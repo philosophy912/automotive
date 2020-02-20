@@ -1,8 +1,8 @@
 .. automotive documentation master file, created by
 
-±¾ÎÄµµÖ÷ÒªÁĞ¾ÙÁËautomotiveÄ£¿é¼°×ÓÄ£¿éµÄÒ»Ğ©·½·¨ËµÃ÷
+æœ¬æ–‡æ¡£ä¸»è¦åˆ—ä¸¾äº†automotiveæ¨¡å—åŠå­æ¨¡å—çš„ä¸€äº›æ–¹æ³•è¯´æ˜
 
-automotiveÄ£¿éÎÄµµËµÃ÷
+automotiveæ¨¡å—æ–‡æ¡£è¯´æ˜
 ======================================
 
 
@@ -10,54 +10,54 @@ automotiveÄ£¿éÎÄµµËµÃ÷
    :maxdepth: 2
    :caption: Contents:
 
-»ù´¡tools¹¤¾ß
+åŸºç¡€toolså·¥å…·
 ======================================
 .. automodule:: automotive.tools
    :members:
 
 
-IT6831ºÍKonstanterµçÔ´
+IT6831å’ŒKonstanterç”µæº
 ======================================
 .. automodule:: automotive.tools.battery
    :members:
 
-ÉãÏñÍ·
+æ‘„åƒå¤´
 ======================================
 .. automodule:: automotive.tools.camera
    :members:
 
 
-Í¼Æ¬´¦Àí
+å›¾ç‰‡å¤„ç†
 ======================================
 .. automodule:: automotive.tools.images
    :members:
 
-ÓÊ¼ş·¢ËÍ½ÓÊÕ£¨Î´Íê³É)
+é‚®ä»¶å‘é€æ¥æ”¶ï¼ˆæœªå®Œæˆ)
 ======================================
 .. automodule:: automotive.tools.mail
    :members:
 
-µçÔ´±ä¶¯²âÊÔ
+ç”µæºå˜åŠ¨æµ‹è¯•
 ======================================
 .. automodule:: automotive.tools.onoff
    :members:
 
-Serial´®¿Ú
+Serialä¸²å£
 ======================================
 .. automodule:: automotive.tools.serial_port
    :members:
 
-SSH²Ù×÷£¨Î´Íê³É)
+SSHæ“ä½œï¼ˆæœªå®Œæˆ)
 ======================================
 .. automodule:: automotive.tools.ssh
    :members:
 
-USB¼ÌµçÆ÷
+USBç»§ç”µå™¨
 ======================================
 .. automodule:: automotive.tools.usbrelay
    :members:
 
-CANºĞ
+CANç›’
 ======================================
 .. automodule:: automotive.can
    :members:
@@ -67,7 +67,7 @@ Android Appium
 .. automodule:: automotive.android
    :members:
 
-Ë÷ÒıºÍ±í
+ç´¢å¼•å’Œè¡¨
 ==================
 
 * :ref:`genindex`
