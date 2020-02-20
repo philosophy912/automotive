@@ -1,0 +1,40 @@
+# 设备相关配置
+device_config:
+  # konstanter配置
+  konstanter: [com9, 115200]
+  # it6831的配置
+  it6831: [com10, 9600]
+  # serial的配置
+  serial: [com7, 9600]
+  # can的配置
+  can:
+    # dbc转换的来的文件
+    message: automatedtest.lib.can.dbc.gse_3j2
+    # 倒档配置
+    r_shift: [0x256, signal_name, 1]
+    # 空挡配置
+    n_shift: [0x256, signal_name, 1]
+    # 快速休眠
+    fast_sleep: [0x256, signal_name, 1, 5]
+# 环境相关配置
+environment:
+  # 配置电源
+  battery: it6831
+  # 配置ACC
+  acc: konstanter
+  # 配置倒车
+  reverse: 5
+  # 配置休眠
+  bus_sleep: fast_sleep
+  # 配置摄像头（都带默认配置)
+  camera:
+    # 默认调整摄像头时间
+    camera_test: 2
+    # 图片对比的阈值
+    compare_threshold: 10
+    # 图片过滤器的阈值
+    filter_threshold: 10
+    # 基准图片配置(亮图和暗图)
+    "base": ["light_template.png", "dark_template.png"]
+  # 配置基准路径
+  base_path: D:\Workspace\python\automatedtest\res\project\temp\screenshot
