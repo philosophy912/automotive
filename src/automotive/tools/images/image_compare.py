@@ -9,9 +9,11 @@
 # --------------------------------------------------------
 import os
 import shutil
+
 from loguru import logger
 from .base_image_compare import ImageProperty
 from .base_image_compare import BaseImageCompare
+from .base_screen_shot import BaseScreenShot
 from ..utils import Utils
 
 
@@ -20,7 +22,7 @@ class ImageCompare(BaseImageCompare):
         图片对比，用于自动化仪表测试的图片对比。
     """
 
-    def __init__(self, screen_shot_module: str, template_path: str, screen_shot_path: str, report_path: str,
+    def __init__(self, screen_shot_module: (str, BaseScreenShot), template_path: str, screen_shot_path: str, report_path: str,
                  config: (str, dict), color: tuple = (255, 0, 0), default_image_name: str = "1.bmp"):
         """
         :param screen_shot_module:

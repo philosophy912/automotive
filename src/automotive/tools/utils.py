@@ -5,7 +5,7 @@
 # @Name:        utils
 # @Purpose:     相关的通用类
 # @Author:      lizhe  
-# @Created:     2019/8/21 10:32  
+# @Created:     2019/8/21 10:32
 # --------------------------------------------------------
 import json
 import time
@@ -209,19 +209,22 @@ class Utils(metaclass=Singleton):
             logger.info(content)
 
     @staticmethod
-    def get_folder_path(folder_name: str, top_folder_name: str) -> str:
+    def get_folder_path(folder_name: str, top_folder_name: str, current_path: str) -> str:
         """
         在top_folder_name目录下找folder_name文件夹存在的位置
 
         Tips: 当该文件夹下面有两个相同的folder_name的时候，以第一个为准
 
-        :param folder_name: 要查找的文件名字
+        :param folder_name: 要查找的文件名字，要查找的在top_folder_name下面的文件夹的名字
 
-        :param top_folder_name: 顶层目录
+        :param top_folder_name: 要查找的顶层目录文件夹名字， 通常设置为automatedtest
+
+        :param current_path: 要查找的文件夹路径，一般传入当前运行文件所在的文件夹
 
         :return: top_folder_name目录下folder_name文件夹的路径
         """
-        current_path = os.path.split(os.path.abspath(__file__))[0]
+        if top_folder_name not in current_path:
+            raise ValueError(f"top_folder_name[{top_folder_name}] must in current_path[{current_path}]")
         head_path = current_path.split(top_folder_name)[0]
         top_folder_path = os.path.join(head_path, top_folder_name)
         logger.debug(f"top_folder_path = {top_folder_path}")

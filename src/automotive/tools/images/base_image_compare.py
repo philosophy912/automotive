@@ -112,10 +112,12 @@ class BaseImageCompare(metaclass=ABCMeta):
 
     """
 
-    def __init__(self, screen_shot_module: str, template_path: str, screen_shot_path: str, report_path: str,
-                 config: (str, dict), color: tuple = (255, 0, 0), default_image_name: str = "1.bmp"):
+    def __init__(self, screen_shot: (str, BaseScreenShot), template_path: str, screen_shot_path: str,
+                 report_path: str, config: (str, dict), color: tuple = (255, 0, 0), default_image_name: str = "1.bmp"):
         """
-        :param screen_shot_module:
+        :param screen_shot:
+            1。可以直接传入实例化对象
+            2. 可以传入实现了BaseScreenShot类的包名
             通用screenshot模块的完成包名，该模块中必须包含继承（实现)了BaseScreenShot的类。
 
         :param template_path: 标准图片存放的路径
@@ -126,18 +128,21 @@ class BaseImageCompare(metaclass=ABCMeta):
 
         :param config: 测试生成的json/py文件
         """
-        # 获取screenshot类的实例
-        self._screen_shot = self.__get_screen_instance(screen_shot_module)
-        # 画框的颜色 ，默认蓝色（用于区域）
-        self._color = color
-        # 实例化Image工具对象
-        self._images = Images()
         # 标准图片存放的路径
         self._template_path = self.__check_path(template_path)
         # 截图文件存放的路径
         self._screen_shot_path = self.__check_path(screen_shot_path)
         # 报告文件存放的路径
         self._report_path = self.__check_path(report_path, True)
+        # 获取screenshot类的实例
+        if isinstance(screen_shot, str):
+            self._screen_shot = self.__get_screen_instance(screen_shot)
+        elif isinstance(screen_shot, BaseScreenShot):
+            self._screen_shot = screen_shot
+        # 画框的颜色 ，默认蓝色（用于区域）
+        self._color = color
+        # 实例化Image工具对象
+        self._images = Images()
         # 配置文件读取出来的对象
         self._properties = self.__get_property_from_json(config)
         # 默认截图图片
@@ -180,7 +185,7 @@ class BaseImageCompare(metaclass=ABCMeta):
         return properties
 
     @staticmethod
-    def __get_screen_instance(module_name: str) -> BaseScreenShot:
+    def __get_screen_instance(self, module_name: str) -> BaseScreenShot:
         """
         实例化screen对象
 
@@ -192,9 +197,10 @@ class BaseImageCompare(metaclass=ABCMeta):
         """
         module = importlib.import_module(module_name)
         for clazz in dir(module):
+            # 由于有参数，需要传入参数，否则实例化会失败
             instance = getattr(module, clazz)
             if inspect.isclass(instance) and instance.__base__.__name__ == "BaseScreenShot":
-                return instance
+                return instance(self._screen_shot_path)
         raise RuntimeError(f"module[{module_name}] cannot include subclass of BaseScreenShot")
 
     @abstractmethod
