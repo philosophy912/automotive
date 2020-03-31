@@ -70,7 +70,7 @@ class UsbCanBus(CanBus):
         msg.msg_id = message.id
         msg.time_stamp = hex(message.time_stamp)
         msg.time_flag = message.time_flag
-        msg.send_type = message.send_type
+        msg.send_type = message.usb_can_send_type
         msg.remote_flag = message.remote_flag
         msg.external_flag = message.extern_flag
         msg.reserved = self.__get_reserved(message.reserved)
@@ -171,7 +171,7 @@ class UsbCanBus(CanBus):
         :param message: message对象
         """
         msg_id = message.msg_id
-        message.send_type = 1
+        message.usb_can_send_type = 1
         if message.msg_send_type == self._cycle:
             # 周期信号
             self.__cycle_msg(message)

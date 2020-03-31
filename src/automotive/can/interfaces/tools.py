@@ -144,10 +144,10 @@ class Tools(object):
 
                 如: data=0b11001100 length=2, shift=4, value=0b11， 则返回0b11111100
         """
-        shift = shift - length + 1
         # logger.debug(f"value = {bin(value)}")
-        mask = (2 ** length - 1) << shift
-        return (data & (~mask)) | (value << shift)
+        # 移位是shift，也就是8byte中右边的位置，+长度
+        mask = (2 ** length - 1) << (shift + length)
+        return (data & (~mask)) | (value << (shift + length))
 
     def get_value(self, data: int, start: int, length: int) -> int:
         """

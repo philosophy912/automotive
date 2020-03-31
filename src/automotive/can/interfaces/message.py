@@ -62,7 +62,7 @@ class Message(object):
         self.is_standard_can = True
         #################################################################################
         # USB MESSAGE独特的部分
-        self.send_type = 1
+        self.usb_can_send_type = 1
         # USB CAN特有的属性
         self.time_flag = 1
         # USB CAN特有的属性
@@ -145,6 +145,7 @@ class Message(object):
                 raw_data = self.__tools.set_list_data_to_msg(self.data)
             logger.debug(f"before raw_data[{bin(raw_data)}]")
             for name, signal in self.signals.items():
+                logger.debug(f"signal name = {signal.signal_name}")
                 logger.debug(f"start[{signal.start_bit}]-length[{signal.bit_length}]"
                              f", value[{signal.value}]")
                 # 根据原来的数据message_data，替换某一部分的内容
@@ -256,7 +257,7 @@ class Signal(object):
         self.bit_length = signal['signal_size']
         self.start_bit = signal["start_bit"]
         self.is_sign = signal["is_sign"]
-        self.is_float = signal["is_float"]
+        self.is_float = signal["byte_type"]
         self.factor = signal["factor"]
         self.offset = signal["offset"]
         self.minimum = signal["minimum"]

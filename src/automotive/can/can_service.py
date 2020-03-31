@@ -58,6 +58,7 @@ class CANService(metaclass=Singleton):
             :return:
         """
         for msg_id, msg in self.messages.items():
+            logger.debug(f"msg id = {msg_id}")
             filter_condition = filter_sender.lower() == msg.sender.lower() if filter_sender else True
             if not (msg.nm_message or msg.diag_state or filter_condition):
                 logger.debug(f"will send msg [{hex(msg_id)}]")
