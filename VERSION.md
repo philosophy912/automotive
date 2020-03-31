@@ -12,5 +12,11 @@
 
   修改了**get_folder_path**方法， 添加了current_path，方便在不同位置查找文件夹，修正了之前在模块中引用的路径错误。
 
-  
+#### V1.0.2
+
+- 修复了CANBOX的发送错误
+- 修复了CAN Message计算的错误
+- 统一了CANDevice的接口
+- 增加了CAN 随机发送消息的接口
+
 

@@ -60,6 +60,17 @@ class Message(object):
         self.is_can_fd = False
         # 是否标准can
         self.is_standard_can = True
+        #################################################################################
+        # USB MESSAGE独特的部分
+        self.send_type = 1
+        # USB CAN特有的属性
+        self.time_flag = 1
+        # USB CAN特有的属性
+        self.remote_flag = 0
+        # USB CAN特有的属性
+        self.external_flag = 0
+        # 信号保留字
+        self.reserved = None
 
     def __check_msg_id(self):
         """
@@ -132,15 +143,16 @@ class Message(object):
                 raw_data = 0
             else:
                 raw_data = self.__tools.set_list_data_to_msg(self.data)
-            logger.debug(f"msg_data[{raw_data}]")
+            logger.debug(f"before raw_data[{bin(raw_data)}]")
             for name, signal in self.signals.items():
-                shift = 63 - self.__tools.get_position_in_8_bytes(signal.start_bit)
                 logger.debug(f"start[{signal.start_bit}]-length[{signal.bit_length}]"
-                             f", shift[{shift}], value[{signal.value}]")
+                             f", value[{signal.value}]")
                 # 根据原来的数据message_data，替换某一部分的内容
-                raw_data = self.__tools.set_value_by_bit(raw_data, signal.bit_length, shift, signal.value)
-                logger.debug(f"msg_data[{raw_data}]")
+                raw_data = self.__tools.get_raw_data(raw_data, signal.bit_length, signal.start_bit, signal.value)
+                logger.debug(f"raw_data[{bin(raw_data)}]")
+            logger.debug(f"after raw_data[{bin(raw_data)}]")
             self.data = self.__tools.set_msg_data_to_list(raw_data)
+            logger.debug(f"data is {list(map(lambda x: hex(x), self.data))}")
         # 收到数据
         else:
             raw_data = self.__tools.set_list_data_to_msg(self.data)
@@ -304,7 +316,7 @@ class Signal(object):
         """
         self.__value = value
         self.__physical_value = int((float(value) * float(self.factor)) + float(self.offset))
-        logger.debug(f"value is {self.__value} and physical value is {self.__physical_value}")
+        logger.trace(f"value is {self.__value} and physical value is {self.__physical_value}")
 
     @property
     def physical_value(self):
@@ -314,25 +326,4 @@ class Signal(object):
     def physical_value(self, physical_value):
         self.__physical_value = physical_value
         self.__value = int((float(physical_value) - float(self.offset)) / float(self.factor))
-        logger.debug(f"physical value is {self.__physical_value} and value is {self.__value}")
-
-
-class PeakCanMessage(Message):
-
-    def __init__(self):
-        super().__init__()
-
-
-class UsbCanMessage(Message):
-
-    def __int__(self):
-        super().__init__()
-        self.send_type = 1
-        # USB CAN特有的属性
-        self.time_flag = 1
-        # USB CAN特有的属性
-        self.remote_flag = 0
-        # USB CAN特有的属性
-        self.external_flag = 1
-        # 信号保留字
-        self.reserved = None
+        logger.trace(f"physical value is {self.__physical_value} and value is {self.__value}")

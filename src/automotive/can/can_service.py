@@ -9,12 +9,14 @@
 # @Created:     2019/8/21 9:47
 # --------------------------------------------------------
 import time
+import random
+from time import sleep
 from loguru import logger
 from automotive.tools import Singleton
 from .interfaces.parser import Parser
 from .interfaces.tools import Tools
 from .devices.device_can_bus import DeviceCanBus
-from .interfaces.message import PeakCanMessage, UsbCanMessage
+from .interfaces.message import Message
 
 
 class CANService(metaclass=Singleton):
@@ -47,6 +49,25 @@ class CANService(metaclass=Singleton):
     @messages.setter
     def messages(self, messages):
         self.__messages = messages
+
+    def __send_random(self, filter_sender: str, interval: int):
+        """
+            随机发送CAN消息
+            :param filter_sender:  过滤发送者，如HU。仅支持单个节点过滤
+            :param interval: 每个信号值改变的间隔时间，默认是1秒
+            :return:
+        """
+        for msg_id, msg in self.messages.items():
+            filter_condition = filter_sender.lower() == msg.sender.lower() if filter_sender else True
+            if not (msg.nm_message or msg.diag_state or filter_condition):
+                logger.debug(f"will send msg [{hex(msg_id)}]")
+                for sig_name, sig in msg.signals.items():
+                    max_value = 2 ** sig.bit_length - 1
+                    value = random.randint(0, max_value)
+                    logger.trace(f"value is [{value}]")
+                    sig.value = value
+                self.send_can_message(msg)
+                sleep(interval)
 
     def open_can(self):
         """
@@ -128,7 +149,7 @@ class CANService(metaclass=Singleton):
         set_message.check_message()
         self.send_can_message_by_id_or_name(msg_id)
 
-    def send_can_message(self, send_msg: (PeakCanMessage, UsbCanMessage), type_: bool = False):
+    def send_can_message(self, send_msg: Message, type_: bool = False):
         """
         直接发送的Message对象数据，可以选择8byte数据发送和signals数据发送两种方式，默认使用signals方式构建数据
 
@@ -142,9 +163,10 @@ class CANService(metaclass=Singleton):
         """
         send_msg.check_message(type_)
         send_msg.update(True)
+        logger.info(f"msg data is {list(map(lambda x: hex(x), send_msg.data))}")
         self.__can.transmit(send_msg)
 
-    def receive_can_message(self, message_id: int) -> (PeakCanMessage, UsbCanMessage):
+    def receive_can_message(self, message_id: int) -> Message:
         """
         接收在CAN上收到的Message消息，当能够在内置的messages对象中查询到则能够查询到具体的signals的值，否则只能查询到8byte数据
 
@@ -302,3 +324,42 @@ class CANService(metaclass=Singleton):
             signal = message.signals[signal_name]
             duplicate.add(signal.value)
         return len(duplicate) > 1
+
+    def get_stack(self) -> list:
+        """
+        获取当前栈中所收到的消息
+
+        :return:  栈中数据List<Message>
+        """
+        return self.__can.get_stack()
+
+    def set_stack_size(self, size: int):
+        """
+        设置栈大小
+
+        :param size: 用于定义最大的保存数据数量
+        """
+        self.__can.set_stack_size(size)
+
+    def send_random(self, filter_sender: str = None, cycle_time: int = None, interval: int = 1):
+        """
+            随机发送信号
+
+            1、不发送诊断帧和网络管理帧
+
+            2、信号的值随机设置
+
+            3、需要过滤指定的发送者
+
+            :param filter_sender: 过滤发送者，如HU。仅支持单个节点过滤
+
+            :param cycle_time: 循环次数，当没有传入的时候无线循环
+
+            :param interval: 每个信号值改变的间隔时间，默认是1秒
+        """
+        if cycle_time:
+            for i in range(cycle_time):
+                logger.info(f"The {i + 1} time set random value")
+                self.__send_random(filter_sender, interval)
+        else:
+            self.__send_random(filter_sender, interval)

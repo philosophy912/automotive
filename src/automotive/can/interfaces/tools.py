@@ -144,6 +144,8 @@ class Tools(object):
 
                 如: data=0b11001100 length=2, shift=4, value=0b11， 则返回0b11111100
         """
+        shift = shift - length + 1
+        # logger.debug(f"value = {bin(value)}")
         mask = (2 ** length - 1) << shift
         return (data & (~mask)) | (value << shift)
 
@@ -176,3 +178,21 @@ class Tools(object):
         temp_data = (data & compare) >> right_distance
         logger.debug(f"get value is {hex(temp_data)}")
         return temp_data
+
+    def get_raw_data(self, data: int, bit_length: int, start_bit: int, value: int) -> int:
+        """
+        获取计算后的8Byte的值
+
+        :param data: 数据
+
+        :param bit_length: signal的bit长度
+
+        :param start_bit: signal开始的bit位
+
+        :param value:  要填入的值
+
+        :return: 取到的数据长度
+        """
+        shift = 63 - self.get_position_in_8_bytes(start_bit)
+        logger.debug(f"shift is {shift}")
+        return self.set_value_by_bit(data, bit_length, shift, value)

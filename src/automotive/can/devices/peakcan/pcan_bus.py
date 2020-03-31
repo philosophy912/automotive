@@ -11,7 +11,7 @@ from time import sleep
 from loguru import logger
 from concurrent.futures import ThreadPoolExecutor
 from .pcan import PCan
-from automotive.can.interfaces import PeakCanMessage, CanBus
+from automotive.can.interfaces import Message, CanBus
 
 
 class PCanBus(CanBus):
@@ -53,7 +53,7 @@ class PCanBus(CanBus):
         """
         return hex(timestamp.micros + 1000 * timestamp.millis + 0x100000000 * 1000 * timestamp.millis_overflow)
 
-    def __get_message(self, message, timestamp) -> PeakCanMessage:
+    def __get_message(self, message, timestamp) -> Message:
         """
         获取message对象
 
@@ -61,7 +61,7 @@ class PCanBus(CanBus):
 
         :return: PeakCanMessage对象
         """
-        msg = PeakCanMessage()
+        msg = Message()
         msg.msg_id = message.id
         msg.time_stamp = self.__get_time_stamp(timestamp)
         msg.send_type = message.msg_type
@@ -89,7 +89,7 @@ class PCanBus(CanBus):
                 # logger.debug(f"Not receive messages.")
                 continue
 
-    def __transmit(self, pcan_message: PeakCanMessage):
+    def __transmit(self, pcan_message: Message):
         """
         CAN发送帧函数，在线程中执行。
 
@@ -99,12 +99,11 @@ class PCanBus(CanBus):
         msg_id = pcan_message.msg_id
         while self.__pcan.is_open and not pcan_message.stop_flag:
             logger.debug(f"send msg {hex(msg_id)} and cycle time is {pcan_message.cycle_time}")
-            self.__pcan.transmit_fd(pcan_message.frame_length, msg_id, pcan_message.send_type,
-                                    pcan_message.data_length, pcan_message.data)
+            self.__pcan.transmit(pcan_message)
             # 循环发送的等待周期
             sleep(pcan_message.cycle_time / 1000.0)
 
-    def __cycle_msg(self, pcan_message: PeakCanMessage):
+    def __cycle_msg(self, pcan_message: Message):
         """
         发送周期性型号
 
@@ -120,7 +119,7 @@ class PCanBus(CanBus):
                     f"Circle time is {cycle_time}ms ******")
         self.__thread_pool.submit(self.__transmit, pcan_message)
 
-    def __event(self, pcan_message: PeakCanMessage):
+    def __event(self, pcan_message: Message):
         """
         发送事件信号
 
@@ -133,8 +132,7 @@ class PCanBus(CanBus):
         for i in range(pcan_message.cycle_time_fast_times):
             logger.info(f"****** The {i} times send msg[{hex_msg_id}] and data [{list(map(lambda x: hex(x), data))}] "
                         f"and cycle time [{pcan_message.cycle_time_fast}]")
-            self.__pcan.transmit_fd(pcan_message.frame_length, msg_id, pcan_message.send_type,
-                                    pcan_message.data_length, pcan_message.data)
+            self.__pcan.transmit(pcan_message)
             sleep(pcan_message.cycle_time_fast / 1000.0)
 
     def open_can(self):
@@ -155,31 +153,31 @@ class PCanBus(CanBus):
         """
         self.__pcan.close_device()
 
-    def transmit(self, pcan_message: PeakCanMessage):
+    def transmit(self, message: Message):
         """
         发送CAN帧函数。
 
         TODO: 延时没有实现
 
-        :param pcan_message: message对象
+        :param message: message对象
         """
-        msg_id = pcan_message.msg_id
-        if pcan_message.msg_send_type == self._cycle:
+        msg_id = message.msg_id
+        if message.msg_send_type == self._cycle:
             # 周期信号
-            self.__cycle_msg(pcan_message)
-        elif pcan_message.msg_send_type == self._event:
+            self.__cycle_msg(message)
+        elif message.msg_send_type == self._event:
             # 事件信号
-            self.__event(pcan_message)
+            self.__event(message)
         else:
             # 周期事件信号
             if msg_id not in self._send_messages:
-                self.__cycle_msg(pcan_message)
+                self.__cycle_msg(message)
             # 暂停已发送的消息
             self._send_messages[msg_id].stop_flag = True
-            self.__event(pcan_message)
+            self.__event(message)
             # 发送完成了周期性事件信号，恢复信号发送
             self._send_messages[msg_id].stop_flag = False
-            self.__cycle_msg(pcan_message)
+            self.__cycle_msg(message)
 
     def stop_transmit(self, msg_id: int = None):
         """
@@ -223,7 +221,7 @@ class PCanBus(CanBus):
                 item.stop_flag = False
                 self.transmit(item)
 
-    def receive(self, msg_id: int) -> PeakCanMessage:
+    def receive(self, msg_id: int) -> Message:
         """
         接收函数。此函数从指定的设备CAN通道的接收缓冲区中读取数据。
 
@@ -258,3 +256,11 @@ class PCanBus(CanBus):
         清除栈数据
         """
         self._stack.clear()
+
+    def set_stack_size(self, size: int):
+        """
+        设置栈大小
+
+        :param size: 用于定义最大的保存数据数量
+        """
+        self._max_stack = size

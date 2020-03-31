@@ -11,15 +11,16 @@
 import sys
 import os
 from ctypes import c_ubyte, c_ushort, c_char, c_uint, Structure, windll, c_int, byref, POINTER, memmove, c_long
-from functools import wraps
 from time import time
 from platform import architecture
 from inspect import stack
 from loguru import logger
-from automotive.can.interfaces import CanBoxDevice
+from automotive.can.interfaces import CanBoxDevice, Message
 
 # ===============================================================================
 # 定义数据类型
+from automotive.can.interfaces.can_bus import CANDevice, BaudRate, control_decorator
+
 UBYTE = c_ubyte
 USHORT = c_ushort
 CHAR = c_char
@@ -49,33 +50,6 @@ band_rate_list = {
     '66.66Kbps': (0x04, 0x6F),
     '83.33Kbps': (0x03, 0x6F)
 }
-
-
-def control_decorator(func):
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        try:
-            ret = func(*args, **kwargs)
-            if ret == 1:
-                if func.__name__ == "init_device":
-                    logger.info("Method <{}> call success, and init CAN{} success.".format(func.__name__, args[2]))
-                elif func.__name__ == "start_device":
-                    logger.info("Method <{}> call success, and start CAN{} success.".format(func.__name__, args[2]))
-                else:
-                    logger.info("Method <{}> call success, and return success.".format(func.__name__))
-                return ret
-            elif ret == 0:
-                raise RuntimeError("Method <{}> is called, and return failed.".format(func.__name__))
-            elif ret == -1:
-                raise RuntimeError("Method <{}> is called, and CAN is not exist.".format(func.__name__))
-            else:
-                raise RuntimeError("Method <{}> : Unknown error.".format(func.__name__))
-        except Exception:
-            error = sys.exc_info()
-            logger.error('ERROR: ' + str(error[0]) + ' : ' + str(error[1]))
-            raise Exception(error[1])
-
-    return wrapper
 
 
 # ===============================================================================
@@ -161,7 +135,7 @@ class VciInitConfig(Structure):
     ]
 
 
-class UsbCan(object):
+class UsbCan(CANDevice):
     """
     用于同一接口
     """
@@ -189,6 +163,18 @@ class UsbCan(object):
         self.__start_time = 0
         self.__device_type = device_type
         self.__device_index = device_index
+        # 过滤器 - 接收所有类型(1) 滤波方式，允许设置为0-3，
+        self.__filter = 1
+        # 工作模式 - 正常模式(1)
+        #  =0表示正常模式（相当于正常节点），
+        #  =1表示只听模式（只接收，不影响总线），
+        #  =2表示自发自收模式（环回模式）
+        self.__mode = 0
+        # 验收码。 SJA1000的帧过滤验收码。对经过屏蔽码过滤为“有关位”进行匹配，
+        # 全部匹配成功后，此帧可以被接收。否则不接收。
+        self.__access_code = 0
+        #  CAN通道索引。 第几路 CAN。即对应卡的CAN通道号， CAN1为0， CAN2为1
+        self.__can_index = 0
         self.is_open = False
 
     @staticmethod
@@ -300,37 +286,15 @@ class UsbCan(object):
         return init_config
 
     @control_decorator
-    def __init_device(self, filters: int, mode: int, access_code: int, baud_rate: str, can_index: int = 0):
+    def __init_device(self, baud_rate: str) -> int:
         """
         初始化指定的CAN通道。有多个CAN通道时，需要多次调用。
 
-        :param filters: 滤波方式，允许设置为0-3，
-
-        :param mode: 模式
-
-            =0表示正常模式（相当于正常节点），
-
-            =1表示只听模式（只接收，不影响总线），
-
-            =2表示自发自收模式（环回模式
-
-        :param access_code:
-
-            验收码。 SJA1000的帧过滤验收码。对经过屏蔽码过滤为“有关位”进行匹配，
-
-            全部匹配成功后，此帧可以被接收。否则不接收。
-
         :param baud_rate: 波特率(band_rate_list列出来的)
-
-        :param can_index: CAN通道索引。 第几路 CAN。即对应卡的CAN通道号， CAN1为0， CAN2为1
         """
-        init_config = self.__get_init_config(filters, mode, access_code, baud_rate)
+        init_config = self.__get_init_config(self.__filter, self.__mode, self.__access_code, baud_rate)
         self.__lib_can.VCI_InitCAN.argtypes = [c_int, c_int, c_int, POINTER(VciInitConfig)]
-        if not self.is_open:
-            if self.__lib_can.VCI_InitCAN(self.__device_type, self.__device_index, can_index, byref(init_config)) == 1:
-                self.is_open = True
-            else:
-                self.is_open = False
+        return self.__lib_can.VCI_InitCAN(self.__device_type, self.__device_index, self.__can_index, byref(init_config))
 
     def __data_package(self, frame_length: int, message_id: int, time_flag: int, send_type: int, remote_flag: int,
                        external_flag: int, data_length: int, data: list, reserve: list):
@@ -421,18 +385,49 @@ class UsbCan(object):
         return send_data
 
     @control_decorator
-    def open_device(self, reserved: int = 0):
+    def __open_device(self, reserved: int = 0) -> int:
+        """
+        描述：打开USB CAN设备，注意一个设备只能打开一次，测试前必须先调用该接口。
+
+        :param reserved:  保留参数，通常为 0
+
+        :return: 返回值=1，表示操作成功；
+
+                =0表示操作失败；
+        """
+        return self.__lib_can.VCI_OpenDevice(self.__device_type, self.__device_index, reserved)
+
+    @control_decorator
+    def __start_device(self):
+        """
+        启动CAN卡的某一个CAN通道。有多个CAN通道时，需要多次调用。
+
+        :return: 返回值=1，表示操作成功；
+
+                =0表示操作失 败。
+        """
+        return self.__lib_can.VCI_StartCAN(self.__device_type, self.__device_index, self.__can_index)
+
+    def open_device(self, baud_rate: BaudRate = BaudRate.HIGH, reserved: int = 0):
         """
         打开USB CAN设备，注意一个设备只能打开一次，测试前必须先调用该接口。
 
+        :param baud_rate: CAN速率，HIGH表示高速，LOW表示低速
+
         :param reserved: 保留参数，通常为 0
         """
-        if self.__lib_can.VCI_OpenDevice(self.__device_type, self.__device_index, reserved) == 1:
-            self.is_open = True
+        # 当前设备处于打开状态
+        if not self.is_open:
+            if self.__open_device() == 1:
+                self.is_open = True
+            else:
+                self.is_open = False
+        if self.is_open:
+            if self.__init_device(baud_rate.value) == 1:
+                self.__start_device()
         else:
-            self.is_open = False
+            raise RuntimeError("can box is not opened")
 
-    @control_decorator
     def close_device(self):
         """
         关闭USB CAN设备，测试结束时调用该接口。
@@ -493,17 +488,6 @@ class UsbCan(object):
         return hw_type
 
     @control_decorator
-    def start_device(self, can_index: int = 0):
-        """
-        启动CAN卡的某一个CAN通道。有多个CAN通道时，需要多次调用。
-
-        :param can_index: CAN通道索引。第几路 CAN。即对应卡的CAN通道号，CAN1为0，CAN2为1。
-        """
-        self.__start_time = float(time() * 1000)
-        if not self.is_open:
-            self.__lib_can.VCI_StartCAN(self.__device_type, self.__device_index, can_index)
-
-    @control_decorator
     def reset_device(self, can_index: int = 0) -> bool:
         """
         复位 CAN。主要用与 VCI_StartCAN配合使用，无需再初始化，即可恢复CAN卡的正常状态。
@@ -548,57 +532,24 @@ class UsbCan(object):
         self.__check_open_status()
         return self.__lib_can.VCI_GetReceiveNum(self.__device_type, self.__device_index, can_index)
 
-    def transmit(self, frame_length: int, message_id: int, time_flag: int, send_type: int, remote_flag: int,
-                 external_flag: int, data_length: int, data: list, reserve: list, can_index=0):
+    def transmit(self, message: Message):
         """
         发送函数。
 
-        :param frame_length: 要发送的帧结构体数组的长度（发送的帧数量）。最大为1000,高速收发时推荐值为48
+        :param message: Message
 
-        :param message_id:  # 帧ID。 32位变量，数据格式为靠右对齐。
-
-        :param time_flag:  是否使用时间标识，为1时TimeStamp有效， TimeFlag和TimeStamp只在此帧为接收帧时有意义。
-
-        :param send_type:  发送帧类型
-
-            0时为正常发送（发送失败会自动重发，重发最长时间为1.5-3秒）
-
-            1时为单次发送（只发送一次，不自动重发）
-
-        :param remote_flag:  是否是远程帧。
-
-            =0时为为数据帧，
-
-            =1时为远程帧（数据段空）
-
-        :param external_flag:  是否是扩展帧。
-
-            =0时为标准帧（11位ID），
-
-            =1时为扩展帧（29位ID）。
-
-        :param data_length:  数据长度 DLC (<=8)，即CAN帧Data有几个字节。约束了后面Data[8]中的有效字节。
-
-        :param data:  data
-
-            CAN帧的数据。由于CAN规定了最大是8个字节，所以这里预留了8个字节的空间
-
-            受data_length约束。如data_length定义为3，即Data[0]、 Data[1]、 Data[2]是有效的。
-
-        :param reserve:  系统保留
-
-        :param can_index: CAN通道索引。第几路 CAN。即对应卡的CAN通道号，CAN1为0，CAN2为1。
         """
-        p_send = self.__data_package(frame_length, message_id, time_flag, send_type, remote_flag, external_flag,
-                                     data_length, data, reserve)
+        p_send = self.__data_package(message.frame_length, message.msg_id, message.time_flag, message.send_type,
+                                     message.remote_flag, message.external_flag, message.data_length, message.data,
+                                     message.reserved)
         self.__lib_can.VCI_Transmit.restype = DWORD
         try:
-            ret = self.__lib_can.VCI_Transmit(self.__device_type, self.__device_index, can_index, byref(p_send),
-                                              frame_length)
+            ret = self.__lib_can.VCI_Transmit(self.__device_type, self.__device_index, self.__can_index, byref(p_send),
+                                              message.frame_length)
             if ret > 0:
-                logger.debug(f"Usb CAN CAN{can_index} Transmit Success.")
+                logger.debug(f"Usb CAN CAN{self.__can_index} Transmit Success.")
             elif ret == 0:
-                raise RuntimeError(f"Usb CAN CAN{can_index} Transmit Failed.")
+                raise RuntimeError(f"Usb CAN CAN{self.__can_index} Transmit Failed.")
             elif ret == -1:
                 reason = stack()[0][3]
                 raise RuntimeError(f"Method <{reason}> Usb CAN not exist.")
@@ -609,7 +560,7 @@ class UsbCan(object):
             logger.error('ERROR: ' + str(error[0]) + ' : ' + str(error[1]))
             raise RuntimeError(error[1])
 
-    def receive(self, frame_length: int = 2500, wait_time: int = 100, can_index: int = 0):
+    def receive(self, frame_length: int = 2500, wait_time: int = 100) -> tuple:
         """
         接收函数。此函数从指定的设备CAN通道的接收缓冲区中读取数据。
 
@@ -624,20 +575,19 @@ class UsbCan(object):
 
         :param wait_time: 保留参数。
 
-        :param can_index: CAN通道索引。第几路 CAN。即对应卡的CAN通道号，CAN1为0，CAN2为1。
-        
+
         :return: 返回实际读取的帧数
         """
         p_receive = (VciCanObj * frame_length)()
         self.__lib_can.VCI_Receive.restype = c_long
         try:
-            ret = self.__lib_can.VCI_Receive(self.__device_type, self.__device_index, can_index,
+            ret = self.__lib_can.VCI_Receive(self.__device_type, self.__device_index, self.__can_index,
                                              byref(p_receive), frame_length, wait_time)
             if ret > 0:
-                logger.debug(f"Usb CAN CAN{can_index} Receive Success.")
-                return p_receive
+                logger.trace(f"Usb CAN CAN{self.__can_index} Receive Success.")
+                return ret, p_receive
             elif ret == 0:
-                raise RuntimeError(f"Usb CAN CAN{can_index} Transmit Failed.")
+                raise RuntimeError(f"Usb CAN CAN{self.__can_index} Transmit Failed.")
             elif ret == -1:
                 reason = stack()[0][3]
                 raise RuntimeError(f"Method <{reason}> Usb CAN not exist.")
@@ -645,5 +595,5 @@ class UsbCan(object):
                 raise RuntimeError("Unknown error.")
         except Exception:
             error = sys.exc_info()
-            logger.error('ERROR: ' + str(error[0]) + ' : ' + str(error[1]))
+            logger.trace('ERROR: ' + str(error[0]) + ' : ' + str(error[1]))
             raise RuntimeError(error[1])

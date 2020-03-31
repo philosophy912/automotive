@@ -7,9 +7,10 @@
 # @Author:      lizhe
 # @Created:     2019/11/30 22:32
 # --------------------------------------------------------
+from loguru import logger
 from .peakcan.pcan_bus import PCanBus
 from .usbcan.usbcan_bus import UsbCanBus
-from ..interfaces.message import PeakCanMessage, UsbCanMessage
+from ..interfaces.message import Message
 from ..interfaces.can_bus import CanBus, CanBoxDevice
 
 
@@ -20,6 +21,14 @@ class DeviceCanBus(CanBus):
         if not can_box_device:
             can_box_device = self.__get_can_type()
         self.__can = self.__get_can_bus(can_box_device)
+
+    def set_stack_size(self, size: int):
+        """
+        设置栈大小
+
+        :param size: 用于定义最大的保存数据数量
+        """
+        self.__can.set_stack_size(size)
 
     @staticmethod
     def __get_can_type() -> CanBoxDevice:
@@ -34,15 +43,21 @@ class DeviceCanBus(CanBus):
             can.close_can()
             return CanBoxDevice.PEAKCAN
         can = UsbCanBus(CanBoxDevice.USBCAN)
-        can.open_can()
-        if can.is_open():
-            can.close_can()
-            return CanBoxDevice.USBCAN
+        try:
+            can.open_can()
+            if can.is_open():
+                can.close_can()
+                return CanBoxDevice.USBCAN
+        except RuntimeError:
+            logger.warning("USBCAN not found")
         can = UsbCanBus(CanBoxDevice.CANALYST)
-        can.open_can()
-        if can.is_open():
-            can.close_can()
-            return CanBoxDevice.CANALYST
+        try:
+            can.open_can()
+            if can.is_open():
+                can.close_can()
+                return CanBoxDevice.CANALYST
+        except RuntimeError:
+            logger.warning("CANALYST not found")
         raise ValueError(f"peak can or USB CAN or CANALYST can not opened, please check device ")
 
     @staticmethod
@@ -71,7 +86,7 @@ class DeviceCanBus(CanBus):
         """
         self.__can.close_can()
 
-    def transmit(self, message: (PeakCanMessage, UsbCanMessage)):
+    def transmit(self, message: Message):
         """
         发送CAN帧函数。
 
@@ -95,7 +110,7 @@ class DeviceCanBus(CanBus):
         """
         self.__can.resume_transmit(message_id)
 
-    def receive(self, message_id: int) -> (PeakCanMessage, UsbCanMessage):
+    def receive(self, message_id: int) -> Message:
         """
         接收函数。此函数从指定的设备CAN通道的接收缓冲区中读取数据。
 

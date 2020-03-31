@@ -13,8 +13,10 @@
 from inspect import stack
 from ctypes import memmove, c_uint
 
+from automotive.can.interfaces import Message
 from loguru import logger
 from . import pcanbasic
+from ...interfaces.can_bus import CANDevice, BaudRate
 
 baud_rate_list = {
     #   波特率
@@ -52,7 +54,7 @@ interrupts = {'3': 3, '4': 4, '5': 5, '7': 7, '9': 9, '10': 10, '11': 11, '12': 
 
 # ===============================================================================
 # 封装PCANBasic的接口
-class PCan(object):
+class PCan(CANDevice):
     def __init__(self):
         """
         """
@@ -131,7 +133,7 @@ class PCan(object):
     @staticmethod
     def __data_package_fd(frame_length: int, message_id: int, send_type: int, data_length: int, data: list):
         """
-        组包CAN发送数据，供VCI_Transmit函数使用。
+        组包CAN发送数据，供VCI_Transmit函数使用。 (预留，目前的PeakCAN不支持CANFD)
 
         :param frame_length: 帧长度
 
@@ -166,21 +168,18 @@ class PCan(object):
             memmove(send_data[i].DATA, a_data, 8)
         return send_data
 
-    def open_device(self, speed: bool = True, channel: int = None):
+    def open_device(self, baud_rate: BaudRate = BaudRate.HIGH, channel: int = None):
         """
         打开Pcan设备
 
-        :param speed:
-            True: 高速CAN
-
-            False： 低速CAN
+        :param baud_rate: CAN速率，HIGH表示高速，LOW表示低速
 
         :param channel:
             A TPCANHandle representing a PEAK CAN Channel
 
         :return: A TPCANStatus error code
         """
-        baud_rate = "500Kbps" if speed else '125Kbps'
+        baud_rate = baud_rate.value
         logger.info(f"baud_rate is {baud_rate}")
         self.__init_device(baud_rate, channel)
 
@@ -271,25 +270,17 @@ class PCan(object):
         if ret != pcanbasic.PCAN_ERROR_OK:
             raise RuntimeError(f"Method <{stack()[0][3]}> Reset PEAK CAN Failed.")
 
-    def transmit(self, frame_length: int, message_id: int, send_type: int,
-                 data_length: int, data: list, channel: int = None):
+    def transmit(self, message: Message, channel: int = None):
         """
         Transmits a CAN message。
 
-        :param frame_length: 帧长度
-
-        :param message_id: 11/29-bit message identifier
-
-        :param send_type: Type of the message
-
-        :param data_length: Data Length Code of the message (0..8)
-
-        :param data: Data of the message (DATA[0]..DATA[7])
+        :param message: PeakCanMessage消息对象
 
         :param channel:  A TPCANHandle representing a PEAK CAN Channel
         """
         channel = self.__channel if channel else pcanbasic.PCAN_USBBUS1
-        p_send = self.__data_package(frame_length, message_id, send_type, data_length, data)
+        p_send = self.__data_package(message.frame_length, message.msg_id, message.send_type, message.data_length,
+                                     message.data)
         try:
             ret = self.__can_basic.write(channel, p_send)
             if ret == pcanbasic.PCAN_ERROR_OK:
@@ -299,25 +290,17 @@ class PCan(object):
         except Exception:
             raise RuntimeError('PEAK CAN transmit failed.')
 
-    def transmit_fd(self, frame_length: int, message_id: int, send_type: int,
-                    data_length: int, data: list, channel: int = None):
+    def transmit_fd(self, message: Message, channel: int = None):
         """
-        Transmits a CAN message。
+        Transmits a CAN message。(预留，目前的PeakCAN不支持CANFD)
 
-        :param frame_length: 帧长度
-
-        :param message_id: 11/29-bit message identifier
-
-        :param send_type: Type of the message
-
-        :param data_length: Data Length Code of the message (0..8)
-
-        :param data: Data of the message (DATA[0]..DATA[7])
+        :param message: PeakCanMessage消息对象
 
         :param channel:  A TPCANHandle representing a PEAK CAN Channel
         """
         channel = self.__channel if channel else pcanbasic.PCAN_USBBUS1
-        p_send = self.__data_package_fd(frame_length, message_id, send_type, data_length, data)
+        p_send = self.__data_package_fd(message.frame_length, message.msg_id, message.send_type, message.data_length,
+                                        message.data)
         try:
             ret = self.__can_basic.write_fd(channel, p_send)
             if ret == pcanbasic.PCAN_ERROR_OK:
@@ -333,14 +316,14 @@ class PCan(object):
 
         :param channel: A TPCANHandle representing a PEAK CAN Channel
 
-        :return: ret, msg, timestamp
+        :return: PeakCanMessage消息对象
         """
         channel = self.__channel if channel else pcanbasic.PCAN_USBBUS1
         try:
             ret, message, timestamp = self.__can_basic.read(channel)
             if ret == pcanbasic.PCAN_ERROR_OK:
                 logger.debug(f"PEAK CAN channel_{hex(channel.value)} Receive Success.")
-                return message, timestamp
+                return ret, [message, timestamp]
             else:
                 raise RuntimeError(f"Method <{stack()[0][3]}> PEAK CAN Receive Failed.")
         except Exception:
@@ -349,17 +332,18 @@ class PCan(object):
     def receive_fd(self, channel: int = None) -> tuple:
         """
         Reads a CAN message from the receive queue of a PEAK CAN Channel
+        (预留，目前的PeakCAN不支持CANFD)
 
         :param channel: A TPCANHandle representing a PEAK CAN Channel
 
-        :return: ret, msg, timestamp
+        :return: PeakCanMessage消息对象
         """
         channel = self.__channel if channel else pcanbasic.PCAN_USBBUS1
         try:
             ret, message, timestamp = self.__can_basic.read_fd(channel)
             if ret == pcanbasic.PCAN_ERROR_OK:
                 logger.debug(f"PEAK CAN channel_{hex(channel.value)} Receive Success.")
-                return message, timestamp
+                return ret, [message, timestamp]
             else:
                 raise RuntimeError(f"Method <{stack()[0][3]}> PEAK CAN Receive Failed.")
         except Exception:
