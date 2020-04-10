@@ -23,7 +23,7 @@ class ImageCompare(BaseImageCompare):
     """
 
     def __init__(self, screen_shot_module: (str, BaseScreenShot), template_path: str, screen_shot_path: str, report_path: str,
-                 config: (str, dict), color: tuple = (255, 0, 0), default_image_name: str = "1.bmp"):
+                 config: (str, dict), color: tuple = (255, 0, 0), default_image_name: str = "1_screen_shot.bmp"):
         """
         :param screen_shot_module:
             通用screenshot模块的完成包名，该模块中必须包含继承（实现)了BaseScreenShot的类。

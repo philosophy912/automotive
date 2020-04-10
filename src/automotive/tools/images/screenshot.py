@@ -30,7 +30,7 @@ class ScreenShot(BaseScreenShot):
         # adb connect status
         self.__is_connect = False
         # commands root需要的命令
-        self.__commands = []
+        self.__commands = ["root", "setenforce 0", "remount"]
         # 最大的高
         self.__max_height = 720
         # 最大的宽
@@ -74,23 +74,36 @@ class ScreenShot(BaseScreenShot):
             :return:
         """
         for command in commands:
-            self.__shell_command(command)
+            if "root" in command or "remount" in command:
+                self.__shell_command(command, need_shell=False)
+            else:
+                self.__shell_command(command)
 
-    def __shell_command(self, command: str, need_return: bool = False) -> tuple:
+    def __shell_command_with_return(self, command: str, need_shell: bool = True) -> tuple:
         """
-            执行shell命令
-            :param command:  shell命令
-            :param need_return:  是否需要回显（默认不需要)
-            :return: 回显字符串
+        执行shell命令并有回显
+        :param command: shell命令
+        :param need_shell:
+        :return:  回显字符串
         """
-        if need_return:
+        if need_shell:
             command_line = f"adb -s {self.__device_id} shell {command}"
-            logger.debug(f"command line is [{command_line}]")
-            return subprocess.getstatusoutput(command_line)
         else:
+            command_line = f"adb -s {self.__device_id} {command}"
+        logger.debug(f"command line is [{command_line}]")
+        return subprocess.getstatusoutput(command_line)
+
+    def __shell_command(self, command: str, need_shell: bool = True):
+        """
+            执行shell命令(无回显)
+            :param command:  shell命令
+        """
+        if need_shell:
             command_line = f"adb -s {self.__device_id} shell \"{command}\" > {os.devnull}"
-            logger.debug(f"command line is [{command_line}]")
-            os.system(command_line)
+        else:
+            command_line = f"adb -s {self.__device_id} \"{command}\" > {os.devnull}"
+        logger.debug(f"command line is [{command_line}]")
+        os.system(command_line)
 
     def __system_prepare(self, commands: list):
         """
@@ -139,10 +152,10 @@ class ScreenShot(BaseScreenShot):
             :param sync: 是否同步共享目录
             :return:
         """
-        logger.info("screen full")
+        # logger.info("screen full")
         commands = f"htalk shell 'screenshot -file={self.__share_path}/{image_name}.bmp'"
         self.__shell_command(commands)
-        logger.info(commands)
+        # logger.info(commands)
         sleep(interval_time)
         if sync:
             self.__sync_android_and_qnx()
@@ -225,7 +238,7 @@ class ScreenShot(BaseScreenShot):
         image_files = []
         for i in range(count):
             # 设置图片的名称，增加前缀
-            screen_shot_image_name = f"{i + 1}-{image_name}"
+            screen_shot_image_name = f"{i + 1}_{image_name}"
             # 最后一次的时候在sync
             sync = True if i == count - 1 else False
             logger.debug(f"now screen shot {screen_shot_image_name} images and sync is {sync}")

@@ -38,6 +38,7 @@ class USBRelay(object):
     """
     USB继电器基础类，利用ctypes操作dll文件
     """
+
     def __init__(self):
         self.__lib = _LibUsbRelay()
         self.__handle = None

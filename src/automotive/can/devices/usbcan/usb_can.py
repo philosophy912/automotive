@@ -229,9 +229,8 @@ class UsbCan(CANDevice):
 
         :return 返回dll所在的绝对路径
         """
-        support_types = CanBoxDevice.USBCAN, CanBoxDevice.CANALYST
-        if can_box_device not in support_types:
-            raise ValueError(f"current can_box_device is {can_box_device} but only support {support_types}")
+        if can_box_device == CanBoxDevice.PEAKCAN:
+            raise ValueError(f"can_box_device not support peak can")
         system_bit = architecture()[0]
         if can_box_device == CanBoxDevice.USBCAN:
             if system_bit == "32bit":
@@ -240,9 +239,9 @@ class UsbCan(CANDevice):
                 dll_path = r'\usbcan\x64\ControlCAN'
         else:
             if system_bit == "32bit":
-                dll_path = r'\canalyst\x86\ControlCANx86'
+                dll_path = r'\canalyst\x86\ControlCAN'
             else:
-                dll_path = r'\canalyst\x64\ControlCANx64'
+                dll_path = r'\canalyst\x64\ControlCAN'
         return os.path.split(os.path.realpath(__file__))[0] + dll_path
 
     def __get_init_config(self, filters: int, mode: int, access_code: int, baud_rate: str) -> VciInitConfig:

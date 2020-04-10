@@ -11,11 +11,14 @@
 import time
 import random
 from time import sleep
+
+from automotive.can.devices.usbcan import UsbCanBus
+from automotive.can.devices.peakcan import PCanBus
+from automotive.can.interfaces import CanBoxDevice
 from loguru import logger
 from automotive.tools import Singleton
 from .interfaces.parser import Parser
 from .interfaces.tools import Tools
-from .devices.device_can_bus import DeviceCanBus
 from .interfaces.message import Message
 
 
@@ -25,8 +28,12 @@ class CANService(metaclass=Singleton):
 
     """
 
-    def __init__(self, message: (str, list), encoding: str = "utf-8"):
-        self.__can = DeviceCanBus()
+    def __init__(self, message: (str, list), encoding: str = "utf-8",
+                 can_box_device: CanBoxDevice = CanBoxDevice.PEAKCAN):
+        if can_box_device == CanBoxDevice.PEAKCAN:
+            self.__can = PCanBus()
+        else:
+            self.__can = UsbCanBus(can_box_device)
         self.__tools = Tools()
         self.__parser = Parser()
         logger.debug(f"read message from file {message}")
@@ -59,7 +66,10 @@ class CANService(metaclass=Singleton):
         """
         for msg_id, msg in self.messages.items():
             logger.debug(f"msg id = {msg_id}")
-            filter_condition = filter_sender.lower() == msg.sender.lower() if filter_sender else True
+            if filter_sender:
+                filter_condition = filter_sender.lower() == msg.sender.lower() if filter_sender else True
+            else:
+                filter_condition = False
             if not (msg.nm_message or msg.diag_state or filter_condition):
                 logger.debug(f"will send msg [{hex(msg_id)}]")
                 for sig_name, sig in msg.signals.items():
@@ -164,7 +174,7 @@ class CANService(metaclass=Singleton):
         """
         send_msg.check_message(type_)
         send_msg.update(True)
-        logger.info(f"msg data is {list(map(lambda x: hex(x), send_msg.data))}")
+        logger.info(f"msg Id {hex(send_msg.msg_id)}, msg data is {list(map(lambda x: hex(x), send_msg.data))}")
         self.__can.transmit(send_msg)
 
     def receive_can_message(self, message_id: int) -> Message:
@@ -342,7 +352,7 @@ class CANService(metaclass=Singleton):
         """
         self.__can.set_stack_size(size)
 
-    def send_random(self, filter_sender: str = None, cycle_time: int = None, interval: int = 1):
+    def send_random(self, filter_sender: str = None, cycle_time: int = None, interval: int = 0.1):
         """
             随机发送信号
 
@@ -356,7 +366,7 @@ class CANService(metaclass=Singleton):
 
             :param cycle_time: 循环次数，当没有传入的时候无线循环
 
-            :param interval: 每个信号值改变的间隔时间，默认是1秒
+            :param interval: 每个信号值改变的间隔时间，默认是0.1秒
         """
         if cycle_time:
             for i in range(cycle_time):
@@ -364,3 +374,9 @@ class CANService(metaclass=Singleton):
                 self.__send_random(filter_sender, interval)
         else:
             self.__send_random(filter_sender, interval)
+
+    def check_signal(self):
+        """
+            1、 做一个无线循环加入到线程库中，每隔1s检查是否有期望的结果
+        """
+        pass

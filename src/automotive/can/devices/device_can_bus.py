@@ -71,7 +71,7 @@ class DeviceCanBus(CanBus):
         """
         if can_box_device == CanBoxDevice.PEAKCAN:
             return PCanBus()
-        elif can_box_device == CanBoxDevice.USBCAN or can_box_device == CanBoxDevice.CANALYST:
+        else:
             return UsbCanBus(can_box_device)
 
     def open_can(self):

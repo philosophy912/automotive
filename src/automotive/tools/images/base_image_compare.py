@@ -113,7 +113,8 @@ class BaseImageCompare(metaclass=ABCMeta):
     """
 
     def __init__(self, screen_shot: (str, BaseScreenShot), template_path: str, screen_shot_path: str,
-                 report_path: str, config: (str, dict), color: tuple = (255, 0, 0), default_image_name: str = "1.bmp"):
+                 report_path: str, config: (str, dict), color: tuple = (255, 0, 0),
+                 default_image_name: str = "1_screen_shot.bmp"):
         """
         :param screen_shot:
             1。可以直接传入实例化对象
@@ -184,7 +185,6 @@ class BaseImageCompare(metaclass=ABCMeta):
             properties[name] = image_property
         return properties
 
-    @staticmethod
     def __get_screen_instance(self, module_name: str) -> BaseScreenShot:
         """
         实例化screen对象
