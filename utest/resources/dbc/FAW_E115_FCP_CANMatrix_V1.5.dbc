@@ -1,0 +1,1971 @@
+VERSION ""
+
+
+NS_ : 
+	NS_DESC_
+	CM_
+	BA_DEF_
+	BA_
+	VAL_
+	CAT_DEF_
+	CAT_
+	FILTER
+	BA_DEF_DEF_
+	EV_DATA_
+	ENVVAR_DATA_
+	SGTYPE_
+	SGTYPE_VAL_
+	BA_DEF_SGTYPE_
+	BA_SGTYPE_
+	SIG_TYPE_REF_
+	VAL_TABLE_
+	SIG_GROUP_
+	SIG_VALTYPE_
+	SIGTYPE_VALTYPE_
+	BO_TX_BU_
+	BA_DEF_REL_
+	BA_REL_
+	BA_DEF_DEF_REL_
+	BU_SG_REL_
+	BU_EV_REL_
+	BU_BO_REL_
+	SG_MUL_VAL_
+
+BS_:
+
+BU_: GATEWAY FCP MCP BCM1 HEADLAMP REARLAMP PLG DSCU PSCU SCCU DDCU PDCU RLDCU RRDCU ATC SCM RMAR
+
+
+BO_ 756 FCP_PEPS: 8 FCP
+ SG_ Checksum_FCP_PEPS : 0|8@1+ (1,0) [0|0] ""  BCM1
+ SG_ FCP_PEPSSwitch : 8|1@1+ (1,0) [0|0] ""  BCM1
+ SG_ FCP_FV : 16|8@1+ (1,0) [0|0] ""  BCM1
+ SG_ FCP_MAC : 24|24@1+ (1,0) [0|0] ""  BCM1
+ SG_ LiveCounter_FCP_PEPS : 60|4@1+ (1,0) [0|0] ""  BCM1
+
+BO_ 741 FCP_5: 8 FCP
+ SG_ FCP_RLseatVentLevelSet : 0|3@1+ (1,0) [0|0] ""  SCCU
+ SG_ FCP_RRseatVentLevelSet : 4|3@1+ (1,0) [0|0] ""  SCCU
+ SG_ FCP_RLseatHeatLevelSet : 8|3@1+ (1,0) [0|0] ""  SCCU
+ SG_ FCP_RRseatHeatLevelSet : 12|3@1+ (1,0) [0|0] ""  SCCU
+ SG_ FCP_RLSeatLegRestAdj : 16|2@1+ (1,0) [0|0] ""  PSCU
+ SG_ FCP_RRSeatLegRestAdj : 18|2@1+ (1,0) [0|0] ""  PSCU
+ SG_ FCP_RLSeatBackendAdj : 20|2@1+ (1,0) [0|0] ""  PSCU
+ SG_ FCP_RRSeatBackendAdj : 22|2@1+ (1,0) [0|0] ""  PSCU
+ SG_ FCP_RLSeatHeadRestAdj : 24|3@1+ (1,0) [0|0] ""  PSCU
+ SG_ FCP_RRSeatHeadRestAdj : 27|3@1+ (1,0) [0|0] ""  PSCU
+ SG_ FCP_HalfLyingModeCtrlCmd_RL : 30|2@1+ (1,0) [0|0] ""  PSCU
+ SG_ FCP_HalfLyingModeCtrlCmd_RR : 32|2@1+ (1,0) [0|0] ""  DSCU,PSCU
+ SG_ FCP_SunshadeMoveRequest : 40|2@1+ (1,0) [0|0] ""  BCM1
+ SG_ FCP_SunRoofMoveRequest : 42|2@1+ (1,0) [0|0] ""  BCM1
+ SG_ FCP_AssociativeMemoryCmd_Pos1 : 44|1@1+ (1,0) [0|0] ""  BCM1
+ SG_ FCP_AssociativeMemoryCmd_Pos2 : 45|1@1+ (1,0) [0|0] ""  BCM1
+ SG_ FCP_AssociativeMemoryCmd_Pos3 : 46|1@1+ (1,0) [0|0] ""  BCM1
+ SG_ FCP_FRSeatMemoryCmd_Pos1 : 48|1@1+ (1,0) [0|0] ""  BCM1
+ SG_ FCP_FRSeatMemoryCmd_Pos2 : 49|1@1+ (1,0) [0|0] ""  BCM1
+ SG_ FCP_FRSeatMemoryCmd_Pos3 : 50|1@1+ (1,0) [0|0] ""  BCM1
+
+BO_ 740 FCP_4: 8 FCP
+ SG_ FCP_RearACAutoFunctionReq : 0|2@1+ (1,0) [0|0] ""  ATC
+ SG_ FCP_RearBlowLevelFunctionSet : 4|4@1+ (1,0) [0|0] ""  ATC
+ SG_ FCP_RearLeftTempAdjFunctionRe : 8|2@1+ (1,0) [0|0] ""  ATC
+ SG_ FCP_RearRightTempAdjFunctionR_eq : 10|2@1+ (1,0) [0|0] ""  ATC
+ SG_ FCP_RearBlowModeSet : 12|3@1+ (1,0) [0|0] ""  ATC
+ SG_ FCP_RearLeftTempSet : 16|6@1+ (1,0) [0|0] ""  ATC
+ SG_ FCP_RearRightTempSet : 24|6@1+ (1,0) [0|0] ""  ATC
+ SG_ FCP_RearRearACAutoFunctionRe : 32|2@1+ (1,0) [0|0] ""  ATC
+ SG_ FCP_RearRearACPowerReq : 34|2@1+ (1,0) [0|0] ""  ATC
+ SG_ FCP_RearRearBlowLevelFunction_Se : 36|4@1+ (1,0) [0|0] ""  ATC
+ SG_ FCP_RearRearLeftTempAdjFunctionR : 40|2@1+ (1,0) [0|0] ""  ATC
+ SG_ FCP_RearRearRightTempAdjFunct_io : 42|2@1+ (1,0) [0|0] ""  ATC
+ SG_ FCP_RearRearBlowModeSet : 44|3@1+ (1,0) [0|0] ""  ATC
+ SG_ FCP_RearRearLeftTempSet : 48|3@1+ (1,0) [0|0] ""  ATC
+ SG_ FCP_RearRearRightTempSet : 56|3@1+ (1,0) [0|0] ""  ATC
+
+BO_ 739 FCP_3: 8 FCP
+ SG_ FCP_FLseatVentLevelSet : 0|3@1+ (1,0) [0|0] ""  GATEWAY,SCCU
+ SG_ FCP_FRseatVentLevelSet : 4|3@1+ (1,0) [0|0] ""  SCCU
+ SG_ FCP_FLseatHeatLevelSet : 8|3@1+ (1,0) [0|0] ""  SCCU
+ SG_ FCP_FRseatHeatLevelSet : 12|3@1+ (1,0) [0|0] ""  SCCU
+ SG_ FCP_FLseatMassageModeSet : 16|2@1+ (1,0) [0|0] ""  SCCU
+ SG_ FCP_FLseatMassageLevelSet : 19|2@1+ (1,0) [0|0] ""  SCCU
+ SG_ FCP_FLseatMassageFuncSet : 22|2@1+ (1,0) [0|0] ""  SCCU
+ SG_ FCP_FRseatMassageModeSet : 24|2@1+ (1,0) [0|0] ""  SCCU
+ SG_ FCP_FRseatMassageLevelSet : 27|2@1+ (1,0) [0|0] ""  SCCU
+ SG_ FCP_FRseatMassageFuncSet : 30|2@1+ (1,0) [0|0] ""  SCCU
+ SG_ FCP_SteeringWheelHeatReq : 32|2@1+ (1,0) [0|0] ""  BCM1,SCCU
+ SG_ FCP_MovingObjectDetectFuncSet : 38|2@1+ (1,0) [0|0] ""  BCM1
+ SG_ FCP_RLseatMassageModeSet : 40|2@1+ (1,0) [0|0] ""  SCCU
+ SG_ FCP_RLseatMassageLevelSet : 43|2@1+ (1,0) [0|0] ""  SCCU
+ SG_ FCP_RLseatMassageFuncSet : 46|2@1+ (1,0) [0|0] ""  SCCU
+ SG_ FCP_RRseatMassageModeSet : 48|2@1+ (1,0) [0|0] ""  SCCU
+ SG_ FCP_RRseatMassageLevelSet : 51|2@1+ (1,0) [0|0] ""  SCCU
+ SG_ FCP_RRseatMassageFuncSet : 54|2@1+ (1,0) [0|0] ""  SCCU
+
+BO_ 737 FCP_2: 8 FCP
+ SG_ FCP_BabyModeFunctionReq : 8|2@1+ (1,0) [0|0] ""  GATEWAY
+ SG_ FCP_ESCFunctionReq : 11|2@1+ (1,0) [0|0] ""  GATEWAY
+ SG_ FCP_HDCFunctionReq : 13|2@1+ (1,0) [0|0] ""  GATEWAY
+ SG_ FCP_SmokeModeFunctionReq : 16|2@1+ (1,0) [0|0] ""  GATEWAY
+ SG_ FCP_HazeModeFunctionReq : 18|2@1+ (1,0) [0|0] ""  GATEWAY
+ SG_ FCP_PLGSwitchSt : 20|1@1+ (1,0) [0|0] ""  BCM1
+ SG_ FCP_AVSFunctionReq : 21|2@1+ (1,0) [0|0] ""  GATEWAY
+ SG_ FCP_AMP_KeyToneCmd : 23|1@1+ (1,0) [0|0] ""  GATEWAY
+ SG_ FCP_NapModeFunctionReq : 24|2@1+ (1,0) [0|0] ""  GATEWAY
+ SG_ FCP_LeisureModeFunctionReq : 26|2@1+ (1,0) [0|0] ""  GATEWAY
+ SG_ FCP_RearWindowHeatFunctionRe : 28|2@1+ (1,0) [0|0] ""  BCM1
+ SG_ FCP_SoberModeFunctionReq : 30|2@1+ (1,0) [0|0] ""  GATEWAY
+ SG_ FCP_ExternalAutoDEFFunctionRe : 40|2@1+ (1,0) [0|0] ""  BCM1
+ SG_ FCP_FragranceAutoFunctionReq : 43|2@1+ (1,0) [0|0] ""  BCM1
+ SG_ FCP_FragranceFunctionReq : 45|2@1+ (1,0) [0|0] ""  BCM1
+ SG_ FCP_FragranceTypeReq : 48|3@1+ (1,0) [0|0] ""  BCM1
+ SG_ FCP_FragranceConcentrationReq : 51|3@1+ (1,0) [0|0] ""  BCM1
+ SG_ FCP_FragranceTimeSet : 54|2@1+ (1,0) [0|0] ""  BCM1
+ SG_ FCP_PDCFunctionReq : 57|2@1+ (1,0) [0|0] ""  GATEWAY
+ SG_ FCP_APAFunctionReq : 59|2@1+ (1,0) [0|0] ""  GATEWAY
+ SG_ FCP_AVPFunctionReq : 61|2@1+ (1,0) [0|0] ""  GATEWAY
+
+BO_ 736 FCP_1: 8 FCP
+ SG_ FCP_ACAutoFunctionReq_FL : 0|2@1+ (1,0) [0|0] ""  ATC
+ SG_ FCP_ACPowerReq : 2|2@1+ (1,0) [0|0] ""  ATC
+ SG_ FCP_ACDefFunctionReq : 6|2@1+ (1,0) [0|0] ""  ATC
+ SG_ FCP_ACSyncFunctionReq : 8|2@1+ (1,0) [0|0] ""  ATC
+ SG_ FCP_ACNaturalAirFunctionReq : 10|2@1+ (1,0) [0|0] ""  ATC
+ SG_ FCP_ACIONFunctionReq : 12|2@1+ (1,0) [0|0] ""  ATC
+ SG_ FCP_ACPM25FunctionReq : 14|2@1+ (1,0) [0|0] ""  ATC
+ SG_ FCP_BlowLevelFunctionSet : 16|4@1+ (1,0) [0|0] ""  ATC
+ SG_ FCP_LeftTempAdjFunctionReq : 33|2@1+ (1,0) [0|0] ""  ATC
+ SG_ FCP_RightTempAdjFunctionReq : 35|2@1+ (1,0) [0|0] ""  ATC
+ SG_ FCP_FRSRECModeFunctionReq : 37|2@1+ (1,0) [0|0] ""  ATC
+ SG_ FCP_LeftTempSet : 40|6@1+ (1,0) [0|0] ""  ATC
+ SG_ FCP_ACAutoFunctionReq_FR : 46|2@1+ (1,0) [0|0] ""  ATC
+ SG_ FCP_RightTempSet : 48|6@1+ (1,0) [0|0] ""  ATC
+ SG_ FCP_BlowModeSet_FL : 56|4@1+ (1,0) [0|0] ""  ATC
+ SG_ FCP_BlowModeSet_FR : 60|4@1+ (1,0) [0|0] ""  ATC
+
+BO_ 688 GW_Config: 8 GATEWAY
+ SG_ GW_RemoteVehicleMode : 12|1@1+ (1,0) [0|0] ""  FCP
+ SG_ GW_OTAMode : 16|3@1+ (1,0) [0|0] ""  FCP
+
+BO_ 664 HU_9: 8 GATEWAY
+ SG_ HU_LeisuremodeFunctionInd : 55|1@1+ (1,0) [0|0] ""  FCP
+ SG_ HU_BabymodeFunctionInd : 59|1@1+ (1,0) [0|0] ""  FCP
+ SG_ HU_SmokemodeFunctionInd : 60|1@1+ (1,0) [0|0] ""  FCP
+ SG_ HU_NapmodeFunctionInd : 61|1@1+ (1,0) [0|0] ""  FCP
+ SG_ HU_HazemodeFunctionInd : 62|1@1+ (1,0) [0|0] ""  FCP
+ SG_ HU_SobermodeFunctionInd : 63|1@1+ (1,0) [0|0] ""  FCP
+
+BO_ 657 HU_14: 8 GATEWAY
+ SG_ DisplayTheme : 24|3@1+ (1,0) [0|0] ""  FCP
+
+BO_ 656 IC_1: 8 GATEWAY
+ SG_ BackLightBrightness_IC : 16|4@1+ (1,0) [0|0] ""  FCP
+ SG_ OdometerValue : 24|25@1+ (1,0) [0|0] ""  FCP
+
+BO_ 642 HU_2: 8 GATEWAY
+ SG_ BackLightBrightness : 48|8@1+ (1,0) [0|0] ""  FCP
+
+BO_ 613 HAD_5: 8 GATEWAY
+ SG_ Checksum_HAD_5 : 0|8@1+ (1,0) [0|0] ""  FCP
+ SG_ HAD_WorkingSt_HWP_Display : 18|4@1+ (1,0) [0|0] ""  FCP
+ SG_ HAD_WorkingSt_TJP_Display : 24|4@1+ (1,0) [0|0] ""  FCP
+ SG_ LiveCounter_HAD_5 : 60|4@1+ (1,0) [0|0] ""  FCP
+
+BO_ 604 PDC_1: 8 BCM1
+ SG_ SysSt_PDC : 0|1@1+ (1,0) [0|0] ""  FCP
+
+BO_ 600 AVS_1: 8 GATEWAY
+ SG_ AVSSt : 0|1@1+ (1,0) [0|0] ""  FCP
+ SG_ AVSErrorSt : 1|1@1+ (1,0) [0|0] ""  FCP
+ SG_ AVSViewMode : 2|4@1+ (1,0) [0|0] ""  FCP
+ SG_ AVSViewtype : 6|2@1+ (1,0) [0|0] ""  FCP
+ SG_ AVSCameraErrorSt_Front : 8|1@1+ (1,0) [0|0] ""  FCP
+ SG_ AVSCameraErrorSt_Rear : 9|1@1+ (1,0) [0|0] ""  FCP
+ SG_ AVSCameraErrorSt_Left : 10|1@1+ (1,0) [0|0] ""  FCP
+ SG_ AVSCameraErrorSt_Right : 11|1@1+ (1,0) [0|0] ""  FCP
+ SG_ LanguageTypeSt_AVS : 12|4@1+ (1,0) [0|0] ""  FCP
+ SG_ DynamicPGSSt_AVS : 16|1@1+ (1,0) [0|0] ""  FCP
+ SG_ MODSt_AVS : 17|1@1+ (1,0) [0|0] ""  FCP
+ SG_ MODWarning_Front : 18|1@1+ (1,0) [0|0] ""  FCP
+ SG_ MODWarning_Rear : 19|1@1+ (1,0) [0|0] ""  FCP
+ SG_ MODWarning_Left : 20|1@1+ (1,0) [0|0] ""  FCP
+ SG_ MODWarning_Right : 21|1@1+ (1,0) [0|0] ""  FCP
+ SG_ CTAWarning_Front : 22|1@1+ (1,0) [0|0] ""  FCP
+ SG_ CTAWarning_Rear : 23|1@1+ (1,0) [0|0] ""  FCP
+ SG_ SwitchScreenRequest_AVS : 24|2@1+ (1,0) [0|0] ""  FCP
+ SG_ AVS_SpeechControlFeedback : 32|5@1+ (1,0) [0|0] ""  FCP
+
+BO_ 595 ADV_5: 8 GATEWAY
+ SG_ Checksum_ADV_5 : 0|8@1+ (1,0) [0|0] ""  FCP
+ SG_ ADV_AVPNaviAvaialble : 26|1@1+ (1,0) [0|0] ""  FCP
+ SG_ ADV_AVPParkInAvaialble : 27|1@1+ (1,0) [0|0] ""  FCP
+ SG_ ADV_AVPParkOutAvaialble : 28|1@1+ (1,0) [0|0] ""  FCP
+ SG_ ADV_HPANaviAvaialble : 31|1@1+ (1,0) [0|0] ""  FCP
+ SG_ ADV_HPAParkInAvaialble : 32|1@1+ (1,0) [0|0] ""  FCP
+ SG_ ADV_HPAParkOutAvaialble : 33|1@1+ (1,0) [0|0] ""  FCP
+ SG_ LiveCounter_ADV_5 : 60|1@1+ (1,0) [0|0] ""  FCP
+
+BO_ 592 ADV_1: 8 GATEWAY
+ SG_ Checksum_ADV_1 : 0|8@1+ (1,0) [0|0] ""  FCP
+ SG_ ADV_ParkStatus : 12|4@1+ (1,0) [0|0] ""  FCP
+ SG_ LiveCounter_ADV_1 : 60|4@1+ (1,0) [0|0] ""  FCP
+
+BO_ 586 DDCU_1: 8 DDCU
+ SG_ DoorLockSt_FL : 0|2@1+ (1,0) [0|0] ""  FCP
+ SG_ DoorSt_FL : 2|1@1+ (1,0) [0|0] ""  FCP
+
+BO_ 583 SCCU_2: 8 SCCU
+ SG_ SeatVentInd_RL : 0|2@1+ (1,0) [0|0] ""  FCP
+ SG_ SeatVentInd_RR : 2|2@1+ (1,0) [0|0] ""  FCP
+ SG_ SeatMassageModeInd_FL : 4|2@1+ (1,0) [0|0] ""  FCP
+ SG_ SeatMassageModeInd_FR : 6|2@1+ (1,0) [0|0] ""  FCP
+ SG_ SeatMassageModeInd_RL : 8|2@1+ (1,0) [0|0] ""  FCP
+ SG_ SeatMassageModeInd_RR : 10|2@1+ (1,0) [0|0] ""  FCP
+ SG_ SeatMassageLevelInd_FL : 32|2@1+ (1,0) [0|0] ""  FCP
+ SG_ SeatMassageLevelInd_FR : 34|2@1+ (1,0) [0|0] ""  FCP
+ SG_ SeatMassageLevelInd_RL : 36|2@1+ (1,0) [0|0] ""  FCP
+ SG_ SeatMassageLevelInd_RR : 38|2@1+ (1,0) [0|0] ""  FCP
+ SG_ SeatMassageFuncInd_FL : 40|1@1+ (1,0) [0|0] ""  FCP
+ SG_ SeatMassageFuncInd_FR : 41|1@1+ (1,0) [0|0] ""  FCP
+ SG_ SeatMassageFuncInd_RL : 42|1@1+ (1,0) [0|0] ""  FCP
+ SG_ SeatMassageFuncInd_RR : 43|1@1+ (1,0) [0|0] ""  FCP
+
+BO_ 582 SCCU_1: 8 SCCU
+ SG_ SeatVentInd_FL : 0|2@1+ (1,0) [0|0] ""  FCP
+ SG_ SeatVentInd_FR : 2|2@1+ (1,0) [0|0] ""  FCP
+ SG_ SeatheatInd_FL : 4|2@1+ (1,0) [0|0] ""  FCP
+ SG_ SeatheatInd_FR : 6|2@1+ (1,0) [0|0] ""  FCP
+ SG_ SeatheatInd_RL : 8|2@1+ (1,0) [0|0] ""  FCP
+ SG_ SeatheatInd_RR : 10|2@1+ (1,0) [0|0] ""  FCP
+
+BO_ 581 PSCU_1: 8 PSCU
+ SG_ SeatPostionMemoryResult_PSCU : 5|2@1+ (1,0) [0|0] ""  FCP
+ SG_ MemoryMode_PSCU : 8|3@1+ (1,0) [0|0] ""  FCP
+
+BO_ 580 DSCU_1: 8 DSCU
+ SG_ MemoryMode_DSCU : 0|3@1+ (1,0) [0|0] ""  FCP
+
+BO_ 578 PLG_1: 8 PLG
+ SG_ LuggageDoorSt : 0|1@1+ (1,0) [0|0] ""  FCP
+ SG_ LuggageDoorWorkingSt : 1|3@1+ (1,0) [0|0] ""  FCP
+
+BO_ 576 BCM2_1: 8 BCM1
+ SG_ RearWindowHeatingStatus : 15|1@1+ (1,0) [0|0] ""  FCP
+
+BO_ 566 BCM1_4: 8 BCM1
+ SG_ WorkingStatus_SMA : 58|2@1+ (1,0) [0|0] ""  FCP
+ SG_ WorkingStatus_SSM : 62|2@1+ (1,0) [0|0] ""  FCP
+
+BO_ 564 BCM1_3: 8 BCM1
+ SG_ SunShadeSt : 22|2@1+ (1,0) [0|0] ""  FCP
+ SG_ SunroofSt : 29|3@1+ (1,0) [0|0] ""  FCP
+ SG_ CurrentPosition_SMA : 33|7@1+ (1,0) [0|0] ""  FCP
+ SG_ MemoryRemind : 40|2@1+ (1,0) [0|0] ""  FCP
+ SG_ MemoryMode : 42|3@1+ (1,0) [0|0] ""  FCP
+ SG_ CurrentPosition_SSM : 57|7@1+ (1,0) [0|0] ""  FCP
+
+BO_ 562 BCM1_2: 8 BCM1
+ SG_ PowerMode : 4|4@1+ (1,0) [0|0] ""  FCP
+
+BO_ 561 BCM1_12: 8 BCM1
+ SG_ BCM_ExternalAutoDEFSetInd : 19|1@1+ (1,0) [0|0] ""  FCP
+ SG_ BCM_ExternalAutoDEFSt : 20|1@1+ (1,0) [0|0] ""  FCP
+ SG_ BCM_FragranceTime : 46|2@1+ (1,0) [0|0] ""  FCP
+ SG_ BCM_FragranceWorkingStatus : 48|1@1+ (1,0) [0|0] ""  FCP
+ SG_ BCM_FragranceAutoFunctionStatu_s : 49|1@1+ (1,0) [0|0] ""  FCP
+ SG_ BCM_FragranceType : 50|3@1+ (1,0) [0|0] ""  FCP
+ SG_ BCM_FragranceConcentration : 53|3@1+ (1,0) [0|0] ""  FCP
+ SG_ BCM_FragranceErrorSt : 56|1@1+ (1,0) [0|0] ""  FCP
+ SG_ BCM_FragrancePreparationLack_T_y : 57|1@1+ (1,0) [0|0] ""  FCP
+ SG_ BCM_FragrancePreparationLac_0000 : 58|1@1+ (1,0) [0|0] ""  FCP
+ SG_ BCM_FragrancePreparationLac_0001 : 59|1@1+ (1,0) [0|0] ""  FCP
+ SG_ BCM_FragrancePreparationLac_0002 : 60|1@1+ (1,0) [0|0] ""  FCP
+ SG_ BCM_SteeringWheelheatInd : 61|1@1+ (1,0) [0|0] ""  FCP
+
+BO_ 560 BCM1_1: 8 GATEWAY
+ SG_ PositionLightSt : 0|1@1+ (1,0) [0|0] ""  FCP
+ SG_ LowBeamSt : 6|1@1+ (1,0) [0|0] ""  FCP
+ SG_ HighBeamSt : 9|1@1+ (1,0) [0|0] ""  FCP
+
+BO_ 552 ATC_5: 8 ATC
+ SG_ IONSt : 0|2@1+ (1,0) [0|0] ""  FCP
+ SG_ AQSt : 2|1@1+ (1,0) [0|0] ""  FCP
+ SG_ NaturalAirinessSt : 14|1@1+ (1,0) [0|0] ""  FCP
+ SG_ PM25SensorFan_ErrorSt : 15|1@1+ (1,0) [0|0] ""  FCP
+ SG_ PM25Data : 16|10@1+ (1,0) [0|0] ""  FCP
+ SG_ PM25St : 26|3@1+ (1,0) [0|0] ""  FCP
+ SG_ PM25Color : 29|3@1+ (1,0) [0|0] ""  FCP
+ SG_ ExpectTemp_RearLeft : 32|6@1+ (1,0) [0|0] ""  FCP
+ SG_ ExpectTemp_RearRight : 40|6@1+ (1,0) [0|0] ""  FCP
+ SG_ BlowMode_Rear : 48|3@1+ (1,0) [0|0] ""  FCP
+ SG_ AutoMode_R : 60|1@1+ (1,0) [0|0] ""  FCP
+
+BO_ 547 ATC_8: 8 ATC
+ SG_ AutoMode_RR : 0|1@1+ (1,0) [0|0] ""  FCP
+ SG_ RearRearBlowLevel : 1|4@1+ (1,0) [0|0] ""  FCP
+ SG_ WorkingSt_AC_RR : 5|1@1+ (1,0) [0|0] ""  FCP
+ SG_ ExpectTemp_RearRearLeft : 8|3@1+ (1,0) [0|0] ""  FCP
+ SG_ ExpectTemp_RearRearRight : 16|3@1+ (1,0) [0|0] ""  FCP
+ SG_ BlowMode_RearRear : 24|3@1+ (1,0) [0|0] ""  FCP
+
+BO_ 546 ATC_2: 8 ATC
+ SG_ ExpectTemp_Left : 0|6@1+ (1,0) [0|0] ""  FCP
+ SG_ WorkingSt_AC : 6|1@1+ (1,0) [0|0] ""  FCP
+ SG_ AutoMode : 7|1@1+ (1,0) [0|0] ""  FCP
+ SG_ ExpectTemp_Right : 8|6@1+ (1,0) [0|0] ""  FCP
+ SG_ SyncMode : 14|1@1+ (1,0) [0|0] ""  FCP
+ SG_ DEFMode : 15|1@1+ (1,0) [0|0] ""  FCP
+ SG_ BlowLevel : 16|4@1+ (1,0) [0|0] ""  FCP
+ SG_ AmbientTemp : 24|8@1+ (1,0) [0|0] ""  FCP
+ SG_ FRSRECMode : 32|2@1+ (1,0) [0|0] ""  FCP
+ SG_ ADSSt : 36|1@1+ (1,0) [0|0] ""  FCP
+ SG_ BlowMode_FL : 40|4@1+ (1,0) [0|0] ""  FCP
+ SG_ BlowMode_FR : 44|3@1+ (1,0) [0|0] ""  FCP
+ SG_ AutoMode_FR : 47|1@1+ (1,0) [0|0] ""  FCP
+ SG_ InternalTemp : 48|8@1+ (1,0) [0|0] ""  FCP
+ SG_ ADSData : 57|7@1+ (1,0) [0|0] ""  FCP
+
+BO_ 306 ESC_2_1: 8 GATEWAY
+ SG_ Checksum_ESC_2_1 : 0|8@1+ (1,0) [0|0] ""  FCP
+ SG_ WorkingSt_ESC : 8|1@1+ (1,0) [0|0] ""  FCP
+ SG_ WorkingSt_HDC : 27|2@1+ (1,0) [0|0] ""  FCP
+ SG_ LiveCounter_ESC_2_1 : 60|4@1+ (1,0) [0|0] ""  FCP
+
+BO_ 290 HCU_2_12: 8 GATEWAY
+ SG_ Checksum_HCU_2_12 : 0|8@1+ (1,0) [0|0] ""  FCP
+ SG_ HCU_LeverInfo : 8|3@1+ (1,0) [0|0] ""  FCP
+ SG_ Livecounter_HCU_2_12 : 60|4@1+ (1,0) [0|0] ""  FCP
+
+BO_ 192 ABS_1: 8 GATEWAY
+ SG_ Checksum_ABS_1 : 0|8@1+ (1,0) [0|0] ""  FCP
+ SG_ VehicleSpeed : 40|15@1+ (1,0) [0|0] ""  FCP
+ SG_ LiveCounter_ABS_1 : 60|4@1+ (1,0) [0|0] ""  FCP
+
+BO_ 118 BCM1_FVSyncReq_FCP: 8 FCP
+ SG_ BCM1_FVSyncReq_FCP : 8|1@1+ (1,0) [0|0] ""  BCM1
+
+BO_ 117 FCP_SyncFV: 8 FCP
+ SG_ FCP_Sync_MAC : 0|16@1+ (1,0) [0|0] ""  BCM1
+ SG_ FCP_ResetCounter : 16|16@1+ (1,0) [0|0] ""  BCM1
+ SG_ FCP_TripCounter : 32|32@1+ (1,0) [0|0] ""  BCM1
+
+
+
+CM_ SG_ 756 Checksum_FCP_PEPS "Checksum_FCP_PEPS The checksum is used to check whether the data from the CPU buffer are shifted without transmission errors to the CAN communication controller buffer and vice versa.";
+CM_ SG_ 756 FCP_PEPSSwitch "FCP_PEPSSwitch The virtual PEPS switch is pressed or not.";
+CM_ SG_ 756 FCP_FV "FCP_FV FV value of secured I_PDU";
+CM_ SG_ 756 FCP_MAC "FCP_MAC MAC value of secured I_PDU";
+CM_ SG_ 756 LiveCounter_FCP_PEPS "LiveCounter_FCP_PEPS The Livecounter is used to check the signal consistency of the messages .If the signals are consecutive, the LiveCounter should also be sequential in the way 0, 1, 2 ¡­15, 0, 1 ¡­";
+CM_ SG_ 741 FCP_RLseatVentLevelSet "FCP_RLseatVentLevelSet This signal is used to set front left seat ventilation level";
+CM_ SG_ 741 FCP_RRseatVentLevelSet "FCP_RRseatVentLevelSet This signal is used to set front right seat ventilation level";
+CM_ SG_ 741 FCP_RLseatHeatLevelSet "FCP_RLseatHeatLevelSet This signal is used to set front left seat heat level";
+CM_ SG_ 741 FCP_RRseatHeatLevelSet "FCP_RRseatHeatLevelSet This signal is used to set front right seat heat level";
+CM_ SG_ 741 FCP_RLSeatLegRestAdj "FCP_RLSeatLegRestAdj This signal is used to adjust the rear left seat leg-rest.";
+CM_ SG_ 741 FCP_RRSeatLegRestAdj "FCP_RRSeatLegRestAdj This signal is used to adjust the rear right seat leg-rest.";
+CM_ SG_ 741 FCP_RLSeatBackendAdj "FCP_RLSeatBackendAdj This signal is used to adjust the rear left seat backend.";
+CM_ SG_ 741 FCP_RRSeatBackendAdj "FCP_RRSeatBackendAdj This signal is used to adjust the rear right seat backend.";
+CM_ SG_ 741 FCP_RLSeatHeadRestAdj "FCP_RLSeatHeadRestAdj This signal is used to adjust the rear left seat head-rest.";
+CM_ SG_ 741 FCP_RRSeatHeadRestAdj "FCP_RRSeatHeadRestAdj This signal is used to adjust the rear right seat head-rest.";
+CM_ SG_ 741 FCP_HalfLyingModeCtrlCmd_RL "FCP_HalfLyingModeCtrlCmd_RL The signal is control command of rear left seat half lying mode.";
+CM_ SG_ 741 FCP_HalfLyingModeCtrlCmd_RR "FCP_HalfLyingModeCtrlCmd_RR The signal is control command of rear right seat half lying mode.";
+CM_ SG_ 741 FCP_SunshadeMoveRequest "FCP_SunshadeMoveRequest This signal indicates the request to open or close the sunshade step by step.Shunshade moves only when the button is pressed.";
+CM_ SG_ 741 FCP_SunRoofMoveRequest "FCP_SunRoofMoveRequest This signal indicates the request to open or close the sunroof step by step.Shunroof moves only when the button is pressed.";
+CM_ SG_ 741 FCP_AssociativeMemoryCmd_Pos1 "FCP_AssociativeMemoryCmd_Pos1 This signal indicates the request to open or close the sunroof step by step.Shunroof moves only when the button is pressed.";
+CM_ SG_ 741 FCP_AssociativeMemoryCmd_Pos2 "FCP_AssociativeMemoryCmd_Pos2 This signal indicates the request to open or close the sunroof step by step.Shunroof moves only when the button is pressed.";
+CM_ SG_ 741 FCP_AssociativeMemoryCmd_Pos3 "FCP_AssociativeMemoryCmd_Pos3 This signal indicates the request to open or close the sunroof step by step.Shunroof moves only when the button is pressed.";
+CM_ SG_ 741 FCP_FRSeatMemoryCmd_Pos1 "FCP_FRSeatMemoryCmd_Pos1 This signal indicates the request to open or close the sunroof step by step.Shunroof moves only when the button is pressed.";
+CM_ SG_ 741 FCP_FRSeatMemoryCmd_Pos2 "FCP_FRSeatMemoryCmd_Pos2 This signal indicates the request to open or close the sunroof step by step.Shunroof moves only when the button is pressed.";
+CM_ SG_ 741 FCP_FRSeatMemoryCmd_Pos3 "FCP_FRSeatMemoryCmd_Pos3 This signal indicates the request to open or close the sunroof step by step.Shunroof moves only when the button is pressed.";
+CM_ SG_ 740 FCP_RearACAutoFunctionReq "FCP_RearACAutoFunctionReq This signal is used to request rear aircondition auto function.";
+CM_ SG_ 740 FCP_RearBlowLevelFunctionSet "FCP_RearBlowLevelFunctionSet This signal is used to set rear blower level function.";
+CM_ SG_ 740 FCP_RearLeftTempAdjFunctionRe "FCP_RearLeftTempAdjFunctionRe This signal is used to request rear left temperature adjust function.";
+CM_ SG_ 740 FCP_RearRightTempAdjFunctionR_eq "FCP_RearRightTempAdjFunctionR_eq This signal is used to request rear right temperature adjust function.";
+CM_ SG_ 740 FCP_RearBlowModeSet "FCP_RearBlowModeSet The signal indicates rear blow mode setting.";
+CM_ SG_ 740 FCP_RearLeftTempSet "FCP_RearLeftTempSet This signal is used to request setting of temperature of rear left side.";
+CM_ SG_ 740 FCP_RearRightTempSet "FCP_RearRightTempSet This signal is used to request setting of temperature of rear right side.";
+CM_ SG_ 740 FCP_RearRearACAutoFunctionRe "FCP_RearRearACAutoFunctionRe This signal is used to request Rear-Rear aircondition auto function.";
+CM_ SG_ 740 FCP_RearRearACPowerReq "FCP_RearRearACPowerReq This signal is used to request Rear-Rear aircondition power.";
+CM_ SG_ 740 FCP_RearRearBlowLevelFunction_Se "FCP_RearRearBlowLevelFunction_Set This signal is used to set Rear-Rear blower level function.";
+CM_ SG_ 740 FCP_RearRearLeftTempAdjFunctionR "FCP_RearRearLeftTempAdjFunctionReq This signal is used to request Rear-Rear left temperature adjust function.";
+CM_ SG_ 740 FCP_RearRearRightTempAdjFunct_io "FCP_RearRearRightTempAdjFunct_ionReq This signal is used to request Rear-Rear right temperature adjust function.";
+CM_ SG_ 740 FCP_RearRearBlowModeSet "FCP_RearRearBlowModeSet The signal indicates Rear-Rear blow mode setting.";
+CM_ SG_ 740 FCP_RearRearLeftTempSet "FCP_RearRearLeftTempSet This signal is used to request setting of temperature of Rear-Rear left side.";
+CM_ SG_ 740 FCP_RearRearRightTempSet "FCP_RearRearRightTempSet This signal is used to request setting of temperature of Rear-Rear right side.";
+CM_ SG_ 739 FCP_FLseatVentLevelSet "FCP_FLseatVentLevelSet This signal is used to set front left seat ventilation level";
+CM_ SG_ 739 FCP_FRseatVentLevelSet "FCP_FRseatVentLevelSet This signal is used to set front right seat ventilation level";
+CM_ SG_ 739 FCP_FLseatHeatLevelSet "FCP_FLseatHeatLevelSet This signal is used to set front left seat heat level";
+CM_ SG_ 739 FCP_FRseatHeatLevelSet "FCP_FRseatHeatLevelSet This signal is used to set front right seat heat level";
+CM_ SG_ 739 FCP_FLseatMassageModeSet "FCP_FLseatMassageModeSet This signal is used to set front left seat massage mode";
+CM_ SG_ 739 FCP_FLseatMassageLevelSet "FCP_FLseatMassageLevelSet This signal is used to set front left seat massage level";
+CM_ SG_ 739 FCP_FLseatMassageFuncSet "FCP_FLseatMassageFuncSet This signal is used to set front left seat massage function";
+CM_ SG_ 739 FCP_FRseatMassageModeSet "FCP_FRseatMassageModeSet This signal is used to set front right seat massage mode";
+CM_ SG_ 739 FCP_FRseatMassageLevelSet "FCP_FRseatMassageLevelSet This signal is used to set front right seat massage level";
+CM_ SG_ 739 FCP_FRseatMassageFuncSet "FCP_FRseatMassageFuncSet This signal is used to set front right seat massage function";
+CM_ SG_ 739 FCP_SteeringWheelHeatReq "FCP_SteeringWheelHeatReq This signal is request of steering wheel heat";
+CM_ SG_ 739 FCP_MovingObjectDetectFuncSet "FCP_MovingObjectDetectFuncSet This signal is used to set the moving objects in car detected function on or off.";
+CM_ SG_ 739 FCP_RLseatMassageModeSet "FCP_RLseatMassageModeSet This signal is used to set rear left seat massage mode";
+CM_ SG_ 739 FCP_RLseatMassageLevelSet "FCP_RLseatMassageLevelSet This signal is used to set rear left seat massage level";
+CM_ SG_ 739 FCP_RLseatMassageFuncSet "FCP_RLseatMassageFuncSet This signal is used to set rear left seat massage function";
+CM_ SG_ 739 FCP_RRseatMassageModeSet "FCP_RRseatMassageModeSet This signal is used to set rear right seat massage mode";
+CM_ SG_ 739 FCP_RRseatMassageLevelSet "FCP_RRseatMassageLevelSet This signal is used to set rear right seat massage level";
+CM_ SG_ 739 FCP_RRseatMassageFuncSet "FCP_RRseatMassageFuncSet This signal is used to set rear right seat massage function";
+CM_ SG_ 737 FCP_BabyModeFunctionReq "FCP_BabyModeFunctionReq This signal is used to request baby mode on or not.";
+CM_ SG_ 737 FCP_ESCFunctionReq "FCP_ESCFunctionReq This signal is used to modify the configuration of ESC function.";
+CM_ SG_ 737 FCP_HDCFunctionReq "FCP_HDCFunctionReq This signal is used to modify the configuration of HDC function.";
+CM_ SG_ 737 FCP_SmokeModeFunctionReq "FCP_SmokeModeFunctionReq This signal is used to request smoke mode on or not.";
+CM_ SG_ 737 FCP_HazeModeFunctionReq "FCP_HazeModeFunctionReq This signal is used to request haze mode on or not.";
+CM_ SG_ 737 FCP_PLGSwitchSt "FCP_PLGSwitchSt The virtual PLG switch is pressed or not.";
+CM_ SG_ 737 FCP_AVSFunctionReq "FCP_AVSFunctionReq This signal is used to request AVS function on or off.";
+CM_ SG_ 737 FCP_AMP_KeyToneCmd "FCP_AMP_KeyToneCmd Indicates the key tone command.";
+CM_ SG_ 737 FCP_NapModeFunctionReq "FCP_NapModeFunctionReq This signal is used to request nap mode on or not.";
+CM_ SG_ 737 FCP_LeisureModeFunctionReq "FCP_LeisureModeFunctionReq This signal is used to request leisure mode on or not.";
+CM_ SG_ 737 FCP_RearWindowHeatFunctionRe "FCP_RearWindowHeatFunctionRe This signal is used to request Rear Window Heat function.";
+CM_ SG_ 737 FCP_SoberModeFunctionReq "FCP_SoberModeFunctionReq This signal is used to request sober mode on or not.";
+CM_ SG_ 737 FCP_ExternalAutoDEFFunctionRe "FCP_ExternalAutoDEFFunctionRe This signal is used to request external auto DEF function.";
+CM_ SG_ 737 FCP_FragranceAutoFunctionReq "FCP_FragranceAutoFunctionReq This signal is used to request fragrance diffuser auto function.";
+CM_ SG_ 737 FCP_FragranceFunctionReq "FCP_FragranceFunctionReq This signal is used to request fragrance diffuser function.";
+CM_ SG_ 737 FCP_FragranceTypeReq "FCP_FragranceTypeReq This signal is used to set fragrance diffuser type.";
+CM_ SG_ 737 FCP_FragranceConcentrationReq "FCP_FragranceConcentrationReq This signal is used to set fragrance diffuser concentration level.";
+CM_ SG_ 737 FCP_FragranceTimeSet "FCP_FragranceTimeSet This signal is used to request fragrance diffuser working time set";
+CM_ SG_ 737 FCP_PDCFunctionReq "FCP_PDCFunctionReq This signal is used to request PDC function on or off.";
+CM_ SG_ 737 FCP_APAFunctionReq "FCP_APAFunctionReq This signal is used to request APA function on or off.";
+CM_ SG_ 737 FCP_AVPFunctionReq "FCP_AVPFunctionReq This signal is used to request AVP function on or off.";
+CM_ SG_ 736 FCP_ACAutoFunctionReq_FL "FCP_ACAutoFunctionReq_FL This signal is used to request Aircondition Auto function.";
+CM_ SG_ 736 FCP_ACPowerReq "FCP_ACPowerReq This signal is used to request Aircondition power.";
+CM_ SG_ 736 FCP_ACDefFunctionReq "FCP_ACDefFunctionReq This signal is used to request Aircondition defrost function.";
+CM_ SG_ 736 FCP_ACSyncFunctionReq "FCP_ACSyncFunctionReq This signal is used to request Aircondition synchronize function.";
+CM_ SG_ 736 FCP_ACNaturalAirFunctionReq "FCP_ACNaturalAirFunctionReq This signal is used to request Aircondition natural air function.";
+CM_ SG_ 736 FCP_ACIONFunctionReq "FCP_ACIONFunctionReq This signal is used to request Aircondition ION function.";
+CM_ SG_ 736 FCP_ACPM25FunctionReq "FCP_ACPM25FunctionReq This signal is used to request Aircondition PM25 function.";
+CM_ SG_ 736 FCP_BlowLevelFunctionSet "FCP_BlowLevelFunctionSet This signal is used to set blower level function.";
+CM_ SG_ 736 FCP_LeftTempAdjFunctionReq "FCP_LeftTempAdjFunctionReq This signal is used to request left temperature adjust function.";
+CM_ SG_ 736 FCP_RightTempAdjFunctionReq "FCP_RightTempAdjFunctionReq This signal is used to request right temperature adjust function.";
+CM_ SG_ 736 FCP_FRSRECModeFunctionReq "FCP_FRSRECModeFunctionReq The signal is used to  request FRS/REC mode function.";
+CM_ SG_ 736 FCP_LeftTempSet "FCP_LeftTempSet This signal is used to request setting of temperature of left side.";
+CM_ SG_ 736 FCP_ACAutoFunctionReq_FR "FCP_ACAutoFunctionReq_FR This signal is used to request Aircondition Auto function.";
+CM_ SG_ 736 FCP_RightTempSet "FCP_RightTempSet This signal is used to request setting of temperature of right side.";
+CM_ SG_ 736 FCP_BlowModeSet_FL "FCP_BlowModeSet_FL The signal indicates front left blow mode setting.";
+CM_ SG_ 736 FCP_BlowModeSet_FR "FCP_BlowModeSet_FR The signal indicates front right blow mode setting.";
+CM_ SG_ 688 GW_RemoteVehicleMode "GW_RemoteVehicleMode The signal indicates the vehicle is in remote  mode or not";
+CM_ SG_ 688 GW_OTAMode "GW_OTAMode The signal indicates the vehicle is in OTA  mode or not";
+CM_ SG_ 664 HU_LeisuremodeFunctionInd "HU_LeisuremodeFunctionInd This signal is used to indicates the leisure mode function status.";
+CM_ SG_ 664 HU_BabymodeFunctionInd "HU_BabymodeFunctionInd This signal is used to indicates the baby mode function status.";
+CM_ SG_ 664 HU_SmokemodeFunctionInd "HU_SmokemodeFunctionInd This signal is used to indicates the Smoke mode function status.";
+CM_ SG_ 664 HU_NapmodeFunctionInd "HU_NapmodeFunctionInd This signal is used to indicates the Nap mode function status.";
+CM_ SG_ 664 HU_HazemodeFunctionInd "HU_HazemodeFunctionInd This signal is used to indicates the Haze mode function status.";
+CM_ SG_ 664 HU_SobermodeFunctionInd "HU_SobermodeFunctionInd This signal is used to indicates the sober mode function status.";
+CM_ SG_ 657 DisplayTheme "DisplayTheme This signal indicates the display theme of the IVI.";
+CM_ SG_ 656 BackLightBrightness_IC "BackLightBrightness_IC This signal Indicates the IC background lighting intensity.This signal is not affected by position light status.";
+CM_ SG_ 656 OdometerValue "OdometerValue This signal is drive distance since prime start .";
+CM_ SG_ 642 BackLightBrightness "BackLightBrightness This signal Indicates the IC background lighting intensity, when the positionlight is off, then this signal always 0%.";
+CM_ SG_ 613 Checksum_HAD_5 "Checksum_HAD_5 The signal indicates the vehicle is in remote  mode or not";
+CM_ SG_ 613 HAD_WorkingSt_HWP_Display "HAD_WorkingSt_HWP_Display The signal indicates the vehicle is in remote  mode or not";
+CM_ SG_ 613 HAD_WorkingSt_TJP_Display "HAD_WorkingSt_TJP_Display The TJP function working status";
+CM_ SG_ 604 SysSt_PDC "SysSt_PDC This signal indicate the PDC system status";
+CM_ SG_ 600 AVSSt "AVSSt This signal indicates the AVS system status.";
+CM_ SG_ 600 AVSErrorSt "AVSErrorSt This signal indicates the AVS system error status.";
+CM_ SG_ 600 AVSViewMode "AVSViewMode This signal indicates the AVS view mode";
+CM_ SG_ 600 AVSViewtype "AVSViewtype This signal indicates the AVS view type.";
+CM_ SG_ 600 AVSCameraErrorSt_Front "AVSCameraErrorSt_Front This signal indicates AVS front camera error status";
+CM_ SG_ 600 AVSCameraErrorSt_Rear "AVSCameraErrorSt_Rear This signal indicates AVS rear camera error status";
+CM_ SG_ 600 AVSCameraErrorSt_Left "AVSCameraErrorSt_Left This signal indicates AVS left camera error status";
+CM_ SG_ 600 AVSCameraErrorSt_Right "AVSCameraErrorSt_Right This signal indicates AVS right camera error status";
+CM_ SG_ 600 LanguageTypeSt_AVS "LanguageTypeSt_AVS The signal indicates the AVS language type status .";
+CM_ SG_ 600 DynamicPGSSt_AVS "DynamicPGSSt_AVS This signal indicates the AVS dynamic PGS status";
+CM_ SG_ 600 MODSt_AVS "MODSt_AVS This signal indicates the AVS MOD status";
+CM_ SG_ 600 MODWarning_Front "MODWarning_Front This signal indicates AVS MOD front warning";
+CM_ SG_ 600 MODWarning_Rear "MODWarning_Rear This signal indicates AVS MOD rear warning";
+CM_ SG_ 600 MODWarning_Left "MODWarning_Left This signal indicates AVS MOD left warning";
+CM_ SG_ 600 MODWarning_Right "MODWarning_Right This signal indicates AVS MOD right 2arning";
+CM_ SG_ 600 CTAWarning_Front "CTAWarning_Front This signal indicates AVS CTA front wide warning";
+CM_ SG_ 600 CTAWarning_Rear "CTAWarning_Rear This signal indicatesAVS CTA rear wide warning";
+CM_ SG_ 600 SwitchScreenRequest_AVS "SwitchScreenRequest_AVS AVS request IVI to switch the screen in case of lever R, lever P or voice control command or etc";
+CM_ SG_ 600 AVS_SpeechControlFeedback "AVS_SpeechControlFeedback This signal indicates AVS speech control feedback";
+CM_ SG_ 595 Checksum_ADV_5 "Checksum_ADV_5 Checksum_ADV_5";
+CM_ SG_ 595 ADV_AVPNaviAvaialble "ADV_AVPNaviAvaialble Indicates AVP system is available or not fot navigation.";
+CM_ SG_ 595 ADV_AVPParkInAvaialble "ADV_AVPParkInAvaialble Indicates AVP Park in system is available or not";
+CM_ SG_ 595 ADV_AVPParkOutAvaialble "ADV_AVPParkOutAvaialble Indicates AVP Park out system is available or not";
+CM_ SG_ 595 ADV_HPANaviAvaialble "ADV_HPANaviAvaialble Indicates HPA system is available or not fot navigation.";
+CM_ SG_ 595 ADV_HPAParkInAvaialble "ADV_HPAParkInAvaialble Indicates HPA Park in system is available or not";
+CM_ SG_ 595 ADV_HPAParkOutAvaialble "ADV_HPAParkOutAvaialble Indicates HPA Park out system is available or not";
+CM_ SG_ 595 LiveCounter_ADV_5 "LiveCounter_ADV_5 The Livecounter is used to check the signal consistency of the messages .If the signals are consecutive, the LiveCounter should also be sequential in the way 0, 1, 2 ¡­15, 0, 1 ¡­";
+CM_ SG_ 592 Checksum_ADV_1 "Checksum_ADV_1 Checksum_ADV_1";
+CM_ SG_ 592 ADV_ParkStatus "ADV_ParkStatus ADV_ParkStatus";
+CM_ SG_ 592 LiveCounter_ADV_1 "LiveCounter_ADV_1 The Livecounter is used to check the signal consistency of the messages . If the signals are consecutive, the LiveCounter should also be sequential inthe way 0, 1, 2 ¡­15, 0, 1 ¡­";
+CM_ SG_ 586 DoorLockSt_FL "DoorLockSt_FL This signal indicates the lock state of driver door.";
+CM_ SG_ 586 DoorSt_FL "DoorSt_FL This signal indicates the state of driver door.";
+CM_ SG_ 583 SeatVentInd_RL "SeatVentInd_RL The signal indicates the rear left seat ventilating status.";
+CM_ SG_ 583 SeatVentInd_RR "SeatVentInd_RR The signal indicates the rear right seat ventilating status.";
+CM_ SG_ 583 SeatMassageModeInd_FL "SeatMassageModeInd_FL The signal indicates the driver seat massage mode.";
+CM_ SG_ 583 SeatMassageModeInd_FR "SeatMassageModeInd_FR The signal indicates the passenger seat massage mode.";
+CM_ SG_ 583 SeatMassageModeInd_RL "SeatMassageModeInd_RL The signal indicates the rear left seat massage mode.";
+CM_ SG_ 583 SeatMassageModeInd_RR "SeatMassageModeInd_RR The signal indicates the rear right seat massage mode.";
+CM_ SG_ 583 SeatMassageLevelInd_FL "SeatMassageLevelInd_FL The signal indicates the driver seat massage level.";
+CM_ SG_ 583 SeatMassageLevelInd_FR "SeatMassageLevelInd_FR The signal indicates the passenger seat massage level.";
+CM_ SG_ 583 SeatMassageLevelInd_RL "SeatMassageLevelInd_RL The signal indicates the rear left seat massage level.";
+CM_ SG_ 583 SeatMassageLevelInd_RR "SeatMassageLevelInd_RR The signal indicates the rear right seat massage level.";
+CM_ SG_ 583 SeatMassageFuncInd_FL "SeatMassageFuncInd_FL The signal indicates the driver seat massage function.";
+CM_ SG_ 583 SeatMassageFuncInd_FR "SeatMassageFuncInd_FR The signal indicates the passenger seat massage function.";
+CM_ SG_ 583 SeatMassageFuncInd_RL "SeatMassageFuncInd_RL The signal indicates the rear left seat massage function.";
+CM_ SG_ 583 SeatMassageFuncInd_RR "SeatMassageFuncInd_RR The signal indicates the rear right seat massage function.";
+CM_ SG_ 582 SeatVentInd_FL "SeatVentInd_FL The signal indicates the driver seat ventilating status.";
+CM_ SG_ 582 SeatVentInd_FR "SeatVentInd_FR The signal indicates the passenger seat ventilating status.";
+CM_ SG_ 582 SeatheatInd_FL "SeatheatInd_FL The signal indicates the driver seat heating status.";
+CM_ SG_ 582 SeatheatInd_FR "SeatheatInd_FR The signal indicates the passenger seat heating status.";
+CM_ SG_ 582 SeatheatInd_RL "SeatheatInd_RL The signal indicates the rear left seat heating status.";
+CM_ SG_ 582 SeatheatInd_RR "SeatheatInd_RR The signal indicates the rear right seat heating status.";
+CM_ SG_ 581 SeatPostionMemoryResult_PSCU "SeatPostionMemoryResult_PSCU This signal shows result of seat position memory.";
+CM_ SG_ 581 MemoryMode_PSCU "MemoryMode_PSCU This signal shows operation of seat position memory.";
+CM_ SG_ 580 MemoryMode_DSCU "MemoryMode_DSCU This signal shows operation of seat position memory.";
+CM_ SG_ 578 LuggageDoorSt "LuggageDoorSt This signal indicates luggage door status";
+CM_ SG_ 578 LuggageDoorWorkingSt "LuggageDoorWorkingSt This signal indicates luggage door status";
+CM_ SG_ 576 RearWindowHeatingStatus "RearWindowHeatingStatus Indicates the rear window heating status";
+CM_ SG_ 566 WorkingStatus_SMA "WorkingStatus_SMA This signal shows the working status of roof";
+CM_ SG_ 566 WorkingStatus_SSM "WorkingStatus_SSM This signal shows the working status of sun shade";
+CM_ SG_ 564 SunShadeSt "SunShadeSt This signal shows sunshade status.";
+CM_ SG_ 564 SunroofSt "SunroofSt This signal shows sunroof status.";
+CM_ SG_ 564 CurrentPosition_SMA "CurrentPosition_SMA The signal indicates the current position of roof.";
+CM_ SG_ 564 MemoryRemind "MemoryRemind This signal reminds of driver the seat and SCM memoring is successful or not.";
+CM_ SG_ 564 MemoryMode "MemoryMode Memory mode of seat , mirror position and SCM";
+CM_ SG_ 564 CurrentPosition_SSM "CurrentPosition_SSM Indicates the current position of sun shade, this signal is used with thesignal¡°SSM  Status¡±";
+CM_ SG_ 562 PowerMode "PowerMode The signal indicates the vehicle power mode.";
+CM_ SG_ 561 BCM_ExternalAutoDEFSetInd "BCM_ExternalAutoDEFSetInd This signal is the indication to the external auto DEF setting.";
+CM_ SG_ 561 BCM_ExternalAutoDEFSt "BCM_ExternalAutoDEFSt This signal is the indication to the activation status of external auto DEF function.";
+CM_ SG_ 561 BCM_FragranceTime "BCM_FragranceTime This signal is used to indicate the fragrance setted working time.";
+CM_ SG_ 561 BCM_FragranceWorkingStatus "BCM_FragranceWorkingStatus This signal is the indication to the status of fragrance diffuser function.";
+CM_ SG_ 561 BCM_FragranceAutoFunctionStatu_s "BCM_FragranceAutoFunctionStatu_s This signal is the indication to the status of fragrance diffuser auto function.";
+CM_ SG_ 561 BCM_FragranceType "BCM_FragranceType This signal is used to indicate the fragrance diffuser type.";
+CM_ SG_ 561 BCM_FragranceConcentration "BCM_FragranceConcentration This signal is used to indicate the fragrance diffuser concentration level.";
+CM_ SG_ 561 BCM_FragranceErrorSt "BCM_FragranceErrorSt This signal is the indication to the error status of fragrance diffuser function system.";
+CM_ SG_ 561 BCM_FragrancePreparationLack_T_y "BCM_FragrancePreparationLack_T_ype1 This signal is the indication that the type 1 fragrance preparation is in shortage.";
+CM_ SG_ 561 BCM_FragrancePreparationLac_0000 "BCM_FragrancePreparationLack_T_ype2 This signal is the indication that the type 2 fragrance preparation is in shortage.";
+CM_ SG_ 561 BCM_FragrancePreparationLac_0001 "BCM_FragrancePreparationLack_T_ype3 This signal is the indication that the type 3 fragrance preparation is in shortage.";
+CM_ SG_ 561 BCM_FragrancePreparationLac_0002 "BCM_FragrancePreparationLack_T_ype4 This signal is the indication that the type 4 fragrance preparation is in shortage.";
+CM_ SG_ 561 BCM_SteeringWheelheatInd "BCM_SteeringWheelheatInd The signal indicates the steering wheel heating status.";
+CM_ SG_ 560 PositionLightSt "PositionLightSt The signal indicates the status of position light.";
+CM_ SG_ 560 LowBeamSt "LowBeamSt The signal indicates the status of low beam indicator";
+CM_ SG_ 560 HighBeamSt "HighBeamSt The signal indicates the status of high beam indicator.";
+CM_ SG_ 552 IONSt "IONSt This signal Indicates the plasma generator LED Status";
+CM_ SG_ 552 AQSt "AQSt The signal indicates air quality sensor status.";
+CM_ SG_ 552 NaturalAirinessSt "NaturalAirinessSt The signal indicates the natural airiness status";
+CM_ SG_ 552 PM25SensorFan_ErrorSt "PM25SensorFan_ErrorSt Indicates PM25SensorFan is error or not";
+CM_ SG_ 552 PM25Data "PM25Data This signal indicates the data of PM25 sensor.";
+CM_ SG_ 552 PM25St "PM25St Indicates the PM25 status";
+CM_ SG_ 552 PM25Color "PM25Color Indicates the PM25 color";
+CM_ SG_ 552 ExpectTemp_RearLeft "ExpectTemp_RearLeft The signal is send to display the temperature value set for rear left side.";
+CM_ SG_ 552 ExpectTemp_RearRight "ExpectTemp_RearRight The signal is send to display the temperature value set for rear right side.";
+CM_ SG_ 552 BlowMode_Rear "BlowMode_Rear The signal indicates  rear blow mode status.";
+CM_ SG_ 552 AutoMode_R "AutoMode_R The signal indicates rear auto mode status.";
+CM_ SG_ 547 AutoMode_RR "AutoMode_RR The signal indicates rear rear auto mode status.";
+CM_ SG_ 547 RearRearBlowLevel "RearRearBlowLevel The signal indicates the rear rear wind power level.";
+CM_ SG_ 547 WorkingSt_AC_RR "WorkingSt_AC_RR The signal indicates rear rear air condition working status.";
+CM_ SG_ 547 ExpectTemp_RearRearLeft "ExpectTemp_RearRearLeft The signal is send to display the temperature value set for rear-Rear left side.";
+CM_ SG_ 547 ExpectTemp_RearRearRight "ExpectTemp_RearRearRight The signal is send to display the temperature value set for rear-Rear right side.";
+CM_ SG_ 547 BlowMode_RearRear "BlowMode_RearRear The signal indicates  rear-rear blow mode status.";
+CM_ SG_ 546 ExpectTemp_Left "ExpectTemp_Left The signal is send to display the temperature value set for front driver side.";
+CM_ SG_ 546 WorkingSt_AC "WorkingSt_AC The signal indicates front air condition working status.";
+CM_ SG_ 546 AutoMode "AutoMode The signal indicates front auto mode status.";
+CM_ SG_ 546 ExpectTemp_Right "ExpectTemp_Right The signal is send to display the temperature value set for front passengerside.";
+CM_ SG_ 546 SyncMode "SyncMode The signal indicates Sync mode status.";
+CM_ SG_ 546 DEFMode "DEFMode The signal indicates DEF mode status.";
+CM_ SG_ 546 BlowLevel "BlowLevel The signal indicates the front wind power level.";
+CM_ SG_ 546 AmbientTemp "AmbientTemp The signal indicate ambient temperature.";
+CM_ SG_ 546 FRSRECMode "FRSRECMode The signal indicates FRS/REC mode.";
+CM_ SG_ 546 ADSSt "ADSSt This signal indicates the status of the air dampness sensor function.";
+CM_ SG_ 546 BlowMode_FL "BlowMode_FL The signal indicates front left blow mode status.";
+CM_ SG_ 546 BlowMode_FR "BlowMode_FR The signal indicates front right blow mode status.";
+CM_ SG_ 546 AutoMode_FR "AutoMode_FR The signal indicates front auto mode status.";
+CM_ SG_ 546 InternalTemp "InternalTemp The signal indicate internal temperature.";
+CM_ SG_ 546 ADSData "ADSData This signal indicates the data of air dampness sensor.";
+CM_ SG_ 306 Checksum_ESC_2_1 "Checksum_ESC_2_1 The checksum is used to check whether the data from the CPU buffer are shifted without transmission errors to the CAN communication controllerbuffer and vice versa.";
+CM_ SG_ 306 WorkingSt_ESC "WorkingSt_ESC This signal indicates the ESC system working status.";
+CM_ SG_ 306 WorkingSt_HDC "WorkingSt_HDC The signal indicates the working status of HDC.";
+CM_ SG_ 306 LiveCounter_ESC_2_1 "LiveCounter_ESC_2_1 The Livecounter is used to check the signal consistency of the messages .If the signals are consecutive, the LiveCounter should also be sequential in the way 0, 1, 2 ¡­15, 0, 1 ¡­";
+CM_ SG_ 290 Checksum_HCU_2_12 "Checksum_HCU_2_12 The checksum is used to check whether the data from the CPU buffer areshifted without transmission errors to the CAN communication controller buffer and vice versa.";
+CM_ SG_ 290 HCU_LeverInfo "HCU_LeverInfo This signal indicate Lever info for display";
+CM_ SG_ 290 Livecounter_HCU_2_12 "Livecounter_HCU_2_12 The Livecounter is used to check the signal consistency of the messages . If the signals are consecutive, the LiveCounter should also be sequential inthe way 0, 1, 2 ¡­15, 0, 1 ¡­";
+CM_ SG_ 192 Checksum_ABS_1 "Checksum_ABS_1 The checksum is used to check whether the data from the CPU buffer areshifted without transmission errors to the CAN communication controller buffer and vice versa.";
+CM_ SG_ 192 VehicleSpeed "VehicleSpeed The signal describes the raw vehicle speed calculated by ABS. The ABS calculates the vehicle speed based on the raw wheel speed signals from  the wheel speed sensors. The vehicle speed output could be the average ofthe wheel speeds of the driven axle.";
+CM_ SG_ 192 LiveCounter_ABS_1 "LiveCounter_ABS_1 The Livecounter is used to check the signal consistency of the messages . If the signals are consecutive, the LiveCounter should also be sequential inthe way 0, 1, 2 ¡­15, 0, 1 ¡­";
+CM_ SG_ 118 BCM1_FVSyncReq_FCP "BCM1_FVSyncReq_FCP BCM reqeust FV sync message";
+CM_ SG_ 117 FCP_Sync_MAC "FCP_Sync_MAC The checksum is used to check whether the data from the CPU buffer are shifted without transmission errors to the CAN communication controller buffer and vice versa.";
+CM_ SG_ 117 FCP_ResetCounter "FCP_ResetCounter The checksum is used to check whether the data from the CPU buffer are shifted without transmission errors to the CAN communication controller buffer and vice versa.";
+CM_ SG_ 117 FCP_TripCounter "FCP_TripCounter The checksum is used to check whether the data from the CPU buffer are shifted without transmission errors to the CAN communication controller buffer and vice versa.";
+BA_DEF_  "BusType" STRING ;
+BA_DEF_  "Manufacturer" STRING ;
+BA_DEF_  "NmType" STRING ;
+BA_DEF_  "NmBaseAddress" HEX 0 2047;
+BA_DEF_  "NmMessageCount" INT 0 255;
+BA_DEF_  "TpBaseAddress" HEX 0 2047;
+BA_DEF_ BU_  "ILUsed" ENUM  "No","Yes";
+BA_DEF_ BU_  "NmNode" ENUM  "No","Yes";
+BA_DEF_ BU_  "NmStationAddress" HEX 0 65535;
+BA_DEF_ BO_  "GenMsgDelayTime" INT 0 65535;
+BA_DEF_ BO_  "GenMsgCycleTime" INT 0 65535;
+BA_DEF_ BO_  "GenMsgCycleTimeFast" INT 0 65535;
+BA_DEF_ BO_  "GenMsgCycleTimeActive" INT 0 65535;
+BA_DEF_ BO_  "GenMsgStartDelayTime" INT 0 65535;
+BA_DEF_ BO_  "GenMsgILSupport" ENUM  "No","Yes";
+BA_DEF_ BO_  "GenMsgNrOfRepetition" INT 0 65535;
+BA_DEF_ BO_  "GenMsgTimeoutTime_HU" INT 0 65535;
+BA_DEF_ BO_  "GenMsgFastOnStart" INT 0 65535;
+BA_DEF_ BO_  "GenMsgSendType" ENUM  "Cycle","not_used","not_used","not_used","not_used","not_used","not_used","IfActive","NoMsgSendType";
+BA_DEF_ BO_  "DiagRequest" ENUM  "No","Yes";
+BA_DEF_ BO_  "DiagResponse" ENUM  "No","Yes";
+BA_DEF_ BO_  "NmMessage" ENUM  "No","Yes";
+BA_DEF_ SG_  "GenSigSendType" ENUM  "Cycle","OnWrite","OnWriteWithRepetition","OnChange","OnChangeWithRepetition","IfActive","IfActiveWithRepetition","NoSigSendType";
+BA_DEF_ SG_  "GenSigInactiveValue" INT 0 65535;
+BA_DEF_ SG_  "GenSigInvalidValue" INT 0 65535;
+BA_DEF_ SG_  "GenSigTimeoutTime_HU" INT 0 63355;
+BA_DEF_ SG_  "GenSigTimeoutValue" INT 0 63355;
+BA_DEF_ SG_  "GenSigStartValue" INT 0 63355;
+BA_DEF_ SG_  "SystemSignalLongSymbol" STRING ;
+BA_DEF_DEF_  "BusType" "CAN";
+BA_DEF_DEF_  "Manufacturer" "Ford";
+BA_DEF_DEF_  "NmType" "Ford-OSEK";
+BA_DEF_DEF_  "NmBaseAddress" 1024;
+BA_DEF_DEF_  "NmMessageCount" 128;
+BA_DEF_DEF_  "TpBaseAddress" 1792;
+BA_DEF_DEF_  "ILUsed" "No";
+BA_DEF_DEF_  "NmNode" "No";
+BA_DEF_DEF_  "NmStationAddress" 0;
+BA_DEF_DEF_  "GenMsgDelayTime" 0;
+BA_DEF_DEF_  "GenMsgCycleTime" 0;
+BA_DEF_DEF_  "GenMsgCycleTimeFast" 20;
+BA_DEF_DEF_  "GenMsgCycleTimeActive" 0;
+BA_DEF_DEF_  "GenMsgStartDelayTime" 60;
+BA_DEF_DEF_  "GenMsgILSupport" "Yes";
+BA_DEF_DEF_  "GenMsgNrOfRepetition" 3;
+BA_DEF_DEF_  "GenMsgTimeoutTime_HU" 0;
+BA_DEF_DEF_  "GenMsgFastOnStart" 0;
+BA_DEF_DEF_  "GenMsgSendType" "Cycle";
+BA_DEF_DEF_  "DiagRequest" "No";
+BA_DEF_DEF_  "DiagResponse" "No";
+BA_DEF_DEF_  "NmMessage" "No";
+BA_DEF_DEF_  "GenSigSendType" "Cycle";
+BA_DEF_DEF_  "GenSigInactiveValue" 0;
+BA_DEF_DEF_  "GenSigInvalidValue" 0;
+BA_DEF_DEF_  "GenSigTimeoutTime_HU" 0;
+BA_DEF_DEF_  "GenSigTimeoutValue" 0;
+BA_DEF_DEF_  "GenSigStartValue" 0;
+BA_DEF_DEF_  "SystemSignalLongSymbol" "";
+BA_ "GenMsgSendType" BO_ 756 8;
+BA_ "GenMsgDelayTime" BO_ 756 0;
+BA_ "GenMsgCycleTimeFast" BO_ 756 0;
+BA_ "GenMsgCycleTime" BO_ 756 100;
+BA_ "GenMsgSendType" BO_ 741 8;
+BA_ "GenMsgDelayTime" BO_ 741 0;
+BA_ "GenMsgCycleTimeFast" BO_ 741 0;
+BA_ "GenMsgCycleTime" BO_ 741 100;
+BA_ "GenMsgSendType" BO_ 740 8;
+BA_ "GenMsgDelayTime" BO_ 740 0;
+BA_ "GenMsgCycleTimeFast" BO_ 740 0;
+BA_ "GenMsgCycleTime" BO_ 740 100;
+BA_ "GenMsgSendType" BO_ 739 8;
+BA_ "GenMsgDelayTime" BO_ 739 0;
+BA_ "GenMsgCycleTimeFast" BO_ 739 0;
+BA_ "GenMsgCycleTime" BO_ 739 100;
+BA_ "GenMsgSendType" BO_ 737 8;
+BA_ "GenMsgDelayTime" BO_ 737 0;
+BA_ "GenMsgCycleTimeFast" BO_ 737 0;
+BA_ "GenMsgCycleTime" BO_ 737 100;
+BA_ "GenMsgSendType" BO_ 736 8;
+BA_ "GenMsgDelayTime" BO_ 736 0;
+BA_ "GenMsgCycleTimeFast" BO_ 736 0;
+BA_ "GenMsgCycleTime" BO_ 736 100;
+BA_ "GenMsgSendType" BO_ 688 0;
+BA_ "GenMsgDelayTime" BO_ 688 0;
+BA_ "GenMsgCycleTimeFast" BO_ 688 0;
+BA_ "GenMsgCycleTime" BO_ 688 100;
+BA_ "GenMsgSendType" BO_ 664 8;
+BA_ "GenMsgDelayTime" BO_ 664 0;
+BA_ "GenMsgCycleTimeFast" BO_ 664 0;
+BA_ "GenMsgCycleTime" BO_ 664 100;
+BA_ "GenMsgSendType" BO_ 657 8;
+BA_ "GenMsgDelayTime" BO_ 657 0;
+BA_ "GenMsgCycleTimeFast" BO_ 657 0;
+BA_ "GenMsgCycleTime" BO_ 657 100;
+BA_ "GenMsgSendType" BO_ 656 0;
+BA_ "GenMsgDelayTime" BO_ 656 0;
+BA_ "GenMsgCycleTimeFast" BO_ 656 0;
+BA_ "GenMsgCycleTime" BO_ 656 100;
+BA_ "GenMsgSendType" BO_ 642 0;
+BA_ "GenMsgDelayTime" BO_ 642 0;
+BA_ "GenMsgCycleTimeFast" BO_ 642 0;
+BA_ "GenMsgCycleTime" BO_ 642 100;
+BA_ "GenMsgSendType" BO_ 613 0;
+BA_ "GenMsgDelayTime" BO_ 613 0;
+BA_ "GenMsgCycleTimeFast" BO_ 613 0;
+BA_ "GenMsgCycleTime" BO_ 613 100;
+BA_ "GenMsgSendType" BO_ 604 0;
+BA_ "GenMsgDelayTime" BO_ 604 0;
+BA_ "GenMsgCycleTimeFast" BO_ 604 0;
+BA_ "GenMsgCycleTime" BO_ 604 100;
+BA_ "GenMsgSendType" BO_ 600 8;
+BA_ "GenMsgDelayTime" BO_ 600 0;
+BA_ "GenMsgCycleTimeFast" BO_ 600 0;
+BA_ "GenMsgCycleTime" BO_ 600 100;
+BA_ "GenMsgSendType" BO_ 595 8;
+BA_ "GenMsgDelayTime" BO_ 595 0;
+BA_ "GenMsgCycleTimeFast" BO_ 595 0;
+BA_ "GenMsgCycleTime" BO_ 595 100;
+BA_ "GenMsgSendType" BO_ 592 8;
+BA_ "GenMsgDelayTime" BO_ 592 0;
+BA_ "GenMsgCycleTimeFast" BO_ 592 0;
+BA_ "GenMsgCycleTime" BO_ 592 100;
+BA_ "GenMsgSendType" BO_ 586 0;
+BA_ "GenMsgDelayTime" BO_ 586 0;
+BA_ "GenMsgCycleTimeFast" BO_ 586 0;
+BA_ "GenMsgCycleTime" BO_ 586 100;
+BA_ "GenMsgSendType" BO_ 583 8;
+BA_ "GenMsgDelayTime" BO_ 583 0;
+BA_ "GenMsgCycleTimeFast" BO_ 583 0;
+BA_ "GenMsgCycleTime" BO_ 583 100;
+BA_ "GenMsgSendType" BO_ 582 8;
+BA_ "GenMsgDelayTime" BO_ 582 0;
+BA_ "GenMsgCycleTimeFast" BO_ 582 0;
+BA_ "GenMsgCycleTime" BO_ 582 100;
+BA_ "GenMsgSendType" BO_ 581 0;
+BA_ "GenMsgDelayTime" BO_ 581 0;
+BA_ "GenMsgCycleTimeFast" BO_ 581 0;
+BA_ "GenMsgCycleTime" BO_ 581 100;
+BA_ "GenMsgSendType" BO_ 580 0;
+BA_ "GenMsgDelayTime" BO_ 580 0;
+BA_ "GenMsgCycleTimeFast" BO_ 580 0;
+BA_ "GenMsgCycleTime" BO_ 580 100;
+BA_ "GenMsgSendType" BO_ 578 8;
+BA_ "GenMsgDelayTime" BO_ 578 0;
+BA_ "GenMsgCycleTimeFast" BO_ 578 0;
+BA_ "GenMsgCycleTime" BO_ 578 100;
+BA_ "GenMsgSendType" BO_ 576 0;
+BA_ "GenMsgDelayTime" BO_ 576 0;
+BA_ "GenMsgCycleTimeFast" BO_ 576 0;
+BA_ "GenMsgCycleTime" BO_ 576 100;
+BA_ "GenMsgSendType" BO_ 566 0;
+BA_ "GenMsgDelayTime" BO_ 566 0;
+BA_ "GenMsgCycleTimeFast" BO_ 566 0;
+BA_ "GenMsgCycleTime" BO_ 566 100;
+BA_ "GenMsgSendType" BO_ 564 0;
+BA_ "GenMsgDelayTime" BO_ 564 0;
+BA_ "GenMsgCycleTimeFast" BO_ 564 0;
+BA_ "GenMsgCycleTime" BO_ 564 100;
+BA_ "GenMsgSendType" BO_ 562 0;
+BA_ "GenMsgDelayTime" BO_ 562 0;
+BA_ "GenMsgCycleTimeFast" BO_ 562 0;
+BA_ "GenMsgCycleTime" BO_ 562 100;
+BA_ "GenMsgSendType" BO_ 561 0;
+BA_ "GenMsgDelayTime" BO_ 561 0;
+BA_ "GenMsgCycleTimeFast" BO_ 561 0;
+BA_ "GenMsgCycleTime" BO_ 561 100;
+BA_ "GenMsgSendType" BO_ 560 0;
+BA_ "GenMsgDelayTime" BO_ 560 0;
+BA_ "GenMsgCycleTimeFast" BO_ 560 0;
+BA_ "GenMsgCycleTime" BO_ 560 100;
+BA_ "GenMsgSendType" BO_ 552 0;
+BA_ "GenMsgDelayTime" BO_ 552 0;
+BA_ "GenMsgCycleTimeFast" BO_ 552 0;
+BA_ "GenMsgCycleTime" BO_ 552 100;
+BA_ "GenMsgSendType" BO_ 547 0;
+BA_ "GenMsgDelayTime" BO_ 547 0;
+BA_ "GenMsgCycleTimeFast" BO_ 547 0;
+BA_ "GenMsgCycleTime" BO_ 547 100;
+BA_ "GenMsgSendType" BO_ 546 0;
+BA_ "GenMsgDelayTime" BO_ 546 0;
+BA_ "GenMsgCycleTimeFast" BO_ 546 0;
+BA_ "GenMsgCycleTime" BO_ 546 100;
+BA_ "GenMsgSendType" BO_ 306 0;
+BA_ "GenMsgDelayTime" BO_ 306 0;
+BA_ "GenMsgCycleTimeFast" BO_ 306 0;
+BA_ "GenMsgCycleTime" BO_ 306 20;
+BA_ "GenMsgSendType" BO_ 290 0;
+BA_ "GenMsgDelayTime" BO_ 290 0;
+BA_ "GenMsgCycleTimeFast" BO_ 290 0;
+BA_ "GenMsgCycleTime" BO_ 290 20;
+BA_ "GenMsgSendType" BO_ 192 8;
+BA_ "GenMsgDelayTime" BO_ 192 0;
+BA_ "GenMsgCycleTimeFast" BO_ 192 0;
+BA_ "GenMsgCycleTime" BO_ 192 10;
+BA_ "GenMsgSendType" BO_ 118 8;
+BA_ "GenMsgDelayTime" BO_ 118 0;
+BA_ "GenMsgCycleTimeFast" BO_ 118 0;
+BA_ "GenMsgCycleTime" BO_ 118 100;
+BA_ "GenMsgSendType" BO_ 117 8;
+BA_ "GenMsgDelayTime" BO_ 117 0;
+BA_ "GenMsgCycleTimeFast" BO_ 117 0;
+BA_ "GenMsgCycleTime" BO_ 117 100;
+BA_ "GenSigInvalidValue" SG_ 756 Checksum_FCP_PEPS 0;
+BA_ "GenSigInactiveValue" SG_ 756 Checksum_FCP_PEPS 0;
+BA_ "GenSigStartValue" SG_ 756 Checksum_FCP_PEPS 0;
+BA_ "GenSigSendType" SG_ 756 Checksum_FCP_PEPS 0;
+BA_ "GenSigInvalidValue" SG_ 756 FCP_PEPSSwitch 0;
+BA_ "GenSigInactiveValue" SG_ 756 FCP_PEPSSwitch 0;
+BA_ "GenSigStartValue" SG_ 756 FCP_PEPSSwitch 0;
+BA_ "GenSigSendType" SG_ 756 FCP_PEPSSwitch 0;
+BA_ "GenSigInvalidValue" SG_ 756 FCP_FV 0;
+BA_ "GenSigInactiveValue" SG_ 756 FCP_FV 0;
+BA_ "GenSigStartValue" SG_ 756 FCP_FV 0;
+BA_ "GenSigSendType" SG_ 756 FCP_FV 0;
+BA_ "GenSigInvalidValue" SG_ 756 FCP_MAC 0;
+BA_ "GenSigInactiveValue" SG_ 756 FCP_MAC 0;
+BA_ "GenSigStartValue" SG_ 756 FCP_MAC 0;
+BA_ "GenSigSendType" SG_ 756 FCP_MAC 0;
+BA_ "GenSigInvalidValue" SG_ 756 LiveCounter_FCP_PEPS 0;
+BA_ "GenSigInactiveValue" SG_ 756 LiveCounter_FCP_PEPS 0;
+BA_ "GenSigStartValue" SG_ 756 LiveCounter_FCP_PEPS 0;
+BA_ "GenSigSendType" SG_ 756 LiveCounter_FCP_PEPS 0;
+BA_ "GenSigInvalidValue" SG_ 741 FCP_RLseatVentLevelSet 0;
+BA_ "GenSigInactiveValue" SG_ 741 FCP_RLseatVentLevelSet 0;
+BA_ "GenSigStartValue" SG_ 741 FCP_RLseatVentLevelSet 0;
+BA_ "GenSigSendType" SG_ 741 FCP_RLseatVentLevelSet 0;
+BA_ "GenSigInvalidValue" SG_ 741 FCP_RRseatVentLevelSet 0;
+BA_ "GenSigInactiveValue" SG_ 741 FCP_RRseatVentLevelSet 0;
+BA_ "GenSigStartValue" SG_ 741 FCP_RRseatVentLevelSet 0;
+BA_ "GenSigSendType" SG_ 741 FCP_RRseatVentLevelSet 0;
+BA_ "GenSigInvalidValue" SG_ 741 FCP_RLseatHeatLevelSet 0;
+BA_ "GenSigInactiveValue" SG_ 741 FCP_RLseatHeatLevelSet 0;
+BA_ "GenSigStartValue" SG_ 741 FCP_RLseatHeatLevelSet 0;
+BA_ "GenSigSendType" SG_ 741 FCP_RLseatHeatLevelSet 0;
+BA_ "GenSigInvalidValue" SG_ 741 FCP_RRseatHeatLevelSet 0;
+BA_ "GenSigInactiveValue" SG_ 741 FCP_RRseatHeatLevelSet 0;
+BA_ "GenSigStartValue" SG_ 741 FCP_RRseatHeatLevelSet 0;
+BA_ "GenSigSendType" SG_ 741 FCP_RRseatHeatLevelSet 0;
+BA_ "GenSigInvalidValue" SG_ 741 FCP_RLSeatLegRestAdj 0;
+BA_ "GenSigInactiveValue" SG_ 741 FCP_RLSeatLegRestAdj 0;
+BA_ "GenSigStartValue" SG_ 741 FCP_RLSeatLegRestAdj 0;
+BA_ "GenSigSendType" SG_ 741 FCP_RLSeatLegRestAdj 0;
+BA_ "GenSigInvalidValue" SG_ 741 FCP_RRSeatLegRestAdj 0;
+BA_ "GenSigInactiveValue" SG_ 741 FCP_RRSeatLegRestAdj 0;
+BA_ "GenSigStartValue" SG_ 741 FCP_RRSeatLegRestAdj 0;
+BA_ "GenSigSendType" SG_ 741 FCP_RRSeatLegRestAdj 0;
+BA_ "GenSigInvalidValue" SG_ 741 FCP_RLSeatBackendAdj 0;
+BA_ "GenSigInactiveValue" SG_ 741 FCP_RLSeatBackendAdj 0;
+BA_ "GenSigStartValue" SG_ 741 FCP_RLSeatBackendAdj 0;
+BA_ "GenSigSendType" SG_ 741 FCP_RLSeatBackendAdj 0;
+BA_ "GenSigInvalidValue" SG_ 741 FCP_RRSeatBackendAdj 0;
+BA_ "GenSigInactiveValue" SG_ 741 FCP_RRSeatBackendAdj 0;
+BA_ "GenSigStartValue" SG_ 741 FCP_RRSeatBackendAdj 0;
+BA_ "GenSigSendType" SG_ 741 FCP_RRSeatBackendAdj 0;
+BA_ "GenSigInvalidValue" SG_ 741 FCP_RLSeatHeadRestAdj 0;
+BA_ "GenSigInactiveValue" SG_ 741 FCP_RLSeatHeadRestAdj 0;
+BA_ "GenSigStartValue" SG_ 741 FCP_RLSeatHeadRestAdj 0;
+BA_ "GenSigSendType" SG_ 741 FCP_RLSeatHeadRestAdj 0;
+BA_ "GenSigInvalidValue" SG_ 741 FCP_RRSeatHeadRestAdj 0;
+BA_ "GenSigInactiveValue" SG_ 741 FCP_RRSeatHeadRestAdj 0;
+BA_ "GenSigStartValue" SG_ 741 FCP_RRSeatHeadRestAdj 0;
+BA_ "GenSigSendType" SG_ 741 FCP_RRSeatHeadRestAdj 0;
+BA_ "GenSigInvalidValue" SG_ 741 FCP_HalfLyingModeCtrlCmd_RL 0;
+BA_ "GenSigInactiveValue" SG_ 741 FCP_HalfLyingModeCtrlCmd_RL 0;
+BA_ "GenSigStartValue" SG_ 741 FCP_HalfLyingModeCtrlCmd_RL 0;
+BA_ "GenSigSendType" SG_ 741 FCP_HalfLyingModeCtrlCmd_RL 0;
+BA_ "GenSigInvalidValue" SG_ 741 FCP_HalfLyingModeCtrlCmd_RR 0;
+BA_ "GenSigInactiveValue" SG_ 741 FCP_HalfLyingModeCtrlCmd_RR 0;
+BA_ "GenSigStartValue" SG_ 741 FCP_HalfLyingModeCtrlCmd_RR 0;
+BA_ "GenSigSendType" SG_ 741 FCP_HalfLyingModeCtrlCmd_RR 0;
+BA_ "GenSigInvalidValue" SG_ 741 FCP_SunshadeMoveRequest 0;
+BA_ "GenSigInactiveValue" SG_ 741 FCP_SunshadeMoveRequest 0;
+BA_ "GenSigStartValue" SG_ 741 FCP_SunshadeMoveRequest 0;
+BA_ "GenSigSendType" SG_ 741 FCP_SunshadeMoveRequest 0;
+BA_ "GenSigInvalidValue" SG_ 741 FCP_SunRoofMoveRequest 0;
+BA_ "GenSigInactiveValue" SG_ 741 FCP_SunRoofMoveRequest 0;
+BA_ "GenSigStartValue" SG_ 741 FCP_SunRoofMoveRequest 0;
+BA_ "GenSigSendType" SG_ 741 FCP_SunRoofMoveRequest 0;
+BA_ "GenSigInvalidValue" SG_ 741 FCP_AssociativeMemoryCmd_Pos1 0;
+BA_ "GenSigInactiveValue" SG_ 741 FCP_AssociativeMemoryCmd_Pos1 0;
+BA_ "GenSigStartValue" SG_ 741 FCP_AssociativeMemoryCmd_Pos1 0;
+BA_ "GenSigSendType" SG_ 741 FCP_AssociativeMemoryCmd_Pos1 0;
+BA_ "GenSigInvalidValue" SG_ 741 FCP_AssociativeMemoryCmd_Pos2 0;
+BA_ "GenSigInactiveValue" SG_ 741 FCP_AssociativeMemoryCmd_Pos2 0;
+BA_ "GenSigStartValue" SG_ 741 FCP_AssociativeMemoryCmd_Pos2 0;
+BA_ "GenSigSendType" SG_ 741 FCP_AssociativeMemoryCmd_Pos2 0;
+BA_ "GenSigInvalidValue" SG_ 741 FCP_AssociativeMemoryCmd_Pos3 0;
+BA_ "GenSigInactiveValue" SG_ 741 FCP_AssociativeMemoryCmd_Pos3 0;
+BA_ "GenSigStartValue" SG_ 741 FCP_AssociativeMemoryCmd_Pos3 0;
+BA_ "GenSigSendType" SG_ 741 FCP_AssociativeMemoryCmd_Pos3 0;
+BA_ "GenSigInvalidValue" SG_ 741 FCP_FRSeatMemoryCmd_Pos1 0;
+BA_ "GenSigInactiveValue" SG_ 741 FCP_FRSeatMemoryCmd_Pos1 0;
+BA_ "GenSigStartValue" SG_ 741 FCP_FRSeatMemoryCmd_Pos1 0;
+BA_ "GenSigSendType" SG_ 741 FCP_FRSeatMemoryCmd_Pos1 0;
+BA_ "GenSigInvalidValue" SG_ 741 FCP_FRSeatMemoryCmd_Pos2 0;
+BA_ "GenSigInactiveValue" SG_ 741 FCP_FRSeatMemoryCmd_Pos2 0;
+BA_ "GenSigStartValue" SG_ 741 FCP_FRSeatMemoryCmd_Pos2 0;
+BA_ "GenSigSendType" SG_ 741 FCP_FRSeatMemoryCmd_Pos2 0;
+BA_ "GenSigInvalidValue" SG_ 741 FCP_FRSeatMemoryCmd_Pos3 0;
+BA_ "GenSigInactiveValue" SG_ 741 FCP_FRSeatMemoryCmd_Pos3 0;
+BA_ "GenSigStartValue" SG_ 741 FCP_FRSeatMemoryCmd_Pos3 0;
+BA_ "GenSigSendType" SG_ 741 FCP_FRSeatMemoryCmd_Pos3 0;
+BA_ "GenSigInvalidValue" SG_ 740 FCP_RearACAutoFunctionReq 0;
+BA_ "GenSigInactiveValue" SG_ 740 FCP_RearACAutoFunctionReq 0;
+BA_ "GenSigStartValue" SG_ 740 FCP_RearACAutoFunctionReq 0;
+BA_ "GenSigSendType" SG_ 740 FCP_RearACAutoFunctionReq 0;
+BA_ "GenSigInvalidValue" SG_ 740 FCP_RearBlowLevelFunctionSet 0;
+BA_ "GenSigInactiveValue" SG_ 740 FCP_RearBlowLevelFunctionSet 0;
+BA_ "GenSigStartValue" SG_ 740 FCP_RearBlowLevelFunctionSet 0;
+BA_ "GenSigSendType" SG_ 740 FCP_RearBlowLevelFunctionSet 0;
+BA_ "GenSigInvalidValue" SG_ 740 FCP_RearLeftTempAdjFunctionRe 0;
+BA_ "GenSigInactiveValue" SG_ 740 FCP_RearLeftTempAdjFunctionRe 0;
+BA_ "GenSigStartValue" SG_ 740 FCP_RearLeftTempAdjFunctionRe 0;
+BA_ "GenSigSendType" SG_ 740 FCP_RearLeftTempAdjFunctionRe 0;
+BA_ "GenSigInvalidValue" SG_ 740 FCP_RearRightTempAdjFunctionR_eq 0;
+BA_ "GenSigInactiveValue" SG_ 740 FCP_RearRightTempAdjFunctionR_eq 0;
+BA_ "GenSigStartValue" SG_ 740 FCP_RearRightTempAdjFunctionR_eq 0;
+BA_ "GenSigSendType" SG_ 740 FCP_RearRightTempAdjFunctionR_eq 0;
+BA_ "GenSigInvalidValue" SG_ 740 FCP_RearBlowModeSet 0;
+BA_ "GenSigInactiveValue" SG_ 740 FCP_RearBlowModeSet 0;
+BA_ "GenSigStartValue" SG_ 740 FCP_RearBlowModeSet 0;
+BA_ "GenSigSendType" SG_ 740 FCP_RearBlowModeSet 0;
+BA_ "GenSigInvalidValue" SG_ 740 FCP_RearLeftTempSet 0;
+BA_ "GenSigInactiveValue" SG_ 740 FCP_RearLeftTempSet 0;
+BA_ "GenSigStartValue" SG_ 740 FCP_RearLeftTempSet 62;
+BA_ "GenSigSendType" SG_ 740 FCP_RearLeftTempSet 0;
+BA_ "GenSigInvalidValue" SG_ 740 FCP_RearRightTempSet 0;
+BA_ "GenSigInactiveValue" SG_ 740 FCP_RearRightTempSet 0;
+BA_ "GenSigStartValue" SG_ 740 FCP_RearRightTempSet 62;
+BA_ "GenSigSendType" SG_ 740 FCP_RearRightTempSet 0;
+BA_ "GenSigInvalidValue" SG_ 740 FCP_RearRearACAutoFunctionRe 0;
+BA_ "GenSigInactiveValue" SG_ 740 FCP_RearRearACAutoFunctionRe 0;
+BA_ "GenSigStartValue" SG_ 740 FCP_RearRearACAutoFunctionRe 0;
+BA_ "GenSigSendType" SG_ 740 FCP_RearRearACAutoFunctionRe 0;
+BA_ "GenSigInvalidValue" SG_ 740 FCP_RearRearACPowerReq 0;
+BA_ "GenSigInactiveValue" SG_ 740 FCP_RearRearACPowerReq 0;
+BA_ "GenSigStartValue" SG_ 740 FCP_RearRearACPowerReq 0;
+BA_ "GenSigSendType" SG_ 740 FCP_RearRearACPowerReq 0;
+BA_ "GenSigInvalidValue" SG_ 740 FCP_RearRearBlowLevelFunction_Se 0;
+BA_ "GenSigInactiveValue" SG_ 740 FCP_RearRearBlowLevelFunction_Se 0;
+BA_ "GenSigStartValue" SG_ 740 FCP_RearRearBlowLevelFunction_Se 0;
+BA_ "GenSigSendType" SG_ 740 FCP_RearRearBlowLevelFunction_Se 0;
+BA_ "SystemSignalLongSymbol" SG_ 740 FCP_RearRearBlowLevelFunction_Se "FCP_RearRearBlowLevelFunction_Set";
+BA_ "GenSigInvalidValue" SG_ 740 FCP_RearRearLeftTempAdjFunctionR 0;
+BA_ "GenSigInactiveValue" SG_ 740 FCP_RearRearLeftTempAdjFunctionR 0;
+BA_ "GenSigStartValue" SG_ 740 FCP_RearRearLeftTempAdjFunctionR 0;
+BA_ "GenSigSendType" SG_ 740 FCP_RearRearLeftTempAdjFunctionR 0;
+BA_ "SystemSignalLongSymbol" SG_ 740 FCP_RearRearLeftTempAdjFunctionR "FCP_RearRearLeftTempAdjFunctionReq";
+BA_ "GenSigInvalidValue" SG_ 740 FCP_RearRearRightTempAdjFunct_io 0;
+BA_ "GenSigInactiveValue" SG_ 740 FCP_RearRearRightTempAdjFunct_io 0;
+BA_ "GenSigStartValue" SG_ 740 FCP_RearRearRightTempAdjFunct_io 0;
+BA_ "GenSigSendType" SG_ 740 FCP_RearRearRightTempAdjFunct_io 0;
+BA_ "SystemSignalLongSymbol" SG_ 740 FCP_RearRearRightTempAdjFunct_io "FCP_RearRearRightTempAdjFunct_ionReq";
+BA_ "GenSigInvalidValue" SG_ 740 FCP_RearRearBlowModeSet 0;
+BA_ "GenSigInactiveValue" SG_ 740 FCP_RearRearBlowModeSet 0;
+BA_ "GenSigStartValue" SG_ 740 FCP_RearRearBlowModeSet 0;
+BA_ "GenSigSendType" SG_ 740 FCP_RearRearBlowModeSet 0;
+BA_ "GenSigInvalidValue" SG_ 740 FCP_RearRearLeftTempSet 0;
+BA_ "GenSigInactiveValue" SG_ 740 FCP_RearRearLeftTempSet 0;
+BA_ "GenSigStartValue" SG_ 740 FCP_RearRearLeftTempSet 0;
+BA_ "GenSigSendType" SG_ 740 FCP_RearRearLeftTempSet 0;
+BA_ "GenSigInvalidValue" SG_ 740 FCP_RearRearRightTempSet 0;
+BA_ "GenSigInactiveValue" SG_ 740 FCP_RearRearRightTempSet 0;
+BA_ "GenSigStartValue" SG_ 740 FCP_RearRearRightTempSet 0;
+BA_ "GenSigSendType" SG_ 740 FCP_RearRearRightTempSet 0;
+BA_ "GenSigInvalidValue" SG_ 739 FCP_FLseatVentLevelSet 0;
+BA_ "GenSigInactiveValue" SG_ 739 FCP_FLseatVentLevelSet 0;
+BA_ "GenSigStartValue" SG_ 739 FCP_FLseatVentLevelSet 0;
+BA_ "GenSigSendType" SG_ 739 FCP_FLseatVentLevelSet 0;
+BA_ "GenSigInvalidValue" SG_ 739 FCP_FRseatVentLevelSet 0;
+BA_ "GenSigInactiveValue" SG_ 739 FCP_FRseatVentLevelSet 0;
+BA_ "GenSigStartValue" SG_ 739 FCP_FRseatVentLevelSet 0;
+BA_ "GenSigSendType" SG_ 739 FCP_FRseatVentLevelSet 0;
+BA_ "GenSigInvalidValue" SG_ 739 FCP_FLseatHeatLevelSet 0;
+BA_ "GenSigInactiveValue" SG_ 739 FCP_FLseatHeatLevelSet 0;
+BA_ "GenSigStartValue" SG_ 739 FCP_FLseatHeatLevelSet 0;
+BA_ "GenSigSendType" SG_ 739 FCP_FLseatHeatLevelSet 0;
+BA_ "GenSigInvalidValue" SG_ 739 FCP_FRseatHeatLevelSet 0;
+BA_ "GenSigInactiveValue" SG_ 739 FCP_FRseatHeatLevelSet 0;
+BA_ "GenSigStartValue" SG_ 739 FCP_FRseatHeatLevelSet 0;
+BA_ "GenSigSendType" SG_ 739 FCP_FRseatHeatLevelSet 0;
+BA_ "GenSigInvalidValue" SG_ 739 FCP_FLseatMassageModeSet 0;
+BA_ "GenSigInactiveValue" SG_ 739 FCP_FLseatMassageModeSet 0;
+BA_ "GenSigStartValue" SG_ 739 FCP_FLseatMassageModeSet 0;
+BA_ "GenSigSendType" SG_ 739 FCP_FLseatMassageModeSet 0;
+BA_ "GenSigInvalidValue" SG_ 739 FCP_FLseatMassageLevelSet 0;
+BA_ "GenSigInactiveValue" SG_ 739 FCP_FLseatMassageLevelSet 0;
+BA_ "GenSigStartValue" SG_ 739 FCP_FLseatMassageLevelSet 0;
+BA_ "GenSigSendType" SG_ 739 FCP_FLseatMassageLevelSet 0;
+BA_ "GenSigInvalidValue" SG_ 739 FCP_FLseatMassageFuncSet 0;
+BA_ "GenSigInactiveValue" SG_ 739 FCP_FLseatMassageFuncSet 0;
+BA_ "GenSigStartValue" SG_ 739 FCP_FLseatMassageFuncSet 0;
+BA_ "GenSigSendType" SG_ 739 FCP_FLseatMassageFuncSet 0;
+BA_ "GenSigInvalidValue" SG_ 739 FCP_FRseatMassageModeSet 0;
+BA_ "GenSigInactiveValue" SG_ 739 FCP_FRseatMassageModeSet 0;
+BA_ "GenSigStartValue" SG_ 739 FCP_FRseatMassageModeSet 0;
+BA_ "GenSigSendType" SG_ 739 FCP_FRseatMassageModeSet 0;
+BA_ "GenSigInvalidValue" SG_ 739 FCP_FRseatMassageLevelSet 0;
+BA_ "GenSigInactiveValue" SG_ 739 FCP_FRseatMassageLevelSet 0;
+BA_ "GenSigStartValue" SG_ 739 FCP_FRseatMassageLevelSet 0;
+BA_ "GenSigSendType" SG_ 739 FCP_FRseatMassageLevelSet 0;
+BA_ "GenSigInvalidValue" SG_ 739 FCP_FRseatMassageFuncSet 0;
+BA_ "GenSigInactiveValue" SG_ 739 FCP_FRseatMassageFuncSet 0;
+BA_ "GenSigStartValue" SG_ 739 FCP_FRseatMassageFuncSet 0;
+BA_ "GenSigSendType" SG_ 739 FCP_FRseatMassageFuncSet 0;
+BA_ "GenSigInvalidValue" SG_ 739 FCP_SteeringWheelHeatReq 0;
+BA_ "GenSigInactiveValue" SG_ 739 FCP_SteeringWheelHeatReq 0;
+BA_ "GenSigStartValue" SG_ 739 FCP_SteeringWheelHeatReq 0;
+BA_ "GenSigSendType" SG_ 739 FCP_SteeringWheelHeatReq 0;
+BA_ "GenSigInvalidValue" SG_ 739 FCP_MovingObjectDetectFuncSet 0;
+BA_ "GenSigInactiveValue" SG_ 739 FCP_MovingObjectDetectFuncSet 0;
+BA_ "GenSigStartValue" SG_ 739 FCP_MovingObjectDetectFuncSet 0;
+BA_ "GenSigSendType" SG_ 739 FCP_MovingObjectDetectFuncSet 0;
+BA_ "GenSigInvalidValue" SG_ 739 FCP_RLseatMassageModeSet 0;
+BA_ "GenSigInactiveValue" SG_ 739 FCP_RLseatMassageModeSet 0;
+BA_ "GenSigStartValue" SG_ 739 FCP_RLseatMassageModeSet 0;
+BA_ "GenSigSendType" SG_ 739 FCP_RLseatMassageModeSet 0;
+BA_ "GenSigInvalidValue" SG_ 739 FCP_RLseatMassageLevelSet 0;
+BA_ "GenSigInactiveValue" SG_ 739 FCP_RLseatMassageLevelSet 0;
+BA_ "GenSigStartValue" SG_ 739 FCP_RLseatMassageLevelSet 0;
+BA_ "GenSigSendType" SG_ 739 FCP_RLseatMassageLevelSet 0;
+BA_ "GenSigInvalidValue" SG_ 739 FCP_RLseatMassageFuncSet 0;
+BA_ "GenSigInactiveValue" SG_ 739 FCP_RLseatMassageFuncSet 0;
+BA_ "GenSigStartValue" SG_ 739 FCP_RLseatMassageFuncSet 0;
+BA_ "GenSigSendType" SG_ 739 FCP_RLseatMassageFuncSet 0;
+BA_ "GenSigInvalidValue" SG_ 739 FCP_RRseatMassageModeSet 0;
+BA_ "GenSigInactiveValue" SG_ 739 FCP_RRseatMassageModeSet 0;
+BA_ "GenSigStartValue" SG_ 739 FCP_RRseatMassageModeSet 0;
+BA_ "GenSigSendType" SG_ 739 FCP_RRseatMassageModeSet 0;
+BA_ "GenSigInvalidValue" SG_ 739 FCP_RRseatMassageLevelSet 0;
+BA_ "GenSigInactiveValue" SG_ 739 FCP_RRseatMassageLevelSet 0;
+BA_ "GenSigStartValue" SG_ 739 FCP_RRseatMassageLevelSet 0;
+BA_ "GenSigSendType" SG_ 739 FCP_RRseatMassageLevelSet 0;
+BA_ "GenSigInvalidValue" SG_ 739 FCP_RRseatMassageFuncSet 0;
+BA_ "GenSigInactiveValue" SG_ 739 FCP_RRseatMassageFuncSet 0;
+BA_ "GenSigStartValue" SG_ 739 FCP_RRseatMassageFuncSet 0;
+BA_ "GenSigSendType" SG_ 739 FCP_RRseatMassageFuncSet 0;
+BA_ "GenSigInvalidValue" SG_ 737 FCP_BabyModeFunctionReq 0;
+BA_ "GenSigInactiveValue" SG_ 737 FCP_BabyModeFunctionReq 0;
+BA_ "GenSigStartValue" SG_ 737 FCP_BabyModeFunctionReq 0;
+BA_ "GenSigSendType" SG_ 737 FCP_BabyModeFunctionReq 0;
+BA_ "GenSigInvalidValue" SG_ 737 FCP_ESCFunctionReq 0;
+BA_ "GenSigInactiveValue" SG_ 737 FCP_ESCFunctionReq 0;
+BA_ "GenSigStartValue" SG_ 737 FCP_ESCFunctionReq 0;
+BA_ "GenSigSendType" SG_ 737 FCP_ESCFunctionReq 0;
+BA_ "GenSigInvalidValue" SG_ 737 FCP_HDCFunctionReq 0;
+BA_ "GenSigInactiveValue" SG_ 737 FCP_HDCFunctionReq 0;
+BA_ "GenSigStartValue" SG_ 737 FCP_HDCFunctionReq 0;
+BA_ "GenSigSendType" SG_ 737 FCP_HDCFunctionReq 0;
+BA_ "GenSigInvalidValue" SG_ 737 FCP_SmokeModeFunctionReq 0;
+BA_ "GenSigInactiveValue" SG_ 737 FCP_SmokeModeFunctionReq 0;
+BA_ "GenSigStartValue" SG_ 737 FCP_SmokeModeFunctionReq 0;
+BA_ "GenSigSendType" SG_ 737 FCP_SmokeModeFunctionReq 0;
+BA_ "GenSigInvalidValue" SG_ 737 FCP_HazeModeFunctionReq 0;
+BA_ "GenSigInactiveValue" SG_ 737 FCP_HazeModeFunctionReq 0;
+BA_ "GenSigStartValue" SG_ 737 FCP_HazeModeFunctionReq 0;
+BA_ "GenSigSendType" SG_ 737 FCP_HazeModeFunctionReq 0;
+BA_ "GenSigInvalidValue" SG_ 737 FCP_PLGSwitchSt 0;
+BA_ "GenSigInactiveValue" SG_ 737 FCP_PLGSwitchSt 0;
+BA_ "GenSigStartValue" SG_ 737 FCP_PLGSwitchSt 0;
+BA_ "GenSigSendType" SG_ 737 FCP_PLGSwitchSt 0;
+BA_ "GenSigInvalidValue" SG_ 737 FCP_AVSFunctionReq 0;
+BA_ "GenSigInactiveValue" SG_ 737 FCP_AVSFunctionReq 0;
+BA_ "GenSigStartValue" SG_ 737 FCP_AVSFunctionReq 0;
+BA_ "GenSigSendType" SG_ 737 FCP_AVSFunctionReq 0;
+BA_ "GenSigInvalidValue" SG_ 737 FCP_AMP_KeyToneCmd 0;
+BA_ "GenSigInactiveValue" SG_ 737 FCP_AMP_KeyToneCmd 0;
+BA_ "GenSigStartValue" SG_ 737 FCP_AMP_KeyToneCmd 0;
+BA_ "GenSigSendType" SG_ 737 FCP_AMP_KeyToneCmd 0;
+BA_ "GenSigInvalidValue" SG_ 737 FCP_NapModeFunctionReq 0;
+BA_ "GenSigInactiveValue" SG_ 737 FCP_NapModeFunctionReq 0;
+BA_ "GenSigStartValue" SG_ 737 FCP_NapModeFunctionReq 0;
+BA_ "GenSigSendType" SG_ 737 FCP_NapModeFunctionReq 0;
+BA_ "GenSigInvalidValue" SG_ 737 FCP_LeisureModeFunctionReq 0;
+BA_ "GenSigInactiveValue" SG_ 737 FCP_LeisureModeFunctionReq 0;
+BA_ "GenSigStartValue" SG_ 737 FCP_LeisureModeFunctionReq 0;
+BA_ "GenSigSendType" SG_ 737 FCP_LeisureModeFunctionReq 0;
+BA_ "GenSigInvalidValue" SG_ 737 FCP_RearWindowHeatFunctionRe 0;
+BA_ "GenSigInactiveValue" SG_ 737 FCP_RearWindowHeatFunctionRe 0;
+BA_ "GenSigStartValue" SG_ 737 FCP_RearWindowHeatFunctionRe 0;
+BA_ "GenSigSendType" SG_ 737 FCP_RearWindowHeatFunctionRe 0;
+BA_ "GenSigInvalidValue" SG_ 737 FCP_SoberModeFunctionReq 0;
+BA_ "GenSigInactiveValue" SG_ 737 FCP_SoberModeFunctionReq 0;
+BA_ "GenSigStartValue" SG_ 737 FCP_SoberModeFunctionReq 0;
+BA_ "GenSigSendType" SG_ 737 FCP_SoberModeFunctionReq 0;
+BA_ "GenSigInvalidValue" SG_ 737 FCP_ExternalAutoDEFFunctionRe 0;
+BA_ "GenSigInactiveValue" SG_ 737 FCP_ExternalAutoDEFFunctionRe 0;
+BA_ "GenSigStartValue" SG_ 737 FCP_ExternalAutoDEFFunctionRe 0;
+BA_ "GenSigSendType" SG_ 737 FCP_ExternalAutoDEFFunctionRe 0;
+BA_ "GenSigInvalidValue" SG_ 737 FCP_FragranceAutoFunctionReq 0;
+BA_ "GenSigInactiveValue" SG_ 737 FCP_FragranceAutoFunctionReq 0;
+BA_ "GenSigStartValue" SG_ 737 FCP_FragranceAutoFunctionReq 0;
+BA_ "GenSigSendType" SG_ 737 FCP_FragranceAutoFunctionReq 0;
+BA_ "GenSigInvalidValue" SG_ 737 FCP_FragranceFunctionReq 0;
+BA_ "GenSigInactiveValue" SG_ 737 FCP_FragranceFunctionReq 0;
+BA_ "GenSigStartValue" SG_ 737 FCP_FragranceFunctionReq 0;
+BA_ "GenSigSendType" SG_ 737 FCP_FragranceFunctionReq 0;
+BA_ "GenSigInvalidValue" SG_ 737 FCP_FragranceTypeReq 0;
+BA_ "GenSigInactiveValue" SG_ 737 FCP_FragranceTypeReq 0;
+BA_ "GenSigStartValue" SG_ 737 FCP_FragranceTypeReq 0;
+BA_ "GenSigSendType" SG_ 737 FCP_FragranceTypeReq 0;
+BA_ "GenSigInvalidValue" SG_ 737 FCP_FragranceConcentrationReq 0;
+BA_ "GenSigInactiveValue" SG_ 737 FCP_FragranceConcentrationReq 0;
+BA_ "GenSigStartValue" SG_ 737 FCP_FragranceConcentrationReq 0;
+BA_ "GenSigSendType" SG_ 737 FCP_FragranceConcentrationReq 0;
+BA_ "GenSigInvalidValue" SG_ 737 FCP_FragranceTimeSet 0;
+BA_ "GenSigInactiveValue" SG_ 737 FCP_FragranceTimeSet 0;
+BA_ "GenSigStartValue" SG_ 737 FCP_FragranceTimeSet 0;
+BA_ "GenSigSendType" SG_ 737 FCP_FragranceTimeSet 0;
+BA_ "GenSigInvalidValue" SG_ 737 FCP_PDCFunctionReq 0;
+BA_ "GenSigInactiveValue" SG_ 737 FCP_PDCFunctionReq 0;
+BA_ "GenSigStartValue" SG_ 737 FCP_PDCFunctionReq 0;
+BA_ "GenSigSendType" SG_ 737 FCP_PDCFunctionReq 0;
+BA_ "GenSigInvalidValue" SG_ 737 FCP_APAFunctionReq 0;
+BA_ "GenSigInactiveValue" SG_ 737 FCP_APAFunctionReq 0;
+BA_ "GenSigStartValue" SG_ 737 FCP_APAFunctionReq 0;
+BA_ "GenSigSendType" SG_ 737 FCP_APAFunctionReq 0;
+BA_ "GenSigInvalidValue" SG_ 737 FCP_AVPFunctionReq 0;
+BA_ "GenSigInactiveValue" SG_ 737 FCP_AVPFunctionReq 0;
+BA_ "GenSigStartValue" SG_ 737 FCP_AVPFunctionReq 0;
+BA_ "GenSigSendType" SG_ 737 FCP_AVPFunctionReq 0;
+BA_ "GenSigInvalidValue" SG_ 736 FCP_ACAutoFunctionReq_FL 0;
+BA_ "GenSigInactiveValue" SG_ 736 FCP_ACAutoFunctionReq_FL 0;
+BA_ "GenSigStartValue" SG_ 736 FCP_ACAutoFunctionReq_FL 0;
+BA_ "GenSigSendType" SG_ 736 FCP_ACAutoFunctionReq_FL 0;
+BA_ "GenSigInvalidValue" SG_ 736 FCP_ACPowerReq 0;
+BA_ "GenSigInactiveValue" SG_ 736 FCP_ACPowerReq 0;
+BA_ "GenSigStartValue" SG_ 736 FCP_ACPowerReq 0;
+BA_ "GenSigSendType" SG_ 736 FCP_ACPowerReq 0;
+BA_ "GenSigInvalidValue" SG_ 736 FCP_ACDefFunctionReq 0;
+BA_ "GenSigInactiveValue" SG_ 736 FCP_ACDefFunctionReq 0;
+BA_ "GenSigStartValue" SG_ 736 FCP_ACDefFunctionReq 0;
+BA_ "GenSigSendType" SG_ 736 FCP_ACDefFunctionReq 0;
+BA_ "GenSigInvalidValue" SG_ 736 FCP_ACSyncFunctionReq 0;
+BA_ "GenSigInactiveValue" SG_ 736 FCP_ACSyncFunctionReq 0;
+BA_ "GenSigStartValue" SG_ 736 FCP_ACSyncFunctionReq 0;
+BA_ "GenSigSendType" SG_ 736 FCP_ACSyncFunctionReq 0;
+BA_ "GenSigInvalidValue" SG_ 736 FCP_ACNaturalAirFunctionReq 0;
+BA_ "GenSigInactiveValue" SG_ 736 FCP_ACNaturalAirFunctionReq 0;
+BA_ "GenSigStartValue" SG_ 736 FCP_ACNaturalAirFunctionReq 0;
+BA_ "GenSigSendType" SG_ 736 FCP_ACNaturalAirFunctionReq 0;
+BA_ "GenSigInvalidValue" SG_ 736 FCP_ACIONFunctionReq 0;
+BA_ "GenSigInactiveValue" SG_ 736 FCP_ACIONFunctionReq 0;
+BA_ "GenSigStartValue" SG_ 736 FCP_ACIONFunctionReq 0;
+BA_ "GenSigSendType" SG_ 736 FCP_ACIONFunctionReq 0;
+BA_ "GenSigInvalidValue" SG_ 736 FCP_ACPM25FunctionReq 0;
+BA_ "GenSigInactiveValue" SG_ 736 FCP_ACPM25FunctionReq 0;
+BA_ "GenSigStartValue" SG_ 736 FCP_ACPM25FunctionReq 0;
+BA_ "GenSigSendType" SG_ 736 FCP_ACPM25FunctionReq 0;
+BA_ "GenSigInvalidValue" SG_ 736 FCP_BlowLevelFunctionSet 0;
+BA_ "GenSigInactiveValue" SG_ 736 FCP_BlowLevelFunctionSet 0;
+BA_ "GenSigStartValue" SG_ 736 FCP_BlowLevelFunctionSet 0;
+BA_ "GenSigSendType" SG_ 736 FCP_BlowLevelFunctionSet 0;
+BA_ "GenSigInvalidValue" SG_ 736 FCP_LeftTempAdjFunctionReq 0;
+BA_ "GenSigInactiveValue" SG_ 736 FCP_LeftTempAdjFunctionReq 0;
+BA_ "GenSigStartValue" SG_ 736 FCP_LeftTempAdjFunctionReq 0;
+BA_ "GenSigSendType" SG_ 736 FCP_LeftTempAdjFunctionReq 0;
+BA_ "GenSigInvalidValue" SG_ 736 FCP_RightTempAdjFunctionReq 0;
+BA_ "GenSigInactiveValue" SG_ 736 FCP_RightTempAdjFunctionReq 0;
+BA_ "GenSigStartValue" SG_ 736 FCP_RightTempAdjFunctionReq 0;
+BA_ "GenSigSendType" SG_ 736 FCP_RightTempAdjFunctionReq 0;
+BA_ "GenSigInvalidValue" SG_ 736 FCP_FRSRECModeFunctionReq 0;
+BA_ "GenSigInactiveValue" SG_ 736 FCP_FRSRECModeFunctionReq 0;
+BA_ "GenSigStartValue" SG_ 736 FCP_FRSRECModeFunctionReq 0;
+BA_ "GenSigSendType" SG_ 736 FCP_FRSRECModeFunctionReq 0;
+BA_ "GenSigInvalidValue" SG_ 736 FCP_LeftTempSet 0;
+BA_ "GenSigInactiveValue" SG_ 736 FCP_LeftTempSet 0;
+BA_ "GenSigStartValue" SG_ 736 FCP_LeftTempSet 62;
+BA_ "GenSigSendType" SG_ 736 FCP_LeftTempSet 0;
+BA_ "GenSigInvalidValue" SG_ 736 FCP_ACAutoFunctionReq_FR 0;
+BA_ "GenSigInactiveValue" SG_ 736 FCP_ACAutoFunctionReq_FR 0;
+BA_ "GenSigStartValue" SG_ 736 FCP_ACAutoFunctionReq_FR 0;
+BA_ "GenSigSendType" SG_ 736 FCP_ACAutoFunctionReq_FR 0;
+BA_ "GenSigInvalidValue" SG_ 736 FCP_RightTempSet 0;
+BA_ "GenSigInactiveValue" SG_ 736 FCP_RightTempSet 0;
+BA_ "GenSigStartValue" SG_ 736 FCP_RightTempSet 62;
+BA_ "GenSigSendType" SG_ 736 FCP_RightTempSet 0;
+BA_ "GenSigInvalidValue" SG_ 736 FCP_BlowModeSet_FL 0;
+BA_ "GenSigInactiveValue" SG_ 736 FCP_BlowModeSet_FL 0;
+BA_ "GenSigStartValue" SG_ 736 FCP_BlowModeSet_FL 0;
+BA_ "GenSigSendType" SG_ 736 FCP_BlowModeSet_FL 0;
+BA_ "GenSigInvalidValue" SG_ 736 FCP_BlowModeSet_FR 0;
+BA_ "GenSigInactiveValue" SG_ 736 FCP_BlowModeSet_FR 0;
+BA_ "GenSigStartValue" SG_ 736 FCP_BlowModeSet_FR 0;
+BA_ "GenSigSendType" SG_ 736 FCP_BlowModeSet_FR 0;
+BA_ "GenSigInvalidValue" SG_ 688 GW_RemoteVehicleMode 0;
+BA_ "GenSigInactiveValue" SG_ 688 GW_RemoteVehicleMode 0;
+BA_ "GenSigStartValue" SG_ 688 GW_RemoteVehicleMode 0;
+BA_ "GenSigSendType" SG_ 688 GW_RemoteVehicleMode 0;
+BA_ "GenSigInvalidValue" SG_ 688 GW_OTAMode 0;
+BA_ "GenSigInactiveValue" SG_ 688 GW_OTAMode 0;
+BA_ "GenSigStartValue" SG_ 688 GW_OTAMode 0;
+BA_ "GenSigSendType" SG_ 688 GW_OTAMode 0;
+BA_ "GenSigInvalidValue" SG_ 664 HU_LeisuremodeFunctionInd 0;
+BA_ "GenSigInactiveValue" SG_ 664 HU_LeisuremodeFunctionInd 0;
+BA_ "GenSigStartValue" SG_ 664 HU_LeisuremodeFunctionInd 0;
+BA_ "GenSigSendType" SG_ 664 HU_LeisuremodeFunctionInd 0;
+BA_ "GenSigInvalidValue" SG_ 664 HU_BabymodeFunctionInd 0;
+BA_ "GenSigInactiveValue" SG_ 664 HU_BabymodeFunctionInd 0;
+BA_ "GenSigStartValue" SG_ 664 HU_BabymodeFunctionInd 0;
+BA_ "GenSigSendType" SG_ 664 HU_BabymodeFunctionInd 0;
+BA_ "GenSigInvalidValue" SG_ 664 HU_SmokemodeFunctionInd 0;
+BA_ "GenSigInactiveValue" SG_ 664 HU_SmokemodeFunctionInd 0;
+BA_ "GenSigStartValue" SG_ 664 HU_SmokemodeFunctionInd 0;
+BA_ "GenSigSendType" SG_ 664 HU_SmokemodeFunctionInd 0;
+BA_ "GenSigInvalidValue" SG_ 664 HU_NapmodeFunctionInd 0;
+BA_ "GenSigInactiveValue" SG_ 664 HU_NapmodeFunctionInd 0;
+BA_ "GenSigStartValue" SG_ 664 HU_NapmodeFunctionInd 0;
+BA_ "GenSigSendType" SG_ 664 HU_NapmodeFunctionInd 0;
+BA_ "GenSigInvalidValue" SG_ 664 HU_HazemodeFunctionInd 0;
+BA_ "GenSigInactiveValue" SG_ 664 HU_HazemodeFunctionInd 0;
+BA_ "GenSigStartValue" SG_ 664 HU_HazemodeFunctionInd 0;
+BA_ "GenSigSendType" SG_ 664 HU_HazemodeFunctionInd 0;
+BA_ "GenSigInvalidValue" SG_ 664 HU_SobermodeFunctionInd 0;
+BA_ "GenSigInactiveValue" SG_ 664 HU_SobermodeFunctionInd 0;
+BA_ "GenSigStartValue" SG_ 664 HU_SobermodeFunctionInd 0;
+BA_ "GenSigSendType" SG_ 664 HU_SobermodeFunctionInd 0;
+BA_ "GenSigInvalidValue" SG_ 657 DisplayTheme 0;
+BA_ "GenSigInactiveValue" SG_ 657 DisplayTheme 0;
+BA_ "GenSigStartValue" SG_ 657 DisplayTheme 0;
+BA_ "GenSigSendType" SG_ 657 DisplayTheme 0;
+BA_ "GenSigInvalidValue" SG_ 656 BackLightBrightness_IC 15;
+BA_ "GenSigInactiveValue" SG_ 656 BackLightBrightness_IC 0;
+BA_ "GenSigStartValue" SG_ 656 BackLightBrightness_IC 14;
+BA_ "GenSigSendType" SG_ 656 BackLightBrightness_IC 0;
+BA_ "GenSigInvalidValue" SG_ 656 OdometerValue 0;
+BA_ "GenSigInactiveValue" SG_ 656 OdometerValue 0;
+BA_ "GenSigStartValue" SG_ 656 OdometerValue 0;
+BA_ "GenSigSendType" SG_ 656 OdometerValue 0;
+BA_ "GenSigInvalidValue" SG_ 642 BackLightBrightness 0;
+BA_ "GenSigInactiveValue" SG_ 642 BackLightBrightness 0;
+BA_ "GenSigStartValue" SG_ 642 BackLightBrightness 254;
+BA_ "GenSigSendType" SG_ 642 BackLightBrightness 0;
+BA_ "GenSigInvalidValue" SG_ 613 Checksum_HAD_5 0;
+BA_ "GenSigInactiveValue" SG_ 613 Checksum_HAD_5 0;
+BA_ "GenSigStartValue" SG_ 613 Checksum_HAD_5 0;
+BA_ "GenSigSendType" SG_ 613 Checksum_HAD_5 0;
+BA_ "GenSigInvalidValue" SG_ 613 HAD_WorkingSt_HWP_Display 0;
+BA_ "GenSigInactiveValue" SG_ 613 HAD_WorkingSt_HWP_Display 0;
+BA_ "GenSigStartValue" SG_ 613 HAD_WorkingSt_HWP_Display 0;
+BA_ "GenSigSendType" SG_ 613 HAD_WorkingSt_HWP_Display 0;
+BA_ "GenSigInvalidValue" SG_ 613 HAD_WorkingSt_TJP_Display 0;
+BA_ "GenSigInactiveValue" SG_ 613 HAD_WorkingSt_TJP_Display 0;
+BA_ "GenSigStartValue" SG_ 613 HAD_WorkingSt_TJP_Display 0;
+BA_ "GenSigSendType" SG_ 613 HAD_WorkingSt_TJP_Display 0;
+BA_ "GenSigInvalidValue" SG_ 613 LiveCounter_HAD_5 0;
+BA_ "GenSigInactiveValue" SG_ 613 LiveCounter_HAD_5 0;
+BA_ "GenSigStartValue" SG_ 613 LiveCounter_HAD_5 0;
+BA_ "GenSigSendType" SG_ 613 LiveCounter_HAD_5 0;
+BA_ "GenSigInvalidValue" SG_ 604 SysSt_PDC 0;
+BA_ "GenSigInactiveValue" SG_ 604 SysSt_PDC 0;
+BA_ "GenSigStartValue" SG_ 604 SysSt_PDC 0;
+BA_ "GenSigSendType" SG_ 604 SysSt_PDC 0;
+BA_ "GenSigInvalidValue" SG_ 600 AVSSt 0;
+BA_ "GenSigInactiveValue" SG_ 600 AVSSt 0;
+BA_ "GenSigStartValue" SG_ 600 AVSSt 0;
+BA_ "GenSigSendType" SG_ 600 AVSSt 0;
+BA_ "GenSigInvalidValue" SG_ 600 AVSErrorSt 0;
+BA_ "GenSigInactiveValue" SG_ 600 AVSErrorSt 0;
+BA_ "GenSigStartValue" SG_ 600 AVSErrorSt 0;
+BA_ "GenSigSendType" SG_ 600 AVSErrorSt 0;
+BA_ "GenSigInvalidValue" SG_ 600 AVSViewMode 0;
+BA_ "GenSigInactiveValue" SG_ 600 AVSViewMode 0;
+BA_ "GenSigStartValue" SG_ 600 AVSViewMode 0;
+BA_ "GenSigSendType" SG_ 600 AVSViewMode 0;
+BA_ "GenSigInvalidValue" SG_ 600 AVSViewtype 0;
+BA_ "GenSigInactiveValue" SG_ 600 AVSViewtype 0;
+BA_ "GenSigStartValue" SG_ 600 AVSViewtype 0;
+BA_ "GenSigSendType" SG_ 600 AVSViewtype 0;
+BA_ "GenSigInvalidValue" SG_ 600 AVSCameraErrorSt_Front 0;
+BA_ "GenSigInactiveValue" SG_ 600 AVSCameraErrorSt_Front 0;
+BA_ "GenSigStartValue" SG_ 600 AVSCameraErrorSt_Front 0;
+BA_ "GenSigSendType" SG_ 600 AVSCameraErrorSt_Front 0;
+BA_ "GenSigInvalidValue" SG_ 600 AVSCameraErrorSt_Rear 0;
+BA_ "GenSigInactiveValue" SG_ 600 AVSCameraErrorSt_Rear 0;
+BA_ "GenSigStartValue" SG_ 600 AVSCameraErrorSt_Rear 0;
+BA_ "GenSigSendType" SG_ 600 AVSCameraErrorSt_Rear 0;
+BA_ "GenSigInvalidValue" SG_ 600 AVSCameraErrorSt_Left 0;
+BA_ "GenSigInactiveValue" SG_ 600 AVSCameraErrorSt_Left 0;
+BA_ "GenSigStartValue" SG_ 600 AVSCameraErrorSt_Left 0;
+BA_ "GenSigSendType" SG_ 600 AVSCameraErrorSt_Left 0;
+BA_ "GenSigInvalidValue" SG_ 600 AVSCameraErrorSt_Right 0;
+BA_ "GenSigInactiveValue" SG_ 600 AVSCameraErrorSt_Right 0;
+BA_ "GenSigStartValue" SG_ 600 AVSCameraErrorSt_Right 0;
+BA_ "GenSigSendType" SG_ 600 AVSCameraErrorSt_Right 0;
+BA_ "GenSigInvalidValue" SG_ 600 LanguageTypeSt_AVS 0;
+BA_ "GenSigInactiveValue" SG_ 600 LanguageTypeSt_AVS 0;
+BA_ "GenSigStartValue" SG_ 600 LanguageTypeSt_AVS 0;
+BA_ "GenSigSendType" SG_ 600 LanguageTypeSt_AVS 0;
+BA_ "GenSigInvalidValue" SG_ 600 DynamicPGSSt_AVS 0;
+BA_ "GenSigInactiveValue" SG_ 600 DynamicPGSSt_AVS 0;
+BA_ "GenSigStartValue" SG_ 600 DynamicPGSSt_AVS 0;
+BA_ "GenSigSendType" SG_ 600 DynamicPGSSt_AVS 0;
+BA_ "GenSigInvalidValue" SG_ 600 MODSt_AVS 0;
+BA_ "GenSigInactiveValue" SG_ 600 MODSt_AVS 0;
+BA_ "GenSigStartValue" SG_ 600 MODSt_AVS 0;
+BA_ "GenSigSendType" SG_ 600 MODSt_AVS 0;
+BA_ "GenSigInvalidValue" SG_ 600 MODWarning_Front 0;
+BA_ "GenSigInactiveValue" SG_ 600 MODWarning_Front 0;
+BA_ "GenSigStartValue" SG_ 600 MODWarning_Front 0;
+BA_ "GenSigSendType" SG_ 600 MODWarning_Front 0;
+BA_ "GenSigInvalidValue" SG_ 600 MODWarning_Rear 0;
+BA_ "GenSigInactiveValue" SG_ 600 MODWarning_Rear 0;
+BA_ "GenSigStartValue" SG_ 600 MODWarning_Rear 0;
+BA_ "GenSigSendType" SG_ 600 MODWarning_Rear 0;
+BA_ "GenSigInvalidValue" SG_ 600 MODWarning_Left 0;
+BA_ "GenSigInactiveValue" SG_ 600 MODWarning_Left 0;
+BA_ "GenSigStartValue" SG_ 600 MODWarning_Left 0;
+BA_ "GenSigSendType" SG_ 600 MODWarning_Left 0;
+BA_ "GenSigInvalidValue" SG_ 600 MODWarning_Right 0;
+BA_ "GenSigInactiveValue" SG_ 600 MODWarning_Right 0;
+BA_ "GenSigStartValue" SG_ 600 MODWarning_Right 0;
+BA_ "GenSigSendType" SG_ 600 MODWarning_Right 0;
+BA_ "GenSigInvalidValue" SG_ 600 CTAWarning_Front 0;
+BA_ "GenSigInactiveValue" SG_ 600 CTAWarning_Front 0;
+BA_ "GenSigStartValue" SG_ 600 CTAWarning_Front 0;
+BA_ "GenSigSendType" SG_ 600 CTAWarning_Front 0;
+BA_ "GenSigInvalidValue" SG_ 600 CTAWarning_Rear 0;
+BA_ "GenSigInactiveValue" SG_ 600 CTAWarning_Rear 0;
+BA_ "GenSigStartValue" SG_ 600 CTAWarning_Rear 0;
+BA_ "GenSigSendType" SG_ 600 CTAWarning_Rear 0;
+BA_ "GenSigInvalidValue" SG_ 600 SwitchScreenRequest_AVS 0;
+BA_ "GenSigInactiveValue" SG_ 600 SwitchScreenRequest_AVS 0;
+BA_ "GenSigStartValue" SG_ 600 SwitchScreenRequest_AVS 0;
+BA_ "GenSigSendType" SG_ 600 SwitchScreenRequest_AVS 0;
+BA_ "GenSigInvalidValue" SG_ 600 AVS_SpeechControlFeedback 0;
+BA_ "GenSigInactiveValue" SG_ 600 AVS_SpeechControlFeedback 0;
+BA_ "GenSigStartValue" SG_ 600 AVS_SpeechControlFeedback 0;
+BA_ "GenSigSendType" SG_ 600 AVS_SpeechControlFeedback 0;
+BA_ "GenSigInvalidValue" SG_ 595 Checksum_ADV_5 0;
+BA_ "GenSigInactiveValue" SG_ 595 Checksum_ADV_5 0;
+BA_ "GenSigStartValue" SG_ 595 Checksum_ADV_5 0;
+BA_ "GenSigSendType" SG_ 595 Checksum_ADV_5 0;
+BA_ "GenSigInvalidValue" SG_ 595 ADV_AVPNaviAvaialble 0;
+BA_ "GenSigInactiveValue" SG_ 595 ADV_AVPNaviAvaialble 0;
+BA_ "GenSigStartValue" SG_ 595 ADV_AVPNaviAvaialble 0;
+BA_ "GenSigSendType" SG_ 595 ADV_AVPNaviAvaialble 0;
+BA_ "GenSigInvalidValue" SG_ 595 ADV_AVPParkInAvaialble 0;
+BA_ "GenSigInactiveValue" SG_ 595 ADV_AVPParkInAvaialble 0;
+BA_ "GenSigStartValue" SG_ 595 ADV_AVPParkInAvaialble 0;
+BA_ "GenSigSendType" SG_ 595 ADV_AVPParkInAvaialble 0;
+BA_ "GenSigInvalidValue" SG_ 595 ADV_AVPParkOutAvaialble 0;
+BA_ "GenSigInactiveValue" SG_ 595 ADV_AVPParkOutAvaialble 0;
+BA_ "GenSigStartValue" SG_ 595 ADV_AVPParkOutAvaialble 0;
+BA_ "GenSigSendType" SG_ 595 ADV_AVPParkOutAvaialble 0;
+BA_ "GenSigInvalidValue" SG_ 595 ADV_HPANaviAvaialble 0;
+BA_ "GenSigInactiveValue" SG_ 595 ADV_HPANaviAvaialble 0;
+BA_ "GenSigStartValue" SG_ 595 ADV_HPANaviAvaialble 0;
+BA_ "GenSigSendType" SG_ 595 ADV_HPANaviAvaialble 0;
+BA_ "GenSigInvalidValue" SG_ 595 ADV_HPAParkInAvaialble 0;
+BA_ "GenSigInactiveValue" SG_ 595 ADV_HPAParkInAvaialble 0;
+BA_ "GenSigStartValue" SG_ 595 ADV_HPAParkInAvaialble 0;
+BA_ "GenSigSendType" SG_ 595 ADV_HPAParkInAvaialble 0;
+BA_ "GenSigInvalidValue" SG_ 595 ADV_HPAParkOutAvaialble 0;
+BA_ "GenSigInactiveValue" SG_ 595 ADV_HPAParkOutAvaialble 0;
+BA_ "GenSigStartValue" SG_ 595 ADV_HPAParkOutAvaialble 0;
+BA_ "GenSigSendType" SG_ 595 ADV_HPAParkOutAvaialble 0;
+BA_ "GenSigInvalidValue" SG_ 595 LiveCounter_ADV_5 0;
+BA_ "GenSigInactiveValue" SG_ 595 LiveCounter_ADV_5 0;
+BA_ "GenSigStartValue" SG_ 595 LiveCounter_ADV_5 0;
+BA_ "GenSigSendType" SG_ 595 LiveCounter_ADV_5 0;
+BA_ "GenSigInvalidValue" SG_ 592 Checksum_ADV_1 0;
+BA_ "GenSigInactiveValue" SG_ 592 Checksum_ADV_1 0;
+BA_ "GenSigStartValue" SG_ 592 Checksum_ADV_1 0;
+BA_ "GenSigSendType" SG_ 592 Checksum_ADV_1 0;
+BA_ "GenSigInvalidValue" SG_ 592 ADV_ParkStatus 0;
+BA_ "GenSigInactiveValue" SG_ 592 ADV_ParkStatus 0;
+BA_ "GenSigStartValue" SG_ 592 ADV_ParkStatus 0;
+BA_ "GenSigSendType" SG_ 592 ADV_ParkStatus 0;
+BA_ "GenSigInvalidValue" SG_ 592 LiveCounter_ADV_1 0;
+BA_ "GenSigInactiveValue" SG_ 592 LiveCounter_ADV_1 0;
+BA_ "GenSigStartValue" SG_ 592 LiveCounter_ADV_1 0;
+BA_ "GenSigSendType" SG_ 592 LiveCounter_ADV_1 0;
+BA_ "GenSigInvalidValue" SG_ 586 DoorLockSt_FL 0;
+BA_ "GenSigInactiveValue" SG_ 586 DoorLockSt_FL 0;
+BA_ "GenSigStartValue" SG_ 586 DoorLockSt_FL 0;
+BA_ "GenSigSendType" SG_ 586 DoorLockSt_FL 0;
+BA_ "GenSigInvalidValue" SG_ 586 DoorSt_FL 0;
+BA_ "GenSigInactiveValue" SG_ 586 DoorSt_FL 0;
+BA_ "GenSigStartValue" SG_ 586 DoorSt_FL 0;
+BA_ "GenSigSendType" SG_ 586 DoorSt_FL 0;
+BA_ "GenSigInvalidValue" SG_ 583 SeatVentInd_RL 0;
+BA_ "GenSigInactiveValue" SG_ 583 SeatVentInd_RL 0;
+BA_ "GenSigStartValue" SG_ 583 SeatVentInd_RL 0;
+BA_ "GenSigSendType" SG_ 583 SeatVentInd_RL 0;
+BA_ "GenSigInvalidValue" SG_ 583 SeatVentInd_RR 0;
+BA_ "GenSigInactiveValue" SG_ 583 SeatVentInd_RR 0;
+BA_ "GenSigStartValue" SG_ 583 SeatVentInd_RR 0;
+BA_ "GenSigSendType" SG_ 583 SeatVentInd_RR 0;
+BA_ "GenSigInvalidValue" SG_ 583 SeatMassageModeInd_FL 0;
+BA_ "GenSigInactiveValue" SG_ 583 SeatMassageModeInd_FL 0;
+BA_ "GenSigStartValue" SG_ 583 SeatMassageModeInd_FL 0;
+BA_ "GenSigSendType" SG_ 583 SeatMassageModeInd_FL 0;
+BA_ "GenSigInvalidValue" SG_ 583 SeatMassageModeInd_FR 0;
+BA_ "GenSigInactiveValue" SG_ 583 SeatMassageModeInd_FR 0;
+BA_ "GenSigStartValue" SG_ 583 SeatMassageModeInd_FR 0;
+BA_ "GenSigSendType" SG_ 583 SeatMassageModeInd_FR 0;
+BA_ "GenSigInvalidValue" SG_ 583 SeatMassageModeInd_RL 0;
+BA_ "GenSigInactiveValue" SG_ 583 SeatMassageModeInd_RL 0;
+BA_ "GenSigStartValue" SG_ 583 SeatMassageModeInd_RL 0;
+BA_ "GenSigSendType" SG_ 583 SeatMassageModeInd_RL 0;
+BA_ "GenSigInvalidValue" SG_ 583 SeatMassageModeInd_RR 0;
+BA_ "GenSigInactiveValue" SG_ 583 SeatMassageModeInd_RR 0;
+BA_ "GenSigStartValue" SG_ 583 SeatMassageModeInd_RR 0;
+BA_ "GenSigSendType" SG_ 583 SeatMassageModeInd_RR 0;
+BA_ "GenSigInvalidValue" SG_ 583 SeatMassageLevelInd_FL 0;
+BA_ "GenSigInactiveValue" SG_ 583 SeatMassageLevelInd_FL 0;
+BA_ "GenSigStartValue" SG_ 583 SeatMassageLevelInd_FL 0;
+BA_ "GenSigSendType" SG_ 583 SeatMassageLevelInd_FL 0;
+BA_ "GenSigInvalidValue" SG_ 583 SeatMassageLevelInd_FR 0;
+BA_ "GenSigInactiveValue" SG_ 583 SeatMassageLevelInd_FR 0;
+BA_ "GenSigStartValue" SG_ 583 SeatMassageLevelInd_FR 0;
+BA_ "GenSigSendType" SG_ 583 SeatMassageLevelInd_FR 0;
+BA_ "GenSigInvalidValue" SG_ 583 SeatMassageLevelInd_RL 0;
+BA_ "GenSigInactiveValue" SG_ 583 SeatMassageLevelInd_RL 0;
+BA_ "GenSigStartValue" SG_ 583 SeatMassageLevelInd_RL 0;
+BA_ "GenSigSendType" SG_ 583 SeatMassageLevelInd_RL 0;
+BA_ "GenSigInvalidValue" SG_ 583 SeatMassageLevelInd_RR 0;
+BA_ "GenSigInactiveValue" SG_ 583 SeatMassageLevelInd_RR 0;
+BA_ "GenSigStartValue" SG_ 583 SeatMassageLevelInd_RR 0;
+BA_ "GenSigSendType" SG_ 583 SeatMassageLevelInd_RR 0;
+BA_ "GenSigInvalidValue" SG_ 583 SeatMassageFuncInd_FL 0;
+BA_ "GenSigInactiveValue" SG_ 583 SeatMassageFuncInd_FL 0;
+BA_ "GenSigStartValue" SG_ 583 SeatMassageFuncInd_FL 0;
+BA_ "GenSigSendType" SG_ 583 SeatMassageFuncInd_FL 0;
+BA_ "GenSigInvalidValue" SG_ 583 SeatMassageFuncInd_FR 0;
+BA_ "GenSigInactiveValue" SG_ 583 SeatMassageFuncInd_FR 0;
+BA_ "GenSigStartValue" SG_ 583 SeatMassageFuncInd_FR 0;
+BA_ "GenSigSendType" SG_ 583 SeatMassageFuncInd_FR 0;
+BA_ "GenSigInvalidValue" SG_ 583 SeatMassageFuncInd_RL 0;
+BA_ "GenSigInactiveValue" SG_ 583 SeatMassageFuncInd_RL 0;
+BA_ "GenSigStartValue" SG_ 583 SeatMassageFuncInd_RL 0;
+BA_ "GenSigSendType" SG_ 583 SeatMassageFuncInd_RL 0;
+BA_ "GenSigInvalidValue" SG_ 583 SeatMassageFuncInd_RR 0;
+BA_ "GenSigInactiveValue" SG_ 583 SeatMassageFuncInd_RR 0;
+BA_ "GenSigStartValue" SG_ 583 SeatMassageFuncInd_RR 0;
+BA_ "GenSigSendType" SG_ 583 SeatMassageFuncInd_RR 0;
+BA_ "GenSigInvalidValue" SG_ 582 SeatVentInd_FL 0;
+BA_ "GenSigInactiveValue" SG_ 582 SeatVentInd_FL 0;
+BA_ "GenSigStartValue" SG_ 582 SeatVentInd_FL 0;
+BA_ "GenSigSendType" SG_ 582 SeatVentInd_FL 0;
+BA_ "GenSigInvalidValue" SG_ 582 SeatVentInd_FR 0;
+BA_ "GenSigInactiveValue" SG_ 582 SeatVentInd_FR 0;
+BA_ "GenSigStartValue" SG_ 582 SeatVentInd_FR 0;
+BA_ "GenSigSendType" SG_ 582 SeatVentInd_FR 0;
+BA_ "GenSigInvalidValue" SG_ 582 SeatheatInd_FL 0;
+BA_ "GenSigInactiveValue" SG_ 582 SeatheatInd_FL 0;
+BA_ "GenSigStartValue" SG_ 582 SeatheatInd_FL 0;
+BA_ "GenSigSendType" SG_ 582 SeatheatInd_FL 0;
+BA_ "GenSigInvalidValue" SG_ 582 SeatheatInd_FR 0;
+BA_ "GenSigInactiveValue" SG_ 582 SeatheatInd_FR 0;
+BA_ "GenSigStartValue" SG_ 582 SeatheatInd_FR 0;
+BA_ "GenSigSendType" SG_ 582 SeatheatInd_FR 0;
+BA_ "GenSigInvalidValue" SG_ 582 SeatheatInd_RL 0;
+BA_ "GenSigInactiveValue" SG_ 582 SeatheatInd_RL 0;
+BA_ "GenSigStartValue" SG_ 582 SeatheatInd_RL 0;
+BA_ "GenSigSendType" SG_ 582 SeatheatInd_RL 0;
+BA_ "GenSigInvalidValue" SG_ 582 SeatheatInd_RR 0;
+BA_ "GenSigInactiveValue" SG_ 582 SeatheatInd_RR 0;
+BA_ "GenSigStartValue" SG_ 582 SeatheatInd_RR 0;
+BA_ "GenSigSendType" SG_ 582 SeatheatInd_RR 0;
+BA_ "GenSigInvalidValue" SG_ 581 SeatPostionMemoryResult_PSCU 0;
+BA_ "GenSigInactiveValue" SG_ 581 SeatPostionMemoryResult_PSCU 0;
+BA_ "GenSigStartValue" SG_ 581 SeatPostionMemoryResult_PSCU 0;
+BA_ "GenSigSendType" SG_ 581 SeatPostionMemoryResult_PSCU 0;
+BA_ "GenSigInvalidValue" SG_ 581 MemoryMode_PSCU 0;
+BA_ "GenSigInactiveValue" SG_ 581 MemoryMode_PSCU 0;
+BA_ "GenSigStartValue" SG_ 581 MemoryMode_PSCU 0;
+BA_ "GenSigSendType" SG_ 581 MemoryMode_PSCU 0;
+BA_ "GenSigInvalidValue" SG_ 580 MemoryMode_DSCU 0;
+BA_ "GenSigInactiveValue" SG_ 580 MemoryMode_DSCU 0;
+BA_ "GenSigStartValue" SG_ 580 MemoryMode_DSCU 0;
+BA_ "GenSigSendType" SG_ 580 MemoryMode_DSCU 0;
+BA_ "GenSigInvalidValue" SG_ 578 LuggageDoorSt 0;
+BA_ "GenSigInactiveValue" SG_ 578 LuggageDoorSt 0;
+BA_ "GenSigStartValue" SG_ 578 LuggageDoorSt 0;
+BA_ "GenSigSendType" SG_ 578 LuggageDoorSt 0;
+BA_ "GenSigInvalidValue" SG_ 578 LuggageDoorWorkingSt 0;
+BA_ "GenSigInactiveValue" SG_ 578 LuggageDoorWorkingSt 0;
+BA_ "GenSigStartValue" SG_ 578 LuggageDoorWorkingSt 0;
+BA_ "GenSigSendType" SG_ 578 LuggageDoorWorkingSt 0;
+BA_ "GenSigInvalidValue" SG_ 576 RearWindowHeatingStatus 0;
+BA_ "GenSigInactiveValue" SG_ 576 RearWindowHeatingStatus 0;
+BA_ "GenSigStartValue" SG_ 576 RearWindowHeatingStatus 0;
+BA_ "GenSigSendType" SG_ 576 RearWindowHeatingStatus 0;
+BA_ "GenSigInvalidValue" SG_ 566 WorkingStatus_SMA 3;
+BA_ "GenSigInactiveValue" SG_ 566 WorkingStatus_SMA 0;
+BA_ "GenSigStartValue" SG_ 566 WorkingStatus_SMA 0;
+BA_ "GenSigSendType" SG_ 566 WorkingStatus_SMA 0;
+BA_ "GenSigInvalidValue" SG_ 566 WorkingStatus_SSM 3;
+BA_ "GenSigInactiveValue" SG_ 566 WorkingStatus_SSM 0;
+BA_ "GenSigStartValue" SG_ 566 WorkingStatus_SSM 0;
+BA_ "GenSigSendType" SG_ 566 WorkingStatus_SSM 0;
+BA_ "GenSigInvalidValue" SG_ 564 SunShadeSt 0;
+BA_ "GenSigInactiveValue" SG_ 564 SunShadeSt 0;
+BA_ "GenSigStartValue" SG_ 564 SunShadeSt 0;
+BA_ "GenSigSendType" SG_ 564 SunShadeSt 0;
+BA_ "GenSigInvalidValue" SG_ 564 SunroofSt 0;
+BA_ "GenSigInactiveValue" SG_ 564 SunroofSt 0;
+BA_ "GenSigStartValue" SG_ 564 SunroofSt 0;
+BA_ "GenSigSendType" SG_ 564 SunroofSt 0;
+BA_ "GenSigInvalidValue" SG_ 564 CurrentPosition_SMA 0;
+BA_ "GenSigInactiveValue" SG_ 564 CurrentPosition_SMA 0;
+BA_ "GenSigStartValue" SG_ 564 CurrentPosition_SMA 0;
+BA_ "GenSigSendType" SG_ 564 CurrentPosition_SMA 0;
+BA_ "GenSigInvalidValue" SG_ 564 MemoryRemind 0;
+BA_ "GenSigInactiveValue" SG_ 564 MemoryRemind 0;
+BA_ "GenSigStartValue" SG_ 564 MemoryRemind 0;
+BA_ "GenSigSendType" SG_ 564 MemoryRemind 0;
+BA_ "GenSigInvalidValue" SG_ 564 MemoryMode 0;
+BA_ "GenSigInactiveValue" SG_ 564 MemoryMode 0;
+BA_ "GenSigStartValue" SG_ 564 MemoryMode 0;
+BA_ "GenSigSendType" SG_ 564 MemoryMode 0;
+BA_ "GenSigInvalidValue" SG_ 564 CurrentPosition_SSM 0;
+BA_ "GenSigInactiveValue" SG_ 564 CurrentPosition_SSM 0;
+BA_ "GenSigStartValue" SG_ 564 CurrentPosition_SSM 0;
+BA_ "GenSigSendType" SG_ 564 CurrentPosition_SSM 0;
+BA_ "GenSigInvalidValue" SG_ 562 PowerMode 0;
+BA_ "GenSigInactiveValue" SG_ 562 PowerMode 0;
+BA_ "GenSigStartValue" SG_ 562 PowerMode 0;
+BA_ "GenSigSendType" SG_ 562 PowerMode 0;
+BA_ "GenSigInvalidValue" SG_ 561 BCM_ExternalAutoDEFSetInd 0;
+BA_ "GenSigInactiveValue" SG_ 561 BCM_ExternalAutoDEFSetInd 0;
+BA_ "GenSigStartValue" SG_ 561 BCM_ExternalAutoDEFSetInd 0;
+BA_ "GenSigSendType" SG_ 561 BCM_ExternalAutoDEFSetInd 0;
+BA_ "GenSigInvalidValue" SG_ 561 BCM_ExternalAutoDEFSt 0;
+BA_ "GenSigInactiveValue" SG_ 561 BCM_ExternalAutoDEFSt 0;
+BA_ "GenSigStartValue" SG_ 561 BCM_ExternalAutoDEFSt 0;
+BA_ "GenSigSendType" SG_ 561 BCM_ExternalAutoDEFSt 0;
+BA_ "GenSigInvalidValue" SG_ 561 BCM_FragranceTime 0;
+BA_ "GenSigInactiveValue" SG_ 561 BCM_FragranceTime 0;
+BA_ "GenSigStartValue" SG_ 561 BCM_FragranceTime 0;
+BA_ "GenSigSendType" SG_ 561 BCM_FragranceTime 0;
+BA_ "GenSigInvalidValue" SG_ 561 BCM_FragranceWorkingStatus 0;
+BA_ "GenSigInactiveValue" SG_ 561 BCM_FragranceWorkingStatus 0;
+BA_ "GenSigStartValue" SG_ 561 BCM_FragranceWorkingStatus 0;
+BA_ "GenSigSendType" SG_ 561 BCM_FragranceWorkingStatus 0;
+BA_ "GenSigInvalidValue" SG_ 561 BCM_FragranceAutoFunctionStatu_s 0;
+BA_ "GenSigInactiveValue" SG_ 561 BCM_FragranceAutoFunctionStatu_s 0;
+BA_ "GenSigStartValue" SG_ 561 BCM_FragranceAutoFunctionStatu_s 0;
+BA_ "GenSigSendType" SG_ 561 BCM_FragranceAutoFunctionStatu_s 0;
+BA_ "GenSigInvalidValue" SG_ 561 BCM_FragranceType 0;
+BA_ "GenSigInactiveValue" SG_ 561 BCM_FragranceType 0;
+BA_ "GenSigStartValue" SG_ 561 BCM_FragranceType 0;
+BA_ "GenSigSendType" SG_ 561 BCM_FragranceType 0;
+BA_ "GenSigInvalidValue" SG_ 561 BCM_FragranceConcentration 0;
+BA_ "GenSigInactiveValue" SG_ 561 BCM_FragranceConcentration 0;
+BA_ "GenSigStartValue" SG_ 561 BCM_FragranceConcentration 0;
+BA_ "GenSigSendType" SG_ 561 BCM_FragranceConcentration 0;
+BA_ "GenSigInvalidValue" SG_ 561 BCM_FragranceErrorSt 0;
+BA_ "GenSigInactiveValue" SG_ 561 BCM_FragranceErrorSt 0;
+BA_ "GenSigStartValue" SG_ 561 BCM_FragranceErrorSt 0;
+BA_ "GenSigSendType" SG_ 561 BCM_FragranceErrorSt 0;
+BA_ "GenSigInvalidValue" SG_ 561 BCM_FragrancePreparationLack_T_y 0;
+BA_ "GenSigInactiveValue" SG_ 561 BCM_FragrancePreparationLack_T_y 0;
+BA_ "GenSigStartValue" SG_ 561 BCM_FragrancePreparationLack_T_y 0;
+BA_ "GenSigSendType" SG_ 561 BCM_FragrancePreparationLack_T_y 0;
+BA_ "SystemSignalLongSymbol" SG_ 561 BCM_FragrancePreparationLack_T_y "BCM_FragrancePreparationLack_T_ype1";
+BA_ "GenSigInvalidValue" SG_ 561 BCM_FragrancePreparationLac_0000 0;
+BA_ "GenSigInactiveValue" SG_ 561 BCM_FragrancePreparationLac_0000 0;
+BA_ "GenSigStartValue" SG_ 561 BCM_FragrancePreparationLac_0000 0;
+BA_ "GenSigSendType" SG_ 561 BCM_FragrancePreparationLac_0000 0;
+BA_ "SystemSignalLongSymbol" SG_ 561 BCM_FragrancePreparationLac_0000 "BCM_FragrancePreparationLack_T_ype2";
+BA_ "GenSigInvalidValue" SG_ 561 BCM_FragrancePreparationLac_0001 0;
+BA_ "GenSigInactiveValue" SG_ 561 BCM_FragrancePreparationLac_0001 0;
+BA_ "GenSigStartValue" SG_ 561 BCM_FragrancePreparationLac_0001 0;
+BA_ "GenSigSendType" SG_ 561 BCM_FragrancePreparationLac_0001 0;
+BA_ "SystemSignalLongSymbol" SG_ 561 BCM_FragrancePreparationLac_0001 "BCM_FragrancePreparationLack_T_ype3";
+BA_ "GenSigInvalidValue" SG_ 561 BCM_FragrancePreparationLac_0002 0;
+BA_ "GenSigInactiveValue" SG_ 561 BCM_FragrancePreparationLac_0002 0;
+BA_ "GenSigStartValue" SG_ 561 BCM_FragrancePreparationLac_0002 0;
+BA_ "GenSigSendType" SG_ 561 BCM_FragrancePreparationLac_0002 0;
+BA_ "SystemSignalLongSymbol" SG_ 561 BCM_FragrancePreparationLac_0002 "BCM_FragrancePreparationLack_T_ype4";
+BA_ "GenSigInvalidValue" SG_ 561 BCM_SteeringWheelheatInd 0;
+BA_ "GenSigInactiveValue" SG_ 561 BCM_SteeringWheelheatInd 0;
+BA_ "GenSigStartValue" SG_ 561 BCM_SteeringWheelheatInd 0;
+BA_ "GenSigSendType" SG_ 561 BCM_SteeringWheelheatInd 0;
+BA_ "GenSigInvalidValue" SG_ 560 PositionLightSt 0;
+BA_ "GenSigInactiveValue" SG_ 560 PositionLightSt 0;
+BA_ "GenSigStartValue" SG_ 560 PositionLightSt 0;
+BA_ "GenSigSendType" SG_ 560 PositionLightSt 0;
+BA_ "GenSigInvalidValue" SG_ 560 LowBeamSt 0;
+BA_ "GenSigInactiveValue" SG_ 560 LowBeamSt 0;
+BA_ "GenSigStartValue" SG_ 560 LowBeamSt 0;
+BA_ "GenSigSendType" SG_ 560 LowBeamSt 0;
+BA_ "GenSigInvalidValue" SG_ 560 HighBeamSt 0;
+BA_ "GenSigInactiveValue" SG_ 560 HighBeamSt 0;
+BA_ "GenSigStartValue" SG_ 560 HighBeamSt 0;
+BA_ "GenSigSendType" SG_ 560 HighBeamSt 0;
+BA_ "GenSigInvalidValue" SG_ 552 IONSt 0;
+BA_ "GenSigInactiveValue" SG_ 552 IONSt 0;
+BA_ "GenSigStartValue" SG_ 552 IONSt 0;
+BA_ "GenSigSendType" SG_ 552 IONSt 0;
+BA_ "GenSigInvalidValue" SG_ 552 AQSt 0;
+BA_ "GenSigInactiveValue" SG_ 552 AQSt 0;
+BA_ "GenSigStartValue" SG_ 552 AQSt 0;
+BA_ "GenSigSendType" SG_ 552 AQSt 0;
+BA_ "GenSigInvalidValue" SG_ 552 NaturalAirinessSt 0;
+BA_ "GenSigInactiveValue" SG_ 552 NaturalAirinessSt 0;
+BA_ "GenSigStartValue" SG_ 552 NaturalAirinessSt 0;
+BA_ "GenSigSendType" SG_ 552 NaturalAirinessSt 0;
+BA_ "GenSigInvalidValue" SG_ 552 PM25SensorFan_ErrorSt 0;
+BA_ "GenSigInactiveValue" SG_ 552 PM25SensorFan_ErrorSt 0;
+BA_ "GenSigStartValue" SG_ 552 PM25SensorFan_ErrorSt 0;
+BA_ "GenSigSendType" SG_ 552 PM25SensorFan_ErrorSt 0;
+BA_ "GenSigInvalidValue" SG_ 552 PM25Data 0;
+BA_ "GenSigInactiveValue" SG_ 552 PM25Data 0;
+BA_ "GenSigStartValue" SG_ 552 PM25Data 1022;
+BA_ "GenSigSendType" SG_ 552 PM25Data 0;
+BA_ "GenSigInvalidValue" SG_ 552 PM25St 0;
+BA_ "GenSigInactiveValue" SG_ 552 PM25St 0;
+BA_ "GenSigStartValue" SG_ 552 PM25St 0;
+BA_ "GenSigSendType" SG_ 552 PM25St 0;
+BA_ "GenSigInvalidValue" SG_ 552 PM25Color 0;
+BA_ "GenSigInactiveValue" SG_ 552 PM25Color 0;
+BA_ "GenSigStartValue" SG_ 552 PM25Color 0;
+BA_ "GenSigSendType" SG_ 552 PM25Color 0;
+BA_ "GenSigInvalidValue" SG_ 552 ExpectTemp_RearLeft 0;
+BA_ "GenSigInactiveValue" SG_ 552 ExpectTemp_RearLeft 0;
+BA_ "GenSigStartValue" SG_ 552 ExpectTemp_RearLeft 0;
+BA_ "GenSigSendType" SG_ 552 ExpectTemp_RearLeft 0;
+BA_ "GenSigInvalidValue" SG_ 552 ExpectTemp_RearRight 0;
+BA_ "GenSigInactiveValue" SG_ 552 ExpectTemp_RearRight 0;
+BA_ "GenSigStartValue" SG_ 552 ExpectTemp_RearRight 0;
+BA_ "GenSigSendType" SG_ 552 ExpectTemp_RearRight 0;
+BA_ "GenSigInvalidValue" SG_ 552 BlowMode_Rear 0;
+BA_ "GenSigInactiveValue" SG_ 552 BlowMode_Rear 0;
+BA_ "GenSigStartValue" SG_ 552 BlowMode_Rear 0;
+BA_ "GenSigSendType" SG_ 552 BlowMode_Rear 0;
+BA_ "GenSigInvalidValue" SG_ 552 AutoMode_R 0;
+BA_ "GenSigInactiveValue" SG_ 552 AutoMode_R 0;
+BA_ "GenSigStartValue" SG_ 552 AutoMode_R 0;
+BA_ "GenSigSendType" SG_ 552 AutoMode_R 0;
+BA_ "GenSigInvalidValue" SG_ 547 AutoMode_RR 0;
+BA_ "GenSigInactiveValue" SG_ 547 AutoMode_RR 0;
+BA_ "GenSigStartValue" SG_ 547 AutoMode_RR 0;
+BA_ "GenSigSendType" SG_ 547 AutoMode_RR 0;
+BA_ "GenSigInvalidValue" SG_ 547 RearRearBlowLevel 0;
+BA_ "GenSigInactiveValue" SG_ 547 RearRearBlowLevel 0;
+BA_ "GenSigStartValue" SG_ 547 RearRearBlowLevel 0;
+BA_ "GenSigSendType" SG_ 547 RearRearBlowLevel 0;
+BA_ "GenSigInvalidValue" SG_ 547 WorkingSt_AC_RR 0;
+BA_ "GenSigInactiveValue" SG_ 547 WorkingSt_AC_RR 0;
+BA_ "GenSigStartValue" SG_ 547 WorkingSt_AC_RR 0;
+BA_ "GenSigSendType" SG_ 547 WorkingSt_AC_RR 0;
+BA_ "GenSigInvalidValue" SG_ 547 ExpectTemp_RearRearLeft 0;
+BA_ "GenSigInactiveValue" SG_ 547 ExpectTemp_RearRearLeft 0;
+BA_ "GenSigStartValue" SG_ 547 ExpectTemp_RearRearLeft 0;
+BA_ "GenSigSendType" SG_ 547 ExpectTemp_RearRearLeft 0;
+BA_ "GenSigInvalidValue" SG_ 547 ExpectTemp_RearRearRight 0;
+BA_ "GenSigInactiveValue" SG_ 547 ExpectTemp_RearRearRight 0;
+BA_ "GenSigStartValue" SG_ 547 ExpectTemp_RearRearRight 0;
+BA_ "GenSigSendType" SG_ 547 ExpectTemp_RearRearRight 0;
+BA_ "GenSigInvalidValue" SG_ 547 BlowMode_RearRear 0;
+BA_ "GenSigInactiveValue" SG_ 547 BlowMode_RearRear 0;
+BA_ "GenSigStartValue" SG_ 547 BlowMode_RearRear 0;
+BA_ "GenSigSendType" SG_ 547 BlowMode_RearRear 0;
+BA_ "GenSigInvalidValue" SG_ 546 ExpectTemp_Left 0;
+BA_ "GenSigInactiveValue" SG_ 546 ExpectTemp_Left 0;
+BA_ "GenSigStartValue" SG_ 546 ExpectTemp_Left 0;
+BA_ "GenSigSendType" SG_ 546 ExpectTemp_Left 0;
+BA_ "GenSigInvalidValue" SG_ 546 WorkingSt_AC 0;
+BA_ "GenSigInactiveValue" SG_ 546 WorkingSt_AC 0;
+BA_ "GenSigStartValue" SG_ 546 WorkingSt_AC 0;
+BA_ "GenSigSendType" SG_ 546 WorkingSt_AC 0;
+BA_ "GenSigInvalidValue" SG_ 546 AutoMode 0;
+BA_ "GenSigInactiveValue" SG_ 546 AutoMode 0;
+BA_ "GenSigStartValue" SG_ 546 AutoMode 0;
+BA_ "GenSigSendType" SG_ 546 AutoMode 0;
+BA_ "GenSigInvalidValue" SG_ 546 ExpectTemp_Right 0;
+BA_ "GenSigInactiveValue" SG_ 546 ExpectTemp_Right 0;
+BA_ "GenSigStartValue" SG_ 546 ExpectTemp_Right 0;
+BA_ "GenSigSendType" SG_ 546 ExpectTemp_Right 0;
+BA_ "GenSigInvalidValue" SG_ 546 SyncMode 0;
+BA_ "GenSigInactiveValue" SG_ 546 SyncMode 0;
+BA_ "GenSigStartValue" SG_ 546 SyncMode 0;
+BA_ "GenSigSendType" SG_ 546 SyncMode 0;
+BA_ "GenSigInvalidValue" SG_ 546 DEFMode 0;
+BA_ "GenSigInactiveValue" SG_ 546 DEFMode 0;
+BA_ "GenSigStartValue" SG_ 546 DEFMode 0;
+BA_ "GenSigSendType" SG_ 546 DEFMode 0;
+BA_ "GenSigInvalidValue" SG_ 546 BlowLevel 0;
+BA_ "GenSigInactiveValue" SG_ 546 BlowLevel 0;
+BA_ "GenSigStartValue" SG_ 546 BlowLevel 0;
+BA_ "GenSigSendType" SG_ 546 BlowLevel 0;
+BA_ "GenSigInvalidValue" SG_ 546 AmbientTemp 0;
+BA_ "GenSigInactiveValue" SG_ 546 AmbientTemp 0;
+BA_ "GenSigStartValue" SG_ 546 AmbientTemp 0;
+BA_ "GenSigSendType" SG_ 546 AmbientTemp 0;
+BA_ "GenSigInvalidValue" SG_ 546 FRSRECMode 0;
+BA_ "GenSigInactiveValue" SG_ 546 FRSRECMode 0;
+BA_ "GenSigStartValue" SG_ 546 FRSRECMode 0;
+BA_ "GenSigSendType" SG_ 546 FRSRECMode 0;
+BA_ "GenSigInvalidValue" SG_ 546 ADSSt 0;
+BA_ "GenSigInactiveValue" SG_ 546 ADSSt 0;
+BA_ "GenSigStartValue" SG_ 546 ADSSt 0;
+BA_ "GenSigSendType" SG_ 546 ADSSt 0;
+BA_ "GenSigInvalidValue" SG_ 546 BlowMode_FL 0;
+BA_ "GenSigInactiveValue" SG_ 546 BlowMode_FL 0;
+BA_ "GenSigStartValue" SG_ 546 BlowMode_FL 0;
+BA_ "GenSigSendType" SG_ 546 BlowMode_FL 0;
+BA_ "GenSigInvalidValue" SG_ 546 BlowMode_FR 0;
+BA_ "GenSigInactiveValue" SG_ 546 BlowMode_FR 0;
+BA_ "GenSigStartValue" SG_ 546 BlowMode_FR 0;
+BA_ "GenSigSendType" SG_ 546 BlowMode_FR 0;
+BA_ "GenSigInvalidValue" SG_ 546 AutoMode_FR 0;
+BA_ "GenSigInactiveValue" SG_ 546 AutoMode_FR 0;
+BA_ "GenSigStartValue" SG_ 546 AutoMode_FR 0;
+BA_ "GenSigSendType" SG_ 546 AutoMode_FR 0;
+BA_ "GenSigInvalidValue" SG_ 546 InternalTemp 0;
+BA_ "GenSigInactiveValue" SG_ 546 InternalTemp 0;
+BA_ "GenSigStartValue" SG_ 546 InternalTemp 254;
+BA_ "GenSigSendType" SG_ 546 InternalTemp 0;
+BA_ "GenSigInvalidValue" SG_ 546 ADSData 0;
+BA_ "GenSigInactiveValue" SG_ 546 ADSData 0;
+BA_ "GenSigStartValue" SG_ 546 ADSData 0;
+BA_ "GenSigSendType" SG_ 546 ADSData 0;
+BA_ "GenSigInvalidValue" SG_ 306 Checksum_ESC_2_1 0;
+BA_ "GenSigInactiveValue" SG_ 306 Checksum_ESC_2_1 0;
+BA_ "GenSigStartValue" SG_ 306 Checksum_ESC_2_1 0;
+BA_ "GenSigSendType" SG_ 306 Checksum_ESC_2_1 0;
+BA_ "GenSigInvalidValue" SG_ 306 WorkingSt_ESC 0;
+BA_ "GenSigInactiveValue" SG_ 306 WorkingSt_ESC 0;
+BA_ "GenSigStartValue" SG_ 306 WorkingSt_ESC 1;
+BA_ "GenSigSendType" SG_ 306 WorkingSt_ESC 0;
+BA_ "GenSigInvalidValue" SG_ 306 WorkingSt_HDC 0;
+BA_ "GenSigInactiveValue" SG_ 306 WorkingSt_HDC 0;
+BA_ "GenSigStartValue" SG_ 306 WorkingSt_HDC 0;
+BA_ "GenSigSendType" SG_ 306 WorkingSt_HDC 0;
+BA_ "GenSigInvalidValue" SG_ 306 LiveCounter_ESC_2_1 0;
+BA_ "GenSigInactiveValue" SG_ 306 LiveCounter_ESC_2_1 0;
+BA_ "GenSigStartValue" SG_ 306 LiveCounter_ESC_2_1 0;
+BA_ "GenSigSendType" SG_ 306 LiveCounter_ESC_2_1 0;
+BA_ "GenSigInvalidValue" SG_ 290 Checksum_HCU_2_12 0;
+BA_ "GenSigInactiveValue" SG_ 290 Checksum_HCU_2_12 0;
+BA_ "GenSigStartValue" SG_ 290 Checksum_HCU_2_12 0;
+BA_ "GenSigSendType" SG_ 290 Checksum_HCU_2_12 0;
+BA_ "GenSigInvalidValue" SG_ 290 HCU_LeverInfo 0;
+BA_ "GenSigInactiveValue" SG_ 290 HCU_LeverInfo 0;
+BA_ "GenSigStartValue" SG_ 290 HCU_LeverInfo 5;
+BA_ "GenSigSendType" SG_ 290 HCU_LeverInfo 0;
+BA_ "GenSigInvalidValue" SG_ 290 Livecounter_HCU_2_12 0;
+BA_ "GenSigInactiveValue" SG_ 290 Livecounter_HCU_2_12 0;
+BA_ "GenSigStartValue" SG_ 290 Livecounter_HCU_2_12 0;
+BA_ "GenSigSendType" SG_ 290 Livecounter_HCU_2_12 0;
+BA_ "GenSigInvalidValue" SG_ 192 Checksum_ABS_1 0;
+BA_ "GenSigInactiveValue" SG_ 192 Checksum_ABS_1 0;
+BA_ "GenSigStartValue" SG_ 192 Checksum_ABS_1 0;
+BA_ "GenSigSendType" SG_ 192 Checksum_ABS_1 0;
+BA_ "GenSigInvalidValue" SG_ 192 VehicleSpeed 0;
+BA_ "GenSigInactiveValue" SG_ 192 VehicleSpeed 0;
+BA_ "GenSigStartValue" SG_ 192 VehicleSpeed 32766;
+BA_ "GenSigSendType" SG_ 192 VehicleSpeed 0;
+BA_ "GenSigInvalidValue" SG_ 192 LiveCounter_ABS_1 0;
+BA_ "GenSigInactiveValue" SG_ 192 LiveCounter_ABS_1 0;
+BA_ "GenSigStartValue" SG_ 192 LiveCounter_ABS_1 0;
+BA_ "GenSigSendType" SG_ 192 LiveCounter_ABS_1 0;
+BA_ "GenSigInvalidValue" SG_ 118 BCM1_FVSyncReq_FCP 0;
+BA_ "GenSigInactiveValue" SG_ 118 BCM1_FVSyncReq_FCP 0;
+BA_ "GenSigStartValue" SG_ 118 BCM1_FVSyncReq_FCP 0;
+BA_ "GenSigSendType" SG_ 118 BCM1_FVSyncReq_FCP 0;
+BA_ "GenSigInvalidValue" SG_ 117 FCP_Sync_MAC 0;
+BA_ "GenSigInactiveValue" SG_ 117 FCP_Sync_MAC 0;
+BA_ "GenSigStartValue" SG_ 117 FCP_Sync_MAC 0;
+BA_ "GenSigSendType" SG_ 117 FCP_Sync_MAC 0;
+BA_ "GenSigInvalidValue" SG_ 117 FCP_ResetCounter 0;
+BA_ "GenSigInactiveValue" SG_ 117 FCP_ResetCounter 0;
+BA_ "GenSigStartValue" SG_ 117 FCP_ResetCounter 0;
+BA_ "GenSigSendType" SG_ 117 FCP_ResetCounter 0;
+BA_ "GenSigInvalidValue" SG_ 117 FCP_TripCounter 0;
+BA_ "GenSigInactiveValue" SG_ 117 FCP_TripCounter 0;
+BA_ "GenSigStartValue" SG_ 117 FCP_TripCounter 0;
+BA_ "GenSigSendType" SG_ 117 FCP_TripCounter 0;
+VAL_ 756 FCP_PEPSSwitch 0 "Notpressed" 1 "Pressed" ;
+VAL_ 741 FCP_RLseatVentLevelSet 0 "Inactive" 1 "Off" 2 "Level1" 3 "Level2" 4 "Level3" 7 "Reserved" ;
+VAL_ 741 FCP_RRseatVentLevelSet 0 "Inactive" 1 "Off" 2 "Level1" 3 "Level2" 4 "Level3" 7 "Reserved" ;
+VAL_ 741 FCP_RLseatHeatLevelSet 0 "Inactive" 1 "Off" 2 "Level1" 3 "Level2" 4 "Level3" 7 "Reserved" ;
+VAL_ 741 FCP_RRseatHeatLevelSet 0 "Inactive" 1 "Off" 2 "Level1" 3 "Level2" 4 "Level3" 7 "Reserved" ;
+VAL_ 741 FCP_RLSeatLegRestAdj 0 "Inactive" 1 "Open" 2 "Close" 3 "Reserved" ;
+VAL_ 741 FCP_RRSeatLegRestAdj 0 "Inactive" 1 "Open" 2 "Close" 3 "Reserved" ;
+VAL_ 741 FCP_RLSeatBackendAdj 0 "Inactive" 1 "Forward" 2 "Backwardly" 3 "Reserved" ;
+VAL_ 741 FCP_RRSeatBackendAdj 0 "Inactive" 1 "Forward" 2 "Backwardly" 3 "Reserved" ;
+VAL_ 741 FCP_RLSeatHeadRestAdj 0 "Inactive" 1 "Upward" 2 "Downward" 7 "Reserved" ;
+VAL_ 741 FCP_RRSeatHeadRestAdj 0 "Inactive" 1 "Upward" 2 "Downward" 7 "Reserved" ;
+VAL_ 741 FCP_HalfLyingModeCtrlCmd_RL 0 "Inactive" 1 "HalfLyingMode" 2 "DefaultMode" 3 "Reserved" ;
+VAL_ 741 FCP_HalfLyingModeCtrlCmd_RR 0 "Inactive" 1 "HalfLyingMode" 2 "DefaultMode" 3 "Reserved" ;
+VAL_ 741 FCP_SunshadeMoveRequest 0 "Notpressed" 1 "Pressed-Close" 2 "Pressed-open" 3 "Reserved" ;
+VAL_ 741 FCP_SunRoofMoveRequest 0 "Notpressed" 1 "Pressed-Close" 2 "Pressed-open" 3 "Reserved" ;
+VAL_ 741 FCP_AssociativeMemoryCmd_Pos1 0 "Notpressed" 1 "Pressed" ;
+VAL_ 741 FCP_AssociativeMemoryCmd_Pos2 0 "Notpressed" 1 "Pressed" ;
+VAL_ 741 FCP_AssociativeMemoryCmd_Pos3 0 "Notpressed" 1 "Pressed" ;
+VAL_ 741 FCP_FRSeatMemoryCmd_Pos1 0 "Notpressed" 1 "Pressed" ;
+VAL_ 741 FCP_FRSeatMemoryCmd_Pos2 0 "Notpressed" 1 "Pressed" ;
+VAL_ 741 FCP_FRSeatMemoryCmd_Pos3 0 "Notpressed" 1 "Pressed" ;
+VAL_ 740 FCP_RearACAutoFunctionReq 0 "Inactive" 1 "Off" 2 "On" 3 "Reserved" ;
+VAL_ 740 FCP_RearBlowLevelFunctionSet 0 "Inactive" 1 "Level1" 2 "Level2" 3 "Level3" 4 "Level4" 5 "Level5" 6 "Level6" 7 "Level7" 15 "Reserved" ;
+VAL_ 740 FCP_RearLeftTempAdjFunctionRe 0 "Inactive" 1 "Up" 2 "Down" 3 "Reserved" ;
+VAL_ 740 FCP_RearRightTempAdjFunctionR_eq 0 "Inactive" 1 "Up" 2 "Down" 3 "Reserved" ;
+VAL_ 740 FCP_RearBlowModeSet 0 "Inactive" 1 "Face" 2 "B/L" 3 "Foot" 7 "Reserved" ;
+VAL_ 740 FCP_RearRearACAutoFunctionRe 0 "Inactive" 1 "Off" 2 "On" 3 "Reserved" ;
+VAL_ 740 FCP_RearRearACPowerReq 0 "Inactive" 1 "Off" 2 "On" 3 "Reserved" ;
+VAL_ 740 FCP_RearRearBlowLevelFunction_Se 0 "Inactive" 1 "Level1" 2 "Level2" 3 "Level3" 4 "Level4" 5 "Level5" 15 "Reserved" ;
+VAL_ 740 FCP_RearRearLeftTempAdjFunctionR 0 "Inactive" 1 "Up" 2 "Down" 3 "Reserved" ;
+VAL_ 740 FCP_RearRearRightTempAdjFunct_io 0 "Inactive" 1 "Up" 2 "Down" 3 "Reserved" ;
+VAL_ 740 FCP_RearRearBlowModeSet 0 "Inactive" 1 "Face" 2 "B/L" 3 "Foot" 7 "Reserved" ;
+VAL_ 740 FCP_RearRearLeftTempSet 0 "Inactive" 1 "Low" 2 "Medium1" 3 "Medium2" 4 "Medium3" 5 "Medium4" 6 "High" 7 "Reserved" ;
+VAL_ 740 FCP_RearRearRightTempSet 0 "Inactive" 1 "Low" 2 "Medium1" 3 "Medium2" 4 "Medium3" 5 "Medium4" 6 "High" 7 "Reserved" ;
+VAL_ 739 FCP_FLseatVentLevelSet 0 "Inactive" 1 "Off" 2 "Level1" 3 "Level2" 4 "Level3" ;
+VAL_ 739 FCP_FRseatVentLevelSet 0 "Inactive" 1 "Off" 2 "Level1" 3 "Level2" 4 "Level3" ;
+VAL_ 739 FCP_FLseatHeatLevelSet 0 "Inactive" 1 "Off" 2 "Level1" 3 "Level2" 4 "Level3" ;
+VAL_ 739 FCP_FRseatHeatLevelSet 0 "Inactive" 1 "Off" 2 "Level1" 3 "Level2" 4 "Level3" ;
+VAL_ 739 FCP_FLseatMassageModeSet 0 "Inactive" 1 "Mode1" 2 "Mode2" 3 "Mode3" ;
+VAL_ 739 FCP_FLseatMassageLevelSet 0 "Inactive" 1 "Level1" 2 "Level2" 3 "Level3" ;
+VAL_ 739 FCP_FLseatMassageFuncSet 0 "Inactive" 1 "Off" 2 "On" 3 "Reserved" ;
+VAL_ 739 FCP_FRseatMassageModeSet 0 "Inactive" 1 "Mode1" 2 "Mode2" 3 "Mode3" ;
+VAL_ 739 FCP_FRseatMassageLevelSet 0 "Inactive" 1 "Level1" 2 "Level2" 3 "Level3" ;
+VAL_ 739 FCP_FRseatMassageFuncSet 0 "Inactive" 1 "Off" 2 "On" 3 "Reserved" ;
+VAL_ 739 FCP_SteeringWheelHeatReq 0 "Inactive" 1 "Off" 2 "On" 3 "Reserved" ;
+VAL_ 739 FCP_MovingObjectDetectFuncSet 0 "Inactive" 1 "Off" 2 "On" 3 "Reserved" ;
+VAL_ 739 FCP_RLseatMassageModeSet 0 "Inactive" 1 "Mode1" 2 "Mode2" 3 "Mode3" ;
+VAL_ 739 FCP_RLseatMassageLevelSet 0 "Inactive" 1 "Level1" 2 "Level2" 3 "Level3" ;
+VAL_ 739 FCP_RLseatMassageFuncSet 0 "Inactive" 1 "Off" 2 "On" 3 "Reserved" ;
+VAL_ 739 FCP_RRseatMassageModeSet 0 "Inactive" 1 "Mode1" 2 "Mode2" 3 "Mode3" ;
+VAL_ 739 FCP_RRseatMassageLevelSet 0 "Inactive" 1 "Level1" 2 "Level2" 3 "Level3" ;
+VAL_ 739 FCP_RRseatMassageFuncSet 0 "Inactive" 1 "Off" 2 "On" 3 "Reserved" ;
+VAL_ 737 FCP_BabyModeFunctionReq 0 "Inactive" 1 "Off" 2 "On" 3 "Reserved" ;
+VAL_ 737 FCP_ESCFunctionReq 0 "Inactive" 1 "Off" 2 "On" 3 "Reserved" ;
+VAL_ 737 FCP_HDCFunctionReq 0 "Inactive" 1 "Off" 2 "On" 3 "Reserved" ;
+VAL_ 737 FCP_SmokeModeFunctionReq 0 "Inactive" 1 "Off" 2 "On" 3 "Reserved" ;
+VAL_ 737 FCP_HazeModeFunctionReq 0 "Inactive" 1 "Off" 2 "On" 3 "Reserved" ;
+VAL_ 737 FCP_PLGSwitchSt 0 "Notpressed" 1 "Pressed" ;
+VAL_ 737 FCP_AVSFunctionReq 0 "Inactive" 1 "Off" 2 "On" 3 "Reserved" ;
+VAL_ 737 FCP_AMP_KeyToneCmd 0 "Inactive" 1 "Active" ;
+VAL_ 737 FCP_NapModeFunctionReq 0 "Inactive" 1 "Off" 2 "On" 3 "Reserved" ;
+VAL_ 737 FCP_LeisureModeFunctionReq 0 "Inactive" 1 "Off" 2 "On" 3 "Reserved" ;
+VAL_ 737 FCP_RearWindowHeatFunctionRe 0 "Inactive" 1 "Off" 2 "On" 3 "Reserved" ;
+VAL_ 737 FCP_SoberModeFunctionReq 0 "Inactive" 1 "Off" 2 "On" 3 "Reserved" ;
+VAL_ 737 FCP_ExternalAutoDEFFunctionRe 0 "Inactive" 1 "Off" 2 "On" 3 "Reserved" ;
+VAL_ 737 FCP_FragranceAutoFunctionReq 0 "Inactive" 1 "Off" 2 "On" 3 "Reserved" ;
+VAL_ 737 FCP_FragranceFunctionReq 0 "Inactive" 1 "Off" 2 "On" 3 "Reserved" ;
+VAL_ 737 FCP_FragranceTypeReq 0 "Inactive" 1 "Refreshmode" 2 "HongQimode" 3 "Calmmode" 4 "User-definedmode" ;
+VAL_ 737 FCP_FragranceConcentrationReq 0 "Inactive" 1 "Level1" 2 "Level2" 3 "Level3" ;
+VAL_ 737 FCP_FragranceTimeSet 0 "Inactive" 1 "1Min" 2 "3Min" 3 "10Min" ;
+VAL_ 737 FCP_PDCFunctionReq 0 "Inactive" 1 "Off" 2 "On" 3 "Reserved" ;
+VAL_ 737 FCP_APAFunctionReq 0 "Inactive" 1 "Off" 2 "On" 3 "Reserved" ;
+VAL_ 737 FCP_AVPFunctionReq 0 "Inactive" 1 "Off" 2 "On" 3 "Reserved" ;
+VAL_ 736 FCP_ACAutoFunctionReq_FL 0 "Inactive" 1 "Off" 2 "On" 3 "Reserved" ;
+VAL_ 736 FCP_ACPowerReq 0 "Inactive" 1 "Off" 2 "On" 3 "Reserved" ;
+VAL_ 736 FCP_ACDefFunctionReq 0 "Inactive" 1 "Off" 2 "On" 3 "Reserved" ;
+VAL_ 736 FCP_ACSyncFunctionReq 0 "Inactive" 1 "Off" 2 "On" 3 "Reserved" ;
+VAL_ 736 FCP_ACNaturalAirFunctionReq 0 "Inactive" 1 "Off" 2 "On" 3 "Reserved" ;
+VAL_ 736 FCP_ACIONFunctionReq 0 "Inactive" 1 "Off" 2 "On" 3 "Reserved" ;
+VAL_ 736 FCP_ACPM25FunctionReq 0 "Inactive" 1 "Off" 2 "Test" 3 "Clean" ;
+VAL_ 736 FCP_BlowLevelFunctionSet 0 "Inactive" 1 "Level1" 2 "Level1" 3 "Level1" 4 "Level1" 5 "Level1" 6 "Level1" 7 "Level1" 15 "Reserved" ;
+VAL_ 736 FCP_LeftTempAdjFunctionReq 0 "Inactive" 1 "Up" 2 "Down" 3 "Reserved" ;
+VAL_ 736 FCP_RightTempAdjFunctionReq 0 "Inactive" 1 "Up" 2 "Down" 3 "Reserved" ;
+VAL_ 736 FCP_FRSRECModeFunctionReq 0 "Inactive" 1 "FRS" 2 "RES" 3 "DoubleVent" ;
+VAL_ 736 FCP_ACAutoFunctionReq_FR 0 "Inactive" 1 "Off" 2 "On" 3 "Reserved" ;
+VAL_ 736 FCP_BlowModeSet_FL 0 "Inactive" 1 "Face" 2 "Face/Def" 3 "B/L" 4 "B/L/Def" 5 "Foot" ;
+VAL_ 736 FCP_BlowModeSet_FR 0 "Inactive" 1 "Face" 2 "Face/Def" 3 "B/L" 4 "B/L/Def" 5 "Foot" ;
+VAL_ 688 GW_RemoteVehicleMode 0 "NormalMode" 1 "RemoteMode" ;
+VAL_ 688 GW_OTAMode 0 "NormalMode" 1 "OTAMode" 3 "Reserved" ;
+VAL_ 664 HU_LeisuremodeFunctionInd 0 "Off" 1 "On" ;
+VAL_ 664 HU_BabymodeFunctionInd 0 "Off" 1 "On" ;
+VAL_ 664 HU_SmokemodeFunctionInd 0 "Off" 1 "On" ;
+VAL_ 664 HU_NapmodeFunctionInd 0 "Off" 1 "On" ;
+VAL_ 664 HU_HazemodeFunctionInd 0 "Off" 1 "On" ;
+VAL_ 664 HU_SobermodeFunctionInd 0 "Off" 1 "On" ;
+VAL_ 657 DisplayTheme 0 "Inactive" 1 "Theme1" 2 "Theme2" 3 "Theme3" 7 "Reserved" ;
+VAL_ 613 HAD_WorkingSt_HWP_Display 0 "Off" 1 "Standby_Inhibit" 2 "Available" 3 "Active" 4 "Override_Lateral" 5 "Override_Longitudinal" 6 "TOR-Mild" 7 "TOR-Normal" 8 "TOR-Urgent" 9 "Fallback_Stop" 10 "Hold" 11 "Locked" 12 "Exit" 13 "Transit" 14 "Reserved" 15 "Reserved" ;
+VAL_ 613 HAD_WorkingSt_TJP_Display 0 "Off" 1 "Standby_Inhibit" 2 "Available" 3 "Active" 4 "Override_Lateral" 5 "Override_Longitudinal" 6 "TOR-Mild" 7 "TOR-Normal" 8 "TOR-Urgent" 9 "Fallback_Stop" 10 "Hold" 11 "Locked" 12 "Exit" 13 "Transit" 14 "Reserved" 15 "Reserved" ;
+VAL_ 604 SysSt_PDC 0 "Off" 1 "On" ;
+VAL_ 600 AVSSt 0 "Off" 1 "On" ;
+VAL_ 600 AVSErrorSt 0 "Noerror" 1 "Error" ;
+VAL_ 600 AVSViewMode 0 "Inactive" 1 "AllTopView" 2 "TopViewandFrontView" 3 "TopViewandRearView" 4 "TopViewandLeftView" 5 "TopViewandRightView" 6 "FrontWideView" 7 "RearWideView" 8 "Reserved" 9 "FrontRimview" 10 "RearRimview" 11 "ScreenDragged3DView" 12 "Reserved" 13 "FactoryMode" 14 "CalibrationMode" 15 "Invalidvalue" ;
+VAL_ 600 AVSViewtype 0 "2D" 1 "3D" 2 "Reserved" 3 "Reserved" ;
+VAL_ 600 AVSCameraErrorSt_Front 0 "Noerror" 1 "Error" ;
+VAL_ 600 AVSCameraErrorSt_Rear 0 "Noerror" 1 "Error" ;
+VAL_ 600 AVSCameraErrorSt_Left 0 "Noerror" 1 "Error" ;
+VAL_ 600 AVSCameraErrorSt_Right 0 "Noerror" 1 "Error" ;
+VAL_ 600 LanguageTypeSt_AVS 0 "SimpleChinese" 1 "TraditionalChinese" 2 "English" 3 "French" 4 "Arabic" 5 "Russian" 15 "Reserved" ;
+VAL_ 600 DynamicPGSSt_AVS 0 "Off" 1 "On" ;
+VAL_ 600 MODSt_AVS 0 "Off" 1 "On" ;
+VAL_ 600 MODWarning_Front 0 "Nowarning" 1 "Warning" ;
+VAL_ 600 MODWarning_Rear 0 "Nowarning" 1 "Warning" ;
+VAL_ 600 MODWarning_Left 0 "Nowarning" 1 "Warning" ;
+VAL_ 600 MODWarning_Right 0 "Nowarning" 1 "Warning" ;
+VAL_ 600 CTAWarning_Front 0 "Nowarning" 1 "Warning" ;
+VAL_ 600 CTAWarning_Rear 0 "Nowarning" 1 "Warning" ;
+VAL_ 600 SwitchScreenRequest_AVS 0 "Inactive" 1 "AVSEnterRequest" 2 "AVSExitRequest" 3 "Reserved" ;
+VAL_ 600 AVS_SpeechControlFeedback 0 "Inactive" 1 "OffSuccess" 2 "OffFailure" 3 "OnSuccess" 4 "OnFailure" 5 "AllTopViewSuccess" 6 "AllTopViewFailure" 7 "TopViewandFrontViewSuccess" 8 "TopViewandFrontViewFailure" 9 "TopViewandRearViewSuccess" 10 "TopViewandRearViewFailure" 11 "TopViewandLeftViewSuccess" 12 "TopViewandLeftViewFailure" 13 "TopViewandRightViewSuccess" 14 "TopViewandRightViewFailure" 15 "FrontWideViewSuccess" 16 "FrontWideViewFailure" 17 "RearWideViewSuccess" 18 "RearWideViewFailure" 19 "Reserved" 20 "Reserved" 21 "FrontRimViewSuccess" 22 "FrontRimViewFailure" 23 "RearRimViewSuccess" 24 "RearRimViewFailure" 25 "Reserved" 31 "Reserved" ;
+VAL_ 595 ADV_AVPNaviAvaialble 0 "NotAvailable" 1 "Available" ;
+VAL_ 595 ADV_AVPParkInAvaialble 0 "NotAvailable" 1 "Available" ;
+VAL_ 595 ADV_AVPParkOutAvaialble 0 "NotAvailable" 1 "Available" ;
+VAL_ 595 ADV_HPANaviAvaialble 0 "NotAvailable" 1 "Available" ;
+VAL_ 595 ADV_HPAParkInAvaialble 0 "NotAvailable" 1 "Available" ;
+VAL_ 595 ADV_HPAParkOutAvaialble 0 "NotAvailable" 1 "Available" ;
+VAL_ 592 ADV_ParkStatus 0 "Initial" 1 "Standby" 2 "Searchingforpark-in" 3 "Searchingforpark-out" 4 "Mapupdate" 5 "Parkingin" 6 "Parkingout" 7 "Driveroverride" 8 "Suspended" 9 "Abort" 10 "Finish" 11 "Error" 15 "Reserved" ;
+VAL_ 586 DoorLockSt_FL 0 "Lock" 1 "Unlock" 2 "Reserved" 3 "Reserved" ;
+VAL_ 586 DoorSt_FL 0 "Close" 1 "Open" ;
+VAL_ 583 SeatVentInd_RL 0 "Off" 1 "Heatleve1" 2 "Heatleve2" 3 "Heatleve3" ;
+VAL_ 583 SeatVentInd_RR 0 "Off" 1 "Heatleve1" 2 "Heatleve2" 3 "Heatleve3" ;
+VAL_ 583 SeatMassageModeInd_FL 0 "Massagemode1" 1 "Massagemode2" 2 "Massagemode3" 3 "Reserved" ;
+VAL_ 583 SeatMassageModeInd_FR 0 "Massagemode1" 1 "Massagemode2" 2 "Massagemode3" 3 "Reserved" ;
+VAL_ 583 SeatMassageModeInd_RL 0 "Massagemode1" 1 "Massagemode2" 2 "Massagemode3" 3 "Reserved" ;
+VAL_ 583 SeatMassageModeInd_RR 0 "Massagemode1" 1 "Massagemode2" 2 "Massagemode3" 3 "Reserved" ;
+VAL_ 583 SeatMassageLevelInd_FL 0 "Massagelevel1" 1 "Massagelevel2" 2 "Massagelevel3" 3 "Reserved" ;
+VAL_ 583 SeatMassageLevelInd_FR 0 "Massagelevel1" 1 "Massagelevel2" 2 "Massagelevel3" 3 "Reserved" ;
+VAL_ 583 SeatMassageLevelInd_RL 0 "Massagelevel1" 1 "Massagelevel2" 2 "Massagelevel3" 3 "Reserved" ;
+VAL_ 583 SeatMassageLevelInd_RR 0 "Massagelevel1" 1 "Massagelevel2" 2 "Massagelevel3" 3 "Reserved" ;
+VAL_ 583 SeatMassageFuncInd_FL 0 "Off" 1 "On" ;
+VAL_ 583 SeatMassageFuncInd_FR 0 "Off" 1 "On" ;
+VAL_ 583 SeatMassageFuncInd_RL 0 "Off" 1 "On" ;
+VAL_ 583 SeatMassageFuncInd_RR 0 "Off" 1 "On" ;
+VAL_ 582 SeatVentInd_FL 0 "Off" 1 "Ventilateleve1" 2 "Ventilateleve2" 3 "Ventilateleve3" ;
+VAL_ 582 SeatVentInd_FR 0 "Off" 1 "Ventilateleve1" 2 "Ventilateleve2" 3 "Ventilateleve3" ;
+VAL_ 582 SeatheatInd_FL 0 "Off" 1 "Heatleve1" 2 "Heatleve2" 3 "Heatleve3" ;
+VAL_ 582 SeatheatInd_FR 0 "Off" 1 "Heatleve1" 2 "Heatleve2" 3 "Heatleve3" ;
+VAL_ 582 SeatheatInd_RL 0 "Off" 1 "Heatleve1" 2 "Heatleve2" 3 "Heatleve3" ;
+VAL_ 582 SeatheatInd_RR 0 "Off" 1 "Heatleve1" 2 "Heatleve2" 3 "Heatleve3" ;
+VAL_ 581 SeatPostionMemoryResult_PSCU 0 "Inactive" 1 "Success" 2 "Failure" 3 "operating" ;
+VAL_ 581 MemoryMode_PSCU 0 "Nooperation" 1 "Memory" 2 "Read" 3 "Reserved" 4 "Reserved" 5 "Intial" 7 "Reserved" ;
+VAL_ 580 MemoryMode_DSCU 0 "Nooperation" 1 "Memory" 2 "Read" 3 "Seatautobackward" 4 "Seatautoforward" 5 "Intial" 7 "Reserved" ;
+VAL_ 578 LuggageDoorSt 0 "Close" 1 "Open" ;
+VAL_ 578 LuggageDoorWorkingSt 0 "Init" 1 "Translatch" 2 "CLosed" 3 "Maunual" 4 "Closing" 5 "Opening" 6 "Open" 7 "Reserved" ;
+VAL_ 576 RearWindowHeatingStatus 0 "Inactive" 1 "Active" ;
+VAL_ 566 WorkingStatus_SMA 0 "Inactive" 1 "Opening" 2 "Closing" 3 "Invalidvalue" ;
+VAL_ 566 WorkingStatus_SSM 0 "Inactive" 1 "Opening" 2 "Closing" 3 "Invalidvalue" ;
+VAL_ 564 SunShadeSt 0 "Fullyclosed" 1 "Betweenfullyclosedandparallelopenlimit" 2 "Parallelopenlimit" 3 "Invalidvalue" ;
+VAL_ 564 SunroofSt 0 "Fullyclosed" 1 "Betweenfullyclosedandparallelopenlimit" 2 "TiltOpenlimit" 3 "BetweenfullyclosedandParallelopenlimit" 4 "Parallelopenlimit" 5 "Parallelopenhalf" 6 "Reserved" 7 "Invalidvalue" ;
+VAL_ 564 MemoryRemind 0 "Inactive" 1 "Success" 2 "Failure" 3 "Reservedvalue" ;
+VAL_ 564 MemoryMode 0 "Inactive" 1 "Memory" 2 "Read" 3 "Reserved" 4 "Init" 7 "Reserved" ;
+VAL_ 562 PowerMode 0 "Off" 1 "Reserved" 3 "Reserved" 4 "IgnitionOn" 5 "Reserved" ;
+VAL_ 561 BCM_ExternalAutoDEFSetInd 0 "Off" 1 "On" ;
+VAL_ 561 BCM_ExternalAutoDEFSt 0 "Inactive" 1 "Active" ;
+VAL_ 561 BCM_FragranceTime 0 "1Min" 1 "3Min" 2 "10Min" 3 "Reserved" ;
+VAL_ 561 BCM_FragranceWorkingStatus 0 "Off" 1 "On" ;
+VAL_ 561 BCM_FragranceAutoFunctionStatu_s 0 "Off" 1 "On" ;
+VAL_ 561 BCM_FragranceType 0 "Refreshmode" 1 "HongQimode" 2 "Calmmode" 3 "User-definedmode" 7 "Reserved" ;
+VAL_ 561 BCM_FragranceConcentration 0 "Level1" 1 "Level2" 2 "Level3" 7 "Reserved" ;
+VAL_ 561 BCM_FragranceErrorSt 0 "Noerror" 1 "Error" ;
+VAL_ 561 BCM_FragrancePreparationLack_T_y 0 "Normal" 1 "Shortage" ;
+VAL_ 561 BCM_FragrancePreparationLac_0000 0 "Normal" 1 "Shortage" ;
+VAL_ 561 BCM_FragrancePreparationLac_0001 0 "Normal" 1 "Shortage" ;
+VAL_ 561 BCM_FragrancePreparationLac_0002 0 "Normal" 1 "Shortage" ;
+VAL_ 561 BCM_SteeringWheelheatInd 0 "Off" 1 "Heating" 2 "Preservation" 3 "Reserved" ;
+VAL_ 560 PositionLightSt 0 "Off" 1 "On" ;
+VAL_ 560 LowBeamSt 0 "Off" 1 "On" ;
+VAL_ 560 HighBeamSt 0 "Off" 1 "On" ;
+VAL_ 552 IONSt 0 "Off" 1 "IONOn" 2 "CLEANOn" 3 "Reserved" ;
+VAL_ 552 AQSt 0 "Off" 1 "On" ;
+VAL_ 552 NaturalAirinessSt 0 "Off" 1 "On" ;
+VAL_ 552 PM25SensorFan_ErrorSt 0 "Noerror" 1 "Error" ;
+VAL_ 552 PM25St 0 "Off" 1 "Testing" 2 "Testfinlsh" 3 "Clearning" 4 "Reserved" ;
+VAL_ 552 PM25Color 0 "NoClolr" 1 "Green" 2 "Yellow" 3 "Red" 4 "Reserved" ;
+VAL_ 552 BlowMode_Rear 0 "Inactive" 1 "Face" 2 "B/L" 3 "Foot" 4 "Reserved" 7 "Invalid" ;
+VAL_ 552 AutoMode_R 0 "Off" 1 "On" ;
+VAL_ 547 AutoMode_RR 0 "Off" 1 "On" ;
+VAL_ 547 RearRearBlowLevel 0 "Inactive" 1 "Level1" 2 "Level2" 3 "Level3" 4 "Level4" 5 "Level5" 6 "Reserved" 15 "Invalid" ;
+VAL_ 547 WorkingSt_AC_RR 0 "Off" 1 "On" ;
+VAL_ 547 ExpectTemp_RearRearLeft 0 "Low" 1 "Medium1" 2 "Medium2" 3 "Medium3" 4 "Medium4" 5 "High" 7 "Reserved" ;
+VAL_ 547 ExpectTemp_RearRearRight 0 "Low" 1 "Medium1" 2 "Medium2" 3 "Medium3" 4 "Medium4" 5 "High" 7 "Reserved" ;
+VAL_ 547 BlowMode_RearRear 0 "Inactive" 1 "Face" 2 "B/L" 3 "Foot" 4 "Reserved" 7 "Invalid" ;
+VAL_ 546 WorkingSt_AC 0 "Off" 1 "On" ;
+VAL_ 546 AutoMode 0 "Off" 1 "On" ;
+VAL_ 546 SyncMode 0 "Off" 1 "On" ;
+VAL_ 546 DEFMode 0 "Off" 1 "On" ;
+VAL_ 546 BlowLevel 0 "Inactive" 1 "Level1" 2 "Level2" 3 "Level3" 4 "Level4" 5 "Level5" 6 "Level6" 7 "Level7" 15 "Reserved" ;
+VAL_ 546 FRSRECMode 0 "Inactive" 1 "FRS" 2 "RES" 3 "DoubleVent" ;
+VAL_ 546 ADSSt 0 "Off" 1 "On" ;
+VAL_ 546 BlowMode_FL 0 "Inactive" 1 "Face" 2 "Face/Def" 3 "B/L" 4 "B/L/Def" 5 "Foot" 6 "Foot/Def" 7 "Def" 8 "Reserved" 15 "Invalidvalue" ;
+VAL_ 546 BlowMode_FR 0 "Inactive" 1 "Face" 2 "B/L" 3 "Foot" 4 "Reserved" 7 "Invalid" ;
+VAL_ 546 AutoMode_FR 0 "Off" 1 "On" ;
+VAL_ 306 WorkingSt_ESC 0 "Off" 1 "On" ;
+VAL_ 306 WorkingSt_HDC 0 "Off" 1 "Standby" 2 "Intervention" 3 "Error" ;
+VAL_ 290 HCU_LeverInfo 0 "P" 1 "R" 2 "N" 3 "D" 4 "Reserved" 5 "Noconnection" 6 "Reserved" 7 "InvalidValue" ;
+VAL_ 118 BCM1_FVSyncReq_FCP 0 "NoRequest" 1 "Request" ;
+

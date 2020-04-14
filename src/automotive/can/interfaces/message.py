@@ -142,23 +142,20 @@ class Message(object):
             if not self.data:
                 raw_data = 0
             else:
-                raw_data = self.__tools.set_list_data_to_msg(self.data)
-            logger.debug(f"before raw_data[{bin(raw_data)}]")
+                raw_data = self.__tools.convert_to_data(self.data)
             for name, signal in self.signals.items():
                 logger.debug(f"signal name = {signal.signal_name}")
-                logger.debug(f"start[{signal.start_bit}]-length[{signal.bit_length}]"
-                             f", value[{signal.value}]")
                 # 根据原来的数据message_data，替换某一部分的内容
-                raw_data = self.__tools.get_raw_data(raw_data, signal.bit_length, signal.start_bit, signal.value)
+                raw_data = self.__tools.set_data(raw_data, signal.start_bit, signal.bit_length, signal.value,
+                                                 signal.is_float)
                 logger.debug(f"raw_data[{bin(raw_data)}]")
-            logger.debug(f"after raw_data[{bin(raw_data)}]")
-            self.data = self.__tools.set_msg_data_to_list(raw_data)
+            self.data = self.__tools.convert_to_msg(raw_data)
             logger.debug(f"data is {list(map(lambda x: hex(x), self.data))}")
         # 收到数据
         else:
-            raw_data = self.__tools.set_list_data_to_msg(self.data)
+            raw_data = self.__tools.convert_to_data(self.data)
             for name, signal in self.signals.items():
-                value = self.__tools.get_value(raw_data, signal.start_bit, signal.bit_length)
+                value = self.__tools.get_data(raw_data, signal.start_bit, signal.bit_length, signal.is_float)
                 logger.info(f"signal name {name} value is {value}")
                 signal.value = value
 

@@ -1,0 +1,375 @@
+VERSION ""
+
+
+NS_ : 
+	NS_DESC_
+	CM_
+	BA_DEF_
+	BA_
+	VAL_
+	CAT_DEF_
+	CAT_
+	FILTER
+	BA_DEF_DEF_
+	EV_DATA_
+	ENVVAR_DATA_
+	SGTYPE_
+	SGTYPE_VAL_
+	BA_DEF_SGTYPE_
+	BA_SGTYPE_
+	SIG_TYPE_REF_
+	VAL_TABLE_
+	SIG_GROUP_
+	SIG_VALTYPE_
+	SIGTYPE_VALTYPE_
+	BO_TX_BU_
+	BA_DEF_REL_
+	BA_REL_
+	BA_DEF_DEF_REL_
+	BU_SG_REL_
+	BU_EV_REL_
+	BU_BO_REL_
+	SG_MUL_VAL_
+
+BS_:
+
+BU_: HU
+
+
+BO_ 1535 BCM_5FF: 8 Vector__XXX
+ SG_ BCM_RemoteWindowDownSetStaus : 31|2@0+ (1,0) [0|3] ""  HU
+
+BO_ 1536 HU_600: 8 HU
+ SG_ HU_AutowindSet3 : 17|2@0+ (1,0) [0|3] ""  HU
+ SG_ HU_AutowindSet2 : 19|2@0+ (1,0) [0|3] "" Vector__XXX
+ SG_ HU_AutowindSet1 : 21|2@0+ (1,0) [0|3] "" Vector__XXX
+
+BO_ 912 BCM_390: 8 Vector__XXX
+ SG_ BCM_RoutineID : 47|8@0+ (1,0) [0|255] ""  HU
+ SG_ BCM_RoutineOdometer : 55|13@0+ (0.1,0) [0|819.1] "KM"  HU
+ SG_ BCM_AllFuelConsumption : 27|10@0+ (0.1,0) [0|102.3] "L"  HU
+ SG_ BCM_RealFuelPotential : 21|10@0+ (0.015,0) [0|15.345] "mL"  HU
+ SG_ BCM_RealFuelConsumption : 15|10@0+ (0.015,0) [0|15.345] "mL"  HU
+ SG_ BCM_BrakeAccChangeQCond : 32|1@0+ (1,0) [0|1] ""  HU
+ SG_ BCM_EmergSteerCond : 33|1@0+ (1,0) [0|1] ""  HU
+ SG_ BCM_FuelPotentialCond : 7|5@0+ (1,0) [0|31] ""  HU
+
+BO_ 789 GW_315: 8 Vector__XXX
+ SG_ EMS_BSGRealTq : 55|8@0+ (0.25,0) [0|63.75] "Nm"  HU
+ SG_ EMS_LiSOCDsp : 47|7@0+ (1,0) [0|100] "%"  HU
+ SG_ EMS_BRSSysEgyFlow : 23|4@0+ (1,0) [0|15] ""  HU
+
+BO_ 816 AC_330: 8 Vector__XXX
+ SG_ AC_AutowindSet3Status : 21|2@0+ (1,0) [0|3] ""  HU
+ SG_ AC_AutowindSet2Status : 19|2@0+ (1,0) [0|3] ""  HU
+ SG_ AC_AutowindSet1Status : 17|2@0+ (1,0) [0|3] ""  HU
+ SG_ AC_EnvironmentalTemp : 63|8@0+ (0.5,-40) [-40|87] "℃"  HU
+ SG_ AC_EnvironmentalTempVD : 48|1@0+ (1,0) [0|1] ""  HU
+
+BO_ 608 IP_260: 8 Vector__XXX
+ SG_ IP_DTE : 25|10@0+ (1,0) [0|999] "km"  HU
+ SG_ IP_FuelWarningLampState : 15|2@0+ (1,0) [0|3] ""  HU
+
+BO_ 761 HU_2F9: 8 HU
+ SG_ HU_CirculationModeReq : 38|3@0+ (1,0) [0|4] "" Vector__XXX
+ SG_ HU_ACFanAdjustValueReq : 23|4@0+ (1,0) [0|10] "" Vector__XXX
+ SG_ HU_ACModeAdjustReq : 18|3@0+ (1,0) [0|5] "" Vector__XXX
+ SG_ HU_ACLFTempAdjustValueReq : 13|6@0+ (0.5,0) [0|0] "degree" Vector__XXX
+ SG_ HU_ACDEFAdjustReq : 3|2@0+ (1,0) [0|3] "" Vector__XXX
+ SG_ HU_FrontACOffReq : 5|2@0+ (1,0) [0|3] "" Vector__XXX
+ SG_ HU_FrontAUTOACOnReq : 7|2@0+ (1,0) [0|3] "" Vector__XXX
+
+BO_ 806 GW_326: 8 Vector__XXX
+ SG_ EMS_CruiseControlStatus : 5|2@0+ (1,0) [0|3] ""  HU
+
+BO_ 810 GW_32A: 8 Vector__XXX
+ SG_ EPS_EpsFailed : 33|1@0+ (1,0) [0|1] ""  HU
+ SG_ ESP_EBDFailStatus : 31|1@0+ (1,0) [0|1] ""  HU
+ SG_ ESP_ESPFunctionStatus : 30|1@0+ (1,0) [0|1] ""  HU
+ SG_ ESP_ESPActiveStatus : 29|1@0+ (1,0) [0|0] ""  HU
+
+BO_ 883 GW_373: 8 Vector__XXX
+ SG_ EMS_IndicatedRealEngTorq : 23|16@0+ (0.001526,0) [0|100] "%"  HU
+
+BO_ 886 GW_376: 8 Vector__XXX
+ SG_ EPS_TorqSensorStatus : 40|1@0+ (1,0) [0|1] ""  HU
+ SG_ EMS_AltitudeFactor : 39|8@0+ (0.01575,0) [0|4] ""  HU
+ SG_ EMS_EngineLimpHome : 27|1@0+ (1,0) [0|1] ""  HU
+ SG_ EMS_AccpedelError : 26|1@0+ (1,0) [0|1] ""  HU
+ SG_ EMS_ThrottleValvePositionError : 25|1@0+ (1,0) [0|1] ""  HU
+ SG_ EMS_ClutchPedalStatus : 30|2@0+ (1,0) [0|3] ""  HU
+
+BO_ 896 IP_380: 8 Vector__XXX
+ SG_ IP_TotalOdometer : 39|24@0+ (0.1,0) [0|999999] "km"  HU
+
+BO_ 640 IP_280: 8 Vector__XXX
+ SG_ IP_AirBagSysWarningLampSts : 15|2@0+ (1,0) [0|3] ""  HU
+ SG_ IP_FuelLeftover : 47|7@0+ (1,0) [0|127] "L"  HU
+
+BO_ 839 BCM_347: 8 Vector__XXX
+ SG_ BCM_WinterMode : 55|1@0+ (1,0) [0|1] ""  HU
+ SG_ BCM_TirePresureSignalStatus : 51|1@0+ (1,0) [0|1] ""  HU
+
+BO_ 614 PEPS_266: 8 Vector__XXX
+ SG_ PEPS_PEPSFailStatus : 54|1@0+ (1,0) [0|1] ""  HU
+
+BO_ 976 PAC_3D0: 4 Vector__XXX
+ SG_ PAC_SystemFailureFlag : 7|1@0+ (1,0) [0|1] ""  HU
+
+BO_ 1798 Msg_DVD_Phys_Diag_Rx: 8 Vector__XXX
+ SG_ DVD_Phys_Diag_Rx_Data : 7|64@0+ (1,0) [0|0] ""  HU
+
+BO_ 1806 Msg_DVD_Diag_Tx: 8 HU
+ SG_ DVD_Diag_Tx_Data : 7|64@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1919 Msg_BCAN_Func_Diag_Rx: 8 Vector__XXX
+ SG_ BCAN_Func_Diag_Rx_Data : 7|64@0+ (1,0) [0|0] ""  HU
+
+BO_ 800 GW_320: 8 Vector__XXX
+ SG_ EMS_EngineSpeedError : 34|1@0+ (1,0) [0|1] ""  HU
+ SG_ EMS_MIL : 25|2@0+ (1,0) [0|3] ""  HU
+ SG_ ESP_ABSFailStatus : 37|1@0+ (1,0) [0|1] ""  HU
+ SG_ ESP_TCSFailStatus : 38|1@0+ (1,0) [0|1] ""  HU
+ SG_ EMS_CoolanTemperatureError : 39|1@0+ (1,0) [0|1] ""  HU
+ SG_ ESP_VehicleSpeedValid : 14|1@0+ (1,0) [0|1] ""  HU
+ SG_ SRS_WarningLampStatus : 27|2@0+ (1,0) [0|3] ""  HU
+ SG_ ESP_VehicleSpeed : 12|13@0+ (0.05625,0) [0|360] "km/h"  HU
+
+BO_ 688 GW_2B0: 8 Vector__XXX
+ SG_ TCU_ShiftPostionValid : 47|1@0+ (1,0) [0|1] ""  HU
+ SG_ TCU_GearShiftPositon : 46|4@0+ (1,0) [0|15] ""  HU
+
+BO_ 630 ESCL_276: 2 Vector__XXX
+ SG_ ESCL_SteeringLockError : 15|1@0+ (1,0) [0|1] ""  HU
+
+BO_ 760 HU_2F8: 8 HU
+ SG_ HU_APAModeSelect : 59|3@0+ (1,0) [0|7] "" Vector__XXX
+ SG_ HU_NaviIconNumber : 47|8@0+ (1,0) [0|255] "" Vector__XXX
+ SG_ HU_NaviDistance : 16|17@0+ (1,0) [0|131070] "m" Vector__XXX
+ SG_ HU_RADMWarringEnable : 3|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ HU_AutoViewSet : 2|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ HU_AVMswitch : 5|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ HU_AVMQuitRequest : 4|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ DVD_ParkingTrackMode : 7|2@0+ (1,0) [0|3] "" Vector__XXX
+
+BO_ 648 BCM_288: 8 Vector__XXX
+ SG_ BCM_PowerStatusFeedback : 43|2@0+ (1,0) [0|3] ""  HU
+
+
+
+CM_ SG_ 614 PEPS_PEPSFailStatus "TBD";
+CM_ SG_ 976 PAC_SystemFailureFlag "0=Not Failure,1=Failure";
+CM_ SG_ 800 EMS_MIL "EMS_MIL：MIL指示灯";
+CM_ SG_ 800 ESP_ABSFailStatus "ABS发此信号";
+CM_ SG_ 800 EMS_CoolanTemperatureError "0=Not Request; 1=Request";
+CM_ SG_ 800 ESP_VehicleSpeedValid "0x0=Valid； 0x1=Not Valid\
+
+所有车型均要求发此信号";
+CM_ SG_ 800 ESP_VehicleSpeed "无效值：0x1FFF
+
+所有车型均要求发此信号";
+CM_ SG_ 688 TCU_ShiftPostionValid "0=Valid; 1=Invalid";
+CM_ SG_ 688 TCU_GearShiftPositon "0h: Parking; 1h: Reverse
+2h: Neutral; 3h: D; 
+4h: D3; 5h: D2;
+6h: L ;7h M
+8h-Dh: Reserved
+Eh: Unreliable
+Fh: Invalid
+
+无效值：F
+初始化值为E（不可靠）";
+CM_ SG_ 760 DVD_ParkingTrackMode "0x0=普通模式 
+0x1=平行模式
+0x2=关闭辅助线
+0x3:无效";
+BA_DEF_  "BusType" STRING ;
+BA_DEF_  "DBName" STRING ;
+BA_DEF_ SG_  "NWM-WakeupAllowed" ENUM  "No","Yes";
+BA_DEF_ SG_  "GenSigSendType" ENUM  "Cyclic","OnWrite","OnWriteWithRepetition","OnChange","OnChangeWithRepetition","IfActive","IfActiveWithRepetition","NoSigSendType","NotUsed","NotUsed","NotUsed","NotUsed","NotUsed";
+BA_DEF_ SG_  "GenSigCycleTime" INT 0 0;
+BA_DEF_ SG_  "GenSigCycleTimeActive" INT 0 0;
+BA_DEF_ SG_  "GenSigInactiveValue" INT 0 0;
+BA_DEF_ SG_  "GenSigStartValue" INT 0 0;
+BA_DEF_ BO_  "DiagRequest" ENUM  "No","Yes";
+BA_DEF_ BO_  "DiagResponse" ENUM  "No","Yes";
+BA_DEF_ BO_  "DiagState" ENUM  "No","Yes";
+BA_DEF_ BO_  "GenMsgCycleTime" INT 0 5000;
+BA_DEF_ BO_  "GenMsgILSupport" ENUM  "No","Yes";
+BA_DEF_ BO_  "GenMsgSendType" ENUM  "Cyclic","NotUsed","NotUsed","NotUsed","event","Cyclic","NotUsed","IfActive","NoMsgSendType","NotUsed";
+BA_DEF_ BO_  "NmMessage" ENUM  "No","Yes";
+BA_DEF_ BO_  "TpTxIndex" INT 0 255;
+BA_DEF_ BU_  "CANoeDrift" INT 0 0;
+BA_DEF_ BU_  "CANoeJitterMax" INT 0 0;
+BA_DEF_ BU_  "CANoeJitterMin" INT 0 0;
+BA_DEF_ BU_  "CANoeStartDelay" INT 0 0;
+BA_DEF_ BU_  "GenNodSleepTime" INT 0 1000000;
+BA_DEF_ BU_  "ILUsed" ENUM  "No","Yes";
+BA_DEF_ BU_  "NmNode" ENUM  "No","Yes";
+BA_DEF_ BU_  "NmStationAddress" HEX 0 0;
+BA_DEF_ BU_  "NodeLayerModules" STRING ;
+BA_DEF_REL_ BU_BO_REL_  "GenMsgCycleTimeFast" INT 0 0;
+BA_DEF_REL_ BU_BO_REL_  "GenMsgNrOfRepetition" INT 0 0;
+BA_DEF_REL_ BU_BO_REL_  "GenMsgDelayTime" INT 0 0;
+BA_DEF_REL_ BU_BO_REL_  "GenMsgStartDelayTime" INT 0 0;
+BA_DEF_DEF_  "BusType" "";
+BA_DEF_DEF_  "DBName" "";
+BA_DEF_DEF_REL_ "GenMsgCycleTimeFast" 0;
+BA_DEF_DEF_REL_ "GenMsgNrOfRepetition" 0;
+BA_DEF_DEF_REL_ "GenMsgDelayTime" 0;
+BA_DEF_DEF_REL_ "GenMsgStartDelayTime" 0;
+BA_DEF_DEF_  "NWM-WakeupAllowed" "";
+BA_DEF_DEF_  "GenSigSendType" "Cyclic";
+BA_DEF_DEF_  "GenSigCycleTime" 0;
+BA_DEF_DEF_  "GenSigCycleTimeActive" 0;
+BA_DEF_DEF_  "GenSigInactiveValue" 0;
+BA_DEF_DEF_  "GenSigStartValue" 0;
+BA_DEF_DEF_  "DiagRequest" "No";
+BA_DEF_DEF_  "DiagResponse" "No";
+BA_DEF_DEF_  "DiagState" "No";
+BA_DEF_DEF_  "GenMsgCycleTime" 0;
+BA_DEF_DEF_  "GenMsgILSupport" "Yes";
+BA_DEF_DEF_  "GenMsgSendType" "NoMsgSendType";
+BA_DEF_DEF_  "NmMessage" "No";
+BA_DEF_DEF_  "TpTxIndex" 0;
+BA_DEF_DEF_  "CANoeDrift" 0;
+BA_DEF_DEF_  "CANoeJitterMax" 0;
+BA_DEF_DEF_  "CANoeJitterMin" 0;
+BA_DEF_DEF_  "CANoeStartDelay" 0;
+BA_DEF_DEF_  "GenNodSleepTime" 0;
+BA_DEF_DEF_  "ILUsed" "Yes";
+BA_DEF_DEF_  "NmNode" "No";
+BA_DEF_DEF_  "NmStationAddress" 0;
+BA_DEF_DEF_  "NodeLayerModules" "OSEKNM01.dll,CANoeILNLVector.dll";
+BA_ "BusType" "CAN";
+BA_ "DBName" "HU";
+BA_ "GenMsgCycleTime" BO_ 1535 100;
+BA_ "GenMsgSendType" BO_ 1535 0;
+BA_ "GenMsgSendType" BO_ 1536 4;
+BA_ "GenMsgCycleTime" BO_ 912 500;
+BA_ "GenMsgSendType" BO_ 912 0;
+BA_ "GenMsgCycleTime" BO_ 789 100;
+BA_ "GenMsgSendType" BO_ 789 0;
+BA_ "GenMsgCycleTime" BO_ 816 100;
+BA_ "GenMsgSendType" BO_ 816 0;
+BA_ "GenMsgCycleTime" BO_ 608 40;
+BA_ "GenMsgSendType" BO_ 608 0;
+BA_ "GenMsgCycleTime" BO_ 761 100;
+BA_ "GenMsgSendType" BO_ 761 0;
+BA_ "GenMsgCycleTime" BO_ 806 100;
+BA_ "GenMsgCycleTime" BO_ 810 100;
+BA_ "GenMsgCycleTime" BO_ 883 300;
+BA_ "GenMsgCycleTime" BO_ 886 300;
+BA_ "GenMsgCycleTime" BO_ 896 500;
+BA_ "GenMsgCycleTime" BO_ 640 50;
+BA_ "GenMsgCycleTime" BO_ 839 500;
+BA_ "GenMsgSendType" BO_ 839 0;
+BA_ "GenMsgCycleTime" BO_ 614 40;
+BA_ "GenMsgSendType" BO_ 614 0;
+BA_ "GenMsgCycleTime" BO_ 976 200;
+BA_ "GenMsgSendType" BO_ 976 0;
+BA_ "DiagRequest" BO_ 1798 1;
+BA_ "GenMsgCycleTime" BO_ 1798 0;
+BA_ "DiagResponse" BO_ 1806 1;
+BA_ "GenMsgCycleTime" BO_ 1806 0;
+BA_ "DiagRequest" BO_ 1919 1;
+BA_ "GenMsgCycleTime" BO_ 1919 0;
+BA_ "GenMsgCycleTime" BO_ 800 100;
+BA_ "GenMsgSendType" BO_ 800 0;
+BA_ "GenMsgCycleTime" BO_ 688 50;
+BA_ "GenMsgSendType" BO_ 688 0;
+BA_ "GenMsgCycleTime" BO_ 630 40;
+BA_ "GenMsgSendType" BO_ 630 0;
+BA_ "GenMsgCycleTime" BO_ 760 100;
+BA_ "GenMsgSendType" BO_ 760 0;
+BA_ "GenMsgCycleTime" BO_ 648 40;
+BA_ "GenMsgSendType" BO_ 648 0;
+BA_ "GenSigStartValue" SG_ 1535 BCM_RemoteWindowDownSetStaus 1;
+BA_ "GenSigStartValue" SG_ 816 AC_EnvironmentalTemp 80;
+BA_ "GenSigStartValue" SG_ 761 HU_ACLFTempAdjustValueReq 0;
+BA_ "GenSigSendType" SG_ 614 PEPS_PEPSFailStatus 0;
+BA_ "GenSigCycleTime" SG_ 614 PEPS_PEPSFailStatus 40;
+BA_ "GenSigSendType" SG_ 976 PAC_SystemFailureFlag 0;
+BA_ "GenSigCycleTime" SG_ 976 PAC_SystemFailureFlag 200;
+BA_ "GenSigSendType" SG_ 1798 DVD_Phys_Diag_Rx_Data 7;
+BA_ "GenSigSendType" SG_ 1806 DVD_Diag_Tx_Data 7;
+BA_ "GenSigSendType" SG_ 1919 BCAN_Func_Diag_Rx_Data 7;
+BA_ "GenSigSendType" SG_ 800 EMS_MIL 0;
+BA_ "GenSigCycleTime" SG_ 800 EMS_MIL 100;
+BA_ "GenSigSendType" SG_ 800 ESP_ABSFailStatus 0;
+BA_ "GenSigCycleTime" SG_ 800 ESP_ABSFailStatus 100;
+BA_ "GenSigSendType" SG_ 800 ESP_TCSFailStatus 0;
+BA_ "GenSigCycleTime" SG_ 800 ESP_TCSFailStatus 100;
+BA_ "GenSigSendType" SG_ 800 EMS_CoolanTemperatureError 0;
+BA_ "GenSigCycleTime" SG_ 800 EMS_CoolanTemperatureError 100;
+BA_ "GenSigSendType" SG_ 800 ESP_VehicleSpeedValid 0;
+BA_ "GenSigCycleTime" SG_ 800 ESP_VehicleSpeedValid 100;
+BA_ "GenSigSendType" SG_ 800 SRS_WarningLampStatus 0;
+BA_ "GenSigCycleTime" SG_ 800 SRS_WarningLampStatus 100;
+BA_ "GenSigSendType" SG_ 800 ESP_VehicleSpeed 0;
+BA_ "GenSigCycleTime" SG_ 800 ESP_VehicleSpeed 100;
+BA_ "GenSigSendType" SG_ 688 TCU_ShiftPostionValid 0;
+BA_ "GenSigCycleTime" SG_ 688 TCU_ShiftPostionValid 50;
+BA_ "GenSigSendType" SG_ 688 TCU_GearShiftPositon 0;
+BA_ "GenSigCycleTime" SG_ 688 TCU_GearShiftPositon 50;
+BA_ "GenSigSendType" SG_ 630 ESCL_SteeringLockError 0;
+BA_ "GenSigCycleTime" SG_ 630 ESCL_SteeringLockError 40;
+BA_ "GenSigSendType" SG_ 760 DVD_ParkingTrackMode 0;
+BA_ "GenSigCycleTime" SG_ 760 DVD_ParkingTrackMode 100;
+BA_ "GenSigSendType" SG_ 648 BCM_PowerStatusFeedback 0;
+BA_ "GenSigCycleTime" SG_ 648 BCM_PowerStatusFeedback 40;
+VAL_ 1535 BCM_RemoteWindowDownSetStaus 3 "Reserved" 2 "open" 1 "off" 0 "inactive" ;
+VAL_ 1536 HU_AutowindSet3 3 "reserved" 2 "钥匙闭锁出风设置关闭" 1 "钥匙闭锁出风设置开启" 0 "未设置" ;
+VAL_ 1536 HU_AutowindSet2 3 "reserved" 2 "钥匙长按出风设置关闭" 1 "钥匙长按出风设置开启" 0 "未设置" ;
+VAL_ 1536 HU_AutowindSet1 3 "reserved" 2 "钥匙开锁出风设置关闭" 1 "钥匙开锁出风设置开启" 0 "未设置" ;
+VAL_ 912 BCM_BrakeAccChangeQCond 1 "有效" 0 "无效" ;
+VAL_ 912 BCM_EmergSteerCond 1 "有效" 0 "无效" ;
+VAL_ 912 BCM_FuelPotentialCond 10 "油门刹车同时踩" 9 "半离合行车" 8 "空档滑行" 7 "半离合急加速" 6 "空踩油门" 5 "驻车长怠速" 4 "高速" 3 "急加速" 2 "降档" 1 "升档" 0 "正常工况" ;
+VAL_ 789 EMS_BRSSysEgyFlow 7 "Idle" 6 "Idle Charge" 5 "Parallel Charge" 4 "Brake Regeneration" 3 "Recepuration" 2 "BSGAssist" 1 "ICE Drive(Engine Drive)" 0 "Standstill" ;
+VAL_ 816 AC_AutowindSet3Status 3 "Reserved" 2 "on" 1 "off" 0 "invalid" ;
+VAL_ 816 AC_AutowindSet2Status 3 "Reserved" 2 "on" 1 "off" 0 "invalid" ;
+VAL_ 816 AC_AutowindSet1Status 3 "Reserved" 2 "on" 1 "off" 0 "invalid" ;
+VAL_ 816 AC_EnvironmentalTempVD 1 "Invalid" 0 "Valid" ;
+VAL_ 608 IP_FuelWarningLampState 3 "Invalid" 2 "Reserved" 1 "Lamp on" 0 "Lamp off" ;
+VAL_ 761 HU_CirculationModeReq 4 "REC/FRS" 3 "AUTO R/F" 2 "FRS" 1 "REC" 0 "No Req" ;
+VAL_ 761 HU_ACFanAdjustValueReq 10 "DOWN Req" 9 "UP Req" 8 "Level8" 7 "Level7" 6 "Level6" 5 "Level5" 4 "Level4" 3 "Level3" 2 "Level2" 1 "Level1" 0 "No Req" ;
+VAL_ 761 HU_ACModeAdjustReq 5 "MODE" 4 "F/D" 3 "FOOT" 2 "B/L" 1 "FACE" 0 "No Req" ;
+VAL_ 761 HU_ACLFTempAdjustValueReq 29 "31.5" 28 "31" 27 "30.5" 26 "30" 25 "29.5" 24 "29" 23 "28.5" 22 "28" 21 "27.5" 20 "27" 19 "26.5" 18 "26" 17 "25.5" 16 "25" 15 "24.5" 14 "24" 13 "23.5" 12 "23" 11 "22.5" 10 "22" 9 "21.5" 8 "21" 7 "20.5" 6 "20" 5 "19.5" 4 "19" 3 "18.5" 33 "Down Req" 32 "UP Req" 31 "HI" 30 "32" 2 "18" 1 "LO" 0 "No Req" ;
+VAL_ 761 HU_ACDEFAdjustReq 3 "DEF" 2 "ON" 1 "OFF" 0 "No Req" ;
+VAL_ 761 HU_FrontACOffReq 3 "invalid" 2 "reserved" 1 "Req" 0 "No Req" ;
+VAL_ 761 HU_FrontAUTOACOnReq 3 "invalid" 2 "reserved" 1 "Req" 0 "No Req" ;
+VAL_ 806 EMS_CruiseControlStatus 3 "Error" 2 "Stand by" 1 "Active" 0 "Off" ;
+VAL_ 810 EPS_EpsFailed 1 "Fail" 0 "No Fail" ;
+VAL_ 810 ESP_EBDFailStatus 1 "Error" 0 "No error" ;
+VAL_ 810 ESP_ESPFunctionStatus 1 "ON" 0 "OFF" ;
+VAL_ 810 ESP_ESPActiveStatus 1 "Active" 0 "NotActive" ;
+VAL_ 886 EPS_TorqSensorStatus 1 "Ab normal" 0 "Normal" ;
+VAL_ 886 EMS_EngineLimpHome 1 "LimpHome" 0 "not LimpHome" ;
+VAL_ 886 EMS_AccpedelError 1 "Error" 0 "No error" ;
+VAL_ 886 EMS_ThrottleValvePositionError 1 "Error" 0 "No error" ;
+VAL_ 886 EMS_ClutchPedalStatus 3 "Error" 2 "Reserved" 1 "Pressed" 0 "NotPressed" ;
+VAL_ 640 IP_AirBagSysWarningLampSts 3 "Failure-failure present" 2 "Lamp flashing-no failure" 1 "Lamp on-no failure" 0 "Lamp off-no failure" ;
+VAL_ 640 IP_FuelLeftover 1 "low" 0 "normal" ;
+VAL_ 839 BCM_WinterMode 1 "Winter Mode" 0 "Normal Mode" ;
+VAL_ 839 BCM_TirePresureSignalStatus 1 "unreliable signal" 0 "reliable signal" ;
+VAL_ 614 PEPS_PEPSFailStatus 1 "Error" 0 "No Error" ;
+VAL_ 976 PAC_SystemFailureFlag 1 "Failure" 0 "Not Failure" ;
+VAL_ 800 EMS_EngineSpeedError 1 "Error" 0 "No error" ;
+VAL_ 800 EMS_MIL 3 "Error" 2 "Reserved" 1 "ON" 0 "OFF" ;
+VAL_ 800 ESP_ABSFailStatus 1 "Error" 0 "No error" ;
+VAL_ 800 ESP_TCSFailStatus 1 "Error" 0 "No error" ;
+VAL_ 800 EMS_CoolanTemperatureError 1 "Error" 0 "No Error" ;
+VAL_ 800 ESP_VehicleSpeedValid 1 "Not Valid" 0 "Valid" ;
+VAL_ 800 SRS_WarningLampStatus 3 "not used" 2 "Lamp Flashing" 1 "Lamp on" 0 "Lamp off" ;
+VAL_ 800 ESP_VehicleSpeed 8191 "Invalid value" ;
+VAL_ 688 TCU_ShiftPostionValid 1 "Invalid" 0 "Valid" ;
+VAL_ 688 TCU_GearShiftPositon 15 "Invalid" 14 "Unreliable" 13 "Reserved" 12 "S position" 11 "A/M position" 10 "- position" 9 " + position" 8 " G position" 7 "M" 6 "L" 5 "D2" 4 "D3" 3 " D" 2 "Neutral" 1 "Reverse" 0 "Parking" ;
+VAL_ 630 ESCL_SteeringLockError 1 "Error" 0 "No Error" ;
+VAL_ 760 HU_APAModeSelect 5 "function  off" 4 "Reserved" 3 "Invalid" 2 "POC Mode" 1 "Cross Mode" 0 "Parallel Mode" ;
+VAL_ 760 HU_RADMWarringEnable 1 "OFF" 0 "ON" ;
+VAL_ 760 HU_AutoViewSet 1 "OFF" 0 "ON" ;
+VAL_ 760 HU_AVMswitch 1 "request" 0 "no request" ;
+VAL_ 760 HU_AVMQuitRequest 1 "request" 0 "no request" ;
+VAL_ 760 DVD_ParkingTrackMode 3 "无效" 2 "关闭辅助线" 1 "平行模式" 0 "普通模式 " ;
+VAL_ 648 BCM_PowerStatusFeedback 3 "Start" 2 "ON" 1 "ACC" 0 "OFF" ;
+

@@ -2,10 +2,8 @@
 # --------------------------------------------------------
 # Copyright (C), 2016-2020, China TSP, All rights reserved
 # --------------------------------------------------------
-# @Name:        version.py
-# @Purpose:     version info
+# @Name:        __init__.py.py
+# @Purpose:     todo
 # @Author:      lizhe
-# @Created:     2020/02/12 22:43
+# @Created:     2020/04/12 22:12
 # --------------------------------------------------------
-
-VERSION = '1.0.4'

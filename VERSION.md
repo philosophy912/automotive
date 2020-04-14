@@ -19,4 +19,13 @@
 - 统一了CANDevice的接口
 - 增加了CAN 随机发送消息的接口
 
+#### V1.0.3
+- 增加了新的CAN分析仪的dll文件
+- 修复了ADB截屏的错误  
+    针对高通820需要先执行adb remount操作，否则会导致截屏不成功
+    
+#### V1.0.4
+- 修复了CAN工具计算值的错误, 涉及src/automotive/can/interfaces/message以及src/automotive/can/interfaces/tools文件
+- 增加了单元测试
+
 

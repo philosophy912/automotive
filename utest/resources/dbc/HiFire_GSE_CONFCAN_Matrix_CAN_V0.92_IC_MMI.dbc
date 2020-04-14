@@ -1,0 +1,3017 @@
+VERSION ""
+
+
+NS_ : 
+	NS_DESC_
+	CM_
+	BA_DEF_
+	BA_
+	VAL_
+	CAT_DEF_
+	CAT_
+	FILTER
+	BA_DEF_DEF_
+	EV_DATA_
+	ENVVAR_DATA_
+	SGTYPE_
+	SGTYPE_VAL_
+	BA_DEF_SGTYPE_
+	BA_SGTYPE_
+	SIG_TYPE_REF_
+	VAL_TABLE_
+	SIG_GROUP_
+	SIG_VALTYPE_
+	SIGTYPE_VALTYPE_
+	BO_TX_BU_
+	BA_DEF_REL_
+	BA_REL_
+	BA_DEF_DEF_REL_
+	BU_SG_REL_
+	BU_EV_REL_
+	BU_BO_REL_
+	SG_MUL_VAL_
+
+BS_:
+
+BU_: AC AVM BCM CWC DSM_D DSM_P FSCM GW IC_MMI
+VAL_TABLE_ MMI_RearViewMirrorAutoFoldFuc 3 "Reserved" 2 "open
+" 1 "close
+" 0 "invalid
+" ;
+VAL_TABLE_ MMI_AccLampSet 3 "开启(延迟60s关闭)" 2 "开启(延迟30s关闭)
+" 1 "close
+" 0 " invalid
+" ;
+VAL_TABLE_ MMI_UnlockVclOpenCsyLampSW 3 "reserved" 2 "open" 1 "close
+" 0 "invalid
+" ;
+VAL_TABLE_ MMI_LockVehicleWarmingTip 3 "Reserved" 2 "flash with horn
+" 1 "flash
+" 0 "invalid
+" ;
+VAL_TABLE_ MMI_OperationMode 3 "sport" 2 "eco" 1 "normal" 0 "invalid" ;
+VAL_TABLE_ MMI_WCBS_CstSwitch 1 "on" 0 "off" ;
+VAL_TABLE_ AmphereLampUserDefModeStatus 3 "炫彩呼吸" 2 "单色呼吸
+" 1 "单色常亮
+" 0 "无效
+" ;
+VAL_TABLE_ AmphereLampMode 3 "驾驶随动模式" 2 "车速随动模式
+" 1 "自定义模式
+" 0 "无效
+" ;
+VAL_TABLE_ AmphereLampSta_IntePerSW 3 "Reserved" 2 "ON
+" 1 "OFF
+" 0 "Invalid
+" ;
+VAL_TABLE_ MMI_AmphereLampIntellisenseSw 3 "reserved" 2 "关闭驾驶模式" 1 "打开驾驶模式" 0 "Invalid" ;
+VAL_TABLE_ BCM_AccLampSetStus 3 "开启(延迟60s关闭)" 2 "开启(延迟30s关闭)
+" 1 "close
+" 0 "invalid
+" ;
+VAL_TABLE_ BCM_VehicleCourtesyLampFuncStus 3 "Reserved" 2 "open
+" 1 "close
+" 0 "invalid
+" ;
+VAL_TABLE_ BCM_CourtesyLampStus 1 "open" 0 "close" ;
+VAL_TABLE_ BCM_LockVehicleWarmingTipStus 3 "Reserved" 2 "flash with horn
+" 1 "flash
+" 0 "invalid
+" ;
+VAL_TABLE_ BCM_RearViewMirrorAutoFoldFuc 3 "reserved" 2 "open" 1 "close" 0 "invalid" ;
+VAL_TABLE_ BCM_RainAutoClsWindowFuncStus 3 "Reserved" 2 "Close" 1 "Open" 0 "invalid" ;
+VAL_TABLE_ BCM_RainAutoClsWindowFuncStus 3 "Description for the value '0x3'" 2 "Close" 1 "Open" 0 "invalid" ;
+VAL_TABLE_ MMI_RainAutoClsWindowCmd 3 "Reserved" 2 "Close" 1 "Open" 0 "invalid" ;
+VAL_TABLE_ DSM_DrvSeatHandyEntryExitSetStus 1 "open" 0 "close" ;
+
+
+BO_ 3221225472 VECTOR__INDEPENDENT_SIG_MSG: 0 Vector__XXX
+ SG_ New_Signal_684 : 0|8@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ New_Signal_684 : 0|8@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ AC_APTC_LV : 0|3@0+ (1,0) [0|7] "" Vector__XXX
+ SG_ New_Signal_681 : 0|8@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ MMI_EpsModeSelect : 0|2@0+ (1,0) [0|3] "" Vector__XXX
+ SG_ AmphereLampSta_Fleshmode : 0|2@0+ (1,0) [0|3] "" Vector__XXX
+ SG_ AmphereLampSta_Drivingmode : 0|2@0+ (1,0) [0|3] "" Vector__XXX
+
+BO_ 1960 Diag_IC_Response: 8 IC_MMI
+ SG_ IC_Diagnostic_Data_response0 : 7|8@0+ (1,0) [0|255] ""  GW
+ SG_ IC_Diagnostic_Data_response2 : 23|8@0+ (1,0) [0|255] ""  GW
+ SG_ IC_Diagnostic_Data_response3 : 31|8@0+ (1,0) [0|255] ""  GW
+ SG_ IC_Diagnostic_Data_response4 : 39|8@0+ (1,0) [0|255] ""  GW
+ SG_ IC_Diagnostic_Data_response5 : 47|8@0+ (1,0) [0|255] ""  GW
+ SG_ IC_Diagnostic_Data_response6 : 55|8@0+ (1,0) [0|255] ""  GW
+ SG_ IC_Diagnostic_Data_response7 : 63|8@0+ (1,0) [0|255] ""  GW
+ SG_ IC_Diagnostic_Data_response1 : 15|8@0+ (1,0) [0|255] ""  GW
+
+BO_ 604 ICU_25Ch: 8 IC_MMI
+ SG_ IC_Vehicle_Speed_Available : 1|1@0+ (1,0) [0|1] ""  GW
+ SG_ ICU_EBDLampSt : 3|2@0+ (1,0) [0|3] ""  GW
+ SG_ ICU_TotalOdometer : 19|20@0+ (1,0) [0|999999] "Km"  AVM,BCM,GW
+ SG_ ICU_ABSLampSt : 5|2@0+ (1,0) [0|3] ""  GW
+ SG_ ICU_PDC_DistanceAlarmDegree_RR : 41|2@0+ (1,0) [0|3] ""  GW
+ SG_ ICU_PDC_DistanceAlarmDegree_RL : 43|2@0+ (1,0) [0|3] ""  GW
+ SG_ ICU_PDC_DistanceAlarmDegree_RRM : 45|2@0+ (1,0) [0|3] ""  GW
+ SG_ ICU_PDC_DistanceAlarmDegree_RLM : 47|2@0+ (1,0) [0|3] ""  GW
+ SG_ ICU_AirBagSysWrnLmpSts : 7|2@0+ (1,0) [0|3] ""  GW
+ SG_ IC_Vehicle_Speed_Displayed : 15|8@0+ (1,0) [0|255] "km/h"  GW
+
+BO_ 620 IC_26Ch: 8 IC_MMI
+ SG_ PAS_PDC_Mode : 2|3@0+ (1,0) [0|7] ""  GW
+ SG_ PAS_PDC_Distance_RL : 23|8@0+ (0.01,0) [0|1.5] "m"  GW
+ SG_ PAS_PDC_Distance_RRM : 31|8@0+ (0.01,0) [0|1.5] "m"  GW
+ SG_ PAS_PDC_Distance_RLM : 39|8@0+ (0.01,0) [0|1.5] "m"  GW
+ SG_ PAS_PDC_SensorSts_RR : 4|1@0+ (1,0) [0|1] ""  GW
+ SG_ PAS_PDC_SensorSts_RL : 5|1@0+ (1,0) [0|1] ""  GW
+ SG_ PAS_PDC_SensorSts_RRM : 6|1@0+ (1,0) [0|1] ""  GW
+ SG_ PAS_PDC_SensorSts_RLM : 7|1@0+ (1,0) [0|1] ""  GW
+ SG_ PAS_PDC_Distance_RR : 15|8@0+ (0.01,0) [0|1.5] "m"  GW
+
+BO_ 370 MMI_172h: 6 IC_MMI
+ SG_ MMI_OperationMode : 30|3@0+ (1,0) [0|7] ""  GW
+ SG_ MMI_WCBS_CstSwitch : 26|1@0+ (1,0) [0|1] ""  GW
+ SG_ MMI_LDW_Main_Switch : 0|1@0+ (1,0) [0|1] ""  GW
+ SG_ MMI_LDW_Switch_Available : 1|1@0+ (1,0) [0|1] ""  GW
+ SG_ MMI_TSR_Main_Switch : 10|1@0+ (1,0) [0|1] ""  GW
+ SG_ MMI_TSR_Switch_Available : 11|1@0+ (1,0) [0|1] ""  GW
+ SG_ MMI_IHC_Main_Switch : 12|1@0+ (1,0) [0|1] ""  GW
+ SG_ MMI_IHC_Switch_Available : 13|1@0+ (1,0) [0|1] ""  GW
+ SG_ MMI_LDW_Sensitivity : 15|2@0+ (1,0) [0|3] ""  GW
+ SG_ MMI_BSD_Main_Switch : 16|1@0+ (1,0) [0|1] ""  GW
+ SG_ MMI_BSD_Switch_Available : 17|1@0+ (1,0) [0|1] ""  GW
+ SG_ MMI_BSD_Sensitivity : 19|2@0+ (1,0) [0|3] ""  GW
+ SG_ MMI_FCW_Sensitivity : 3|2@0+ (1,0) [0|3] ""  GW
+ SG_ MMI_EPS_ModeSwitch : 22|3@0+ (1,0) [0|7] ""  GW
+ SG_ MMI_PauseContinueChrgRQ : 25|2@0+ (1,0) [0|3] ""  GW
+ SG_ MMI_ChrgMaxPower : 38|7@0+ (1,0) [0|100] "%"  GW
+ SG_ MMI_FCW_Main_Switch : 4|1@0+ (1,0) [0|1] ""  GW
+ SG_ MMI_ChrgCurrentSet : 47|8@0+ (0.1,0) [0|25.5] "A"  GW
+ SG_ MMI_FCW_Switch_Available : 5|1@0+ (1,0) [0|1] ""  GW
+ SG_ MMI_AEB_Main_Switch : 6|1@0+ (1,0) [0|1] ""  GW
+ SG_ MMI_AEB_Switch_Available : 7|1@0+ (1,0) [0|1] ""  GW
+
+BO_ 630 MMI_276h: 8 IC_MMI
+ SG_ MMI_AVM_ConnectStatus : 3|4@0+ (1,0) [0|15] ""  AVM,GW
+ SG_ MMI_AVM_AVM3DExitDelaySet : 11|2@0+ (1,0) [0|3] ""  AVM,GW
+ SG_ MMI_AVM_AVM3DTurnLightSet : 13|2@0+ (1,0) [0|3] ""  AVM,GW
+ SG_ MMI_AVM_AVM3DBlindFillSet : 15|2@0+ (1,0) [0|3] ""  AVM,GW
+ SG_ MMI_AVM_BSDFunction : 17|2@0+ (1,0) [0|3] ""  AVM,GW
+ SG_ MMI_AVM_OTFunction : 19|2@0+ (1,0) [0|3] ""  AVM,GW
+ SG_ MMI_AVM_AVM3DCarIconColor : 23|4@0+ (1,0) [0|15] ""  AVM,GW
+ SG_ MMI_AVM_AVM3DCarIconTransparenVa : 25|2@0+ (1,0) [0|3] ""  AVM,GW
+ SG_ MMI_AVM_VideoOutputStatus : 31|4@0+ (1,0) [0|15] ""  AVM,GW
+ SG_ MMI_AVM_AVM3DCarIconTransparent : 39|8@0+ (1,0) [0|100] "%"  AVM,GW
+ SG_ MMI_AVM_LanguageSet : 7|4@0+ (1,0) [0|15] ""  AVM,GW
+ SG_ MMI_AVM_AVM3DDynTrajSet : 9|2@0+ (1,0) [0|3] ""  AVM,GW
+
+BO_ 632 MMI_278h: 8 IC_MMI
+ SG_ MMI_AVMXcoordinate : 7|12@0+ (1,0) [0|4094] ""  AVM,GW
+ SG_ MMI_AVMYcoordinate : 9|10@0+ (1,0) [0|1022] ""  AVM,GW
+ SG_ MMI_AVMXGestureSpeed : 31|8@0+ (1,0) [0|254] "pixels/100ms"  AVM,GW
+ SG_ MMI_AVMYGestureSpeed : 39|8@0+ (1,0) [0|254] "pixels/100ms"  AVM,GW
+ SG_ MMI_AVMZoomScaleFactor : 47|8@0+ (1,0) [0|254] ""  AVM,GW
+ SG_ MMI_AVMZoomRotaterFactor : 55|8@0+ (1,0) [0|254] ""  AVM,GW
+ SG_ MMI_AVMTouchEventType : 59|4@0+ (1,0) [0|15] ""  AVM,GW
+
+BO_ 634 MMI_27Ah: 8 IC_MMI
+ SG_ MMI_AVM_AVM3D_COMMAND : 3|4@0+ (1,0) [0|15] ""  AVM,GW
+ SG_ MMI_AVM_AVM3DViewSwitch : 23|8@0+ (1,0) [0|255] ""  AVM,GW
+ SG_ MMI_AVM_AVM3DViewModeSwitch : 7|4@0+ (1,0) [0|15] ""  AVM,GW
+ SG_ MMI_AVM_AVMEcuEnterExit : 12|5@0+ (1,0) [0|31] ""  AVM,GW
+
+BO_ 648 MMI_288h: 8 IC_MMI
+ SG_ MMI_ACAUTOReqValid : 0|1@0+ (1,0) [0|1] ""  AC,GW
+ SG_ MMI_ACAUTOReq : 1|1@0+ (1,0) [0|1] ""  AC,GW
+ SG_ MMI_BLOWERReqValid : 10|1@0+ (1,0) [0|1] ""  AC,GW
+ SG_ MMI_BLOWERReq : 11|1@0+ (1,0) [0|1] ""  AC,GW
+ SG_ MMI_ACBlowModeReqValid : 12|1@0+ (1,0) [0|1] ""  AC,GW
+ SG_ MMI_ACBlowModeReq : 15|3@0+ (1,0) [0|7] ""  AC,GW
+ SG_ MMI_CirculatingModeSetValid : 16|1@0+ (1,0) [0|1] ""  AC,GW
+ SG_ MMI_CirculatingModeSet : 17|1@0+ (1,0) [0|1] ""  AC,GW
+ SG_ MMI_InsideTempSetValid : 18|1@0+ (1,0) [0|1] ""  AC,GW
+ SG_ MMI_InsideTempSet : 23|5@0+ (0.5,18) [18|32] "℃"  AC,GW
+ SG_ MMI_ACCompressorReqValid : 2|1@0+ (1,0) [0|1] ""  AC,GW
+ SG_ MMI_SeatHeatReq_right : 25|2@0+ (1,0) [0|3] ""  AC,GW
+ SG_ MMI_SeatHeatReq_left : 27|2@0+ (1,0) [0|3] ""  AC,GW
+ SG_ MMI_BLOWERGearSetValid : 28|1@0+ (1,0) [0|1] ""  AC,GW
+ SG_ MMI_BLOWERGearSet : 31|3@0+ (1,0) [0|7] ""  AC,GW
+ SG_ MMI_ACCompressorReq : 3|1@0+ (1,0) [0|1] ""  AC,GW
+ SG_ MMI_FrontDeforstReq : 33|2@0+ (1,0) [0|3] ""  AC,GW
+ SG_ MMI_RearDeforstReq : 35|2@0+ (1,0) [0|3] ""  AC,GW
+ SG_ MMI_EnergyRecoveryContr : 38|3@0+ (1,0) [0|7] ""  GW
+ SG_ MMI_ACMaxReqValid : 4|1@0+ (1,0) [0|1] ""  AC,GW
+ SG_ MMI_RearViewMirrorHeatReq : 41|2@0+ (1,0) [0|3] ""  AC,GW
+ SG_ MMI_AnionNegativeIonReq : 43|2@0+ (1,0) [0|3] ""  AC,GW
+ SG_ MMI_ACMaxReq : 5|1@0+ (1,0) [0|1] ""  AC,GW
+ SG_ MMI_ACOFFReqValid : 6|1@0+ (1,0) [0|1] ""  AC,GW
+ SG_ MMI_ACOFFReq : 7|1@0+ (1,0) [0|1] ""  AC,GW
+ SG_ MMI_InsideTempIncDecReqValid : 8|1@0+ (1,0) [0|1] ""  AC,GW
+ SG_ MMI_InsideTempIncDecReq : 9|1@0+ (1,0) [0|1] ""  AC,GW
+
+BO_ 652 MMI_28Ch: 6 IC_MMI
+ SG_ MMI_PlatfondPellAuto_SW : 31|2@0+ (1,0) [0|3] ""  GW
+ SG_ MMI_PlatfondPellucidity : 38|7@0+ (1,0) [0|100] ""  GW
+ SG_ MMI_VoiceSourceSelect_Cycle : 1|2@0+ (1,0) [0|3] ""  GW
+ SG_ MMI_AmphereLampCtrl_BrtnsVal : 23|8@0+ (1,0) [0|100] ""  GW
+ SG_ MMI_AmphereLampCtrl_Fleshmode : 25|2@0+ (1,0) [0|3] ""  GW
+ SG_ MMI_AmphereLampCtrl_Drivingmode : 27|2@0+ (1,0) [0|3] ""  GW
+ SG_ MMI_AmphereLampCtrl_SW : 29|2@0+ (1,0) [0|3] ""  GW
+ SG_ MMI_VoiceSourceSelect : 5|3@0+ (1,0) [0|7] ""  GW
+ SG_ MMI_PlatfondColorCmd : 43|3@0+ (1,0) [0|7] ""  GW
+ SG_ MMI_AmphereLampIntellisenseSw : 45|2@0+ (1,0) [0|3] ""  GW
+ SG_ MMI_CWC_Cmd : 47|2@0+ (1,0) [0|3] ""  GW,CWC
+ SG_ MMI_VSPEnableCommand : 7|2@0+ (1,0) [0|3] ""  GW
+ SG_ MMI_AmphereLampCtrl_Colour : 11|4@0+ (1,0) [0|15] ""  GW
+
+BO_ 666 MMI_29Ah: 8 IC_MMI
+ SG_ MMI_DrvSeatSlideCommand : 1|2@0+ (1,0) [0|3] ""  DSM_D
+ SG_ MMI_DrvSeatFrontLiftPosPercentVa : 16|1@0+ (1,0) [0|1] ""  DSM_D
+ SG_ MMI_DrvSeatFrontLiftPosPercent : 23|7@0+ (1,0) [0|100] "%"  DSM_D
+ SG_ MMI_DrvSeatFrontLiftCommand : 3|2@0+ (1,0) [0|3] ""  DSM_D
+ SG_ MMI_DrvSeatReclinerPosPercentVal : 24|1@0+ (1,0) [0|1] ""  DSM_D
+ SG_ MMI_DrvSeatReclinerPosPercent : 31|7@0+ (1,0) [0|100] "%"  DSM_D
+ SG_ MMI_DrvSeatAllLiftPosPercentVali : 32|1@0+ (1,0) [0|1] ""  DSM_D
+ SG_ MMI_DrvSeatAllLiftPosPercent : 39|7@0+ (1,0) [0|100] "%"  DSM_D
+ SG_ MMI_DrvSeatReclinerCommand : 5|2@0+ (1,0) [0|3] ""  DSM_D
+ SG_ MMI_DrvSeatHeatControlCmd : 42|3@0+ (1,0) [0|7] ""  FSCM
+ SG_ MMI_DrvSeatVenControlCmd : 46|3@0+ (1,0) [0|7] ""  FSCM
+ SG_ MMI_DrvSeatHandyEntryExitSet : 49|2@0+ (1,0) [0|3] ""  DSM_D
+ SG_ MMI_DrvSeatAllLiftCommand : 7|2@0+ (1,0) [0|3] ""  DSM_D
+ SG_ MMI_DrvSeatSlidePosPercentValid : 8|1@0+ (1,0) [0|1] ""  DSM_D
+ SG_ MMI_DrvSeatSlidePosPercent : 15|7@0+ (1,0) [0|100] "%"  DSM_D
+
+BO_ 668 MMI_29Ch: 8 IC_MMI
+ SG_ MMI_PassSeatSlideCommand : 1|2@0+ (1,0) [0|3] ""  DSM_P
+ SG_ MMI_PassSeatFrontLiftPosPercentV : 16|1@0+ (1,0) [0|1] ""  DSM_P
+ SG_ MMI_PassSeatFrontLiftPosPercent : 23|7@0+ (1,0) [0|100] "%"  DSM_P
+ SG_ MMI_PassSeatFrontLiftCommand : 3|2@0+ (1,0) [0|3] ""  DSM_P
+ SG_ MMI_PassSeatReclinerPosPercentVa : 24|1@0+ (1,0) [0|1] ""  DSM_P
+ SG_ MMI_PassSeatReclinerPosPercent : 31|7@0+ (1,0) [0|100] "%"  DSM_P
+ SG_ MMI_PassSeatAllLiftPosPercentVal : 32|1@0+ (1,0) [0|1] ""  DSM_P
+ SG_ MMI_PassSeatAllLiftPosPercent : 39|7@0+ (1,0) [0|100] "%"  DSM_P
+ SG_ MMI_PassSeatReclinerCommand : 5|2@0+ (1,0) [0|3] ""  DSM_P
+ SG_ MMI_PassDrvSeatHeatControlCmd : 42|3@0+ (1,0) [0|7] ""  FSCM
+ SG_ MMI_PassDrvSeatVenControlCmd : 46|3@0+ (1,0) [0|7] ""  FSCM
+ SG_ MMI_PassSeatAllLiftCommand : 7|2@0+ (1,0) [0|3] ""  DSM_P
+ SG_ MMI_PassSeatSlidePosPercentValid : 8|1@0+ (1,0) [0|1] ""  DSM_P
+ SG_ MMI_PassSeatSlidePosPercent : 15|7@0+ (1,0) [0|100] "%"  DSM_P
+
+BO_ 670 MMI_29Eh: 8 IC_MMI
+ SG_ MMI_LockVehicleWarmingTip : 53|2@0+ (1,0) [0|3] ""  BCM
+ SG_ MMI_UnlockVetesyLampSW : 55|2@0+ (1,0) [0|3] ""  BCM
+ SG_ MMI_AccLampSet : 59|2@0+ (1,0) [0|3] ""  BCM
+ SG_ MMI_RearViewMirrorA : 61|2@0+ (1,0) [0|3] ""  BCM
+ SG_ MMI_RainAutoClsWindowCmd : 39|2@0+ (1,0) [0|3] ""  BCM
+ SG_ MMI_HazardLightCmd : 1|2@0+ (1,0) [0|3] ""  BCM
+ SG_ MMI_DoorLockCmd : 11|2@0+ (1,0) [0|3] ""  BCM
+ SG_ MMI_LowBeamLightCmd : 13|2@0+ (1,0) [0|3] ""  BCM
+ SG_ MMI_HighBeamLightCmd : 15|2@0+ (1,0) [0|3] ""  BCM
+ SG_ MMI_FoglightCmd : 17|2@0+ (1,0) [0|3] ""  BCM
+ SG_ MMI_WiperCmd : 20|3@0+ (1,0) [0|7] ""  BCM
+ SG_ MMI_BCMLightCmd : 3|2@0+ (1,0) [0|3] ""  BCM
+ SG_ MMI_FronLeftDoorWindowCmd : 23|3@0+ (1,0) [0|7] ""  BCM
+ SG_ MMI_FronRightDoorWindowCmd : 26|3@0+ (1,0) [0|7] ""  BCM
+ SG_ MMI_RearLeftDoorWindowCmd : 29|3@0+ (1,0) [0|7] ""  BCM
+ SG_ MMI_FourDoorWindowCmd : 33|2@0+ (1,0) [0|3] ""  BCM
+ SG_ MMI_FrontDoorWindowCmd : 35|2@0+ (1,0) [0|3] ""  BCM
+ SG_ MMI_AutolightSWCmd : 37|2@0+ (1,0) [0|3] ""  BCM
+ SG_ MMI_TailgateCmd : 5|2@0+ (1,0) [0|3] ""  BCM
+ SG_ MMI_RearRightDoorWindowCmd : 42|3@0+ (1,0) [0|7] ""  BCM
+ SG_ MMI_RearViewMirrorSelect : 47|2@0+ (1,0) [0|3] ""  BCM
+ SG_ MMI_RearViewMirrorUpDown : 49|2@0+ (1,0) [0|3] ""  BCM
+ SG_ MMI_RearViewMirrorLeftRight : 51|2@0+ (1,0) [0|3] ""  BCM
+ SG_ MMI_RearViewCmd : 7|2@0+ (1,0) [0|3] ""  BCM
+
+BO_ 792 MMI_318h: 8 IC_MMI
+ SG_ MMI_LicensePlate_ProvinceName : 5|6@0+ (1,0) [0|31] ""  AVM,GW
+ SG_ MMI_LicensePlate_Num2 : 21|6@0+ (1,0) [0|36] ""  AVM,GW
+ SG_ MMI_LicensePlate_Num3 : 29|6@0+ (1,0) [0|36] ""  AVM,GW
+ SG_ MMI_LicensePlate_Num4 : 37|6@0+ (1,0) [0|36] ""  AVM,GW
+ SG_ MMI_LicensePlate_Num5 : 45|6@0+ (1,0) [0|36] ""  AVM,GW
+ SG_ MMI_LicensePlate_Num6 : 53|6@0+ (1,0) [0|36] ""  AVM,GW
+ SG_ MMI_LicensePlate_Num7 : 61|6@0+ (1,0) [0|36] ""  AVM,GW
+ SG_ MMI_LicensePlate_Num1 : 13|6@0+ (1,0) [0|36] ""  AVM,GW
+
+BO_ 1030 NM_IC_406: 8 IC_MMI
+ SG_ IC_NM_Message0 : 7|8@0+ (1,0) [0|255] ""  AC,BCM,GW
+ SG_ IC_NM_Message2 : 23|8@0+ (1,0) [0|255] ""  AC,BCM,GW
+ SG_ IC_NM_Message3 : 31|8@0+ (1,0) [0|255] ""  AC,BCM,GW
+ SG_ IC_NM_Message4 : 39|8@0+ (1,0) [0|255] ""  AC,BCM,GW
+ SG_ IC_NM_Message5 : 47|8@0+ (1,0) [0|255] ""  AC,BCM,GW
+ SG_ IC_NM_Message6 : 55|8@0+ (1,0) [0|255] ""  AC,BCM,GW
+ SG_ IC_NM_Message7 : 63|8@0+ (1,0) [0|255] ""  AC,BCM,GW
+ SG_ IC_NM_Message1 : 15|8@0+ (1,0) [0|255] ""  AC,BCM,GW
+
+BO_ 352 ADAS_160h: 8 GW
+ SG_ ACC_Set_Speed : 7|8@0+ (1,0) [0|255] "kph"  IC_MMI
+ SG_ ACC_Set_Headway : 15|3@0+ (1,0) [0|7] ""  IC_MMI
+
+BO_ 384 APA_180h: 8 GW
+ SG_ APA_MMI_ConnectStatus : 3|4@0+ (1,0) [0|7] ""  IC_MMI
+ SG_ APA_MMI_EcuStatus : 7|4@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ APA_MMI_VideoOutputStatus : 9|2@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ APA_MMI_3DViewModeStatus : 13|4@0+ (1,0) [0|15] ""  IC_MMI
+ SG_ APA_MMI_AVM3DViewSwitch : 23|8@0+ (1,0) [0|255] ""  IC_MMI
+
+BO_ 386 APA_182h: 8 GW
+ SG_ APA_BSDLeftWaringSeverity : 6|7@0+ (1,0) [0|126] ""  IC_MMI
+ SG_ APA_BSDLeftWaringValid : 7|1@0+ (1,0) [0|1] ""  IC_MMI
+ SG_ APA_BSDRightWaringSeverity : 14|7@0+ (1,0) [0|126] ""  IC_MMI
+ SG_ APA_BSDRightWaringValid : 15|1@0+ (1,0) [0|1] ""  IC_MMI
+ SG_ APA_BSDStatus : 22|1@0+ (1,0) [0|1] ""  IC_MMI
+ SG_ APA_BSDStatusValid : 23|1@0+ (1,0) [0|1] ""  IC_MMI
+
+BO_ 387 APA_183h: 8 GW
+ SG_ PAS_APA_DistanceLR_RL : 7|9@0+ (0.01,0) [0|5] "m"  IC_MMI
+ SG_ PAS_APA_DistanceLR_RR : 14|9@0+ (0.01,0) [0|5] "m"  IC_MMI
+ SG_ PAS_APA_DistanceSR_RL : 21|8@0+ (0.01,0) [0|2.5] "m"  IC_MMI
+ SG_ PAS_APA_DistanceSR_RML : 29|8@0+ (0.01,0) [0|2.5] "m"  IC_MMI
+ SG_ PAS_APA_DistanceSR_RMR : 37|8@0+ (0.01,0) [0|2.5] "m"  IC_MMI
+ SG_ PAS_APA_DistanceSR_RR : 45|8@0+ (0.01,0) [0|2.5] "m"  IC_MMI
+ SG_ APA_183hh_MessageCounter : 51|4@0+ (1,0) [0|15] ""  IC_MMI
+ SG_ APA_183hh_MessageChecksum : 63|8@0+ (1,0) [0|255] ""  IC_MMI
+
+BO_ 388 APA_184h: 8 GW
+ SG_ PAS_APA_DistanceLR_FL : 7|9@0+ (0.01,0) [0|5] "m"  IC_MMI
+ SG_ PAS_APA_DistanceLR_FR : 14|9@0+ (0.01,0) [0|5] "m"  IC_MMI
+ SG_ PAS_APA_DistanceSR_FL : 21|8@0+ (0.01,0) [0|2.5] "m"  IC_MMI
+ SG_ PAS_APA_DistanceSR_FML : 29|8@0+ (0.01,0) [0|2.5] "m"  IC_MMI
+ SG_ PAS_APA_DistanceSR_FMR : 37|8@0+ (0.01,0) [0|2.5] "m"  IC_MMI
+ SG_ PAS_APA_DistanceSR_FR : 45|8@0+ (0.01,0) [0|2.5] "m"  IC_MMI
+ SG_ APA_184hh_MessageCounter : 51|4@0+ (1,0) [0|15] ""  IC_MMI
+ SG_ APA_184hh_MessageChecksum : 63|8@0+ (1,0) [0|255] ""  IC_MMI
+
+BO_ 784 APA_310h: 8 GW
+ SG_ APA_AVM_MCU_Version : 15|24@0+ (1,0) [0|16777214] ""  IC_MMI
+ SG_ APA_AVM_BSP_Version : 39|24@0+ (1,0) [0|16777214] ""  IC_MMI
+
+BO_ 786 APA_312h: 8 GW
+ SG_ APA_AVM_ZADAS_Version : 15|24@0+ (1,0) [0|16777214] ""  IC_MMI
+ SG_ APA_Avm3d_licenseStatus : 33|2@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ APA_BSD_licenseStatus : 35|2@0+ (1,0) [0|3] ""  IC_MMI
+
+BO_ 390 AVM_186h: 8 AVM
+ SG_ AVM_BSDLeftWaringSeverity : 6|7@0+ (1,0) [0|126] ""  IC_MMI
+ SG_ AVM_BSDLeftWaringValid : 7|1@0+ (1,0) [0|1] ""  IC_MMI
+ SG_ AVM_BSDRightWaringSeverity : 14|7@0+ (1,0) [0|126] ""  IC_MMI
+ SG_ AVM_BSDRightWaringValid : 15|1@0+ (1,0) [0|1] ""  IC_MMI
+ SG_ AVM_BSDStatus : 22|1@0+ (1,0) [0|1] ""  IC_MMI
+ SG_ AVM_BSDStatusValid : 23|1@0+ (1,0) [0|1] ""  IC_MMI
+
+BO_ 392 AVM_188h: 8 AVM
+ SG_ AVM_MMI_ConnectStatus : 3|4@0+ (1,0) [0|7] ""  IC_MMI
+ SG_ AVM_MMI_EcuStatus : 7|4@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ AVM_MMI_VideoOutputStatus : 9|2@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ AVM_MMI_AVM3DViewModeStatus : 13|4@0+ (1,0) [0|15] ""  IC_MMI
+ SG_ AVM_MMI_AVM3DViewSwitch : 23|8@0+ (1,0) [0|255] ""  IC_MMI
+
+BO_ 788 AVM_314h: 8 AVM
+ SG_ AVM_MCU_Version : 15|24@0+ (1,0) [0|16777214] ""  IC_MMI
+ SG_ AVM_BSP_Version : 39|24@0+ (1,0) [0|16777214] ""  IC_MMI
+
+BO_ 790 AVM_316h: 8 AVM
+ SG_ AVM_ZADAS_Version : 15|24@0+ (1,0) [0|16777214] ""  IC_MMI
+ SG_ Avm3d_licenseStatus : 33|2@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ BSD_licenseStatus : 35|2@0+ (1,0) [0|3] ""  IC_MMI
+
+BO_ 524 BMS_20Ch: 8 GW
+ SG_ BMS_Powertrain_System_fault : 1|2@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ BMS_cell_Voltage_low : 5|2@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ BMS_cell_Voltage_High : 7|2@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ BMS_Battery_LowTemp_warning : 9|2@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ BMS_Battery_HighTemp_warning : 11|2@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ BMS_SOCHigh_Warning : 17|2@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ BMS_SOCLow_Warning : 19|2@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ BMS_Battery_SumVoltage_High : 21|2@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ BMS_Battery_SumVoltage_Low : 23|2@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ BMS_HVBatCellDiffFalt : 25|2@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ BMS_Err_OverVoltageFault : 27|2@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ BMS_Battery_charge_Fault : 29|2@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ BMS_SOCJump_Warning : 31|2@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ BMS_Err_CellT_Low : 35|2@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ BMS_Err_CellT_High : 37|2@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ BMS_BatNotMatchFlt : 39|2@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ BMS_Err_ISO_LOW : 41|2@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ BMS_Err_ChgCurrent_High : 43|2@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ BMS_Err_DchCurrent_High : 45|2@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ BMS_Err_DtT_High : 47|2@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ BMS_Err_comunicacion : 51|2@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ BMS_Err_InterLock : 52|1@0+ (1,0) [0|1] ""  IC_MMI
+ SG_ BMS_Circuit_Protection : 53|1@0+ (1,0) [0|1] ""  IC_MMI
+ SG_ BMS_FeedFault : 55|2@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ BMS_TotalErrNumber : 63|8@0+ (1,0) [0|254] ""  IC_MMI
+
+BO_ 528 BMS_210h: 8 GW
+ SG_ BMS_Sys_MinCellV : 7|16@0+ (0.001,0) [0|5] "V"  IC_MMI
+ SG_ BMS_Sys_MaxCellV : 23|16@0+ (0.001,0) [0|5] "V"  IC_MMI
+ SG_ BMS_Sys_MinCellV_No : 39|8@0+ (1,0) [0|255] ""  IC_MMI
+ SG_ BMS_Sys_MaxCellV_No : 47|8@0+ (1,0) [0|255] ""  IC_MMI
+
+BO_ 530 BMS_212h: 8 GW
+ SG_ BMS_Sys_MinCellT : 7|8@0+ (1,-50) [-50|204] "℃"  IC_MMI
+ SG_ BMS_Sys_MaxCellT : 15|8@0+ (1,-50) [-50|204] "℃"  IC_MMI
+ SG_ BMS_Sys_MinCellT_No : 23|8@0+ (1,0) [0|254] "℃"  IC_MMI
+ SG_ BMS_Sys_MaxCellT_No : 31|8@0+ (1,0) [0|254] "℃"  IC_MMI
+ SG_ BMS_FastChrgTemp : 39|8@0+ (1,-50) [-50|204] "℃"  IC_MMI
+
+BO_ 534 BMS_216h: 8 GW
+ SG_ BMS_Sys_SOC : 39|8@0+ (1,0) [0|100] "%"  IC_MMI
+ SG_ BMS_Sys_SOH : 47|8@0+ (1,0) [0|100] "%"  IC_MMI
+
+BO_ 340 BSD_154h: 8 GW
+ SG_ RCTA_warm_status_left : 1|2@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ BSDLCA_warm_status_left : 3|2@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ BSD_ConnectionFault_left : 9|2@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ BSD_RFICFault_left : 11|2@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ BSD_OverTempFault_left : 13|2@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ BSD_StoreFault_left : 15|2@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ BSDDOW_warm_status_left : 17|2@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ BSD_EnableStatus : 22|3@0+ (1,0) [0|7] ""  IC_MMI
+
+BO_ 344 BSD_158h: 8 GW
+ SG_ RCTA_warm_status_right : 1|2@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ BSDLCA_warm_status_right : 3|2@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ BSD_ConnectionFault_right : 9|2@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ BSD_RFICFault_right : 11|2@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ BSD_OverTempFault_right : 13|2@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ BSD_StoreFault_right : 15|2@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ BSDDOW_warm_status_right : 17|2@0+ (1,0) [0|3] ""  IC_MMI
+
+BO_ 856 CWC_358h: 8 CWC
+ SG_ CWC_Status_Charge : 1|2@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ CWC_Info_matter : 4|1@0+ (1,0) [0|1] ""  IC_MMI
+ SG_ CWC_Info_phoneforgotten : 5|1@0+ (1,0) [0|1] ""  IC_MMI
+ SG_ CWC_Over_Temp : 8|1@0+ (1,0) [0|1] ""  IC_MMI
+ SG_ CWC_Over_Current : 9|1@0+ (1,0) [0|1] ""  IC_MMI
+ SG_ CWC_Over_Voltage : 10|1@0+ (1,0) [0|1] ""  IC_MMI
+
+BO_ 665 DSM_D_299h: 8 DSM_D
+ SG_ DSM_DrvSeatHandyEntryExitSetStus : 15|2@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ DSM_D_SlideDirection : 2|3@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ DSM_D_FrontLiftDirection : 5|3@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ DSM_D_ReclinerDirection : 10|3@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ DSM_D_AllLiftDirection : 13|3@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ DSM_D_SlidePosPercentFinal : 22|7@0+ (1,0) [0|100] "%"  IC_MMI
+ SG_ DSM_D_FrontLiftPosPercentFinal : 30|7@0+ (1,0) [0|100] "%"  IC_MMI
+ SG_ DSM_D_ReclinerPosPercentFinal : 38|7@0+ (1,0) [0|100] "%"  IC_MMI
+ SG_ DSM_D_AllLiftPosPercentFinal : 46|7@0+ (1,0) [0|100] "%"  IC_MMI
+
+BO_ 667 DSM_P_29Bh: 8 DSM_P
+ SG_ DSM_P_SlideDirection : 2|3@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ DSM_P_FrontLiftDirection : 5|3@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ DSM_P_ReclinerDirection : 10|3@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ DSM_P_AllLiftDirection : 13|3@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ DSM_P_SlidePosPercentFinal : 22|7@0+ (1,0) [0|100] "%"  IC_MMI
+ SG_ DSM_P_FrontLiftPosPercentFinal : 30|7@0+ (1,0) [0|100] "%"  IC_MMI
+ SG_ DSM_P_ReclinerPosPercentFinal : 38|7@0+ (1,0) [0|100] "%"  IC_MMI
+ SG_ DSM_P_AllLiftPosPercentFinal : 46|7@0+ (1,0) [0|100] "%"  IC_MMI
+
+BO_ 1832 Diag_IC_Request: 8 GW
+ SG_ IC_Diagnostic_Data_Request0 : 7|8@0+ (1,0) [0|255] ""  IC_MMI
+ SG_ IC_Diagnostic_Data_Request1 : 15|8@0+ (1,0) [0|255] ""  IC_MMI
+ SG_ IC_Diagnostic_Data_Request2 : 23|8@0+ (1,0) [0|255] ""  IC_MMI
+ SG_ IC_Diagnostic_Data_Request3 : 31|8@0+ (1,0) [0|255] ""  IC_MMI
+ SG_ IC_Diagnostic_Data_Request4 : 39|8@0+ (1,0) [0|255] ""  IC_MMI
+ SG_ IC_Diagnostic_Data_Request5 : 47|8@0+ (1,0) [0|255] ""  IC_MMI
+ SG_ IC_Diagnostic_Data_Request6 : 55|8@0+ (1,0) [0|255] ""  IC_MMI
+ SG_ IC_Diagnostic_Data_Request7 : 63|8@0+ (1,0) [0|255] ""  IC_MMI
+
+BO_ 342 GW_156h: 8 GW
+ SG_ AmphereLampUserDefModeStatus : 29|2@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ AmphereLampMode : 27|2@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ AmphereLampSta_IntePerS : 19|2@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ SteerWheel_L_OK : 0|1@0+ (1,0) [0|1] ""  IC_MMI
+ SG_ SteerWheel_Voice : 1|1@0+ (1,0) [0|1] ""  IC_MMI
+ SG_ SteerWheel_VOL_Inc : 2|1@0+ (1,0) [0|1] ""  IC_MMI
+ SG_ SteerWheel_VOL_Dec : 4|1@0+ (1,0) [0|1] ""  IC_MMI
+ SG_ SteerWheel_PREV : 6|1@0+ (1,0) [0|1] ""  IC_MMI
+ SG_ SteerWheel_Defi : 14|1@0+ (1,0) [0|1] ""  IC_MMI
+ SG_ SteerWheel_NEXT : 15|1@0+ (1,0) [0|1] ""  IC_MMI
+ SG_ SteerWheel_Mode : 16|1@0+ (1,0) [0|1] ""  IC_MMI
+ SG_ SteerWheel_Return_Home : 17|1@0+ (1,0) [0|1] ""  IC_MMI
+ SG_ SteerWheel_Hang_Down : 24|1@0+ (1,0) [0|1] ""  IC_MMI
+ SG_ AmphereLampSta_SW : 31|2@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ AmphereLampSta_Colour : 47|3@0+ (1,0) [0|7] ""  IC_MMI
+ SG_ AmphereLampBrtnsVal : 63|8@0+ (1,0) [0|100] "%"  IC_MMI
+
+BO_ 594 MCU_F_252h: 8 GW
+ SG_ MCU_F_ResolverFault : 8|1@0+ (1,0) [0|1] ""  IC_MMI
+ SG_ MCU_F_Err_IGBT : 9|1@0+ (1,0) [0|1] ""  IC_MMI
+ SG_ MCU_F_CurrentOverload : 11|2@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ MCU_F_Controllertemp_Status : 13|2@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ MCU_F_SpeedOtLoopFalult : 18|1@0+ (1,0) [0|1] ""  IC_MMI
+ SG_ MCU_F_MdTepErr : 19|1@0+ (1,0) [0|1] ""  IC_MMI
+ SG_ MCU_F_ControllerOverVolt_Status : 21|2@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ MCU_F_MotorTemp_Fault : 23|2@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ MCU_F_MotorOverSpd : 25|1@0+ (1,0) [0|1] ""  IC_MMI
+ SG_ MCU_F_ControllerLowUnderVolt_Sta : 27|1@0+ (1,0) [0|1] ""  IC_MMI
+ SG_ MCU_F_ControllerUnderVolt_Status : 29|2@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ MCU_F_ControllerFault : 17|3@0+ (1,0) [0|7] ""  IC_MMI
+ SG_ FMCU_HV_Interlock_Falult : 35|2@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ FMCU_Uncap_Falult : 37|2@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ MCU_F_MotTepErr : 39|1@0+ (1,0) [0|1] ""  IC_MMI
+
+BO_ 132 MCU_F_84h: 8 GW
+ SG_ MCU_F_ControlerTemp : 7|8@0+ (1,-50) [-50|205] "℃"  IC_MMI
+ SG_ MCU_F_TempCurr : 31|8@0+ (1,-50) [-50|205] "℃"  IC_MMI
+
+BO_ 580 MCU_R_244h: 8 GW
+ SG_ MCU_R_ControlerTemp : 7|8@0+ (1,-50) [-50|205] "℃"  IC_MMI
+ SG_ MCU_R_TempCurr : 31|8@0+ (1,-50) [-50|205] "℃"  IC_MMI
+
+BO_ 608 MCU_R_260h: 8 GW
+ SG_ MCU_R_ResolverFault : 8|1@0+ (1,0) [0|1] ""  IC_MMI
+ SG_ MCU_R_Err_IGBT : 9|1@0+ (1,0) [0|1] ""  IC_MMI
+ SG_ MCU_R_CurrentOverload : 11|2@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ MCU_R_Controllertemp_Status : 13|2@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ MCU_R_SpeedOtLoopFalult : 18|1@0+ (1,0) [0|1] ""  IC_MMI
+ SG_ MCU_R_MdTepErr : 19|1@0+ (1,0) [0|1] ""  IC_MMI
+ SG_ MCU_R_ControllerOverVolt_Status : 21|2@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ MCU_R_MotorTemp_Fault : 23|2@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ MCU_R_MotorOverSpd : 25|1@0+ (1,0) [0|1] ""  IC_MMI
+ SG_ MCU_R_ControllerLowUnderVolt_Sta : 27|1@0+ (1,0) [0|1] ""  IC_MMI
+ SG_ MCU_R_ControllerUnderVolt_Status : 29|2@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ MCU_R_ControllerFault : 17|3@0+ (1,0) [0|7] ""  IC_MMI
+ SG_ RMCU_HV_Interlock_Falult : 35|2@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ RMCU_Uncap_Falult : 37|2@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ MCU_R_MotTepErr : 39|1@0+ (1,0) [0|1] ""  IC_MMI
+
+BO_ 644 TBOX_284h: 8 GW
+ SG_ TBOX_StartChgYear : 5|6@0+ (1,2010) [2010|2072] ""  IC_MMI
+ SG_ TBOX_ReservationChgCommandSet : 7|2@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ TBOX_StartChgMonth : 11|4@0+ (1,0) [1|12] ""  IC_MMI
+ SG_ TBOX_StartChgDay : 20|5@0+ (1,0) [1|31] ""  IC_MMI
+ SG_ TBOX_StartChgHour : 28|5@0+ (1,0) [0|23] ""  IC_MMI
+ SG_ TBOX_ChrgMode : 33|2@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ TBOX_StartChgMinute : 39|6@0+ (1,0) [0|59] ""  IC_MMI
+ SG_ TBOX_ChrgPercentum : 47|8@0+ (1,0) [0|100] "%"  IC_MMI
+ SG_ TBOX_StopChrgRQ : 49|2@0+ (1,0) [0|3] ""  IC_MMI
+
+BO_ 770 THREE_DCDC_302h: 8 GW
+ SG_ DCDC_Voltage_Output : 23|8@0+ (0.1,0) [0|20] "A"  IC_MMI
+ SG_ DCDC_Current_Output : 37|12@0+ (0.1,0) [0|400] "A"  IC_MMI
+
+BO_ 776 THREE_DCDC_308h: 8 GW
+ SG_ DCDC_Status : 1|2@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ DCDC_Fault : 11|2@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ DCDC_OverTemp_Fault : 13|2@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ DCDC_ControllerTemp : 31|8@0+ (1,0) [0|255] "℃"  IC_MMI
+
+BO_ 772 THREE_OBC_304h: 8 GW
+ SG_ ChargeInterfacetemperature : 15|8@0+ (1,0) [0|255] "℃"  IC_MMI
+ SG_ OBC_ControllerTemp : 23|8@0+ (1,0) [0|255] "℃"  IC_MMI
+ SG_ OBC_Charger_Fail_State : 29|1@0+ (1,0) [0|1] ""  IC_MMI
+ SG_ OBC_CC_Resistance : 43|3@0+ (1,0) [0|7] ""  IC_MMI
+ SG_ KL30_UnderVolt : 49|2@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ ElectronicLockSts : 50|1@0+ (1,0) [0|1] ""  IC_MMI
+ SG_ ElectronicLockFault : 52|2@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ OBC_Charger_Instructions : 53|1@0+ (1,0) [0|1] ""  IC_MMI
+
+BO_ 570 VCU_23Ah: 8 GW
+ SG_ VCU_AC_ChrgStatus : 30|3@0+ (1,0) [0|7] ""  IC_MMI
+ SG_ VCU_EnergyRecoverySt : 34|3@0+ (1,0) [0|7] ""  IC_MMI
+ SG_ VCU_PwrFlowIndcr : 37|3@0+ (1,0) [0|7] ""  IC_MMI
+ SG_ VCU_DC_ChrgStatus : 42|3@0+ (1,0) [0|7] ""  IC_MMI
+ SG_ VCU_V2V_ChrgStatus : 45|3@0+ (1,0) [0|7] ""  IC_MMI
+
+BO_ 574 VCU_23Eh: 8 GW
+ SG_ VCU_EnduranceMileage : 31|16@0+ (0.1,0) [0|800] "km"  IC_MMI
+ SG_ VCU_23Eh_RollingCounter : 51|4@0+ (1,0) [0|15] ""  IC_MMI
+ SG_ VCU_23Eh_CheckSUM : 63|8@0+ (1,0) [0|255] ""  IC_MMI
+
+BO_ 913 VSP_391h: 8 GW
+ SG_ VSP_State : 2|2@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ VSP_VoiceSourceSelectFeedback : 4|2@0+ (1,0) [0|3] ""  IC_MMI
+
+BO_ 274 EPS_112h: 8 GW
+ SG_ EPS_SteeringWheelAngVD : 2|1@0+ (1,0) [0|1] ""  AVM,IC_MMI
+ SG_ EPS_SASFailureSts : 3|1@0+ (1,0) [0|1] ""  AVM,IC_MMI
+ SG_ EPS_Fault : 7|2@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ EPS_SteeringWheelAng : 23|16@0+ (0.1,-780) [-780|780] "degree"  AVM,IC_MMI
+ SG_ EPS_SteerWheelRotSpd : 39|8@0+ (4,0) [0|1016] "deg/s"  IC_MMI
+ SG_ EPS_SteerWheelRotSpdVD : 47|1@0+ (1,0) [0|1] ""  IC_MMI
+
+BO_ 328 EPBL_148h: 8 GW
+ SG_ EPB_Brake_Lights_Request_L : 1|1@0+ (1,0) [0|1] ""  BCM,IC_MMI
+ SG_ EPB_SwitchSta_L : 3|2@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ EPB_WarnLampSta_L : 5|2@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ EPB_ParkLampSta_L : 7|2@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ EPB_ActuatorSt_L : 13|3@0+ (1,0) [0|7] ""  AVM,IC_MMI
+ SG_ EPB_DisplayMsgID_L : 27|4@0+ (1,0) [0|15] ""  IC_MMI
+ SG_ EPB_148h_RollingCounter : 51|4@0+ (1,0) [0|15] ""  AVM,BCM,IC_MMI
+ SG_ EPB_148h_CheckSUM : 63|8@0+ (1,0) [0|255] ""  AVM,BCM,IC_MMI
+
+BO_ 336 EPBR_150h: 8 GW
+ SG_ EPB_Brake_Lights_Request_R : 1|1@0+ (1,0) [0|1] ""  BCM,IC_MMI
+ SG_ EPB_SwitchSta_R : 3|2@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ EPB_WarnLampSta_R : 5|2@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ EPB_ParkLampSta_R : 7|2@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ EPB_ActuatorSt_R : 13|3@0+ (1,0) [0|7] ""  AVM,IC_MMI
+ SG_ EPB_DisplayMsgID_R : 27|4@0+ (1,0) [0|15] ""  IC_MMI
+ SG_ EPB_150h_RollingCounter : 51|4@0+ (1,0) [0|15] ""  AVM,BCM,IC_MMI
+ SG_ EPB_150h_CheckSUM : 63|8@0+ (1,0) [0|255] ""  AVM,BCM,IC_MMI
+
+BO_ 338 BCM_152h: 8 BCM
+ SG_ BCM_VehicleCourtesyLampFuncStus : 61|2@0+ (1,0) [0|3] "" Vector__XXX
+ SG_ BCM_AccLampSetStus : 63|2@0+ (1,0) [0|3] "" Vector__XXX
+ SG_ BCM_LockVehicleWarmingTipStus : 57|2@0+ (1,0) [0|3] "" Vector__XXX
+ SG_ BCM_CourtesyLampStus : 58|1@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ BCM_RearViewMirrorAutoFoldFuc : 35|2@0+ (1,0) [0|3] ""  IC_MMI,GW
+ SG_ BCM_RainAutoClsWindowFuncStus : 55|2@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ BCM_RFDoorSwitchSt : 0|1@0+ (1,0) [0|1] ""  AVM,GW,IC_MMI,CWC
+ SG_ BCM_LFDoorSwitchSt : 1|1@0+ (1,0) [0|1] ""  AVM,GW,IC_MMI,DSM_D,DSM_P,CWC
+ SG_ BCM_PositionLampSt : 2|1@0+ (1,0) [0|1] ""  GW,IC_MMI
+ SG_ BCM_FrontFogligthSt : 3|1@0+ (1,0) [0|1] ""  GW,IC_MMI
+ SG_ BCM_BackFogligthSt : 4|1@0+ (1,0) [0|1] ""  GW,IC_MMI
+ SG_ BCM_HighBeamStatus : 5|1@0+ (1,0) [0|1] ""  GW,IC_MMI
+ SG_ BCM_LowBeamStatus : 6|1@0+ (1,0) [0|1] ""  GW,IC_MMI
+ SG_ BCM_TrunkSt : 7|1@0+ (1,0) [0|1] ""  AVM,GW,IC_MMI
+ SG_ BCM_TurnLeverLoc : 9|2@0+ (1,0) [0|3] ""  AVM,GW,IC_MMI
+ SG_ BCM_RightligthFaultSt : 10|1@0+ (1,0) [0|1] ""  AVM,GW,IC_MMI
+ SG_ BCM_RightligthSt : 11|1@0+ (1,0) [0|1] ""  AVM,GW,IC_MMI
+ SG_ BCM_LetfligthFaultSt : 12|1@0+ (1,0) [0|1] ""  AVM,GW,IC_MMI
+ SG_ BCM_LetfligthSt : 13|1@0+ (1,0) [0|1] ""  AVM,GW,IC_MMI
+ SG_ BCM_LRDoorSwitchSt : 14|1@0+ (1,0) [0|1] ""  AVM,GW,IC_MMI
+ SG_ BCM_RRDoorSwitchSt : 15|1@0+ (1,0) [0|1] ""  AVM,GW,IC_MMI
+ SG_ BCM_CentralLockSt : 16|1@0+ (1,0) [0|1] ""  GW,IC_MMI
+ SG_ BCM_Reverse_Light : 17|1@0+ (1,0) [0|1] ""  GW,IC_MMI
+ SG_ BCM_Mainbeam_Available : 18|1@0+ (1,0) [0|1] ""  AVM,GW,IC_MMI
+ SG_ BCM_HazardwarnLampSt : 20|1@0+ (1,0) [0|1] ""  AVM,GW,IC_MMI
+ SG_ BCM_PassSeatbeltBucklestatus : 21|1@0+ (1,0) [0|1] ""  AVM,GW,IC_MMI
+ SG_ BCM_DrvSeatbeltBucklestatus : 22|1@0+ (1,0) [0|1] ""  AVM,GW,IC_MMI
+ SG_ BCM_FrontCoverSt : 23|1@0+ (1,0) [0|1] ""  AVM,GW,IC_MMI
+ SG_ BCM_Auto_LightSwitch : 32|1@0+ (1,0) [0|1] ""  GW,IC_MMI
+ SG_ BCM_Brake_Light : 33|1@0+ (1,0) [0|1] ""  GW,IC_MMI
+ SG_ BCM_Rain_Sensor : 37|2@0+ (1,0) [0|3] ""  AC,GW,IC_MMI
+ SG_ BCM_DrvSeatbeltBucklevalidity : 38|1@0+ (1,0) [0|1] ""  AVM,GW,IC_MMI
+ SG_ BCM_PassSeatbeltBucklevalidity : 39|1@0+ (1,0) [0|1] ""  AVM,GW,IC_MMI
+ SG_ BCM_PowerMode : 42|3@0+ (1,0) [0|3] ""  GW,IC_MMI,DSM_D,DSM_P,FSCM,CWC
+ SG_ BCM_RearViewMirror : 45|2@0+ (1,0) [0|3] ""  GW,IC_MMI
+ SG_ BCM_ChargeCoverLockStatus : 46|1@0+ (1,0) [0|1] ""  GW,IC_MMI
+ SG_ BCM_RearDeforstSts : 47|1@0+ (1,0) [0|1] ""  AC,GW,IC_MMI
+ SG_ BCM_BkSeat_1_beltBucklevalidity : 48|1@0+ (1,0) [0|1] ""  GW,IC_MMI
+ SG_ BCM_BkSeat_1_beltBucklestatus : 49|1@0+ (1,0) [0|1] ""  GW,IC_MMI
+ SG_ BCM_BkSeat_2_beltBucklevalidity : 50|1@0+ (1,0) [0|1] ""  GW,IC_MMI
+ SG_ BCM_BkSeat_2_beltBucklestatus : 51|1@0+ (1,0) [0|1] ""  GW,IC_MMI
+ SG_ BCM_BkSeat_3_beltBucklevalidity : 52|1@0+ (1,0) [0|1] ""  GW,IC_MMI
+ SG_ BCM_BkSeat_3_beltBucklestatus : 53|1@0+ (1,0) [0|1] ""  GW,IC_MMI
+
+BO_ 354 ADAS_162h: 8 GW
+ SG_ AEB_State : 7|3@0+ (1,0) [0|7] ""  IC_MMI
+ SG_ FCW_State : 19|3@0+ (1,0) [0|7] ""  IC_MMI
+ SG_ ADAS_Sensorstatus : 27|3@0+ (1,0) [0|7] ""  IC_MMI
+ SG_ HW_Warning_Level : 29|2@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ FCW_Warning_Level : 31|2@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ ACC_Override_Indicator : 32|1@0+ (1,0) [0|1] ""  IC_MMI
+ SG_ ACC_CIPV_Indicator : 33|1@0+ (1,0) [0|1] ""  IC_MMI
+ SG_ ACC_Auto_Cancel : 35|2@0+ (1,0) [0|2] ""  IC_MMI
+ SG_ ACC_Driver_Cancel : 36|1@0+ (1,0) [0|1] ""  IC_MMI
+ SG_ ACC_State : 39|3@0+ (1,0) [0|7] ""  AVM,IC_MMI
+ SG_ ACC_Go_Indicator : 46|1@0+ (1,0) [0|1] ""  IC_MMI
+ SG_ ACC_Takeover_Indicator : 47|1@0+ (1,0) [0|1] ""  IC_MMI
+ SG_ ADAS_162h_RollingCounter : 51|4@0+ (1,0) [0|15] ""  IC_MMI
+ SG_ ADAS_162h_CheckSUM : 63|8@0+ (1,0) [0|255] ""  IC_MMI
+
+BO_ 356 ADAS_164h: 8 GW
+ SG_ TSR_State : 2|3@0+ (1,0) [0|4] ""  IC_MMI
+ SG_ DAS_TSR_Main_Switch : 3|1@0+ (1,0) [0|1] ""  IC_MMI
+ SG_ IHC_State : 7|3@0+ (1,0) [0|7] ""  BCM,IC_MMI
+ SG_ LDW_Line_Detect_Status : 10|3@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ LDW_Warning : 12|2@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ LDW_State : 15|3@0+ (1,0) [0|4] ""  IC_MMI
+ SG_ TSR_Targetspeed_Request : 23|8@0+ (1,0) [0|254] "km/h"  IC_MMI
+ SG_ LKA_State : 31|3@0+ (1,0) [0|5] ""  IC_MMI
+ SG_ LKA_Takeover_Request : 46|1@0+ (1,0) [0|1] ""  IC_MMI
+ SG_ LKA_Hands_Off_Warning : 47|1@0+ (1,0) [0|1] ""  IC_MMI
+ SG_ DAS_LDW_Main_Switch : 48|1@0+ (1,0) [0|1] ""  IC_MMI
+ SG_ DAS_LDW_Sensitivity : 50|2@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ DAS_FCW_Main_Switch : 51|1@0+ (1,0) [0|1] ""  IC_MMI
+ SG_ DAS_FCW_Sensitivity : 53|2@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ DAS_AEB_Main_Switch : 54|1@0+ (1,0) [0|1] ""  IC_MMI
+ SG_ DAS_IHC_Main_Switch : 55|1@0+ (1,0) [0|1] ""  IC_MMI
+
+BO_ 372 VCU_174h: 8 GW
+ SG_ VCU_Err_BrakeSwitch : 0|1@0+ (1,0) [0|1] ""  IC_MMI
+ SG_ VCU_Err_AccPedal : 2|1@0+ (1,0) [0|1] ""  IC_MMI
+ SG_ VCU_GearPosition : 7|4@0+ (1,0) [0|15] ""  AVM,BCM,IC_MMI,FSCM
+ SG_ VCU_PTSystem_Satus : 23|2@0+ (1,0) [0|3] ""  AVM,IC_MMI
+ SG_ VCU_VehSysStatus : 28|5@0+ (1,0) [0|31] ""  AC,AVM,BCM,IC_MMI
+ SG_ VCU_Cruise_MainSwitch : 32|1@0+ (1,0) [0|1] ""  IC_MMI
+ SG_ VCU_OperationMode : 34|2@0+ (1,0) [0|3] ""  AC,IC_MMI
+ SG_ VCU_DrivingMode : 36|2@0+ (1,0) [0|1] ""  IC_MMI
+ SG_ VCU_SpeedMode : 37|1@0+ (1,0) [0|1] ""  IC_MMI
+ SG_ VCU_TortoiseIndicator : 44|1@0+ (1,0) [0|1] ""  IC_MMI
+ SG_ VCU_Cruise_Enable : 47|1@0+ (1,0) [0|1] ""  IC_MMI
+ SG_ VCU_174h_RollingCounter : 51|4@0+ (1,0) [0|15] ""  AC,AVM,BCM,IC_MMI,FSCM
+ SG_ VCU_UnlockSts : 54|2@0+ (1,0) [0|3] ""  BCM,IC_MMI
+ SG_ VCU_174h_CheckSUM : 63|8@0+ (1,0) [0|255] ""  AC,AVM,BCM,IC_MMI,FSCM
+
+BO_ 512 BMS_200h: 8 GW
+ SG_ BMS_Sys_SumVoltage : 7|16@0+ (0.1,0) [0|6000] "V"  AC,IC_MMI
+ SG_ BMS_Sys_SumCurrent : 23|16@0+ (0.1,-3000) [-3000|3000] "A"  AC,IC_MMI
+
+BO_ 514 BMS_202h: 8 GW
+ SG_ BMS_Sys_ChgorDisChrgSts : 28|2@0+ (1,0) [0|3] ""  AC,IC_MMI
+ SG_ BMS_FastChrgSts : 31|3@0+ (1,0) [0|7] ""  IC_MMI
+ SG_ BMS_SlowChrgSts : 34|3@0+ (1,0) [0|7] ""  IC_MMI
+ SG_ BMS_ChrgCouplesSt : 38|2@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ BMS_PauseContinueChrgStus : 54|2@0+ (1,0) [0|3] ""  IC_MMI
+ SG_ BMS_AllowedChrgMaxPower : 62|7@0+ (1,0) [0|100] "%"  IC_MMI
+
+BO_ 518 BMS_206h: 8 GW
+ SG_ BMS_ThermalManageReq : 43|2@0+ (1,0) [0|3] ""  AC,IC_MMI
+
+BO_ 568 VCU_238h: 8 GW
+ SG_ VCU_CoolingFanSt : 37|2@0+ (1,0) [0|3] ""  AC,IC_MMI
+ SG_ VCU_StartInf : 42|3@0+ (1,0) [0|7] ""  IC_MMI
+ SG_ VCU_ChaGearInf : 45|3@0+ (1,0) [0|7] ""  IC_MMI
+
+BO_ 586 ACU_24Ah: 8 GW
+ SG_ ACU_AirBagSysWrnLmpCmd : 4|1@0+ (1,0) [0|1] ""  BCM,IC_MMI
+ SG_ ACU_Crashinfo : 7|3@0+ (1,0) [0|7] ""  BCM,IC_MMI
+ SG_ ACU_24Ah_RollingCounter : 51|4@0+ (1,0) [0|15] ""  BCM,IC_MMI
+ SG_ ACU_24Ah_CheckSUM : 63|8@0+ (1,0) [0|255] ""  BCM,IC_MMI
+
+BO_ 588 BCM_24Ch: 8 BCM
+ SG_ PEPS_KeyInCarWarning : 0|1@0+ (1,0) [0|1] ""  GW,IC_MMI
+ SG_ ReminderPutInP_Nposition_OFF : 1|1@0+ (1,0) [0|1] ""  GW,IC_MMI
+ SG_ ReminderPutInP_Nposition_Lock : 2|1@0+ (1,0) [0|1] ""  GW,IC_MMI
+ SG_ PEPS_KeyNotInWarning : 3|1@0+ (1,0) [0|1] ""  GW,IC_MMI
+ SG_ BCM_FrontWiperSt : 5|2@0+ (1,0) [0|3] ""  GW,IC_MMI
+ SG_ PEPS_PutKeyInIMMOSocket : 8|1@0+ (1,0) [0|1] ""  GW,IC_MMI
+ SG_ PEPS_PowerRelayFault : 9|1@0+ (1,0) [0|1] ""  GW,IC_MMI
+ SG_ PEPS_RemoteLowVoltage : 14|1@0+ (1,0) [0|1] ""  GW,IC_MMI
+ SG_ PEPS_ESCLFault : 19|1@0+ (1,0) [0|1] ""  GW,IC_MMI
+ SG_ PEPS_ESCLUnlockFailed : 20|1@0+ (1,0) [0|1] ""  GW,IC_MMI
+ SG_ FLWS_POS_VIT_FL : 30|7@0+ (1,0) [0|100] "%"  GW,IC_MMI
+ SG_ FRWS_POS_VIT_FL : 38|7@0+ (1,0) [0|100] "%"  GW,IC_MMI
+ SG_ RLWS_POS_VIT_FL : 46|7@0+ (1,0) [0|100] "%"  GW,IC_MMI
+ SG_ RRWS_POS_VIT_FL : 54|7@0+ (1,0) [0|100] "%"  GW,IC_MMI
+
+BO_ 589 BCM_24Dh: 8 BCM
+ SG_ BCM_LFDoorLockStatus : 10|3@0+ (1,0) [0|7] ""  GW,IC_MMI
+ SG_ BCM_TrunkDoorLockSts : 13|3@0+ (1,0) [0|7] ""  GW,IC_MMI
+ SG_ BCM_RFDoorLockStatus : 18|3@0+ (1,0) [0|7] ""  GW,IC_MMI
+ SG_ BCM_LRDoorLockStatus : 21|3@0+ (1,0) [0|7] ""  GW,IC_MMI
+ SG_ BCM_RRDoorLockStatus : 31|3@0+ (1,0) [0|7] ""  GW,IC_MMI
+ SG_ BCM_RLS_RQ_WiperSPD : 41|2@0+ (1,0) [0|3] ""  GW,IC_MMI
+ SG_ BCM_RLS_Fault : 43|2@0+ (1,0) [0|3] ""  AC,GW,IC_MMI
+ SG_ BCM_RLC_FWLight : 55|8@0+ (1,0) [0|255] ""  AC,GW,IC_MMI
+ SG_ BCM_RLC_Ambient_Light : 63|8@0+ (1,0) [0|255] ""  GW,IC_MMI
+
+BO_ 607 AC_25Fh: 8 AC
+ SG_ AC_AmbientAirTemperature_Correct : 15|8@0+ (0.5,-40) [-40|87.5] "℃"  AVM,GW,IC_MMI
+ SG_ AC_IncarTemperature : 23|8@0+ (0.5,-40) [-40|87.5] "℃"  GW,IC_MMI
+ SG_ AC_ACMode : 31|4@0+ (1,0) [0|15] ""  GW,IC_MMI
+ SG_ AC_AmbientAirTemperature_Validit : 41|1@0+ (1,0) [0|1] ""  AVM,GW,IC_MMI
+
+BO_ 610 BCM_262h: 8 BCM
+ SG_ BCM_FL_TirePrs : 7|8@0+ (1.373,0) [0|348.742] "Kpa"  GW,IC_MMI
+ SG_ BCM_FR_TirePrs : 15|8@0+ (1.373,0) [0|348.742] "Kpa"  GW,IC_MMI
+ SG_ BCM_RL_TirePrs : 23|8@0+ (1.373,0) [0|348.742] "Kpa"  GW,IC_MMI
+ SG_ BCM_RR_TirePrs : 31|8@0+ (1.373,0) [0|348.742] "Kpa"  GW,IC_MMI
+ SG_ BCM_RR_TirePrsSt : 33|2@0+ (1,0) [0|3] ""  AVM,GW,IC_MMI
+ SG_ BCM_RL_TirePrsSt : 35|2@0+ (1,0) [0|3] ""  AVM,GW,IC_MMI
+ SG_ BCM_FR_TirePrsSt : 37|2@0+ (1,0) [0|3] ""  AVM,GW,IC_MMI
+ SG_ BCM_FL_TirePrsSt : 39|2@0+ (1,0) [0|3] ""  AVM,GW,IC_MMI
+
+BO_ 612 BCM_264h: 8 BCM
+ SG_ BCM_FL_TireTpt : 7|8@0+ (1,-50) [-50|204] ""  GW,IC_MMI
+ SG_ BCM_FR_TireTpt : 15|8@0+ (1,-50) [-50|204] ""  GW,IC_MMI
+ SG_ BCM_RL_TireTpt : 23|8@0+ (1,-50) [-50|204] ""  GW,IC_MMI
+ SG_ BCM_RR_TireTpt : 31|8@0+ (1,-50) [-50|204] ""  GW,IC_MMI
+ SG_ BCM_RR_TireTptSt : 36|1@0+ (1,0) [0|1] ""  GW,IC_MMI
+ SG_ BCM_RL_TireTptSt : 37|1@0+ (1,0) [0|1] ""  GW,IC_MMI
+ SG_ BCM_FR_TireTptSt : 38|1@0+ (1,0) [0|1] ""  GW,IC_MMI
+ SG_ BCM_FL_TireTptSt : 39|1@0+ (1,0) [0|1] ""  GW,IC_MMI
+
+BO_ 613 BCM_265h: 8 BCM
+ SG_ BCM_RR_TireLose : 0|1@0+ (1,0) [0|1] ""  GW,IC_MMI
+ SG_ BCM_RL_TireLose : 1|1@0+ (1,0) [0|1] ""  GW,IC_MMI
+ SG_ BCM_FR_TireLose : 2|1@0+ (1,0) [0|1] ""  GW,IC_MMI
+ SG_ BCM_FL_TireLose : 3|1@0+ (1,0) [0|1] ""  GW,IC_MMI
+ SG_ BCM_RR_TireLowVol : 4|1@0+ (1,0) [0|1] ""  GW,IC_MMI
+ SG_ BCM_RL_TireLowVol : 5|1@0+ (1,0) [0|1] ""  GW,IC_MMI
+ SG_ BCM_FR_TireLowVol : 6|1@0+ (1,0) [0|1] ""  GW,IC_MMI
+ SG_ BCM_FL_TireLowVol : 7|1@0+ (1,0) [0|1] ""  GW,IC_MMI
+ SG_ BCM_RR_TestSt : 9|1@0+ (1,0) [0|1] ""  AVM,GW,IC_MMI
+ SG_ BCM_RL_TestSt : 10|1@0+ (1,0) [0|1] ""  AVM,GW,IC_MMI
+ SG_ BCM_FR_TestSt : 11|1@0+ (1,0) [0|1] ""  AVM,GW,IC_MMI
+ SG_ BCM_FL_TestSt : 12|1@0+ (1,0) [0|1] ""  AVM,GW,IC_MMI
+ SG_ BCM_BatVol_ErrFlag : 13|1@0+ (1,0) [0|1] ""  GW,IC_MMI
+ SG_ BCM_TPMS_TestSt : 15|2@0+ (1,0) [0|3] ""  AVM,GW,IC_MMI
+ SG_ BCM_RR_Quikleakage : 20|1@0+ (1,0) [0|1] ""  AVM,GW,IC_MMI
+ SG_ BCM_RL_Quikleakage : 21|1@0+ (1,0) [0|1] ""  AVM,GW,IC_MMI
+ SG_ BCM_FR_Quikleakage : 22|1@0+ (1,0) [0|1] ""  AVM,GW,IC_MMI
+ SG_ BCM_FL_Quikleakage : 23|1@0+ (1,0) [0|1] ""  AVM,GW,IC_MMI
+
+BO_ 614 AC_266h: 7 AC
+ SG_ AC_WPTC_RunStatus : 53|3@0+ (1,0) [0|7] ""  GW,IC_MMI
+ SG_ AC_ACCM_RunStatus : 55|2@0+ (1,0) [0|3] ""  GW,IC_MMI
+
+BO_ 624 AC_270h: 8 AC
+ SG_ AC_AutoMode : 1|2@0+ (1,0) [0|3] ""  GW,IC_MMI
+ SG_ AC_ActualBlowingMode : 4|3@0+ (1,0) [0|7] ""  GW,IC_MMI
+ SG_ AC_ActualCirculationMode : 6|2@0+ (1,0) [0|3] ""  GW,IC_MMI
+ SG_ AC_DVDDisplayReq : 7|1@0+ (1,0) [0|1] ""  GW,IC_MMI
+ SG_ AC_TempSetPoint : 12|5@0+ (0.5,18) [18|32] "℃"  GW,IC_MMI
+ SG_ AC_ActualAirQuantity : 15|3@0+ (1,0) [0|7] ""  GW,IC_MMI
+ SG_ AC_FwdDeforstSts : 16|1@0+ (1,0) [0|1] ""  GW,IC_MMI
+ SG_ AC_RearDeforstSts : 17|1@0+ (1,0) [0|1] ""  GW,IC_MMI
+ SG_ AC_CoolingStaus : 19|2@0+ (1,0) [0|3] ""  GW,IC_MMI
+ SG_ AC_MaxCooingStaus : 21|2@0+ (1,0) [0|3] ""  GW,IC_MMI
+ SG_ AC_OffStaus : 22|1@0+ (1,0) [0|1] ""  GW,IC_MMI
+ SG_ AC_PM25_Status : 24|1@0+ (1,0) [0|1] ""  GW,IC_MMI
+ SG_ AC_RearViewMirroHeatStatus : 27|2@0+ (1,0) [0|3] ""  GW,IC_MMI
+ SG_ AC_NegativeIconGenStus : 29|2@0+ (1,0) [0|3] ""  GW,IC_MMI
+
+BO_ 645 TBOX_285h: 8 GW
+ SG_ TBOX_Second : 7|6@0+ (1,0) [0|59] "s"  AC,AVM,IC_MMI
+ SG_ TBOX_Minute : 15|6@0+ (1,0) [0|59] "m"  AC,AVM,IC_MMI
+ SG_ TBOX_Hour : 23|5@0+ (1,0) [0|23] "h"  AC,AVM,IC_MMI
+ SG_ TBOX_Day : 31|5@0+ (1,0) [1|31] "d"  AC,AVM,IC_MMI
+ SG_ TBOX_Month : 39|4@0+ (1,0) [1|12] "m"  AC,AVM,IC_MMI
+ SG_ TBOX_Year : 47|6@0+ (1,2010) [2010|2072] "y"  AC,AVM,IC_MMI
+ SG_ TBOX_TimeCheckBit : 48|1@0+ (1,0) [0|1] ""  AC,AVM,IC_MMI
+ SG_ TBOX_InvalidByte : 63|8@0+ (1,0) [0|255] ""  AC,AVM,IC_MMI
+
+BO_ 659 FSCM_293h: 8 FSCM
+ SG_ FSCM_DrvSeatHeat_Sts : 2|3@0+ (1,0) [0|7] ""  GW,IC_MMI
+ SG_ FSCM_DrvSeatVentilation_Sts : 6|3@0+ (1,0) [0|7] ""  GW,IC_MMI
+ SG_ FSCM_PassSeatHeat_Sts : 10|3@0+ (1,0) [0|7] ""  GW,IC_MMI
+ SG_ FSCM_PassSeatVentilation_Sts : 14|3@0+ (1,0) [0|7] ""  GW,IC_MMI
+
+BO_ 662 TBOX_296h: 8 GW
+ SG_ TBOX_VehiclePosition_longitude : 7|32@0+ (1E-007,-180) [-180|180] ""  AC,IC_MMI
+ SG_ TBOX_VehiclePosition_latitude : 39|32@0+ (1E-007,-90) [-90|90] ""  AC,IC_MMI
+
+BO_ 664 TBOX_298h: 8 GW
+ SG_ Tbox_VehiclePosition_gradient : 7|8@0+ (1,-90) [-90|90] ""  AC,IC_MMI
+ SG_ Tbox_VehiclePosition_altitude : 15|16@0+ (0.1,-53.4) [-53.4|6500] ""  AC,IC_MMI
+ SG_ Tbox_VehiclePosition_headDirecti : 31|16@0+ (1,0) [0|359] ""  AC,IC_MMI
+
+BO_ 1024 NM_BCM_400: 8 BCM
+ SG_ BCM_NM_Message0 : 7|8@0+ (1,0) [0|255] ""  AC,GW,IC_MMI
+ SG_ BCM_NM_Message1 : 15|8@0+ (1,0) [0|255] ""  AC,GW,IC_MMI
+ SG_ BCM_NM_Message2 : 23|8@0+ (1,0) [0|255] ""  AC,GW,IC_MMI
+ SG_ BCM_NM_Message3 : 31|8@0+ (1,0) [0|255] ""  AC,GW,IC_MMI
+ SG_ BCM_NM_Message4 : 39|8@0+ (1,0) [0|255] ""  AC,GW,IC_MMI
+ SG_ BCM_NM_Message5 : 47|8@0+ (1,0) [0|255] ""  AC,GW,IC_MMI
+ SG_ BCM_NM_Message6 : 55|8@0+ (1,0) [0|255] ""  AC,GW,IC_MMI
+ SG_ BCM_NM_Message7 : 63|8@0+ (1,0) [0|255] ""  AC,GW,IC_MMI
+
+BO_ 1028 NM_AC_404: 8 AC
+ SG_ AC_NM_Message0 : 7|8@0+ (1,0) [0|255] ""  BCM,GW,IC_MMI
+ SG_ AC_NM_Message1 : 15|8@0+ (1,0) [0|255] ""  BCM,GW,IC_MMI
+ SG_ AC_NM_Message2 : 23|8@0+ (1,0) [0|255] ""  BCM,GW,IC_MMI
+ SG_ AC_NM_Message3 : 31|8@0+ (1,0) [0|255] ""  BCM,GW,IC_MMI
+ SG_ AC_NM_Message4 : 39|8@0+ (1,0) [0|255] ""  BCM,GW,IC_MMI
+ SG_ AC_NM_Message5 : 47|8@0+ (1,0) [0|255] ""  BCM,GW,IC_MMI
+ SG_ AC_NM_Message6 : 55|8@0+ (1,0) [0|255] ""  BCM,GW,IC_MMI
+ SG_ AC_NM_Message7 : 63|8@0+ (1,0) [0|255] ""  BCM,GW,IC_MMI
+
+BO_ 1043 NM_CONF_GW_413: 8 GW
+ SG_ CONF_GW_NM_Message0 : 7|8@0+ (1,0) [0|255] ""  AC,BCM,IC_MMI
+ SG_ CONF_GW_NM_Message1 : 15|8@0+ (1,0) [0|255] ""  AC,BCM,IC_MMI
+ SG_ CONF_GW_NM_Message2 : 23|8@0+ (1,0) [0|255] ""  AC,BCM,IC_MMI
+ SG_ CONF_GW_NM_Message3 : 31|8@0+ (1,0) [0|255] ""  AC,BCM,IC_MMI
+ SG_ CONF_GW_NM_Message4 : 39|8@0+ (1,0) [0|255] ""  AC,BCM,IC_MMI
+ SG_ CONF_GW_NM_Message5 : 47|8@0+ (1,0) [0|255] ""  AC,BCM,IC_MMI
+ SG_ CONF_GW_NM_Message6 : 55|8@0+ (1,0) [0|255] ""  AC,BCM,IC_MMI
+ SG_ CONF_GW_NM_Message7 : 63|8@0+ (1,0) [0|255] ""  AC,BCM,IC_MMI
+
+BO_ 112 VCU_70h: 8 GW
+ SG_ VCU_BrkSw_Sta : 4|1@0+ (1,0) [0|1] ""  AVM,BCM,IC_MMI
+ SG_ VCU_BrkSw_V : 6|1@0+ (1,0) [0|1] ""  AVM,BCM,IC_MMI
+ SG_ VCU_Acc_Validity : 7|1@0+ (1,0) [0|1] ""  AVM,IC_MMI
+ SG_ VCU_Acc_pedal_position : 23|8@0+ (0.5,0) [0|100] "%"  AVM,IC_MMI
+ SG_ VCU_70h_RollingCounter : 51|4@0+ (1,0) [0|15] ""  AVM,BCM,IC_MMI
+ SG_ VCU_70h_CheckSUM : 63|8@0+ (1,0) [0|255] ""  AVM,BCM,IC_MMI
+
+BO_ 2015 Diag_Functional_Request: 8 GW
+ SG_ Functional_Diag_Data_Request0 : 7|8@0+ (1,0) [0|255] ""  AC,AVM,BCM,IC_MMI,DSM_D,DSM_P,FSCM,CWC
+ SG_ Functional_Diag_Data_Request1 : 15|8@0+ (1,0) [0|255] ""  AC,AVM,BCM,IC_MMI,DSM_D,DSM_P,FSCM,CWC
+ SG_ Functional_Diag_Data_Request2 : 23|8@0+ (1,0) [0|255] ""  AC,AVM,BCM,IC_MMI,DSM_D,DSM_P,FSCM,CWC
+ SG_ Functional_Diag_Data_Request3 : 31|8@0+ (1,0) [0|255] ""  AC,AVM,BCM,IC_MMI,DSM_D,DSM_P,FSCM,CWC
+ SG_ Functional_Diag_Data_Request4 : 39|8@0+ (1,0) [0|255] ""  AC,AVM,BCM,IC_MMI,DSM_D,DSM_P,FSCM,CWC
+ SG_ Functional_Diag_Data_Request5 : 47|8@0+ (1,0) [0|255] ""  AC,AVM,BCM,IC_MMI,DSM_D,DSM_P,FSCM,CWC
+ SG_ Functional_Diag_Data_Request6 : 55|8@0+ (1,0) [0|255] ""  AC,AVM,BCM,IC_MMI,DSM_D,DSM_P,FSCM,CWC
+ SG_ Functional_Diag_Data_Request7 : 63|8@0+ (1,0) [0|255] ""  AC,AVM,BCM,IC_MMI,DSM_D,DSM_P,FSCM,CWC
+
+BO_ 130 MCU_F_82h: 8 GW
+ SG_ MCU_F_NCurr : 23|16@0+ (1,-32768) [-32768|32767] "1/min"  AVM,BCM,IC_MMI
+ SG_ MCU_F_NCurrValid : 45|1@0+ (1,0) [0|1] ""  AVM,BCM,IC_MMI
+ SG_ MCU_F_82h_RollingCounter : 51|4@0+ (1,0) [0|15] ""  AVM,BCM,IC_MMI
+ SG_ MCU_F_82h_CheckSUM : 63|8@0+ (1,0) [0|255] ""  AVM,BCM,IC_MMI
+
+BO_ 144 ESC_90h: 8 GW
+ SG_ ESC_TCSActive : 0|1@0+ (1,0) [0|1] ""  IC_MMI
+ SG_ ESC_HHC_Failure : 1|1@0+ (1,0) [0|1] ""  IC_MMI
+ SG_ ESC_HHCActive : 2|1@0+ (1,0) [0|1] ""  IC_MMI
+ SG_ ESC_EBDFailed : 3|1@0+ (1,0) [0|1] ""  IC_MMI
+ SG_ ESC_EBDActive : 4|1@0+ (1,0) [0|1] ""  IC_MMI
+ SG_ ESC_ABSFailed : 6|1@0+ (1,0) [0|1] ""  IC_MMI
+ SG_ ESC_ABSActive : 7|1@0+ (1,0) [0|1] ""  IC_MMI
+ SG_ ESC_AVHactive : 8|1@0+ (1,0) [0|1] ""  IC_MMI
+ SG_ ESC_AutoholdStandby : 9|1@0+ (1,0) [0|1] ""  IC_MMI
+ SG_ ESC_AutoholdFailure : 10|1@0+ (1,0) [0|1] ""  IC_MMI
+ SG_ ESC_Sw : 11|1@0+ (1,0) [0|1] ""  IC_MMI
+ SG_ ESC_HBAActive : 12|1@0+ (1,0) [0|1] ""  IC_MMI
+ SG_ ESC_VDCFailure : 13|1@0+ (1,0) [0|1] ""  IC_MMI
+ SG_ ESC_VDCActive : 14|1@0+ (1,0) [0|1] ""  IC_MMI
+ SG_ ESC_TCSFailure : 15|1@0+ (1,0) [0|1] ""  IC_MMI
+ SG_ ESC_CDPAvailable : 20|1@0+ (1,0) [0|1] ""  IC_MMI
+ SG_ ESC_CDPActive : 21|1@0+ (1,0) [0|1] ""  IC_MMI
+ SG_ ESC_AVH_Warning1 : 40|1@0+ (1,0) [0|1] ""  IC_MMI
+ SG_ ESC_AVH_Warning2 : 41|1@0+ (1,0) [0|1] ""  IC_MMI
+ SG_ ESC_AVH_Warning3 : 42|1@0+ (1,0) [0|1] ""  IC_MMI
+ SG_ ESC_AVH_Warning4 : 43|1@0+ (1,0) [0|1] ""  IC_MMI
+ SG_ ESC_90h_RollingCounter : 51|4@0+ (1,0) [0|15] ""  BCM,IC_MMI
+ SG_ ESC_90h_CheckSUM : 63|8@0+ (1,0) [0|255] ""  BCM,IC_MMI
+
+BO_ 146 ESC_92h: 8 GW
+ SG_ ESC_VehSpd : 7|16@0+ (0.05625,0) [0|299.98] "km/h"  AC,AVM,BCM,IC_MMI,DSM_D,DSM_P
+ SG_ ESC_92h_RollingCounter : 51|4@0+ (1,0) [0|15] ""  AC,AVM,BCM,IC_MMI,DSM_D,DSM_P
+ SG_ ESC_VehSpdVd : 55|1@0+ (1,0) [0|1] ""  AC,AVM,BCM,IC_MMI,DSM_D,DSM_P
+ SG_ ESC_92h_CheckSUM : 63|8@0+ (1,0) [0|255] ""  AC,AVM,BCM,IC_MMI,DSM_D,DSM_P
+
+BO_ 148 EHB_94h: 8 GW
+ SG_ EHB_FaultSt : 7|3@0+ (1,0) [0|7] ""  IC_MMI
+
+BO_ 178 MCU_R_B2h: 8 GW
+ SG_ MCU_R_Ncurr : 23|16@0+ (1,-32768) [-32768|32767] "1/min"  AVM,BCM,IC_MMI
+ SG_ MCU_R_NCurrValid : 45|1@0+ (1,0) [0|1] ""  AVM,BCM,IC_MMI
+ SG_ MCU_R_B2h_RollingCounter : 51|4@0+ (1,0) [0|15] ""  AVM,BCM,IC_MMI
+ SG_ MCU_R_B2h_CheckSUM : 63|8@0+ (1,0) [0|15] ""  AVM,BCM,IC_MMI
+
+
+
+CM_ " ";
+CM_ BO_ 3221225472 "This is a message for not used signals, created by Vector CANdb++ DBC OLE DB Provider.";
+CM_ SG_ 3221225472 AC_APTC_LV "空气PTC加热等级";
+CM_ SG_ 3221225472 MMI_EpsModeSelect "EPS多助力模式选择（预留）";
+CM_ SG_ 3221225472 AmphereLampSta_Fleshmode "氛围灯呼吸模式";
+CM_ SG_ 3221225472 AmphereLampSta_Drivingmode "氛围灯驾驶模式";
+CM_ SG_ 604 IC_Vehicle_Speed_Available "indicates if IC is available
+指示仪表车速信号是否可用";
+CM_ SG_ 604 ICU_EBDLampSt "EBD灯的状态";
+CM_ SG_ 604 ICU_TotalOdometer "Total Odometer 
+总里程";
+CM_ SG_ 604 ICU_ABSLampSt "ABS故障灯的状态";
+CM_ SG_ 604 ICU_PDC_DistanceAlarmDegree_RR "PDC rear right distance alarm degree
+倒车雷达后右距离报警级别";
+CM_ SG_ 604 ICU_PDC_DistanceAlarmDegree_RL "PDC rear left distance alarm degree
+倒车雷达后左距离报警级别";
+CM_ SG_ 604 ICU_PDC_DistanceAlarmDegree_RRM "PDC rear right midle distance alarm degree
+倒车雷达后右中距离报警级别";
+CM_ SG_ 604 ICU_PDC_DistanceAlarmDegree_RLM "PDC rear left midle distance alarm degree
+倒车雷达后左中距离报警级别";
+CM_ SG_ 604 ICU_AirBagSysWrnLmpSts "Airbag System Warning Lamp Status
+安全气囊报警指示灯状态";
+CM_ SG_ 604 IC_Vehicle_Speed_Displayed "IPK displayed vehicle speed
+仪表车速";
+CM_ BO_ 620 "预留";
+CM_ SG_ 620 PAS_PDC_Mode "PDC mode
+倒车雷达的工作模式";
+CM_ SG_ 620 PAS_PDC_Distance_RL "PDC Rear left distance display
+倒车雷达后左区距离显示";
+CM_ SG_ 620 PAS_PDC_Distance_RRM "PDC Rear right midle distance display
+倒车雷达后右中区距离显示";
+CM_ SG_ 620 PAS_PDC_Distance_RLM "PDC Rear left midle distance display
+倒车雷达后左中区距离显示";
+CM_ SG_ 620 PAS_PDC_SensorSts_RR "PDC Rear right sensor status
+倒车雷达后右传感器状态";
+CM_ SG_ 620 PAS_PDC_SensorSts_RL "PDC Rear left sensor status
+倒车雷达后左传感器状态";
+CM_ SG_ 620 PAS_PDC_SensorSts_RRM "PDC Rear right midle sensor status
+倒车雷达后右中传感器状态";
+CM_ SG_ 620 PAS_PDC_SensorSts_RLM "PDC Rear left midle sensor status
+倒车雷达后左中传感器状态";
+CM_ SG_ 620 PAS_PDC_Distance_RR "PDC Rear right distance display
+倒车雷达后右区距离显示";
+CM_ BO_ 370 "给ADAS、BSD、预约充电的开关信号";
+CM_ SG_ 370 MMI_LDW_Main_Switch "LDW main switch status
+LDW主开关状态";
+CM_ SG_ 370 MMI_LDW_Switch_Available "indicates if LDW switch is available
+指示LDW开关信号是否可用";
+CM_ SG_ 370 MMI_TSR_Main_Switch "TSR main switch status
+TSR主开关状态";
+CM_ SG_ 370 MMI_TSR_Switch_Available "indicates if TSR switch is available
+指示TSR开关是否可用";
+CM_ SG_ 370 MMI_IHC_Main_Switch "IHC main switch status
+IHC主开关状态";
+CM_ SG_ 370 MMI_IHC_Switch_Available "indicates if IHC switch is available
+指示IHC开关信号是否可用";
+CM_ SG_ 370 MMI_LDW_Sensitivity "driver selected sensitivity level
+驾驶员选择的LDW敏感等级";
+CM_ SG_ 370 MMI_BSD_Main_Switch "BSD main switch status
+BSD主开关状态";
+CM_ SG_ 370 MMI_BSD_Switch_Available "indicates if BSDswitch is available
+指示BSD开关信号是否可用";
+CM_ SG_ 370 MMI_BSD_Sensitivity "driver selected sensitivity level
+驾驶员选择的BSD敏感等级";
+CM_ SG_ 370 MMI_FCW_Sensitivity "driver selected sensitivity level
+驾驶员选择的FCW敏感等级";
+CM_ SG_ 370 MMI_EPS_ModeSwitch "EPS Mode Select
+EPS模式选择";
+CM_ SG_ 370 MMI_PauseContinueChrgRQ "Pause/Continue charge Request
+请求暂停/继续充电";
+CM_ SG_ 370 MMI_ChrgMaxPower "Max Charging Power Set
+最大充电电量设置";
+CM_ SG_ 370 MMI_FCW_Main_Switch "FCW main switch status
+FCW主开关状态";
+CM_ SG_ 370 MMI_ChrgCurrentSet "Charge Current Set
+充电电流设置";
+CM_ SG_ 370 MMI_FCW_Switch_Available "indicates if FCW switch is available
+指示FCW开关是否可用";
+CM_ SG_ 370 MMI_AEB_Main_Switch "AEB main switch status
+AEB主开关状态";
+CM_ SG_ 370 MMI_AEB_Switch_Available "indicates if AEB switch is available
+指示AEB开关信号是否可用";
+CM_ BO_ 630 "MMI发给AVM的信号1(APA共用)";
+CM_ SG_ 630 MMI_AVM_ConnectStatus "MMI connect status
+MMI 与AVM连接状态";
+CM_ SG_ 630 MMI_AVM_AVM3DExitDelaySet "AVM3D退出延迟设置";
+CM_ SG_ 630 MMI_AVM_AVM3DTurnLightSet "AVM3D转向灯随动设置";
+CM_ SG_ 630 MMI_AVM_AVM3DBlindFillSet "AVM3D车底盲区填充设置";
+CM_ SG_ 630 MMI_AVM_BSDFunction "BSD功能是否开启";
+CM_ SG_ 630 MMI_AVM_OTFunction "OTF功能是否开启";
+CM_ SG_ 630 MMI_AVM_AVM3DCarIconColor "AVM车模颜色选择";
+CM_ SG_ 630 MMI_AVM_AVM3DCarIconTransparenVa "AVM3D车模透明度是否有效";
+CM_ SG_ 630 MMI_AVM_VideoOutputStatus "MMI AVM video outputstatus
+MMI AVM 视频输出状态";
+CM_ SG_ 630 MMI_AVM_AVM3DCarIconTransparent "AVM3D车模透明度";
+CM_ SG_ 630 MMI_AVM_LanguageSet "语言设置";
+CM_ SG_ 630 MMI_AVM_AVM3DDynTrajSet "AVM3D动态轨迹线设置";
+CM_ BO_ 632 "MMI发给AVM的信号2";
+CM_ SG_ 632 MMI_AVMXcoordinate "触摸点横坐标";
+CM_ SG_ 632 MMI_AVMYcoordinate "触摸点纵坐标";
+CM_ SG_ 632 MMI_AVMXGestureSpeed "手势横向速度";
+CM_ SG_ 632 MMI_AVMYGestureSpeed "手势纵向速度";
+CM_ SG_ 632 MMI_AVMZoomScaleFactor "缩放系数";
+CM_ SG_ 632 MMI_AVMZoomRotaterFactor "旋转系数";
+CM_ SG_ 632 MMI_AVMTouchEventType "触摸事件类型";
+CM_ BO_ 634 "MMI发给AVM的信号3";
+CM_ SG_ 634 MMI_AVM_AVM3D_COMMAND "AVM3D操作指令";
+CM_ SG_ 634 MMI_AVM_AVM3DViewSwitch "AVM3D视角状态";
+CM_ SG_ 634 MMI_AVM_AVM3DViewModeSwitch "AVM3D视角模式切换";
+CM_ SG_ 634 MMI_AVM_AVMEcuEnterExit "AVM_ECU进入/退出";
+CM_ BO_ 648 "MMI发给空调的控制命令";
+CM_ SG_ 648 MMI_ACAUTOReqValid "空调AUTO命令信号有效性";
+CM_ SG_ 648 MMI_ACAUTOReq "空调AUTO命令";
+CM_ SG_ 648 MMI_BLOWERReqValid "鼓风机风量增减命令信号有效性";
+CM_ SG_ 648 MMI_BLOWERReq "鼓风机风量增减命令
+风量为1档时，不执行风量减，风量为7时，不执行风量加指令";
+CM_ SG_ 648 MMI_ACBlowModeReqValid "空调吹风模式命令信号有效性";
+CM_ SG_ 648 MMI_ACBlowModeReq "空调吹风模式命令";
+CM_ SG_ 648 MMI_CirculatingModeSetValid "循环模式设定信号有效性";
+CM_ SG_ 648 MMI_CirculatingModeSet "循环模式设定";
+CM_ SG_ 648 MMI_InsideTempSetValid "室内温度设定值命令信号有效性";
+CM_ SG_ 648 MMI_InsideTempSet "室内温度设定值命令";
+CM_ SG_ 648 MMI_ACCompressorReqValid "空调压缩机命令信号有效性";
+CM_ SG_ 648 MMI_SeatHeatReq_right "副驾座椅加热请求";
+CM_ SG_ 648 MMI_SeatHeatReq_left "主驾座椅加热请求";
+CM_ SG_ 648 MMI_BLOWERGearSetValid "鼓风机风量档位设定信号有效性";
+CM_ SG_ 648 MMI_BLOWERGearSet "鼓风机风量档位设定
+按照档位设定（1-7档），可在范围内设定；MMI下发指令设定风量时，直接赋值，不执行加减";
+CM_ SG_ 648 MMI_ACCompressorReq "空调压缩机命令";
+CM_ SG_ 648 MMI_FrontDeforstReq "前除霜控制命令";
+CM_ SG_ 648 MMI_RearDeforstReq "后除霜控制命令";
+CM_ SG_ 648 MMI_EnergyRecoveryContr "能量回收等级控制";
+CM_ SG_ 648 MMI_ACMaxReqValid "最大制冷命令信号有效性";
+CM_ SG_ 648 MMI_RearViewMirrorHeatReq "外后视镜加热控制命令";
+CM_ SG_ 648 MMI_AnionNegativeIonReq "负离子开关命令";
+CM_ SG_ 648 MMI_ACMaxReq "最大制冷命令请求";
+CM_ SG_ 648 MMI_ACOFFReqValid "空调关机命令信号有效性";
+CM_ SG_ 648 MMI_ACOFFReq "空调关机命令";
+CM_ SG_ 648 MMI_InsideTempIncDecReqValid "温度增减命令信号有效性";
+CM_ SG_ 648 MMI_InsideTempIncDecReq "温度增减命令
+温度为18℃（LO）时，不响应温度减指令，温度为32℃（HI）时，不响应温度加指令；增减步进为0.5℃；";
+CM_ BO_ 652 "VSP/氛围灯/CWC/EPS/天窗的控制命令";
+CM_ SG_ 652 MMI_VoiceSourceSelect_Cycle "VSP声源循环切换";
+CM_ SG_ 652 MMI_AmphereLampCtrl_BrtnsVal "氛围灯亮度值控制（0-100%）";
+CM_ SG_ 652 MMI_AmphereLampCtrl_Fleshmode "氛围灯呼吸模式控制";
+CM_ SG_ 652 MMI_AmphereLampCtrl_Drivingmode "氛围灯驾驶模式控制";
+CM_ SG_ 652 MMI_AmphereLampCtrl_SW "氛围灯开关控制";
+CM_ SG_ 652 MMI_VoiceSourceSelect "VSP声源切换";
+CM_ SG_ 652 MMI_PlatfondColorCmd "变色玻璃顶棚颜色控制命令";
+CM_ SG_ 652 MMI_AmphereLampIntellisenseSw "天窗的控制命令";
+CM_ SG_ 652 MMI_CWC_Cmd "CWC_OPEN_CLS                                                                  对无线充电器的开启与关闭";
+CM_ SG_ 652 MMI_VSPEnableCommand "VSP开关命令";
+CM_ SG_ 652 MMI_AmphereLampCtrl_Colour "氛围灯颜色控制";
+CM_ BO_ 666 "MMI发送给主座椅调节及通风、加热命令";
+CM_ SG_ 666 MMI_DrvSeatSlideCommand "主驾座椅前后调节指令";
+CM_ SG_ 666 MMI_DrvSeatFrontLiftPosPercentVa "主驾座椅前升降调节设置有效性";
+CM_ SG_ 666 MMI_DrvSeatFrontLiftPosPercent "主驾座椅前升降调节设置";
+CM_ SG_ 666 MMI_DrvSeatFrontLiftCommand "主驾座椅前升降调节指令";
+CM_ SG_ 666 MMI_DrvSeatReclinerPosPercentVal "主驾座椅靠背调角调节设置有效性";
+CM_ SG_ 666 MMI_DrvSeatReclinerPosPercent "主驾座椅靠背调角调节设置";
+CM_ SG_ 666 MMI_DrvSeatAllLiftPosPercentVali "主驾座椅全升降调节设置有效性";
+CM_ SG_ 666 MMI_DrvSeatAllLiftPosPercent "主驾座椅全升降调节设置";
+CM_ SG_ 666 MMI_DrvSeatReclinerCommand "主驾座椅靠背调角调节指令";
+CM_ SG_ 666 MMI_DrvSeatHeatControlCmd "Driver seat heat control command
+主驾座椅加热控制命令";
+CM_ SG_ 666 MMI_DrvSeatVenControlCmd "Driver seat ventilation control command
+主驾座椅通风控制命令";
+CM_ SG_ 666 MMI_DrvSeatHandyEntryExitSet "便利进出设置";
+CM_ SG_ 666 MMI_DrvSeatAllLiftCommand "主驾座椅全升降调节指令";
+CM_ SG_ 666 MMI_DrvSeatSlidePosPercentValid "主驾座椅前后调节设置有效性";
+CM_ SG_ 666 MMI_DrvSeatSlidePosPercent "主驾座椅前后调节设置";
+CM_ BO_ 668 "MMI发送给副座椅调节及通风、加热命令";
+CM_ SG_ 668 MMI_PassSeatSlideCommand "副驾座椅前后调节指令";
+CM_ SG_ 668 MMI_PassSeatFrontLiftPosPercentV "副驾座椅前升降调节设置有效性";
+CM_ SG_ 668 MMI_PassSeatFrontLiftPosPercent "副驾座椅前升降调节设置";
+CM_ SG_ 668 MMI_PassSeatFrontLiftCommand "副驾座椅前升降调节指令";
+CM_ SG_ 668 MMI_PassSeatReclinerPosPercentVa "副驾座椅靠背调角调节设置有效性";
+CM_ SG_ 668 MMI_PassSeatReclinerPosPercent "副驾座椅靠背调角调节设置";
+CM_ SG_ 668 MMI_PassSeatAllLiftPosPercentVal "副驾座椅全升降调节设置有效性";
+CM_ SG_ 668 MMI_PassSeatAllLiftPosPercent "副驾座椅全升降调节设置";
+CM_ SG_ 668 MMI_PassSeatReclinerCommand "副驾座椅靠背调角调节指令";
+CM_ SG_ 668 MMI_PassDrvSeatHeatControlCmd "Pass Driver seat heat control command
+副驾座椅加热控制命令";
+CM_ SG_ 668 MMI_PassDrvSeatVenControlCmd "Pass seat ventilation control command
+副驾座椅通风控制命令";
+CM_ SG_ 668 MMI_PassSeatAllLiftCommand "副驾座椅全升降调节指令";
+CM_ SG_ 668 MMI_PassSeatSlidePosPercentValid "副驾座椅前后调节设置有效性";
+CM_ SG_ 668 MMI_PassSeatSlidePosPercent "副驾座椅前后调节设置";
+CM_ BO_ 670 "发送给BCM的控制命令";
+CM_ SG_ 670 MMI_HazardLightCmd "对双闪灯的控制命令";
+CM_ SG_ 670 MMI_DoorLockCmd "对车门门锁的控制命令";
+CM_ SG_ 670 MMI_LowBeamLightCmd "对近光灯的控制命令";
+CM_ SG_ 670 MMI_HighBeamLightCmd "对远光灯的控制命令";
+CM_ SG_ 670 MMI_FoglightCmd "发送给雾灯的控制命令";
+CM_ SG_ 670 MMI_WiperCmd "发送给雨刮的控制命令";
+CM_ SG_ 670 MMI_BCMLightCmd "对小灯的控制命令";
+CM_ SG_ 670 MMI_FronLeftDoorWindowCmd "主车窗的控制命令";
+CM_ SG_ 670 MMI_FronRightDoorWindowCmd "副车窗的控制命令";
+CM_ SG_ 670 MMI_RearLeftDoorWindowCmd "左后车窗的控制命令";
+CM_ SG_ 670 MMI_FourDoorWindowCmd "四门车窗的控制命令";
+CM_ SG_ 670 MMI_FrontDoorWindowCmd "前车窗的控制命令";
+CM_ SG_ 670 MMI_AutolightSWCmd "自动大灯开关命令";
+CM_ SG_ 670 MMI_TailgateCmd "对尾门的控制命令";
+CM_ SG_ 670 MMI_RearRightDoorWindowCmd "右后车窗的控制命令";
+CM_ SG_ 670 MMI_RearViewMirrorSelect "外后视镜选择控制命令(预留)";
+CM_ SG_ 670 MMI_RearViewMirrorUpDown "视镜上下调节控制命令(预留)";
+CM_ SG_ 670 MMI_RearViewMirrorLeftRight "视镜左右调节控制命令(预留)";
+CM_ SG_ 670 MMI_RearViewCmd "对后视镜的控制命令";
+CM_ BO_ 792 "MMI发给AVM的信号4";
+CM_ SG_ 792 MMI_LicensePlate_ProvinceName "Car License Plate Province
+车牌号-省";
+CM_ SG_ 792 MMI_LicensePlate_Num2 "Car License Plate Number 2
+车牌号-数字号2";
+CM_ SG_ 792 MMI_LicensePlate_Num3 "Car License Plate Number 3
+车牌号-数字号3";
+CM_ SG_ 792 MMI_LicensePlate_Num4 "Car License Plate Number 4
+车牌号-数字号4";
+CM_ SG_ 792 MMI_LicensePlate_Num5 "Car License Plate Number 5
+车牌号-数字号5";
+CM_ SG_ 792 MMI_LicensePlate_Num6 "Car License Plate Number6
+车牌号-数字号6";
+CM_ SG_ 792 MMI_LicensePlate_Num7 "Car License Plate Number 7
+车牌号-数字号7";
+CM_ SG_ 792 MMI_LicensePlate_Num1 "Car License Plate Number 1
+车牌号-数字号1";
+CM_ SG_ 352 ACC_Set_Speed "driver selected cruise speed
+驾驶员选择的巡航速度";
+CM_ SG_ 352 ACC_Set_Headway "driver selected follow headway
+驾驶员选择的跟车距离";
+CM_ BO_ 384 "APA与MMI交互信号1";
+CM_ SG_ 384 APA_MMI_ConnectStatus "APA connect status
+APA与MMI连接状态";
+CM_ SG_ 384 APA_MMI_EcuStatus "Signal from APA to indicate ECU status 
+APA ECU状态";
+CM_ SG_ 384 APA_MMI_VideoOutputStatus "APA Ecu Video output status
+APA Ecu视频输出状态";
+CM_ SG_ 384 APA_MMI_3DViewModeStatus "APA 3D View Mode Status";
+CM_ SG_ 384 APA_MMI_AVM3DViewSwitch "APA3D视角状态";
+CM_ BO_ 386 "APA与MMI交互信号2(预留)";
+CM_ SG_ 386 APA_BSDLeftWaringSeverity "BSD左侧报警严重度(预留)";
+CM_ SG_ 386 APA_BSDLeftWaringValid "BSD左侧报警有效(预留)";
+CM_ SG_ 386 APA_BSDRightWaringSeverity "BSD右侧报警严重度(预留)";
+CM_ SG_ 386 APA_BSDRightWaringValid "BSD右侧报警有效(预留)";
+CM_ SG_ 386 APA_BSDStatus "BSD状态(预留)";
+CM_ SG_ 386 APA_BSDStatusValid "BSD状态位是否有效(预留)";
+CM_ BO_ 387 "APA后泊车雷达信号 APA与MMI交互信号3";
+CM_ SG_ 387 PAS_APA_DistanceLR_RL "obstancle detection Distance by rear left radar(long distance)
+左后长距离雷达探测障碍物距离值";
+CM_ SG_ 387 PAS_APA_DistanceLR_RR "obstancle detection Distance by rear right radar(long distance)
+右后长距离雷达探测障碍物距离值";
+CM_ SG_ 387 PAS_APA_DistanceSR_RL "obstancle detection Distance by rear left radar(short distance)
+左后短距离雷达探测障碍物距离值";
+CM_ SG_ 387 PAS_APA_DistanceSR_RML "obstancle detection Distance by rear middle left radar(short distance)
+左中后短距离雷达探测障碍物距离值";
+CM_ SG_ 387 PAS_APA_DistanceSR_RMR "obstancle detection Distance by rear middle right radar(short distance)
+右中后短距离雷达探测障碍物距离值";
+CM_ SG_ 387 PAS_APA_DistanceSR_RR "obstancle detection Distance by rear right radar(short distance)
+右后短距离雷达探测障碍物距离值";
+CM_ SG_ 387 APA_183hh_MessageCounter "counter
+计数器";
+CM_ SG_ 387 APA_183hh_MessageChecksum "校检和 checksum = (Byte0+Byte1 …+ Byte6) XOR 0xFF";
+CM_ BO_ 388 "APA前泊车雷达信号 APA与MMI交互信号4";
+CM_ SG_ 388 PAS_APA_DistanceLR_FL "obstancle detection Distance by front left radar(long distance)
+左前长距离雷达探测障碍物距离值";
+CM_ SG_ 388 PAS_APA_DistanceLR_FR "obstancle detection Distance by front right radar(long distance)
+右前长距离雷达探测障碍物距离值";
+CM_ SG_ 388 PAS_APA_DistanceSR_FL "obstancle detection Distance by front left radar(short distance)
+左前短距离雷达探测障碍物距离值";
+CM_ SG_ 388 PAS_APA_DistanceSR_FML "obstancle detection Distance by front middle left radar(short distance)
+左中前短距离雷达探测障碍物距离值";
+CM_ SG_ 388 PAS_APA_DistanceSR_FMR "obstancle detection Distance by front middle right radar(short distance)
+右中前短距离雷达探测障碍物距离值";
+CM_ SG_ 388 PAS_APA_DistanceSR_FR "obstancle detection Distance by front right radar(short distance)
+右前短距离雷达探测障碍物距离值";
+CM_ SG_ 388 APA_184hh_MessageCounter "counter
+计数器";
+CM_ SG_ 388 APA_184hh_MessageChecksum "校检和 checksum = (Byte0+Byte1 …+ Byte6) XOR 0xFF";
+CM_ BO_ 784 "APA与MMI交互信号3";
+CM_ SG_ 784 APA_AVM_MCU_Version "Signal from AVM to indicate MCU version
+标识MCU版本 eg.0x030008: 3.0.8";
+CM_ SG_ 784 APA_AVM_BSP_Version "Signal from AVM to indicate BSP version
+标识BSP版本 eg.0x030008: 3.0.8";
+CM_ BO_ 786 "APA与MMI交互信号4";
+CM_ SG_ 786 APA_AVM_ZADAS_Version "Signal from AVM to indicate Zadas version
+标识ZADAS版本 eg.0x030008: 3.0.8";
+CM_ SG_ 786 APA_Avm3d_licenseStatus "Signal from AVM to indicate if contained avm3d license
+是否包含AVM 3D授权";
+CM_ SG_ 786 APA_BSD_licenseStatus "Signal from AVM to indicate if contained BSD license
+是否包含BSD授权";
+CM_ BO_ 390 "AVM发给MMI的信号2(预留)";
+CM_ SG_ 390 AVM_BSDLeftWaringSeverity "BSD左侧报警严重度(预留)";
+CM_ SG_ 390 AVM_BSDLeftWaringValid "BSD左侧报警有效(预留)";
+CM_ SG_ 390 AVM_BSDRightWaringSeverity "BSD右侧报警严重度(预留)";
+CM_ SG_ 390 AVM_BSDRightWaringValid "BSD右侧报警有效(预留)";
+CM_ SG_ 390 AVM_BSDStatus "BSD状态(预留)";
+CM_ SG_ 390 AVM_BSDStatusValid "BSD状态位是否有效(预留)";
+CM_ BO_ 392 "AVM发给MMI的信号1";
+CM_ SG_ 392 AVM_MMI_ConnectStatus "AVM  connect status
+AVM  与MMI连接状态";
+CM_ SG_ 392 AVM_MMI_EcuStatus "Signal from AVM to indicate ECU status 
+AVM ECU状态(0xF: invalid/提示用户AVM_ECU状态异常)";
+CM_ SG_ 392 AVM_MMI_VideoOutputStatus "AVM Ecu Video output status
+AVM Ecu视频输出状态(0x3: invalid/显示MMI画面)";
+CM_ SG_ 392 AVM_MMI_AVM3DViewModeStatus "AVM3D View Mode Status";
+CM_ SG_ 392 AVM_MMI_AVM3DViewSwitch "AVM3D视角状态";
+CM_ BO_ 788 "AVM发给MMI的信号3";
+CM_ SG_ 788 AVM_MCU_Version "Signal from AVM to indicate MCU version
+标识MCU版本";
+CM_ SG_ 788 AVM_BSP_Version "Signal from AVM to indicate BSP version
+标识BSP版本";
+CM_ BO_ 790 "AVM发给MMI的信号4";
+CM_ SG_ 790 AVM_ZADAS_Version "Signal from AVM to indicate Zadas version
+标识ZADAS版本";
+CM_ SG_ 790 Avm3d_licenseStatus "Signal from AVM to indicate if contained avm3d license
+是否包含AVM 3D授权";
+CM_ SG_ 790 BSD_licenseStatus "Signal from AVM to indicate if contained BSD license
+是否包含BSD授权";
+CM_ SG_ 524 BMS_Powertrain_System_fault "Battery system failure
+电池系统故障";
+CM_ SG_ 524 BMS_cell_Voltage_low "Battery monomer power down fault
+电池单体电压低故障";
+CM_ SG_ 524 BMS_cell_Voltage_High "High voltage fault of battery monomer
+电池单体电压高故障";
+CM_ SG_ 524 BMS_Battery_LowTemp_warning "Battery pack Temperature Low fault
+电池组温度低故障";
+CM_ SG_ 524 BMS_Battery_HighTemp_warning "Battery pack Temperature High fault
+电池组温度高故障";
+CM_ SG_ 524 BMS_SOCHigh_Warning "Soc High Alarm
+SOC高报警";
+CM_ SG_ 524 BMS_SOCLow_Warning "Soc Low Alarm
+SOC低报警";
+CM_ SG_ 524 BMS_Battery_SumVoltage_High "High total voltage of battery pack failure
+电池包总电压高故障";
+CM_ SG_ 524 BMS_Battery_SumVoltage_Low "Battery pack total power down fault
+电池包总电压低故障";
+CM_ SG_ 524 BMS_HVBatCellDiffFalt "Battery Monomer Consistency Difference failure
+电池单体一致性差故障";
+CM_ SG_ 524 BMS_Err_OverVoltageFault "Battery pack monomer over-voltage failure
+电池包单体过压故障";
+CM_ SG_ 524 BMS_Battery_charge_Fault "Battery pack Charging failure
+电池组充电故障";
+CM_ SG_ 524 BMS_SOCJump_Warning "Soc Jump Alarm
+SOC跳变报警";
+CM_ SG_ 524 BMS_Err_CellT_Low "Low fault of monomer temperature
+单体温度过低故障";
+CM_ SG_ 524 BMS_Err_CellT_High "Excessive fault of monomer temperature
+单体温度过高故障";
+CM_ SG_ 524 BMS_BatNotMatchFlt "Battery mismatch Alarm
+电池不匹配报警";
+CM_ SG_ 524 BMS_Err_ISO_LOW "Insulation Low fault
+绝缘低故障";
+CM_ SG_ 524 BMS_Err_ChgCurrent_High "Charging current is too large fault
+充电电流过大故障";
+CM_ SG_ 524 BMS_Err_DchCurrent_High "Too large discharge current failure
+放电电流过大故障";
+CM_ SG_ 524 BMS_Err_DtT_High "The temperature difference is too big fault
+温差过大故障";
+CM_ SG_ 524 BMS_Err_comunicacion "BMS Communication failure
+BMS通讯故障";
+CM_ SG_ 524 BMS_Err_InterLock "BMS Interlock fault
+BMS互锁故障";
+CM_ SG_ 524 BMS_Circuit_Protection "Short Circuit protection
+短路保护";
+CM_ SG_ 524 BMS_FeedFault "BMS feed fault
+蓄电池馈电故障";
+CM_ SG_ 524 BMS_TotalErrNumber "Total number of BMS faults
+BMS故障总个数";
+CM_ SG_ 528 BMS_Sys_MinCellV "Minimum monomer voltage
+最小单体电压";
+CM_ SG_ 528 BMS_Sys_MaxCellV "Maximum electrical voltage
+最大电体电压";
+CM_ SG_ 528 BMS_Sys_MinCellV_No "Minimum monomer voltage position
+最小单体电压位置";
+CM_ SG_ 528 BMS_Sys_MaxCellV_No "Maximum electrical voltage position
+最大电体电压位置";
+CM_ SG_ 530 BMS_Sys_MinCellT "Minimum temperature
+最小温度";
+CM_ SG_ 530 BMS_Sys_MaxCellT "Maximum temperature
+最大温度";
+CM_ SG_ 530 BMS_Sys_MinCellT_No "Minimum temperature range
+最小温度位置";
+CM_ SG_ 530 BMS_Sys_MaxCellT_No "Maximum temperature position
+最大温度位置";
+CM_ SG_ 530 BMS_FastChrgTemp "Fast Charging gun surface temperature
+快充电枪表面温度";
+CM_ SG_ 534 BMS_Sys_SOC "State Of Charge
+电池SOC";
+CM_ SG_ 534 BMS_Sys_SOH "State Of Health
+电池SOH";
+CM_ SG_ 340 RCTA_warm_status_left "后方交叉路口左侧车辆报警";
+CM_ SG_ 340 BSDLCA_warm_status_left "左侧有车警告";
+CM_ SG_ 340 BSD_ConnectionFault_left "左雷达异常报警";
+CM_ SG_ 340 BSD_RFICFault_left "左雷达RFIC异常报警";
+CM_ SG_ 340 BSD_OverTempFault_left "左雷达温度异常报警";
+CM_ SG_ 340 BSD_StoreFault_left "左雷达存储异常报警";
+CM_ SG_ 340 BSDDOW_warm_status_left "DOW左侧有车警告";
+CM_ SG_ 340 BSD_EnableStatus "开关机状态反馈";
+CM_ SG_ 344 RCTA_warm_status_right "后方交叉路口右侧车辆报警";
+CM_ SG_ 344 BSDLCA_warm_status_right "右侧有车警告";
+CM_ SG_ 344 BSD_ConnectionFault_right "右雷达异常报警";
+CM_ SG_ 344 BSD_RFICFault_right "右雷达RFIC异常报警";
+CM_ SG_ 344 BSD_OverTempFault_right "右雷达温度异常报警";
+CM_ SG_ 344 BSD_StoreFault_right "右雷达存储异常报警";
+CM_ SG_ 344 BSDDOW_warm_status_right "DOW右侧有车警告";
+CM_ BO_ 856 "手机无线充电器CWC发出信号";
+CM_ SG_ 856 CWC_Status_Charge "手机充电状态";
+CM_ SG_ 856 CWC_Info_matter "无线充电器异物检测";
+CM_ SG_ 856 CWC_Info_phoneforgotten "手机遗忘提醒";
+CM_ SG_ 856 CWC_Over_Temp "充电器过温";
+CM_ SG_ 856 CWC_Over_Current "充电器过流";
+CM_ SG_ 856 CWC_Over_Voltage "充电器过压";
+CM_ BO_ 665 "主驾座椅电机状态反馈";
+CM_ SG_ 665 DSM_D_SlideDirection "主驾座椅前后调节状态";
+CM_ SG_ 665 DSM_D_FrontLiftDirection "主驾座椅前升降调节状态";
+CM_ SG_ 665 DSM_D_ReclinerDirection "主驾座椅靠背调角调节状态";
+CM_ SG_ 665 DSM_D_AllLiftDirection "主驾座椅全升降调节状态";
+CM_ SG_ 665 DSM_D_SlidePosPercentFinal "主驾座椅前后位置";
+CM_ SG_ 665 DSM_D_FrontLiftPosPercentFinal "主驾座椅前升位置";
+CM_ SG_ 665 DSM_D_ReclinerPosPercentFinal "主驾座椅靠背位置百分比";
+CM_ SG_ 665 DSM_D_AllLiftPosPercentFinal "主驾座椅全升降位置百分比";
+CM_ BO_ 667 "副驾座椅电机状态反馈";
+CM_ SG_ 667 DSM_P_SlideDirection "副驾座椅前后调节状态";
+CM_ SG_ 667 DSM_P_FrontLiftDirection "副驾座椅前升降调节状态";
+CM_ SG_ 667 DSM_P_ReclinerDirection "副驾座椅靠背调角调节状态";
+CM_ SG_ 667 DSM_P_AllLiftDirection "副驾座椅全升降调节状态";
+CM_ SG_ 667 DSM_P_SlidePosPercentFinal "副驾座椅前后位置";
+CM_ SG_ 667 DSM_P_FrontLiftPosPercentFinal "副驾座椅前升位置";
+CM_ SG_ 667 DSM_P_ReclinerPosPercentFinal "副驾座椅靠背位置百分比";
+CM_ SG_ 667 DSM_P_AllLiftPosPercentFinal "副驾座椅全升降位置百分比";
+CM_ SG_ 342 SteerWheel_L_OK "左确认键";
+CM_ SG_ 342 SteerWheel_Voice "语音";
+CM_ SG_ 342 SteerWheel_VOL_Inc "音量+";
+CM_ SG_ 342 SteerWheel_VOL_Dec "音量-/静音";
+CM_ SG_ 342 SteerWheel_PREV "上一曲/上一页";
+CM_ SG_ 342 SteerWheel_Defi "自定义开关";
+CM_ SG_ 342 SteerWheel_NEXT "下一曲/下一页";
+CM_ SG_ 342 SteerWheel_Mode "MODE开关(MENU)";
+CM_ SG_ 342 SteerWheel_Return_Home "返回/主页开关";
+CM_ SG_ 342 SteerWheel_Hang_Down "接/挂电话";
+CM_ SG_ 342 AmphereLampSta_SW "氛围灯开关状态";
+CM_ SG_ 342 AmphereLampSta_Colour "氛围灯颜色状态";
+CM_ SG_ 342 AmphereLampBrtnsVal "氛围灯亮度值（0-100%）";
+CM_ SG_ 594 MCU_F_ResolverFault "MCU spin fault
+MCU旋变故障";
+CM_ SG_ 594 MCU_F_Err_IGBT "IGBT fault
+IGBT故障";
+CM_ SG_ 594 MCU_F_CurrentOverload "Overcurrent State
+过流状态";
+CM_ SG_ 594 MCU_F_Controllertemp_Status "Drive Motor controller Temperature state
+驱动电机控制器温度状态";
+CM_ SG_ 594 MCU_F_SpeedOtLoopFalult "Out Speed Loop Response Failure
+外部转速环响应故障";
+CM_ SG_ 594 MCU_F_MdTepErr "Module temperature Detection Value exception
+模块温度检测值异常";
+CM_ SG_ 594 MCU_F_ControllerOverVolt_Status "Overvoltage State of Motor controller
+电机控制器过压状态";
+CM_ SG_ 594 MCU_F_MotorTemp_Fault "Drive Motor Temperature Alarm
+驱动电机温度报警";
+CM_ SG_ 594 MCU_F_MotorOverSpd "Motor Overspeed Failure
+电机超速故障";
+CM_ SG_ 594 MCU_F_ControllerLowUnderVolt_Sta "Low pressure undervoltage State of motor controller
+电机控制器低压欠压状态";
+CM_ SG_ 594 MCU_F_ControllerUnderVolt_Status "Voltage State of Motor controller
+电机控制器欠压状态";
+CM_ SG_ 594 MCU_F_ControllerFault "Motor Controller Failure
+电机控制器故障";
+CM_ SG_ 594 FMCU_HV_Interlock_Falult "FMCU HV Interlock Falult                                              前电机高压互锁故障";
+CM_ SG_ 594 FMCU_Uncap_Falult "FMCU uncap fault                                                      前电控开盖故障";
+CM_ SG_ 594 MCU_F_MotTepErr "Abnormal motor temperature detection value
+电机温度检测值异常";
+CM_ SG_ 132 MCU_F_ControlerTemp "Front MCU Controler Temperature
+前电机控制器温度";
+CM_ SG_ 132 MCU_F_TempCurr "Actual temperature of front motor
+前电机实际温度";
+CM_ SG_ 580 MCU_R_ControlerTemp "Rear MCU Controler Temperature
+后电机控制器温度";
+CM_ SG_ 580 MCU_R_TempCurr "Actual temperature of rear motor
+后电机实际温度";
+CM_ SG_ 608 MCU_R_ResolverFault "MCU spin fault
+MCU旋变故障";
+CM_ SG_ 608 MCU_R_Err_IGBT "IGBT fault
+IGBT故障";
+CM_ SG_ 608 MCU_R_CurrentOverload "Overcurrent State
+过流状态";
+CM_ SG_ 608 MCU_R_Controllertemp_Status "Drive Motor controller Temperature state
+驱动电机控制器温度状态";
+CM_ SG_ 608 MCU_R_SpeedOtLoopFalult "Out Speed Loop Response Failure
+外部转速环响应故障";
+CM_ SG_ 608 MCU_R_MdTepErr "Module temperature Detection Value exception
+模块温度检测值异常";
+CM_ SG_ 608 MCU_R_ControllerOverVolt_Status "Overvoltage State of Motor controller
+电机控制器过压状态";
+CM_ SG_ 608 MCU_R_MotorTemp_Fault "Drive Motor Temperature Alarm
+驱动电机温度报警";
+CM_ SG_ 608 MCU_R_MotorOverSpd "Motor Overspeed Failure
+电机超速故障";
+CM_ SG_ 608 MCU_R_ControllerLowUnderVolt_Sta "Low pressure undervoltage State of motor controller
+电机控制器低压欠压状态";
+CM_ SG_ 608 MCU_R_ControllerUnderVolt_Status "Voltage State of Motor controller
+电机控制器欠压状态";
+CM_ SG_ 608 MCU_R_ControllerFault "Motor Controller Failure
+电机控制器故障";
+CM_ SG_ 608 RMCU_HV_Interlock_Falult "RMCU HV Interlock Falult                                              前电机高压互锁故障";
+CM_ SG_ 608 RMCU_Uncap_Falult "RMCU uncap fault                                                      前电控开盖故障";
+CM_ SG_ 608 MCU_R_MotTepErr "Abnormal motor temperature detection value
+电机温度检测值异常";
+CM_ BO_ 644 "预约充电命令设置";
+CM_ SG_ 644 TBOX_StartChgYear "预约开始时间年设置";
+CM_ SG_ 644 TBOX_ReservationChgCommandSet "预约充电命令设置";
+CM_ SG_ 644 TBOX_StartChgMonth "预约开始时间月设置";
+CM_ SG_ 644 TBOX_StartChgDay "预约开始时间日设置";
+CM_ SG_ 644 TBOX_StartChgHour "预约开始时间时设置";
+CM_ SG_ 644 TBOX_ChrgMode "充电功率模式";
+CM_ SG_ 644 TBOX_StartChgMinute "预约开始时间分设置";
+CM_ SG_ 644 TBOX_ChrgPercentum "预约充电设定百分比";
+CM_ SG_ 644 TBOX_StopChrgRQ "请求停止充电";
+CM_ SG_ 770 DCDC_Voltage_Output "DCDC Output Voltage
+DCDC输出电压";
+CM_ SG_ 770 DCDC_Current_Output "DCDC Output Current
+DCDC输出电流";
+CM_ BO_ 776 "DCDC有关的信号2";
+CM_ SG_ 776 DCDC_Status "DCDC Controller Status
+DCDC控制器状态";
+CM_ SG_ 776 DCDC_Fault "DCDC Controller Fault Alarm
+DCDC控制器故障报警";
+CM_ SG_ 776 DCDC_OverTemp_Fault "DCDC temperature is too high to malfunction
+DCDC温度过高故障";
+CM_ SG_ 776 DCDC_ControllerTemp "DCDC Controller Temperature
+DCDC控制器温度";
+CM_ BO_ 772 "充电有关的信号2";
+CM_ SG_ 772 ChargeInterfacetemperature "Charger Temperature
+充电口温度 ";
+CM_ SG_ 772 OBC_ControllerTemp "OBC Controller Temperature
+充电机控制器温度";
+CM_ SG_ 772 OBC_Charger_Fail_State "OBC Fail State                                                             充电机故障状态";
+CM_ SG_ 772 OBC_CC_Resistance "OBC_CC
+充电连接CC状态";
+CM_ SG_ 772 KL30_UnderVolt "KL30_UnderVolt                                                                                     KL30电源过欠压";
+CM_ SG_ 772 ElectronicLockSts "ElectronicLockSts                                                电子锁状态";
+CM_ SG_ 772 ElectronicLockFault "ElectronicLockFault                                               电子锁故障状态";
+CM_ SG_ 772 OBC_Charger_Instructions "AC Charge Indicator
+交流充电指示";
+CM_ SG_ 570 VCU_AC_ChrgStatus "AC Charging Status
+交流充电状态";
+CM_ SG_ 570 VCU_EnergyRecoverySt "Energy Recovery Grade Status
+能量回收等级状态";
+CM_ SG_ 570 VCU_PwrFlowIndcr "Power flow indicator
+能量流";
+CM_ SG_ 570 VCU_DC_ChrgStatus "DC Charging Status
+直流充电状态";
+CM_ SG_ 570 VCU_V2V_ChrgStatus "V2V Charging Status
+对外放电状态";
+CM_ SG_ 574 VCU_EnduranceMileage "Mileage of continuous driving
+续驶里程";
+CM_ SG_ 574 VCU_23Eh_RollingCounter "Rolling counter
+循环计数器";
+CM_ SG_ 574 VCU_23Eh_CheckSUM "校检和 checksum = (Byte0+Byte1 …+ Byte6) XOR 0xFF";
+CM_ SG_ 913 VSP_State "VSP状态";
+CM_ SG_ 913 VSP_VoiceSourceSelectFeedback "VSP声源切换反馈";
+CM_ SG_ 274 EPS_SteeringWheelAngVD "EPS steering wheel angle Valid Status
+EPS中测量的方向盘转角信号有效性标识位";
+CM_ SG_ 274 EPS_SASFailureSts "EPS SAS Failure Status
+EPS中的转角传感器失效状态";
+CM_ SG_ 274 EPS_Fault "Fault Lamp Status
+故障灯状态";
+CM_ SG_ 274 EPS_SteeringWheelAng "EPS steering wheel angle
+EPS中测量的方向盘转角(左正右负)";
+CM_ SG_ 274 EPS_SteerWheelRotSpd "EPS Steering wheel rotational speed
+EPS中测量的方向盘转角速度";
+CM_ SG_ 274 EPS_SteerWheelRotSpdVD "EPS Steering wheel rotational speed Valid Status
+EPS中测量的方向盘转角速度有效性标识位";
+CM_ SG_ 328 EPB_Brake_Lights_Request_L "brake lights request
+点亮刹车灯请求";
+CM_ SG_ 328 EPB_SwitchSta_L "EPB Switch State 
+EPB开关状态";
+CM_ SG_ 328 EPB_WarnLampSta_L "EPB Warning Lamp State
+EPB故障灯状态";
+CM_ SG_ 328 EPB_ParkLampSta_L "Park Lamp State
+驻车灯状态";
+CM_ SG_ 328 EPB_ActuatorSt_L "Lift EPB Actuator State
+左Moc状态";
+CM_ SG_ 328 EPB_DisplayMsgID_L "Display  Message ID Requested by EPB to ICU   仪表文字提示信息";
+CM_ SG_ 328 EPB_148h_RollingCounter "Rolling counter
+循环计数器";
+CM_ SG_ 328 EPB_148h_CheckSUM "校验和
+checksum = (Byte0+Byte1 …+ Byte6) XOR 0xFF";
+CM_ SG_ 336 EPB_Brake_Lights_Request_R "brake lights request
+点亮刹车灯请求";
+CM_ SG_ 336 EPB_SwitchSta_R "EPB Switch State 
+EPB开关状态";
+CM_ SG_ 336 EPB_WarnLampSta_R "EPB Warning Lamp State
+EPB故障灯状态";
+CM_ SG_ 336 EPB_ParkLampSta_R "Park Lamp State
+驻车灯状态";
+CM_ SG_ 336 EPB_ActuatorSt_R "Right EPB Actuator State
+右 EPD 执行器状态";
+CM_ SG_ 336 EPB_DisplayMsgID_R "Display  Message ID Requested by EPB to ICU   
+仪表文字提示信息";
+CM_ SG_ 336 EPB_150h_RollingCounter "Rolling counter
+循环计数器";
+CM_ SG_ 336 EPB_150h_CheckSUM "校验和
+checksum = (Byte0+Byte1 …+ Byte6) XOR 0xFF";
+CM_ SG_ 338 BCM_RearViewMirrorAutoFoldFuc "indicate illuminate level
+光照等级";
+CM_ SG_ 338 BCM_RFDoorSwitchSt "Right front door status signal
+右前车门状态信号";
+CM_ SG_ 338 BCM_LFDoorSwitchSt "Left Front door status signal
+左前车门状态信号";
+CM_ SG_ 338 BCM_PositionLampSt "Position lamp Status
+位置灯状态";
+CM_ SG_ 338 BCM_FrontFogligthSt "Front fog lamp Status
+前雾灯状态";
+CM_ SG_ 338 BCM_BackFogligthSt "Rear fog lamp status
+后雾灯状态";
+CM_ SG_ 338 BCM_HighBeamStatus "Remote Light Status
+远光灯状态";
+CM_ SG_ 338 BCM_LowBeamStatus "Near light status
+近光灯状态";
+CM_ SG_ 338 BCM_TrunkSt "Suitcase Door Status Signal
+行李箱门状态信号";
+CM_ SG_ 338 BCM_TurnLeverLoc "Turn Level Location
+转向拨杆位置";
+CM_ SG_ 338 BCM_RightligthFaultSt "Right Turn light malfunction
+右转向灯故障";
+CM_ SG_ 338 BCM_RightligthSt "Right steering State signal
+右转向状态信号";
+CM_ SG_ 338 BCM_LetfligthFaultSt "Left Turn lamp fault
+左转向灯故障";
+CM_ SG_ 338 BCM_LetfligthSt "Left steering State signal
+左转向状态信号";
+CM_ SG_ 338 BCM_LRDoorSwitchSt "Left rear door status signal
+左后车门状态信号";
+CM_ SG_ 338 BCM_RRDoorSwitchSt "Right rear door status signal
+右后车门状态信号";
+CM_ SG_ 338 BCM_CentralLockSt "Switch state of central control lock
+中控锁开关状态";
+CM_ SG_ 338 BCM_Reverse_Light "status of reverse lights
+倒车灯状态";
+CM_ SG_ 338 BCM_Mainbeam_Available "indicates if Mainbeam is available
+指示远光灯是否可用";
+CM_ SG_ 338 BCM_HazardwarnLampSt "Hazard Alarm Lamp Status signal
+危险报警灯状态信号";
+CM_ SG_ 338 BCM_PassSeatbeltBucklestatus "Passenger seat belt buckle status
+副驾驶安全带状态";
+CM_ SG_ 338 BCM_DrvSeatbeltBucklestatus "Driver seat belt buckle status
+驾驶员安全带状态";
+CM_ SG_ 338 BCM_FrontCoverSt "Front Hatch Status Signal
+前舱盖状态信号";
+CM_ SG_ 338 BCM_Auto_LightSwitch "Whether the far and near light switch is in 'Auto' gear
+远近光灯开关是否处于AUTO挡";
+CM_ SG_ 338 BCM_Brake_Light "status of brake lights
+刹车灯状态";
+CM_ SG_ 338 BCM_Rain_Sensor "indicate rain level
+雨量等级(AUTO挡时，雨量传感器请求的雨刮状态)";
+CM_ SG_ 338 BCM_DrvSeatbeltBucklevalidity "Driver seat belt buckle validity
+驾驶员安全带状态信号有效性";
+CM_ SG_ 338 BCM_PassSeatbeltBucklevalidity "Passenger seat belt buckle validity
+副驾驶安全带状态信号有效性";
+CM_ SG_ 338 BCM_PowerMode "System power supply
+That is: ignition status
+系统电源
+即：点火状态";
+CM_ SG_ 338 BCM_RearViewMirror "RearViewMirror Status
+后视镜状态";
+CM_ SG_ 338 BCM_ChargeCoverLockStatus "Charge Cover Lock Status
+充电口盖锁状态";
+CM_ SG_ 338 BCM_RearDeforstSts "Rear deforst status
+后除霜状态";
+CM_ SG_ 338 BCM_BkSeat_1_beltBucklevalidity "Back seat 1 belt buckle validity
+后排座椅安全带1状态信号有效性";
+CM_ SG_ 338 BCM_BkSeat_1_beltBucklestatus "Back seat 1 belt buckle status
+后排1安全带状态";
+CM_ SG_ 338 BCM_BkSeat_2_beltBucklevalidity "Back seat 2 belt buckle validity
+后排座椅安全带2状态信号有效性";
+CM_ SG_ 338 BCM_BkSeat_2_beltBucklestatus "Back seat 2 belt buckle status
+后排2安全带状态";
+CM_ SG_ 338 BCM_BkSeat_3_beltBucklevalidity "Back seat 3 belt buckle validity
+后排座椅安全带1状态信号有效性";
+CM_ SG_ 338 BCM_BkSeat_3_beltBucklestatus "Back seat 3 belt buckle status
+后排1安全带状态";
+CM_ SG_ 354 AEB_State "indicate system working state
+指示AEB系统状态";
+CM_ SG_ 354 FCW_State "indicate system working state
+指示FCW工作状态";
+CM_ SG_ 354 ADAS_Sensorstatus "Sensor Fault Status
+传感器故障状态";
+CM_ SG_ 354 HW_Warning_Level "indicate the current warning level
+指示HW当前报警等级";
+CM_ SG_ 354 FCW_Warning_Level "indicate the current warning level
+指示FCW报警等级";
+CM_ SG_ 354 ACC_Override_Indicator "Instruct driver to override through throttle
+指示驾驶员通过油门超控";
+CM_ SG_ 354 ACC_CIPV_Indicator "indicate CIPV detection status
+指示最近在径前车状态";
+CM_ SG_ 354 ACC_Auto_Cancel "indicate auto cancel 
+指示系统自动取消了ACC功能";
+CM_ SG_ 354 ACC_Driver_Cancel "indicate driver cancel operation
+指示驾驶员取消ACC";
+CM_ SG_ 354 ACC_State "indicate system working state
+指示ACC系统工作状态";
+CM_ SG_ 354 ACC_Go_Indicator "GO' notifier for stop & go function
+ stop & go功能的前进指示
+";
+CM_ SG_ 354 ACC_Takeover_Indicator "indicate driver takeover operation
+请求驾驶员接管";
+CM_ SG_ 354 ADAS_162h_RollingCounter "循环计数器";
+CM_ SG_ 354 ADAS_162h_CheckSUM "校检和 checksum = (Byte0+Byte1 …+ Byte6) XOR 0xFF";
+CM_ SG_ 356 TSR_State "indicate system working state
+指示TSR系统工作状态";
+CM_ SG_ 356 DAS_TSR_Main_Switch "Trafic Signal Recognise switch feedback status                  
+ 交通信号灯识别开关回馈状态";
+CM_ SG_ 356 IHC_State "indicate system working state
+指示IHC工作状态";
+CM_ SG_ 356 LDW_Line_Detect_Status "indicate system lane mark detection status
+指示车道线检测状态";
+CM_ SG_ 356 LDW_Warning "indicate the current warning direction
+指示当前LDW报警等级";
+CM_ SG_ 356 LDW_State "indicate system working state
+指示LDW工作状态";
+CM_ SG_ 356 TSR_Targetspeed_Request "Indicates the current identified speed limit
+指示当前识别到的限速值";
+CM_ SG_ 356 LKA_State "indicate system working state
+指示LKA系统状态";
+CM_ SG_ 356 LKA_Takeover_Request "warning when system detect current situation beyond system limit
+LKA请求驾驶员接管";
+CM_ SG_ 356 LKA_Hands_Off_Warning "warning when hands off detected
+驾驶员手离开方向盘警告";
+CM_ SG_ 356 DAS_LDW_Main_Switch "Lan Departure Warming switch feedback status                   道路偏离预警开关回馈状态";
+CM_ SG_ 356 DAS_LDW_Sensitivity "Lan Departure Warming Sensitivity feedback status                                                             道路偏离预警灵敏度回馈状态";
+CM_ SG_ 356 DAS_FCW_Main_Switch "Forward Collision switch feedback status                   前碰预警开关回馈状态";
+CM_ SG_ 356 DAS_FCW_Sensitivity "Forward Collision sensitivity feedback status                   前碰预警开关灵敏度回馈状态";
+CM_ SG_ 356 DAS_AEB_Main_Switch "Auto Emergency Break switch feedback status                   自动紧急制动主开关回馈状态";
+CM_ SG_ 356 DAS_IHC_Main_Switch "Intergrade HeadLingt Control Main switch feedback status                                                                      自动大灯开关回馈状态";
+CM_ SG_ 372 VCU_Err_BrakeSwitch "Brake Switch fault
+制动开关故障";
+CM_ SG_ 372 VCU_Err_AccPedal "Throttle Pedal Failure
+油门踏板故障";
+CM_ SG_ 372 VCU_GearPosition "Gear status (R\/N\/D/P)
+档位状态（R/N/D/P）";
+CM_ SG_ 372 VCU_PTSystem_Satus "Power system fault Status
+动力系统故障状态";
+CM_ SG_ 372 VCU_VehSysStatus "Full Vehicle system status
+整车系统状态";
+CM_ SG_ 372 VCU_Cruise_MainSwitch "Main Cruise Switch
+主巡航开关";
+CM_ SG_ 372 VCU_OperationMode "Running mode
+运行模式";
+CM_ SG_ 372 VCU_DrivingMode "Driving mode
+驱动模式(两驱或四驱)";
+CM_ SG_ 372 VCU_SpeedMode "Speed mode
+转速模式";
+CM_ SG_ 372 VCU_TortoiseIndicator "Turtle Speed Lamp Indication
+龟速灯指示";
+CM_ SG_ 372 VCU_Cruise_Enable "Cruise enable
+巡航使能";
+CM_ SG_ 372 VCU_174h_RollingCounter "Rolling counter
+循环计数器";
+CM_ SG_ 372 VCU_UnlockSts "VCU anti-theft cancellation status
+VCU防盗解除状态";
+CM_ SG_ 372 VCU_174h_CheckSUM "校检和 checksum = (Byte0+Byte1 …+ Byte6) XOR 0xFF";
+CM_ SG_ 512 BMS_Sys_SumVoltage "Total battery voltage
+电池总电压";
+CM_ SG_ 512 BMS_Sys_SumCurrent "Total Battery Current
+电池总电流";
+CM_ SG_ 514 BMS_Sys_ChgorDisChrgSts "Battery pack charging and discharging status
+电池包充放电状态";
+CM_ SG_ 514 BMS_FastChrgSts "BMS FastCharge Status
+BMS快充充电状态";
+CM_ SG_ 514 BMS_SlowChrgSts "BMS SlowCharge Status
+BMS慢充充电状态";
+CM_ SG_ 514 BMS_ChrgCouplesSt "Fast charge connection status
+快充连接状态";
+CM_ SG_ 514 BMS_PauseContinueChrgStus "Pause/Continue charge status feedback
+请求暂停/继续充电状态反馈";
+CM_ SG_ 514 BMS_AllowedChrgMaxPower "Max Allowed Charge Power
+最大允许充电电量";
+CM_ SG_ 518 BMS_ThermalManageReq "BMS request AC to cooling or heating
+热管理请求";
+CM_ SG_ 568 VCU_CoolingFanSt "Cooling Fan Status
+冷却风扇状态";
+CM_ SG_ 568 VCU_StartInf "Veicle Start Information                                     车辆启动提示";
+CM_ SG_ 568 VCU_ChaGearInf "Change gear Information                                    换挡提示";
+CM_ SG_ 586 ACU_AirBagSysWrnLmpCmd "Airbag system warning lamp request";
+CM_ SG_ 586 ACU_Crashinfo "crash signal
+无碰撞时100ms 有碰撞时20ms连续发10次";
+CM_ SG_ 586 ACU_24Ah_RollingCounter "循环计数器";
+CM_ SG_ 586 ACU_24Ah_CheckSUM "校检和 checksum = (Byte0+Byte1 …+ Byte6) XOR 0xFF";
+CM_ SG_ 588 PEPS_KeyInCarWarning "Failed lock warning for the key is in the car 
+钥匙遗忘在车内 驾驶员提醒（IP:智能钥匙遗忘车内）";
+CM_ SG_ 588 ReminderPutInP_Nposition_OFF "Display the reminder of put in P/N position or neutral when OFF.
+请切换至P档提醒（IP:请切换至P档下电）";
+CM_ SG_ 588 ReminderPutInP_Nposition_Lock "Display the reminder of put in P/N position or neutral when lock.
+请切换至P档提醒（IP:请切换至P档）";
+CM_ SG_ 588 PEPS_KeyNotInWarning "Display there is no valid key inside.
+钥匙不在车内提醒（IP:智能钥匙不在车内）";
+CM_ SG_ 588 BCM_FrontWiperSt "Front Wiper Switch Status
+前雨刮开关状态";
+CM_ SG_ 588 PEPS_PutKeyInIMMOSocket "Put Key In IMMO socket
+请将遥控钥匙放置将智能钥匙放置于钥匙槽来执行IMMO启动提醒（IP:将智能钥匙放置于钥匙槽）";
+CM_ SG_ 588 PEPS_PowerRelayFault "Power Relay fault
+电源故障（任何一个继电器坏掉都报故障）（IP:电源故障）";
+CM_ SG_ 588 PEPS_RemoteLowVoltage "Display the key battery low status
+遥控钥匙电压低提醒（IP:智能钥匙电量低）";
+CM_ SG_ 588 PEPS_ESCLFault "ESCL fault（预留）
+ESCL故障（IP:ESCL故障）";
+CM_ SG_ 588 PEPS_ESCLUnlockFailed "ESCL unlock failed（预留）
+ESCL解锁失败（IP:请转动方向盘）";
+CM_ SG_ 588 FLWS_POS_VIT_FL "Left Front window position
+左前车窗位置";
+CM_ SG_ 588 FRWS_POS_VIT_FL "Right front window position
+右前车窗位置";
+CM_ SG_ 588 RLWS_POS_VIT_FL "Left rear Window position
+左后车窗位置";
+CM_ SG_ 588 RRWS_POS_VIT_FL "Right rear Window position
+右后车窗位置";
+CM_ SG_ 589 BCM_LFDoorLockStatus "Left front door door lock status
+左前门门锁状态";
+CM_ SG_ 589 BCM_TrunkDoorLockSts "Backup Box door lock status
+后备箱门锁状态";
+CM_ SG_ 589 BCM_RFDoorLockStatus "Right front door door lock status
+右前门门锁状态";
+CM_ SG_ 589 BCM_LRDoorLockStatus "Left Backdoor door lock status
+左后门门锁状态";
+CM_ SG_ 589 BCM_RRDoorLockStatus "Right Backdoor door lock status右后门门锁状态";
+CM_ SG_ 589 BCM_RLS_RQ_WiperSPD "The Sensor requested wiper speed 雨量传感器请求的雨刮速度.            ";
+CM_ SG_ 589 BCM_RLS_Fault "Rain/Light sensor fault status
+雨量光照传感器故障";
+CM_ SG_ 589 BCM_RLC_FWLight "Forward light前向光";
+CM_ SG_ 589 BCM_RLC_Ambient_Light "Ambient light上方光";
+CM_ SG_ 607 AC_AmbientAirTemperature_Correct "校准后环境温度";
+CM_ SG_ 607 AC_IncarTemperature "车内温度";
+CM_ SG_ 607 AC_ACMode "空调模式";
+CM_ SG_ 607 AC_AmbientAirTemperature_Validit "环境温度有效性";
+CM_ SG_ 610 BCM_FL_TirePrs "Left Front tire pressure pressure
+左前轮胎压压力";
+CM_ SG_ 610 BCM_FR_TirePrs "Right Front tire pressure pressure
+右前轮胎压压力";
+CM_ SG_ 610 BCM_RL_TirePrs "Left rear tire pressure pressure
+左后轮胎压压力";
+CM_ SG_ 610 BCM_RR_TirePrs "Right rear tire pressure pressure
+右后轮胎压压力";
+CM_ SG_ 610 BCM_RR_TirePrsSt "Right rear tire pressure state
+右后轮胎压状态";
+CM_ SG_ 610 BCM_RL_TirePrsSt "Left rear tire pressure state
+左后轮胎压状态";
+CM_ SG_ 610 BCM_FR_TirePrsSt "Right front tire pressure state右前轮胎右前轮胎压状态";
+CM_ SG_ 610 BCM_FL_TirePrsSt "Left Front tire pressure state
+左前轮胎压状态";
+CM_ SG_ 612 BCM_FL_TireTpt "Left Front tire temperature
+左前轮胎温";
+CM_ SG_ 612 BCM_FR_TireTpt "Right front tire temperature
+右前轮胎温";
+CM_ SG_ 612 BCM_RL_TireTpt "Left rear tire temperature
+左后轮胎温";
+CM_ SG_ 612 BCM_RR_TireTpt "Right rear tire temperature
+右后轮胎温";
+CM_ SG_ 612 BCM_RR_TireTptSt "Right rear wheel tire temperature state
+右后轮轮胎温状态";
+CM_ SG_ 612 BCM_RL_TireTptSt "Left rear wheel tire temperature state
+左后轮轮胎温状态";
+CM_ SG_ 612 BCM_FR_TireTptSt "Right front wheel tire temperature state
+右前轮轮胎温状态";
+CM_ SG_ 612 BCM_FL_TireTptSt "Left front wheel tire temperature state
+左前轮轮胎温状态";
+CM_ SG_ 613 BCM_RR_TireLose "Right rear wheel sensor RF signal failure
+右后轮传感器RF信号故障";
+CM_ SG_ 613 BCM_RL_TireLose "Left rear wheel sensor RF signal failure
+左后轮传感器RF信号故障";
+CM_ SG_ 613 BCM_FR_TireLose "Right front wheel sensor RF signal failure
+右前轮传感器RF信号故障";
+CM_ SG_ 613 BCM_FL_TireLose "Left front wheel sensor RF signal failure
+左前轮传感器RF信号故障";
+CM_ SG_ 613 BCM_RR_TireLowVol "Right rear wheel sensor low voltage tips
+右后轮传感器低压提示";
+CM_ SG_ 613 BCM_RL_TireLowVol "Left rear wheel sensor low voltage tips
+左后轮传感器低压提示";
+CM_ SG_ 613 BCM_FR_TireLowVol "Right front wheel sensor low voltage tips
+右前轮传感器低压提示";
+CM_ SG_ 613 BCM_FL_TireLowVol "Left front wheel sensor low voltage tips
+左前轮传感器低压提示";
+CM_ SG_ 613 BCM_RR_TestSt "TPMS right rear wheel test status
+TPMS右后轮测试状态";
+CM_ SG_ 613 BCM_RL_TestSt "TPMS left rear wheel test status
+TPMS左后轮测试状态";
+CM_ SG_ 613 BCM_FR_TestSt "TPMS right front wheel test status
+TPMS右前轮测试状态";
+CM_ SG_ 613 BCM_FL_TestSt "TPMS left front wheel test status
+TPMS左前轮测试状态";
+CM_ SG_ 613 BCM_BatVol_ErrFlag "TPMS Supply voltage anomaly
+TPMS供电电压异常";
+CM_ SG_ 613 BCM_TPMS_TestSt "TPMS Test Status
+TPMS 测试状态";
+CM_ SG_ 613 BCM_RR_Quikleakage "Right rear wheel sensor fast leak alarm prompt
+右后轮传感器快速漏气报警提示";
+CM_ SG_ 613 BCM_RL_Quikleakage "Left rear wheel sensor fast leak alarm prompt
+左后轮传感器快速漏气报警提示";
+CM_ SG_ 613 BCM_FR_Quikleakage "Right front wheel sensor fast leak alarm Tips
+右前轮传感器快速漏气报警提示";
+CM_ SG_ 613 BCM_FL_Quikleakage "Left front wheel sensor fast leak alarm Tips
+左前轮传感器快速漏气报警提示";
+CM_ SG_ 614 AC_WPTC_RunStatus "水加热PTC运行状态";
+CM_ SG_ 614 AC_ACCM_RunStatus "压缩机运行状态";
+CM_ SG_ 624 AC_AutoMode "AC自动模式";
+CM_ SG_ 624 AC_ActualBlowingMode "AC实际吹风模式";
+CM_ SG_ 624 AC_ActualCirculationMode "AC实际内外循环模式";
+CM_ SG_ 624 AC_DVDDisplayReq "大屏弹窗请求";
+CM_ SG_ 624 AC_TempSetPoint "Temp set point
+AC设定温度";
+CM_ SG_ 624 AC_ActualAirQuantity "AC实际风量大小";
+CM_ SG_ 624 AC_FwdDeforstSts "前除霜状态";
+CM_ SG_ 624 AC_RearDeforstSts "后除霜状态(预留)";
+CM_ SG_ 624 AC_CoolingStaus "AC制冷状态";
+CM_ SG_ 624 AC_MaxCooingStaus "AC最大制冷状态";
+CM_ SG_ 624 AC_OffStaus "AC关机状态";
+CM_ SG_ 624 AC_PM25_Status "PM2.5 Status
+PM2.5 状态";
+CM_ SG_ 624 AC_RearViewMirroHeatStatus "Rear View Mirror Heat Status
+后视镜加热状态反馈";
+CM_ SG_ 624 AC_NegativeIconGenStus "AC Negative Icon genarator status
+负离子发生器状态";
+CM_ BO_ 645 "年月日时分秒";
+CM_ SG_ 645 TBOX_Second "秒";
+CM_ SG_ 645 TBOX_Minute "分";
+CM_ SG_ 645 TBOX_Hour "小时";
+CM_ SG_ 645 TBOX_Day "天";
+CM_ SG_ 645 TBOX_Month "月";
+CM_ SG_ 645 TBOX_Year "年，基础年份为2000年";
+CM_ SG_ 645 TBOX_TimeCheckBit "时间校验位";
+CM_ SG_ 645 TBOX_InvalidByte "无效字节";
+CM_ BO_ 659 "座椅加热与通风状态反馈";
+CM_ SG_ 659 FSCM_DrvSeatHeat_Sts "Driver seat heat degree status
+驾驶员座椅加热等级状态";
+CM_ SG_ 659 FSCM_DrvSeatVentilation_Sts "Driver seat ventilation degree status
+驾驶员座椅通风等级状态";
+CM_ SG_ 659 FSCM_PassSeatHeat_Sts "Pass Driver seat heat degree status
+驾驶员座椅加热等级状态";
+CM_ SG_ 659 FSCM_PassSeatVentilation_Sts "Pass Driver seat ventilation degree status
+驾驶员座椅通风等级状态";
+CM_ SG_ 662 TBOX_VehiclePosition_longitude "车辆定位经度-度数";
+CM_ SG_ 662 TBOX_VehiclePosition_latitude "车辆定位纬度-度数";
+CM_ SG_ 664 Tbox_VehiclePosition_gradient "坡度";
+CM_ SG_ 664 Tbox_VehiclePosition_altitude "海拔";
+CM_ SG_ 664 Tbox_VehiclePosition_headDirecti "车辆朝向(正北为0，正南为180)";
+CM_ SG_ 112 VCU_BrkSw_Sta "Brake switch signal status
+刹车开关信号状态";
+CM_ SG_ 112 VCU_BrkSw_V "Brake switch signal Vaild
+刹车开关信号有效标识位";
+CM_ SG_ 112 VCU_Acc_Validity "Accelerator Eff. Position Validity
+油门踏板位置信号有效标识位";
+CM_ SG_ 112 VCU_Acc_pedal_position "Throttle Pedal Input Depth
+油门踏板输入深度";
+CM_ SG_ 112 VCU_70h_RollingCounter "Rolling counter
+循环计数器";
+CM_ SG_ 112 VCU_70h_CheckSUM "校检和 checksum = (Byte0+Byte1 …+ Byte6) XOR 0xFF'";
+CM_ SG_ 130 MCU_F_NCurr "Current actual Axle speed of the motor
+电机当前实际转速(轴端)";
+CM_ SG_ 130 MCU_F_NCurrValid "EV Motor Speed Signal Failure
+EV电机转速信号有效性";
+CM_ SG_ 130 MCU_F_82h_RollingCounter "Rolling counter
+循环计数器";
+CM_ SG_ 130 MCU_F_82h_CheckSUM "校检和 checksum = (Byte0+Byte1 …+ Byte6) XOR 0xFF";
+CM_ SG_ 144 ESC_TCSActive "TCS work or not 
+TCS是否工作";
+CM_ SG_ 144 ESC_HHC_Failure "HHC normal or not
+HHC是否正常运行";
+CM_ SG_ 144 ESC_HHCActive "HHC work or not 
+HHC是否工作";
+CM_ SG_ 144 ESC_EBDFailed "EBD normal or not
+EBD是否正常运行";
+CM_ SG_ 144 ESC_EBDActive "EBD work or not
+EBD是否工作";
+CM_ SG_ 144 ESC_ABSFailed "ABS normal or not
+是否正常运行";
+CM_ SG_ 144 ESC_ABSActive "ABS work or not
+ABS是否工作";
+CM_ SG_ 144 ESC_AVHactive "AVH work or not 
+AVH是否工作";
+CM_ SG_ 144 ESC_AutoholdStandby "Autohold standby
+Autohold功能待机";
+CM_ SG_ 144 ESC_AutoholdFailure "Autohold failure
+Autohold功能故障";
+CM_ SG_ 144 ESC_Sw "ESC OFF switch
+ESC OFF开关";
+CM_ SG_ 144 ESC_HBAActive "HBA work or not 
+HBA是否工作";
+CM_ SG_ 144 ESC_VDCFailure "VDC normal or not
+VDC是否正常运行";
+CM_ SG_ 144 ESC_VDCActive "VDC work or not 
+VDC是否工作";
+CM_ SG_ 144 ESC_TCSFailure "TCS normal or not
+TCS是否正常运行";
+CM_ SG_ 144 ESC_CDPAvailable "Controlled Deceleration for
+Parking Brake Available
+停车制动减速控制可用";
+CM_ SG_ 144 ESC_CDPActive "Controlled Deceleration for
+Parking Brake Active
+停车制动减速控制有效";
+CM_ SG_ 144 ESC_AVH_Warning1 "warming: Please close driver door ,then press AVH switch 
+提醒：请关好驾驶员侧车门，再按下AVH开关";
+CM_ SG_ 144 ESC_AVH_Warning2 "warming: Please tie driver seat belt buckle,then press AVH switch 
+提醒：请系好驾驶员安全带，再按下AVH开关";
+CM_ SG_ 144 ESC_AVH_Warning3 "warming: Please Ready ,then press AVH switch 
+提醒：请车辆Ready，再按下AVH开关";
+CM_ SG_ 144 ESC_AVH_Warning4 "warming: Please press break switch,then press AVH switch 
+提醒：请踩下制动踏板，再按下AVH开关";
+CM_ SG_ 144 ESC_90h_RollingCounter "Rolling counter
+循环计数器";
+CM_ SG_ 144 ESC_90h_CheckSUM "校验和
+checksum = (Byte0+Byte1 …+ Byte6) XOR 0xFF";
+CM_ SG_ 146 ESC_VehSpd "Speed,sending 0x7FFF when invalid
+车速，当无效时发送0x7FFF";
+CM_ SG_ 146 ESC_92h_RollingCounter "Rolling counter
+循环计数器";
+CM_ SG_ 146 ESC_VehSpdVd "Speed Signal validity
+车速信号有效性";
+CM_ SG_ 146 ESC_92h_CheckSUM "校验和
+checksum = (Byte0+Byte1 …+ Byte6) XOR 0xFF";
+CM_ SG_ 148 EHB_FaultSt "EHB Fault State
+EHB 故障状态";
+CM_ SG_ 178 MCU_R_Ncurr "Current actual Axle speed of the motor
+电机当前实际转速(轴端)";
+CM_ SG_ 178 MCU_R_NCurrValid "EV Motor Speed Signal Failure
+EV电机转速信号有效性";
+CM_ SG_ 178 MCU_R_B2h_RollingCounter "Rolling counter
+循环计数器";
+CM_ SG_ 178 MCU_R_B2h_CheckSUM "校检和 checksum = (Byte0+Byte1 …+ Byte6) XOR 0xFF";
+BA_DEF_ BO_  "NmMessage" ENUM  "No","Yes";
+BA_DEF_ BO_  "DiagState" ENUM  "No","Yes";
+BA_DEF_ BO_  "DiagRequest" ENUM  "No","Yes";
+BA_DEF_ BO_  "DiagResponse" ENUM  "No","Yes";
+BA_DEF_ BO_  "GenMsgSendType" ENUM  "Cycle","CA","CE","Event","NotUsed","NotUsed","NotUsed","IfActive","NoMsgSendType","NotUsed";
+BA_DEF_ BO_  "GenMsgCycleTime" INT 0 0;
+BA_DEF_ SG_  "GenSigSendType" ENUM  "Cycle","OnChange","OnWrite","IfActive","OnChangeWithRepetition","OnWriteWithRepetition","IfActiveWithRepetition";
+BA_DEF_ SG_  "GenSigStartValue" INT 0 0;
+BA_DEF_ SG_  "GenSigInactiveValue" INT 0 0;
+BA_DEF_ BO_  "GenMsgCycleTimeFast" INT 0 0;
+BA_DEF_ BO_  "GenMsgNrOfRepetition" INT 0 0;
+BA_DEF_ BO_  "GenMsgDelayTime" INT 0 0;
+BA_DEF_  "DBName" STRING ;
+BA_DEF_ BO_  "CANFD_BRS" ENUM  "0","1";
+BA_DEF_ BO_  "VFrameFormat" ENUM  "StandardCAN","ExtendedCAN","reserved","reserved","reserved","reserved","reserved","reserved","reserved","reserved","reserved","reserved","reserved","reserved","StandardCAN_FD","ExtendedCAN_FD";
+BA_DEF_ BU_  "NodeLayerModules" STRING ;
+BA_DEF_ SG_  "GenSigTimeoutValue" INT 0 1000000000;
+BA_DEF_ BO_  "GenMsgCycleTimeActive" INT 0 0;
+BA_DEF_ BU_  "ILUsed" ENUM  "No","Yes";
+BA_DEF_ BU_  "DiagStationAddress" HEX 0 255;
+BA_DEF_ BU_  "NmNode" ENUM  "Not","Yes";
+BA_DEF_ BU_  "NmStationAddress" HEX 0 65535;
+BA_DEF_ BU_  "NmCAN" INT 0 2;
+BA_DEF_  "Manufacturer" STRING ;
+BA_DEF_  "NmType" STRING ;
+BA_DEF_  "NmBaseAddress" HEX 0 2047;
+BA_DEF_  "NmMessageCount" INT 0 255;
+BA_DEF_ BO_  "_Cdb_Sc_CTm_FAW_v3_0" INT 0 0;
+BA_DEF_ BO_  "_Cdb_Sc_CTm_FAW_v2_3" INT 0 0;
+BA_DEF_ BO_  "_Cdb_Sc_CTm_FAW_v3_1" INT 0 0;
+BA_DEF_ BO_  "_Cdb_Sc_CTm_FAW_v2_2" INT 0 0;
+BA_DEF_ BO_  "_Cdb_Sc_CTm_FAW_v2_1" INT 0 0;
+BA_DEF_ BO_  "GenMsgILSupport" ENUM  "No","Yes";
+BA_DEF_ BO_  "GenMsgStartDelayTime" INT 0 65535;
+BA_DEF_  "BusType" STRING ;
+BA_DEF_ SG_  "SystemSignalLongSymbol" STRING ;
+BA_DEF_DEF_  "NmMessage" "No";
+BA_DEF_DEF_  "DiagState" "No";
+BA_DEF_DEF_  "DiagRequest" "No";
+BA_DEF_DEF_  "DiagResponse" "No";
+BA_DEF_DEF_  "GenMsgSendType" "Cycle";
+BA_DEF_DEF_  "GenMsgCycleTime" 0;
+BA_DEF_DEF_  "GenSigSendType" "Cycle";
+BA_DEF_DEF_  "GenSigStartValue" 0;
+BA_DEF_DEF_  "GenSigInactiveValue" 0;
+BA_DEF_DEF_  "GenMsgCycleTimeFast" 0;
+BA_DEF_DEF_  "GenMsgNrOfRepetition" 0;
+BA_DEF_DEF_  "GenMsgDelayTime" 0;
+BA_DEF_DEF_  "DBName" "";
+BA_DEF_DEF_  "CANFD_BRS" "0";
+BA_DEF_DEF_  "VFrameFormat" "StandardCAN";
+BA_DEF_DEF_  "NodeLayerModules" "oseknm01.dll,osek_tp.dll,CANoeILNLVector.dll";
+BA_DEF_DEF_  "GenSigTimeoutValue" 0;
+BA_DEF_DEF_  "GenMsgCycleTimeActive" 0;
+BA_DEF_DEF_  "ILUsed" "No";
+BA_DEF_DEF_  "DiagStationAddress" 0;
+BA_DEF_DEF_  "NmNode" "Not";
+BA_DEF_DEF_  "NmStationAddress" 0;
+BA_DEF_DEF_  "NmCAN" 0;
+BA_DEF_DEF_  "Manufacturer" "";
+BA_DEF_DEF_  "NmType" "";
+BA_DEF_DEF_  "NmBaseAddress" 1024;
+BA_DEF_DEF_  "NmMessageCount" 128;
+BA_DEF_DEF_  "_Cdb_Sc_CTm_FAW_v3_0" 0;
+BA_DEF_DEF_  "_Cdb_Sc_CTm_FAW_v2_3" 0;
+BA_DEF_DEF_  "_Cdb_Sc_CTm_FAW_v3_1" 0;
+BA_DEF_DEF_  "_Cdb_Sc_CTm_FAW_v2_2" 0;
+BA_DEF_DEF_  "_Cdb_Sc_CTm_FAW_v2_1" 0;
+BA_DEF_DEF_  "GenMsgILSupport" "No";
+BA_DEF_DEF_  "GenMsgStartDelayTime" 0;
+BA_DEF_DEF_  "BusType" "CAN FD";
+BA_DEF_DEF_  "SystemSignalLongSymbol" "";
+BA_ "BusType" "CAN";
+BA_ "DBName" "CONFCAN";
+BA_ "DiagState" BO_ 1960 1;
+BA_ "DiagResponse" BO_ 1960 1;
+BA_ "GenMsgSendType" BO_ 1960 3;
+BA_ "GenMsgCycleTime" BO_ 604 100;
+BA_ "GenMsgCycleTime" BO_ 620 100;
+BA_ "GenMsgSendType" BO_ 370 3;
+BA_ "GenMsgCycleTimeFast" BO_ 370 100;
+BA_ "GenMsgNrOfRepetition" BO_ 370 3;
+BA_ "GenMsgCycleTime" BO_ 630 100;
+BA_ "GenMsgSendType" BO_ 632 3;
+BA_ "GenMsgCycleTimeFast" BO_ 632 20;
+BA_ "GenMsgNrOfRepetition" BO_ 632 3;
+BA_ "GenMsgSendType" BO_ 634 3;
+BA_ "GenMsgCycleTimeFast" BO_ 634 20;
+BA_ "GenMsgNrOfRepetition" BO_ 634 3;
+BA_ "GenMsgSendType" BO_ 648 3;
+BA_ "GenMsgCycleTimeFast" BO_ 648 100;
+BA_ "GenMsgNrOfRepetition" BO_ 648 3;
+BA_ "GenMsgSendType" BO_ 652 3;
+BA_ "GenMsgCycleTimeFast" BO_ 652 100;
+BA_ "GenMsgNrOfRepetition" BO_ 652 3;
+BA_ "GenMsgSendType" BO_ 666 3;
+BA_ "GenMsgCycleTimeFast" BO_ 666 100;
+BA_ "GenMsgNrOfRepetition" BO_ 666 3;
+BA_ "GenMsgSendType" BO_ 668 3;
+BA_ "GenMsgCycleTimeFast" BO_ 668 100;
+BA_ "GenMsgNrOfRepetition" BO_ 668 3;
+BA_ "GenMsgSendType" BO_ 670 3;
+BA_ "GenMsgCycleTimeFast" BO_ 670 20;
+BA_ "GenMsgNrOfRepetition" BO_ 670 3;
+BA_ "GenMsgCycleTime" BO_ 792 2000;
+BA_ "NmMessage" BO_ 1030 1;
+BA_ "GenMsgSendType" BO_ 1030 3;
+BA_ "GenMsgCycleTime" BO_ 352 20;
+BA_ "GenMsgCycleTime" BO_ 384 50;
+BA_ "GenMsgCycleTime" BO_ 386 50;
+BA_ "GenMsgCycleTime" BO_ 387 50;
+BA_ "GenMsgCycleTime" BO_ 388 50;
+BA_ "GenMsgCycleTime" BO_ 784 200;
+BA_ "GenMsgCycleTime" BO_ 786 2000;
+BA_ "GenMsgCycleTime" BO_ 390 50;
+BA_ "GenMsgCycleTime" BO_ 392 50;
+BA_ "GenMsgCycleTime" BO_ 788 2000;
+BA_ "GenMsgCycleTime" BO_ 790 2000;
+BA_ "GenMsgCycleTime" BO_ 524 100;
+BA_ "GenMsgCycleTime" BO_ 528 100;
+BA_ "GenMsgCycleTime" BO_ 530 100;
+BA_ "GenMsgCycleTime" BO_ 534 100;
+BA_ "GenMsgCycleTime" BO_ 340 50;
+BA_ "GenMsgCycleTime" BO_ 344 50;
+BA_ "GenMsgCycleTime" BO_ 856 200;
+BA_ "GenMsgSendType" BO_ 665 3;
+BA_ "GenMsgCycleTimeFast" BO_ 665 100;
+BA_ "GenMsgNrOfRepetition" BO_ 665 3;
+BA_ "GenMsgSendType" BO_ 667 3;
+BA_ "GenMsgCycleTimeFast" BO_ 667 100;
+BA_ "GenMsgNrOfRepetition" BO_ 667 3;
+BA_ "DiagState" BO_ 1832 1;
+BA_ "DiagResponse" BO_ 1832 1;
+BA_ "GenMsgSendType" BO_ 1832 3;
+BA_ "GenMsgCycleTime" BO_ 342 20;
+BA_ "GenMsgCycleTime" BO_ 594 100;
+BA_ "GenMsgCycleTime" BO_ 132 100;
+BA_ "GenMsgCycleTime" BO_ 580 100;
+BA_ "GenMsgCycleTime" BO_ 608 100;
+BA_ "GenMsgSendType" BO_ 644 3;
+BA_ "GenMsgCycleTimeFast" BO_ 644 100;
+BA_ "GenMsgNrOfRepetition" BO_ 644 3;
+BA_ "GenMsgCycleTime" BO_ 770 500;
+BA_ "GenMsgCycleTime" BO_ 776 500;
+BA_ "GenMsgCycleTime" BO_ 772 500;
+BA_ "GenMsgCycleTime" BO_ 570 100;
+BA_ "GenMsgCycleTime" BO_ 574 100;
+BA_ "GenMsgCycleTime" BO_ 913 500;
+BA_ "GenMsgCycleTime" BO_ 274 20;
+BA_ "GenMsgCycleTime" BO_ 328 20;
+BA_ "GenMsgCycleTime" BO_ 336 20;
+BA_ "GenMsgCycleTime" BO_ 338 50;
+BA_ "GenMsgCycleTime" BO_ 354 20;
+BA_ "GenMsgCycleTime" BO_ 356 20;
+BA_ "GenMsgCycleTime" BO_ 372 50;
+BA_ "GenMsgCycleTime" BO_ 512 100;
+BA_ "GenMsgCycleTime" BO_ 514 100;
+BA_ "GenMsgCycleTime" BO_ 518 100;
+BA_ "GenMsgCycleTime" BO_ 568 100;
+BA_ "GenMsgSendType" BO_ 586 2;
+BA_ "GenMsgCycleTime" BO_ 586 100;
+BA_ "GenMsgCycleTimeFast" BO_ 586 20;
+BA_ "GenMsgNrOfRepetition" BO_ 586 10;
+BA_ "GenMsgCycleTime" BO_ 588 100;
+BA_ "GenMsgCycleTime" BO_ 589 100;
+BA_ "GenMsgCycleTime" BO_ 607 100;
+BA_ "GenMsgCycleTime" BO_ 610 200;
+BA_ "GenMsgCycleTime" BO_ 612 200;
+BA_ "GenMsgCycleTime" BO_ 613 200;
+BA_ "GenMsgCycleTime" BO_ 614 100;
+BA_ "GenMsgCycleTime" BO_ 624 100;
+BA_ "GenMsgSendType" BO_ 645 3;
+BA_ "GenMsgCycleTimeFast" BO_ 645 100;
+BA_ "GenMsgNrOfRepetition" BO_ 645 3;
+BA_ "GenMsgCycleTime" BO_ 659 200;
+BA_ "GenMsgCycleTime" BO_ 662 100;
+BA_ "GenMsgCycleTime" BO_ 664 100;
+BA_ "NmMessage" BO_ 1024 1;
+BA_ "GenMsgSendType" BO_ 1024 3;
+BA_ "NmMessage" BO_ 1028 1;
+BA_ "GenMsgSendType" BO_ 1028 3;
+BA_ "NmMessage" BO_ 1043 1;
+BA_ "GenMsgSendType" BO_ 1043 3;
+BA_ "GenMsgCycleTime" BO_ 112 10;
+BA_ "DiagState" BO_ 2015 1;
+BA_ "DiagResponse" BO_ 2015 1;
+BA_ "GenMsgSendType" BO_ 2015 3;
+BA_ "GenMsgCycleTime" BO_ 130 10;
+BA_ "GenMsgCycleTime" BO_ 144 10;
+BA_ "GenMsgCycleTime" BO_ 146 10;
+BA_ "GenMsgCycleTime" BO_ 148 10;
+BA_ "GenMsgCycleTime" BO_ 178 10;
+BA_ "GenSigSendType" SG_ 3221225472 MMI_EpsModeSelect 2;
+BA_ "GenSigSendType" SG_ 1960 IC_Diagnostic_Data_response0 2;
+BA_ "GenSigSendType" SG_ 1960 IC_Diagnostic_Data_response2 2;
+BA_ "GenSigSendType" SG_ 1960 IC_Diagnostic_Data_response3 2;
+BA_ "GenSigSendType" SG_ 1960 IC_Diagnostic_Data_response4 2;
+BA_ "GenSigSendType" SG_ 1960 IC_Diagnostic_Data_response5 2;
+BA_ "GenSigSendType" SG_ 1960 IC_Diagnostic_Data_response6 2;
+BA_ "GenSigSendType" SG_ 1960 IC_Diagnostic_Data_response7 2;
+BA_ "GenSigSendType" SG_ 1960 IC_Diagnostic_Data_response1 2;
+BA_ "GenSigSendType" SG_ 370 MMI_LDW_Main_Switch 4;
+BA_ "GenSigSendType" SG_ 370 MMI_LDW_Switch_Available 4;
+BA_ "GenSigStartValue" SG_ 370 MMI_LDW_Switch_Available 1;
+BA_ "GenSigSendType" SG_ 370 MMI_TSR_Main_Switch 4;
+BA_ "GenSigSendType" SG_ 370 MMI_TSR_Switch_Available 4;
+BA_ "GenSigStartValue" SG_ 370 MMI_TSR_Switch_Available 1;
+BA_ "GenSigSendType" SG_ 370 MMI_IHC_Main_Switch 4;
+BA_ "GenSigSendType" SG_ 370 MMI_IHC_Switch_Available 4;
+BA_ "GenSigStartValue" SG_ 370 MMI_IHC_Switch_Available 1;
+BA_ "GenSigSendType" SG_ 370 MMI_LDW_Sensitivity 4;
+BA_ "GenSigSendType" SG_ 370 MMI_BSD_Main_Switch 4;
+BA_ "GenSigSendType" SG_ 370 MMI_BSD_Switch_Available 4;
+BA_ "GenSigSendType" SG_ 370 MMI_BSD_Sensitivity 4;
+BA_ "GenSigSendType" SG_ 370 MMI_FCW_Sensitivity 4;
+BA_ "GenSigSendType" SG_ 370 MMI_EPS_ModeSwitch 4;
+BA_ "GenSigSendType" SG_ 370 MMI_PauseContinueChrgRQ 4;
+BA_ "GenSigSendType" SG_ 370 MMI_ChrgMaxPower 4;
+BA_ "GenSigSendType" SG_ 370 MMI_FCW_Main_Switch 4;
+BA_ "GenSigSendType" SG_ 370 MMI_ChrgCurrentSet 4;
+BA_ "GenSigSendType" SG_ 370 MMI_FCW_Switch_Available 4;
+BA_ "GenSigStartValue" SG_ 370 MMI_FCW_Switch_Available 1;
+BA_ "GenSigSendType" SG_ 370 MMI_AEB_Main_Switch 4;
+BA_ "GenSigSendType" SG_ 370 MMI_AEB_Switch_Available 4;
+BA_ "GenSigStartValue" SG_ 370 MMI_AEB_Switch_Available 1;
+BA_ "SystemSignalLongSymbol" SG_ 630 MMI_AVM_AVM3DCarIconTransparenVa "MMI_AVM_AVM3DCarIconTransparenValid";
+BA_ "GenSigSendType" SG_ 632 MMI_AVMXcoordinate 5;
+BA_ "GenSigSendType" SG_ 632 MMI_AVMYcoordinate 5;
+BA_ "GenSigSendType" SG_ 632 MMI_AVMXGestureSpeed 5;
+BA_ "GenSigSendType" SG_ 632 MMI_AVMYGestureSpeed 5;
+BA_ "GenSigSendType" SG_ 632 MMI_AVMZoomScaleFactor 5;
+BA_ "GenSigSendType" SG_ 632 MMI_AVMZoomRotaterFactor 5;
+BA_ "GenSigSendType" SG_ 632 MMI_AVMTouchEventType 5;
+BA_ "GenSigSendType" SG_ 634 MMI_AVM_AVM3D_COMMAND 5;
+BA_ "GenSigSendType" SG_ 634 MMI_AVM_AVM3DViewSwitch 5;
+BA_ "GenSigSendType" SG_ 634 MMI_AVM_AVM3DViewModeSwitch 5;
+BA_ "GenSigSendType" SG_ 634 MMI_AVM_AVMEcuEnterExit 5;
+BA_ "GenSigSendType" SG_ 648 MMI_ACAUTOReqValid 5;
+BA_ "GenSigSendType" SG_ 648 MMI_ACAUTOReq 5;
+BA_ "GenSigSendType" SG_ 648 MMI_BLOWERReqValid 5;
+BA_ "GenSigSendType" SG_ 648 MMI_BLOWERReq 5;
+BA_ "GenSigSendType" SG_ 648 MMI_ACBlowModeReqValid 5;
+BA_ "GenSigSendType" SG_ 648 MMI_ACBlowModeReq 5;
+BA_ "GenSigSendType" SG_ 648 MMI_CirculatingModeSetValid 5;
+BA_ "GenSigSendType" SG_ 648 MMI_CirculatingModeSet 5;
+BA_ "GenSigSendType" SG_ 648 MMI_InsideTempSetValid 4;
+BA_ "GenSigSendType" SG_ 648 MMI_InsideTempSet 4;
+BA_ "GenSigSendType" SG_ 648 MMI_ACCompressorReqValid 5;
+BA_ "GenSigSendType" SG_ 648 MMI_SeatHeatReq_right 4;
+BA_ "GenSigSendType" SG_ 648 MMI_SeatHeatReq_left 4;
+BA_ "GenSigSendType" SG_ 648 MMI_BLOWERGearSetValid 5;
+BA_ "GenSigSendType" SG_ 648 MMI_BLOWERGearSet 5;
+BA_ "GenSigSendType" SG_ 648 MMI_ACCompressorReq 5;
+BA_ "GenSigSendType" SG_ 648 MMI_FrontDeforstReq 5;
+BA_ "GenSigSendType" SG_ 648 MMI_RearDeforstReq 5;
+BA_ "GenSigSendType" SG_ 648 MMI_EnergyRecoveryContr 5;
+BA_ "GenSigSendType" SG_ 648 MMI_ACMaxReqValid 5;
+BA_ "GenSigSendType" SG_ 648 MMI_RearViewMirrorHeatReq 4;
+BA_ "GenSigSendType" SG_ 648 MMI_AnionNegativeIonReq 5;
+BA_ "GenSigSendType" SG_ 648 MMI_ACMaxReq 5;
+BA_ "GenSigSendType" SG_ 648 MMI_ACOFFReqValid 5;
+BA_ "GenSigSendType" SG_ 648 MMI_ACOFFReq 5;
+BA_ "GenSigSendType" SG_ 648 MMI_InsideTempIncDecReqValid 5;
+BA_ "GenSigSendType" SG_ 648 MMI_InsideTempIncDecReq 5;
+BA_ "GenSigSendType" SG_ 652 MMI_VoiceSourceSelect_Cycle 1;
+BA_ "GenSigSendType" SG_ 652 MMI_AmphereLampCtrl_BrtnsVal 1;
+BA_ "GenSigStartValue" SG_ 652 MMI_AmphereLampCtrl_BrtnsVal 255;
+BA_ "GenSigSendType" SG_ 652 MMI_AmphereLampCtrl_Fleshmode 1;
+BA_ "GenSigSendType" SG_ 652 MMI_AmphereLampCtrl_Drivingmode 1;
+BA_ "GenSigSendType" SG_ 652 MMI_AmphereLampCtrl_SW 1;
+BA_ "GenSigSendType" SG_ 652 MMI_VoiceSourceSelect 1;
+BA_ "GenSigSendType" SG_ 652 MMI_PlatfondColorCmd 2;
+BA_ "GenSigSendType" SG_ 652 MMI_AmphereLampIntellisenseSw 2;
+BA_ "GenSigSendType" SG_ 652 MMI_CWC_Cmd 2;
+BA_ "GenSigSendType" SG_ 652 MMI_VSPEnableCommand 1;
+BA_ "GenSigSendType" SG_ 652 MMI_AmphereLampCtrl_Colour 1;
+BA_ "GenSigSendType" SG_ 666 MMI_DrvSeatSlideCommand 4;
+BA_ "GenSigSendType" SG_ 666 MMI_DrvSeatFrontLiftPosPercentVa 4;
+BA_ "SystemSignalLongSymbol" SG_ 666 MMI_DrvSeatFrontLiftPosPercentVa "MMI_DrvSeatFrontLiftPosPercentValid";
+BA_ "GenSigSendType" SG_ 666 MMI_DrvSeatFrontLiftPosPercent 4;
+BA_ "GenSigStartValue" SG_ 666 MMI_DrvSeatFrontLiftPosPercent 63;
+BA_ "GenSigSendType" SG_ 666 MMI_DrvSeatFrontLiftCommand 4;
+BA_ "GenSigSendType" SG_ 666 MMI_DrvSeatReclinerPosPercentVal 4;
+BA_ "SystemSignalLongSymbol" SG_ 666 MMI_DrvSeatReclinerPosPercentVal "MMI_DrvSeatReclinerPosPercentValid";
+BA_ "GenSigSendType" SG_ 666 MMI_DrvSeatReclinerPosPercent 4;
+BA_ "GenSigStartValue" SG_ 666 MMI_DrvSeatReclinerPosPercent 63;
+BA_ "GenSigSendType" SG_ 666 MMI_DrvSeatAllLiftPosPercentVali 4;
+BA_ "SystemSignalLongSymbol" SG_ 666 MMI_DrvSeatAllLiftPosPercentVali "MMI_DrvSeatAllLiftPosPercentValid";
+BA_ "GenSigSendType" SG_ 666 MMI_DrvSeatAllLiftPosPercent 4;
+BA_ "GenSigStartValue" SG_ 666 MMI_DrvSeatAllLiftPosPercent 63;
+BA_ "GenSigSendType" SG_ 666 MMI_DrvSeatReclinerCommand 4;
+BA_ "GenSigSendType" SG_ 666 MMI_DrvSeatHeatControlCmd 4;
+BA_ "GenSigSendType" SG_ 666 MMI_DrvSeatVenControlCmd 4;
+BA_ "GenSigSendType" SG_ 666 MMI_DrvSeatHandyEntryExitSet 4;
+BA_ "GenSigSendType" SG_ 666 MMI_DrvSeatAllLiftCommand 4;
+BA_ "GenSigSendType" SG_ 666 MMI_DrvSeatSlidePosPercentValid 4;
+BA_ "GenSigSendType" SG_ 666 MMI_DrvSeatSlidePosPercent 4;
+BA_ "GenSigStartValue" SG_ 666 MMI_DrvSeatSlidePosPercent 63;
+BA_ "GenSigSendType" SG_ 668 MMI_PassSeatSlideCommand 4;
+BA_ "GenSigSendType" SG_ 668 MMI_PassSeatFrontLiftPosPercentV 4;
+BA_ "SystemSignalLongSymbol" SG_ 668 MMI_PassSeatFrontLiftPosPercentV "MMI_PassSeatFrontLiftPosPercentValid";
+BA_ "GenSigSendType" SG_ 668 MMI_PassSeatFrontLiftPosPercent 4;
+BA_ "GenSigStartValue" SG_ 668 MMI_PassSeatFrontLiftPosPercent 63;
+BA_ "GenSigSendType" SG_ 668 MMI_PassSeatFrontLiftCommand 4;
+BA_ "GenSigSendType" SG_ 668 MMI_PassSeatReclinerPosPercentVa 4;
+BA_ "SystemSignalLongSymbol" SG_ 668 MMI_PassSeatReclinerPosPercentVa "MMI_PassSeatReclinerPosPercentValid";
+BA_ "GenSigSendType" SG_ 668 MMI_PassSeatReclinerPosPercent 4;
+BA_ "GenSigStartValue" SG_ 668 MMI_PassSeatReclinerPosPercent 63;
+BA_ "GenSigSendType" SG_ 668 MMI_PassSeatAllLiftPosPercentVal 4;
+BA_ "SystemSignalLongSymbol" SG_ 668 MMI_PassSeatAllLiftPosPercentVal "MMI_PassSeatAllLiftPosPercentValid";
+BA_ "GenSigSendType" SG_ 668 MMI_PassSeatAllLiftPosPercent 4;
+BA_ "GenSigStartValue" SG_ 668 MMI_PassSeatAllLiftPosPercent 63;
+BA_ "GenSigSendType" SG_ 668 MMI_PassSeatReclinerCommand 4;
+BA_ "GenSigSendType" SG_ 668 MMI_PassDrvSeatHeatControlCmd 4;
+BA_ "GenSigSendType" SG_ 668 MMI_PassDrvSeatVenControlCmd 4;
+BA_ "GenSigSendType" SG_ 668 MMI_PassSeatAllLiftCommand 4;
+BA_ "GenSigSendType" SG_ 668 MMI_PassSeatSlidePosPercentValid 4;
+BA_ "GenSigSendType" SG_ 668 MMI_PassSeatSlidePosPercent 4;
+BA_ "GenSigStartValue" SG_ 668 MMI_PassSeatSlidePosPercent 63;
+BA_ "GenSigSendType" SG_ 670 MMI_RainAutoClsWindowCmd 2;
+BA_ "GenSigSendType" SG_ 670 MMI_HazardLightCmd 2;
+BA_ "GenSigSendType" SG_ 670 MMI_DoorLockCmd 2;
+BA_ "GenSigSendType" SG_ 670 MMI_LowBeamLightCmd 2;
+BA_ "GenSigSendType" SG_ 670 MMI_HighBeamLightCmd 2;
+BA_ "GenSigSendType" SG_ 670 MMI_FoglightCmd 2;
+BA_ "GenSigSendType" SG_ 670 MMI_WiperCmd 2;
+BA_ "GenSigSendType" SG_ 670 MMI_BCMLightCmd 2;
+BA_ "GenSigSendType" SG_ 670 MMI_FronLeftDoorWindowCmd 2;
+BA_ "GenSigSendType" SG_ 670 MMI_FronRightDoorWindowCmd 2;
+BA_ "GenSigSendType" SG_ 670 MMI_RearLeftDoorWindowCmd 2;
+BA_ "GenSigSendType" SG_ 670 MMI_FourDoorWindowCmd 2;
+BA_ "GenSigSendType" SG_ 670 MMI_FrontDoorWindowCmd 2;
+BA_ "GenSigSendType" SG_ 670 MMI_AutolightSWCmd 2;
+BA_ "GenSigSendType" SG_ 670 MMI_TailgateCmd 2;
+BA_ "GenSigSendType" SG_ 670 MMI_RearRightDoorWindowCmd 2;
+BA_ "GenSigSendType" SG_ 670 MMI_RearViewMirrorSelect 2;
+BA_ "GenSigSendType" SG_ 670 MMI_RearViewMirrorUpDown 2;
+BA_ "GenSigSendType" SG_ 670 MMI_RearViewMirrorLeftRight 2;
+BA_ "GenSigSendType" SG_ 670 MMI_RearViewCmd 2;
+BA_ "GenSigStartValue" SG_ 792 MMI_LicensePlate_ProvinceName 63;
+BA_ "GenSigStartValue" SG_ 792 MMI_LicensePlate_Num2 63;
+BA_ "GenSigStartValue" SG_ 792 MMI_LicensePlate_Num3 63;
+BA_ "GenSigStartValue" SG_ 792 MMI_LicensePlate_Num4 63;
+BA_ "GenSigStartValue" SG_ 792 MMI_LicensePlate_Num5 63;
+BA_ "GenSigStartValue" SG_ 792 MMI_LicensePlate_Num6 63;
+BA_ "GenSigStartValue" SG_ 792 MMI_LicensePlate_Num7 63;
+BA_ "GenSigStartValue" SG_ 792 MMI_LicensePlate_Num1 63;
+BA_ "GenSigSendType" SG_ 1030 IC_NM_Message0 2;
+BA_ "GenSigSendType" SG_ 1030 IC_NM_Message2 2;
+BA_ "GenSigSendType" SG_ 1030 IC_NM_Message3 2;
+BA_ "GenSigSendType" SG_ 1030 IC_NM_Message4 2;
+BA_ "GenSigSendType" SG_ 1030 IC_NM_Message5 2;
+BA_ "GenSigSendType" SG_ 1030 IC_NM_Message6 2;
+BA_ "GenSigSendType" SG_ 1030 IC_NM_Message7 2;
+BA_ "GenSigSendType" SG_ 1030 IC_NM_Message1 2;
+BA_ "GenSigSendType" SG_ 665 DSM_DrvSeatHandyEntryExitSetStus 4;
+BA_ "GenSigSendType" SG_ 665 DSM_D_SlideDirection 4;
+BA_ "GenSigSendType" SG_ 665 DSM_D_FrontLiftDirection 4;
+BA_ "GenSigSendType" SG_ 665 DSM_D_ReclinerDirection 4;
+BA_ "GenSigSendType" SG_ 665 DSM_D_AllLiftDirection 4;
+BA_ "GenSigSendType" SG_ 665 DSM_D_SlidePosPercentFinal 4;
+BA_ "GenSigSendType" SG_ 665 DSM_D_FrontLiftPosPercentFinal 4;
+BA_ "GenSigSendType" SG_ 665 DSM_D_ReclinerPosPercentFinal 4;
+BA_ "GenSigSendType" SG_ 665 DSM_D_AllLiftPosPercentFinal 4;
+BA_ "GenSigSendType" SG_ 667 DSM_P_SlideDirection 4;
+BA_ "GenSigSendType" SG_ 667 DSM_P_FrontLiftDirection 4;
+BA_ "GenSigSendType" SG_ 667 DSM_P_ReclinerDirection 4;
+BA_ "GenSigSendType" SG_ 667 DSM_P_AllLiftDirection 4;
+BA_ "GenSigSendType" SG_ 667 DSM_P_SlidePosPercentFinal 4;
+BA_ "GenSigSendType" SG_ 667 DSM_P_FrontLiftPosPercentFinal 4;
+BA_ "GenSigSendType" SG_ 667 DSM_P_ReclinerPosPercentFinal 4;
+BA_ "GenSigSendType" SG_ 667 DSM_P_AllLiftPosPercentFinal 4;
+BA_ "GenSigSendType" SG_ 1832 IC_Diagnostic_Data_Request0 2;
+BA_ "GenSigSendType" SG_ 1832 IC_Diagnostic_Data_Request1 2;
+BA_ "GenSigSendType" SG_ 1832 IC_Diagnostic_Data_Request2 2;
+BA_ "GenSigSendType" SG_ 1832 IC_Diagnostic_Data_Request3 2;
+BA_ "GenSigSendType" SG_ 1832 IC_Diagnostic_Data_Request4 2;
+BA_ "GenSigSendType" SG_ 1832 IC_Diagnostic_Data_Request5 2;
+BA_ "GenSigSendType" SG_ 1832 IC_Diagnostic_Data_Request6 2;
+BA_ "GenSigSendType" SG_ 1832 IC_Diagnostic_Data_Request7 2;
+BA_ "GenSigStartValue" SG_ 342 AmphereLampBrtnsVal 255;
+BA_ "SystemSignalLongSymbol" SG_ 594 MCU_F_ControllerLowUnderVolt_Sta "MCU_F_ControllerLowUnderVolt_Status";
+BA_ "SystemSignalLongSymbol" SG_ 608 MCU_R_ControllerLowUnderVolt_Sta "MCU_R_ControllerLowUnderVolt_Status";
+BA_ "GenSigSendType" SG_ 644 TBOX_StartChgYear 5;
+BA_ "GenSigSendType" SG_ 644 TBOX_ReservationChgCommandSet 5;
+BA_ "GenSigStartValue" SG_ 644 TBOX_ReservationChgCommandSet 3;
+BA_ "GenSigSendType" SG_ 644 TBOX_StartChgMonth 5;
+BA_ "GenSigStartValue" SG_ 644 TBOX_StartChgMonth 15;
+BA_ "GenSigSendType" SG_ 644 TBOX_StartChgDay 5;
+BA_ "GenSigSendType" SG_ 644 TBOX_StartChgHour 5;
+BA_ "GenSigSendType" SG_ 644 TBOX_ChrgMode 5;
+BA_ "GenSigSendType" SG_ 644 TBOX_StartChgMinute 5;
+BA_ "GenSigStartValue" SG_ 644 TBOX_StartChgMinute 63;
+BA_ "GenSigSendType" SG_ 644 TBOX_ChrgPercentum 5;
+BA_ "GenSigSendType" SG_ 644 TBOX_StopChrgRQ 5;
+BA_ "GenSigSendType" SG_ 586 ACU_Crashinfo 4;
+BA_ "SystemSignalLongSymbol" SG_ 607 AC_AmbientAirTemperature_Correct "AC_AmbientAirTemperature_Corrected";
+BA_ "SystemSignalLongSymbol" SG_ 607 AC_AmbientAirTemperature_Validit "AC_AmbientAirTemperature_Validity";
+BA_ "GenSigStartValue" SG_ 624 AC_TempSetPoint 31;
+BA_ "GenSigSendType" SG_ 645 TBOX_Second 1;
+BA_ "GenSigSendType" SG_ 645 TBOX_Minute 1;
+BA_ "GenSigSendType" SG_ 645 TBOX_Hour 1;
+BA_ "GenSigSendType" SG_ 645 TBOX_Day 1;
+BA_ "GenSigStartValue" SG_ 645 TBOX_Day 1;
+BA_ "GenSigSendType" SG_ 645 TBOX_Month 1;
+BA_ "GenSigStartValue" SG_ 645 TBOX_Month 1;
+BA_ "GenSigSendType" SG_ 645 TBOX_Year 1;
+BA_ "GenSigSendType" SG_ 645 TBOX_TimeCheckBit 1;
+BA_ "GenSigSendType" SG_ 645 TBOX_InvalidByte 1;
+BA_ "SystemSignalLongSymbol" SG_ 664 Tbox_VehiclePosition_headDirecti "Tbox_VehiclePosition_headDirection";
+BA_ "GenSigSendType" SG_ 1024 BCM_NM_Message0 2;
+BA_ "GenSigSendType" SG_ 1024 BCM_NM_Message1 2;
+BA_ "GenSigSendType" SG_ 1024 BCM_NM_Message2 2;
+BA_ "GenSigSendType" SG_ 1024 BCM_NM_Message3 2;
+BA_ "GenSigSendType" SG_ 1024 BCM_NM_Message4 2;
+BA_ "GenSigSendType" SG_ 1024 BCM_NM_Message5 2;
+BA_ "GenSigSendType" SG_ 1024 BCM_NM_Message6 2;
+BA_ "GenSigSendType" SG_ 1024 BCM_NM_Message7 2;
+BA_ "GenSigSendType" SG_ 1028 AC_NM_Message0 2;
+BA_ "GenSigSendType" SG_ 1028 AC_NM_Message1 2;
+BA_ "GenSigSendType" SG_ 1028 AC_NM_Message2 2;
+BA_ "GenSigSendType" SG_ 1028 AC_NM_Message3 2;
+BA_ "GenSigSendType" SG_ 1028 AC_NM_Message4 2;
+BA_ "GenSigSendType" SG_ 1028 AC_NM_Message5 2;
+BA_ "GenSigSendType" SG_ 1028 AC_NM_Message6 2;
+BA_ "GenSigSendType" SG_ 1028 AC_NM_Message7 2;
+BA_ "GenSigSendType" SG_ 1043 CONF_GW_NM_Message0 2;
+BA_ "GenSigSendType" SG_ 1043 CONF_GW_NM_Message1 2;
+BA_ "GenSigSendType" SG_ 1043 CONF_GW_NM_Message2 2;
+BA_ "GenSigSendType" SG_ 1043 CONF_GW_NM_Message3 2;
+BA_ "GenSigSendType" SG_ 1043 CONF_GW_NM_Message4 2;
+BA_ "GenSigSendType" SG_ 1043 CONF_GW_NM_Message5 2;
+BA_ "GenSigSendType" SG_ 1043 CONF_GW_NM_Message6 2;
+BA_ "GenSigSendType" SG_ 1043 CONF_GW_NM_Message7 2;
+BA_ "GenSigSendType" SG_ 2015 Functional_Diag_Data_Request0 2;
+BA_ "GenSigSendType" SG_ 2015 Functional_Diag_Data_Request1 2;
+BA_ "GenSigSendType" SG_ 2015 Functional_Diag_Data_Request2 2;
+BA_ "GenSigSendType" SG_ 2015 Functional_Diag_Data_Request3 2;
+BA_ "GenSigSendType" SG_ 2015 Functional_Diag_Data_Request4 2;
+BA_ "GenSigSendType" SG_ 2015 Functional_Diag_Data_Request5 2;
+BA_ "GenSigSendType" SG_ 2015 Functional_Diag_Data_Request6 2;
+BA_ "GenSigSendType" SG_ 2015 Functional_Diag_Data_Request7 2;
+VAL_ 3221225472 AC_APTC_LV 7 "Reserved" 6 "Reserved" 5 "Reserved" 4 "Reserved" 3 "Reserved" 2 "Second Gear" 1 "First Gear" 0 "No RQ" ;
+VAL_ 3221225472 MMI_EpsModeSelect 3 "Sport运动" 2 "Standard标准" 1 "Conf舒适" 0 "Invalid" ;
+VAL_ 3221225472 AmphereLampSta_Fleshmode 3 "保留" 2 "呼吸模式关" 1 "呼吸模式开" 0 "invalid" ;
+VAL_ 3221225472 AmphereLampSta_Drivingmode 3 "保留" 2 "驾驶模式关" 1 "驾驶模式开" 0 "invalid" ;
+VAL_ 604 IC_Vehicle_Speed_Available 1 "Available" 0 "Unavailable" ;
+VAL_ 604 ICU_EBDLampSt 3 "Off - failure present" 2 "not used" 1 "LightOn_with no failure" 0 "LightOff_with no failure" ;
+VAL_ 604 ICU_TotalOdometer 1048575 "Invalid" ;
+VAL_ 604 ICU_ABSLampSt 3 "Off - failure present" 2 "not used" 1 "LightOn_with no failure" 0 "LightOff_with no failure" ;
+VAL_ 604 ICU_PDC_DistanceAlarmDegree_RR 3 "reserved" 2 "alarm 2(40cm<距离<65cm)；" 1 "alarm 1(距离<40cm)；" 0 "no alarm；" ;
+VAL_ 604 ICU_PDC_DistanceAlarmDegree_RL 3 "reserved" 2 "alarm 2(40cm<距离<65cm)；" 1 "alarm 1(距离<40cm)；" 0 "no alarm；" ;
+VAL_ 604 ICU_PDC_DistanceAlarmDegree_RRM 3 "alarm 3(100cm<距离<150cm)；" 2 "alarm 2(40cm<距离<100cm)；" 1 "alarm 1(距离<40cm)；" 0 "no alarm；" ;
+VAL_ 604 ICU_PDC_DistanceAlarmDegree_RLM 3 "alarm 3(100cm<距离<150cm)；" 2 "alarm 2(40cm<距离<100cm)；" 1 "alarm 1(距离<40cm)；" 0 "no alarm；" ;
+VAL_ 604 ICU_AirBagSysWrnLmpSts 3 "Off - failure present" 2 "not used" 1 "LightOn_with no failure" 0 "LightOff_with no failure" ;
+VAL_ 620 PAS_PDC_Mode 7 "Reserved" 6 "Reserved" 5 "Reserved" 4 "通讯超时故障" 3 "停止" 2 "正常工作模式" 1 "自检模式" 0 "车型请求模式" ;
+VAL_ 620 PAS_PDC_Distance_RL 15 "Invalid" ;
+VAL_ 620 PAS_PDC_Distance_RRM 15 "Invalid" ;
+VAL_ 620 PAS_PDC_Distance_RLM 15 "Invalid" ;
+VAL_ 620 PAS_PDC_SensorSts_RR 1 "fault" 0 "normal" ;
+VAL_ 620 PAS_PDC_SensorSts_RL 1 "fault" 0 "normal" ;
+VAL_ 620 PAS_PDC_SensorSts_RRM 1 "fault" 0 "normal" ;
+VAL_ 620 PAS_PDC_SensorSts_RLM 1 "fault" 0 "normal" ;
+VAL_ 620 PAS_PDC_Distance_RR 15 "Invalid" ;
+VAL_ 370 MMI_OperationMode 3 "sport" 2 "eco" 1 "normal" 0 "invalid" ;
+VAL_ 370 MMI_WCBS_CstSwitch 1 "on" 0 "off" ;
+VAL_ 370 MMI_LDW_Main_Switch 1 "On" 0 "Off" ;
+VAL_ 370 MMI_LDW_Switch_Available 1 "Unavailable" 0 "Available" ;
+VAL_ 370 MMI_TSR_Main_Switch 1 "On" 0 "Off" ;
+VAL_ 370 MMI_TSR_Switch_Available 1 "Unavailable" 0 "Available" ;
+VAL_ 370 MMI_IHC_Main_Switch 1 "On" 0 "Off" ;
+VAL_ 370 MMI_IHC_Switch_Available 1 "Unavailable" 0 "Available" ;
+VAL_ 370 MMI_LDW_Sensitivity 3 "High" 2 "Normal" 1 "Low" 0 "Reserved" ;
+VAL_ 370 MMI_BSD_Main_Switch 1 "On" 0 "Off" ;
+VAL_ 370 MMI_BSD_Switch_Available 1 "Available" 0 "Unavailable" ;
+VAL_ 370 MMI_BSD_Sensitivity 3 "High" 2 "Normal" 1 "Low" 0 "Reserved" ;
+VAL_ 370 MMI_FCW_Sensitivity 3 "Level 3" 2 "Level 2" 1 "Level 1" 0 "Reserved" ;
+VAL_ 370 MMI_EPS_ModeSwitch 4 "snow" 3 "sport" 2 "standard" 1 "conf" 0 "Invalid" ;
+VAL_ 370 MMI_PauseContinueChrgRQ 3 "reserved" 2 "继续充电" 1 "暂停充电" 0 "invalid" ;
+VAL_ 370 MMI_ChrgMaxPower 127 "Invalid" ;
+VAL_ 370 MMI_FCW_Main_Switch 1 "On" 0 "Off" ;
+VAL_ 370 MMI_ChrgCurrentSet 0 "invalid" ;
+VAL_ 370 MMI_FCW_Switch_Available 1 "Unavailable" 0 "Available" ;
+VAL_ 370 MMI_AEB_Main_Switch 1 "On" 0 "Off" ;
+VAL_ 370 MMI_AEB_Switch_Available 1 "Unavailable" 0 "Available" ;
+VAL_ 630 MMI_AVM_ConnectStatus 15 "invalid" 2 "connected" 1 "disconnect" 0 "reserved" 0 "none(解决车机晚于AVM启动。AVM侧此状态可认为车机默认为已连接处理)" ;
+VAL_ 630 MMI_AVM_AVM3DExitDelaySet 3 "invalid" 2 "on" 1 "off" 0 "none" ;
+VAL_ 630 MMI_AVM_AVM3DTurnLightSet 3 "invalid" 2 "on" 1 "off" 0 "none" ;
+VAL_ 630 MMI_AVM_AVM3DBlindFillSet 3 "invalid" 2 "on" 1 "off" 0 "none" ;
+VAL_ 630 MMI_AVM_BSDFunction 3 "invalid" 2 "on" 1 "off" 0 "none" ;
+VAL_ 630 MMI_AVM_OTFunction 3 "invalid" 2 "on" 1 "off" 0 "none" ;
+VAL_ 630 MMI_AVM_AVM3DCarIconColor 15 "invalid" 14 "reserved" 13 "reserved" 12 "reserved" 11 "reserved" 10 "reserved" 9 "reserved" 8 "reserved" 7 "reserved" 6 "reserved" 5 "black" 4 "white" 3 "blue" 2 "yellow" 1 "red" 0 "none" ;
+VAL_ 630 MMI_AVM_AVM3DCarIconTransparenVa 3 "invalid" 2 "reserved" 1 "valid/有效时，才能使用AVM3D车模透明度" 0 "none" ;
+VAL_ 630 MMI_AVM_VideoOutputStatus 15 "invalid" 14 "reserved" 13 "reserved" 12 "reserved" 11 "reserved" 10 "reserved" 9 "reserved" 8 "reserved" 7 "reserved" 6 "reserved" 5 "reserved" 4 "reserved" 3 "invalid/显示MMI画面" 2 "on/显示AVM画面" 1 "off/显示MMI画面" 0 "none/显示MMI画面" ;
+VAL_ 630 MMI_AVM_AVM3DCarIconTransparent 255 "invalid" 100 "车模透明度的0~100%" 99 "车模透明度的0~100%" 98 "车模透明度的0~100%" 97 "车模透明度的0~100%" 96 "车模透明度的0~100%" 95 "车模透明度的0~100%" 94 "车模透明度的0~100%" 93 "车模透明度的0~100%" 92 "车模透明度的0~100%" 91 "车模透明度的0~100%" 90 "车模透明度的0~100%" 89 "车模透明度的0~100%" 88 "车模透明度的0~100%" 87 "车模透明度的0~100%" 86 "车模透明度的0~100%" 85 "车模透明度的0~100%" 84 "车模透明度的0~100%" 83 "车模透明度的0~100%" 82 "车模透明度的0~100%" 81 "车模透明度的0~100%" 80 "车模透明度的0~100%" 79 "车模透明度的0~100%" 78 "车模透明度的0~100%" 77 "车模透明度的0~100%" 76 "车模透明度的0~100%" 75 "车模透明度的0~100%" 74 "车模透明度的0~100%" 73 "车模透明度的0~100%" 72 "车模透明度的0~100%" 71 "车模透明度的0~100%" 70 "车模透明度的0~100%" 69 "车模透明度的0~100%" 68 "车模透明度的0~100%" 67 "车模透明度的0~100%" 66 "车模透明度的0~100%" 65 "车模透明度的0~100%" 64 "车模透明度的0~100%" 63 "车模透明度的0~100%" 62 "车模透明度的0~100%" 61 "车模透明度的0~100%" 60 "车模透明度的0~100%" 59 "车模透明度的0~100%" 58 "车模透明度的0~100%" 57 "车模透明度的0~100%" 56 "车模透明度的0~100%" 55 "车模透明度的0~100%" 54 "车模透明度的0~100%" 53 "车模透明度的0~100%" 52 "车模透明度的0~100%" 51 "车模透明度的0~100%" 50 "车模透明度的0~100%" 49 "车模透明度的0~100%" 48 "车模透明度的0~100%" 47 "车模透明度的0~100%" 46 "车模透明度的0~100%" 45 "车模透明度的0~100%" 44 "车模透明度的0~100%" 43 "车模透明度的0~100%" 42 "车模透明度的0~100%" 41 "车模透明度的0~100%" 40 "车模透明度的0~100%" 39 "车模透明度的0~100%" 38 "车模透明度的0~100%" 37 "车模透明度的0~100%" 36 "车模透明度的0~100%" 35 "车模透明度的0~100%" 34 "车模透明度的0~100%" 33 "车模透明度的0~100%" 32 "车模透明度的0~100%" 31 "车模透明度的0~100%" 30 "车模透明度的0~100%" 29 "车模透明度的0~100%" 28 "车模透明度的0~100%" 27 "车模透明度的0~100%" 26 "车模透明度的0~100%" 25 "车模透明度的0~100%" 24 "车模透明度的0~100%" 23 "车模透明度的0~100%" 22 "车模透明度的0~100%" 21 "车模透明度的0~100%" 20 "车模透明度的0~100%" 19 "车模透明度的0~100%" 18 "车模透明度的0~100%" 17 "车模透明度的0~100%" 16 "车模透明度的0~100%" 15 "车模透明度的0~100%" 14 "车模透明度的0~100%" 13 "车模透明度的0~100%" 12 "车模透明度的0~100%" 11 "车模透明度的0~100%" 10 "车模透明度的0~100%" 9 "车模透明度的0~100%" 8 "车模透明度的0~100%" 7 "车模透明度的0~100%" 6 "车模透明度的0~100%" 5 "车模透明度的0~100%" 4 "车模透明度的0~100%" 3 "车模透明度的0~100%" 2 "车模透明度的0~100%" 1 "车模透明度的0~100%" 0 "车模透明度的0~100%" ;
+VAL_ 630 MMI_AVM_LanguageSet 15 "invalid" 14 "reserved" 13 "reserved" 12 "reserved" 11 "reserved" 10 "reserved" 9 "reserved" 8 "reserved" 7 "reserved" 6 "reserved" 5 "reserved" 4 "reserved" 3 "reserved" 2 "Chinese" 1 "English" 0 "none" ;
+VAL_ 630 MMI_AVM_AVM3DDynTrajSet 3 "invalid" 2 "on" 1 "off" 0 "none" ;
+VAL_ 632 MMI_AVMXcoordinate 4095 "Invalid" ;
+VAL_ 632 MMI_AVMYcoordinate 1023 "Invalid" ;
+VAL_ 632 MMI_AVMXGestureSpeed 255 "Invalid" ;
+VAL_ 632 MMI_AVMYGestureSpeed 255 "Invalid" ;
+VAL_ 632 MMI_AVMZoomScaleFactor 255 "Invalid" ;
+VAL_ 632 MMI_AVMZoomRotaterFactor 255 "Invalid" ;
+VAL_ 632 MMI_AVMTouchEventType 15 "Reserved" 14 "Reserved" 13 "Reserved" 12 "Reserved" 11 "Reserved" 10 "GESTURE_ROTATE" 9 "GESTURE_ZOOM_OUT" 8 "GESTURE_ZOOM_IN" 7 "GESTURE_ONE_FINGER_SWIPE" 6 "GESTURE_ONE_FINGER_MOVING" 5 "GESTURE_ONE_FINGER_LONG_PRESS" 4 "GESTURE_ONE_FINGER_DOUBLE_CLICK" 3 "GESTURE_ONE_FINGER_SINGLE_CLICK" 2 "GESTURE_ONE_FINGER_UP" 1 "GESTURE_ONE_FINGER_DOWN" 0 "Invalid" ;
+VAL_ 634 MMI_AVM_AVM3D_COMMAND 15 "invalid" 1 "clear otf calibration data" 0 "none" ;
+VAL_ 634 MMI_AVM_AVM3DViewSwitch 255 "reserved" 254 "reserved" 253 "reserved" 252 "reserved" 251 "reserved" 250 "reserved" 249 "reserved" 248 "reserved" 247 "reserved" 246 "reserved" 245 "reserved" 244 "reserved" 243 "reserved" 242 "reserved" 241 "reserved" 240 "reserved" 239 "reserved" 238 "reserved" 237 "reserved" 236 "reserved" 235 "reserved" 234 "reserved" 233 "reserved" 232 "reserved" 231 "reserved" 230 "reserved" 229 "reserved" 228 "reserved" 227 "reserved" 226 "reserved" 225 "reserved" 224 "reserved" 223 "reserved" 222 "reserved" 221 "reserved" 220 "reserved" 219 "reserved" 218 "reserved" 217 "reserved" 216 "reserved" 215 "reserved" 214 "reserved" 213 "reserved" 212 "reserved" 211 "reserved" 210 "reserved" 209 "reserved" 208 "reserved" 207 "reserved" 206 "reserved" 205 "reserved" 204 "reserved" 203 "reserved" 202 "reserved" 201 "reserved" 200 "reserved" 199 "reserved" 198 "reserved" 197 "reserved" 196 "reserved" 195 "reserved" 194 "reserved" 193 "reserved" 192 "reserved" 191 "reserved" 190 "reserved" 189 "reserved" 188 "reserved" 187 "reserved" 186 "reserved" 185 "reserved" 184 "reserved" 183 "reserved" 182 "reserved" 181 "reserved" 180 "reserved" 179 "reserved" 178 "reserved" 177 "reserved" 176 "reserved" 175 "reserved" 174 "reserved" 173 "reserved" 172 "reserved" 171 "reserved" 170 "reserved" 169 "reserved" 168 "reserved" 167 "reserved" 166 "reserved" 165 "reserved" 164 "reserved" 163 "reserved" 162 "reserved" 161 "reserved" 160 "reserved" 159 "reserved" 158 "reserved" 157 "reserved" 156 "reserved" 155 "reserved" 154 "reserved" 153 "reserved" 152 "reserved" 151 "reserved" 150 "reserved" 149 "reserved" 148 "reserved" 147 "reserved" 146 "reserved" 145 "reserved" 144 "reserved" 143 "reserved" 142 "reserved" 141 "reserved" 140 "reserved" 139 "reserved" 138 "reserved" 137 "reserved" 136 "reserved" 135 "reserved" 134 "reserved" 133 "reserved" 132 "reserved" 131 "reserved" 130 "reserved" 129 "reserved" 128 "reserved" 127 "reserved" 126 "reserved" 125 "reserved" 124 "reserved" 123 "reserved" 122 "reserved" 121 "reserved" 120 "reserved" 119 "reserved" 118 "reserved" 117 "reserved" 116 "reserved" 115 "reserved" 114 "reserved" 113 "reserved" 112 "reserved" 111 "reserved" 110 "reserved" 109 "reserved" 108 "reserved" 107 "reserved" 106 "reserved" 105 "reserved" 104 "reserved" 103 "reserved" 102 "reserved" 101 "reserved" 100 "reserved" 99 "reserved" 98 "reserved" 97 "reserved" 96 "reserved" 95 "reserved" 94 "reserved" 93 "reserved" 92 "reserved" 91 "reserved" 90 "reserved" 89 "reserved" 88 "reserved" 87 "reserved" 86 "reserved" 85 "reserved" 84 "reserved" 83 "reserved" 82 "reserved" 81 "reserved" 80 "reserved" 79 "reserved" 78 "reserved" 77 "reserved" 76 "reserved" 75 "reserved" 74 "reserved" 73 "reserved" 72 "reserved" 71 "reserved" 70 "reserved" 69 "reserved" 68 "reserved" 67 "reserved" 66 "reserved" 65 "reserved" 64 "reserved" 63 "reserved" 62 "reserved" 61 "reserved" 60 "reserved" 59 "reserved" 58 "reserved" 57 "reserved" 56 "reserved" 55 "reserved" 54 "reserved" 53 "reserved" 52 "reserved" 51 "reserved" 50 "reserved" 49 "reserved" 48 "reserved" 47 "reserved" 46 "reserved" 45 "reserved" 44 "reserved" 43 "reserved" 42 "reserved" 41 "reserved" 40 "reserved" 39 "reserved" 38 "reserved" 37 "reserved" 36 "reserved" 35 "reserved" 34 "reserved" 33 "reserved" 32 "reserved" 31 "reserved" 30 "reserved" 29 "reserved" 28 "reserved" 27 "reserved" 26 "reserved" 25 "reserved" 24 "3d_right_rear" 23 "3d_left_rear" 22 "3d_left_front" 21 "3d_right_front" 20 "3d_rear" 19 "3d_left" 18 "3d_right" 17 "3d_front" 16 "reserved" 15 "reserved" 14 "reserved" 13 "reserved" 12 "reserved" 11 "reserved" 10 "reserved" 9 "reserved" 8 "reserved" 7 "reserved" 6 "reserved" 5 "reserved" 4 "2d_rear" 3 "2d_left" 2 "2d_right" 1 "2d_front" 0 "none" ;
+VAL_ 634 MMI_AVM_AVM3DViewModeSwitch 15 "invalid" 14 "reserved" 13 "reserved" 12 "reserved" 11 "reserved" 10 "reserved" 9 "reserved" 8 "reserved" 7 "Rim_Rear" 6 "Rim_Front" 5 "Ctv_Rear" 4 "Ctv_Front" 3 "speed3D" 2 "3d" 1 "2d" 0 "none" ;
+VAL_ 634 MMI_AVM_AVMEcuEnterExit 17 "calibration enter/标定只有进入，禁止从车机请求退出" 16 "reserved" 11 "avm3d_exit_recognition" 10 "avm3d_exit_gesture" 9 "avm3d_exit_hardkey" 8 "avm3d_exit_softkey" 7 "reserved" 6 "reserved" 5 "reserved" 4 "avm3d_enter_recognition" 3 "avm3d_enter_gesture" 2 "avm3d_enter_hardkey" 1 "avm3d_enter_softkey" 0 "//calibrationenter" 0 "reserved" 0 "//avm3dexit" 0 "//avm3denter" 0 "none" ;
+VAL_ 648 MMI_ACAUTOReqValid 1 "Valid" 0 "Invalid" ;
+VAL_ 648 MMI_ACAUTOReq 1 "ON" 0 "OFF" ;
+VAL_ 648 MMI_BLOWERReqValid 1 "Valid" 0 "Invalid" ;
+VAL_ 648 MMI_BLOWERReq 1 "Down" 0 "Up" ;
+VAL_ 648 MMI_ACBlowModeReqValid 1 "Valid" 0 "Invalid" ;
+VAL_ 648 MMI_ACBlowModeReq 7 "reserved" 6 "reserved" 5 "FaceAndFoot" 4 "Foot" 3 "FootAndDefrost" 2 "Reserved" 1 "Face" 0 "No Req" ;
+VAL_ 648 MMI_CirculatingModeSetValid 1 "Valid" 0 "Invalid" ;
+VAL_ 648 MMI_CirculatingModeSet 1 "车外循环" 0 "车内循环" ;
+VAL_ 648 MMI_InsideTempSetValid 1 "Valid" 0 "Invalid" ;
+VAL_ 648 MMI_ACCompressorReqValid 1 "Valid" 0 "Invalid" ;
+VAL_ 648 MMI_SeatHeatReq_right 3 "2档" 2 "1档" 1 "off" 0 "Invalid" ;
+VAL_ 648 MMI_SeatHeatReq_left 3 "2档" 2 "1档" 1 "off" 0 "Invalid" ;
+VAL_ 648 MMI_BLOWERGearSetValid 1 "Valid" 0 "Invalid" ;
+VAL_ 648 MMI_BLOWERGearSet 7 "Gear7" 6 "Gear6" 5 "Gear5" 4 "Gear4" 3 "Gear3" 2 "Gear2" 1 "Gear1" 0 "No req" ;
+VAL_ 648 MMI_ACCompressorReq 1 "ON" 0 "OFF" ;
+VAL_ 648 MMI_FrontDeforstReq 3 "Reserved" 2 "Off" 1 "On" 0 "Invalid" ;
+VAL_ 648 MMI_RearDeforstReq 3 "Reserved" 2 "Off" 1 "On" 0 "Invalid" ;
+VAL_ 648 MMI_EnergyRecoveryContr 7 "reserved" 6 "reserved" 5 "reserved" 4 "Lev3" 3 "Lev2" 2 "Lev1" 1 "Lev0" 0 "Invalid" ;
+VAL_ 648 MMI_ACMaxReqValid 1 "Valid" 0 "Invalid" ;
+VAL_ 648 MMI_RearViewMirrorHeatReq 3 "reserved" 2 "close" 1 "open" 0 "invalid" ;
+VAL_ 648 MMI_AnionNegativeIonReq 3 "Reserved" 2 "Off" 1 "On" 0 "Invalid" ;
+VAL_ 648 MMI_ACMaxReq 1 "Req" 0 "No Req" ;
+VAL_ 648 MMI_ACOFFReqValid 1 "Valid" 0 "Invalid" ;
+VAL_ 648 MMI_ACOFFReq 1 "OFF" 0 "No Req" ;
+VAL_ 648 MMI_InsideTempIncDecReqValid 1 "Valid" 0 "Invalid" ;
+VAL_ 648 MMI_InsideTempIncDecReq 1 "Down" 0 "Up" ;
+VAL_ 652 MMI_VoiceSourceSelect_Cycle 3 "reserved" 2 "Select_OFF" 1 "Select_ON" 0 "Invalid" ;
+VAL_ 652 MMI_AmphereLampCtrl_BrtnsVal 255 "Invalid" ;
+VAL_ 652 MMI_AmphereLampCtrl_Fleshmode 3 "保留" 2 "关闭呼吸模式" 1 "打开呼吸模式" 0 "Invalid" ;
+VAL_ 652 MMI_AmphereLampCtrl_Drivingmode 3 "保留" 2 "关闭驾驶模式" 1 "打开驾驶模式" 0 "Invalid" ;
+VAL_ 652 MMI_AmphereLampCtrl_SW 3 "Reserved" 2 "ON" 1 "OFF" 0 "Invalid" ;
+VAL_ 652 MMI_VoiceSourceSelect 7 "选择声源7" 6 "选择声源6" 5 "选择声源5" 4 "选择声源4" 3 "选择声源3" 2 "选择声源2" 1 "选择声源1" 0 "Invalid" ;
+VAL_ 652 MMI_PlatfondColorCmd 7 "reserved保留" 6 "reserved保留" 5 "reserved保留" 4 "Green绿" 3 "Blue蓝" 2 "Yellow黄" 1 "Red红" 0 "Invalid" ;
+VAL_ 652 MMI_AmphereLampIntellisenseSw 3 "reserved" 2 "关闭驾驶模式" 1 "打开驾驶模式" 0 "Invalid" ;
+VAL_ 652 MMI_CWC_Cmd 3 "reserve" 2 "关闭" 1 "打开" 0 "Invalid" ;
+VAL_ 652 MMI_VSPEnableCommand 3 "打开停车模拟（车辆READY，非N档，VSP响）" 2 "关闭VSP命令" 1 "开启VSP命令（默认:车辆READY，非N档，车速等于0，VSP不响）" 0 "Invalid" ;
+VAL_ 652 MMI_AmphereLampCtrl_Colour 15 "Reserved" 14 "Reserved" 13 "Reserved" 12 "Reserved" 11 "Reserved" 10 "Reserved" 9 "Reserved" 8 "Reserved" 7 "紫色" 6 "蓝色" 5 "青色" 4 "绿色" 3 "黄色" 2 "橙色" 1 "红色" 0 "默认颜色" ;
+VAL_ 666 MMI_DrvSeatSlideCommand 3 "向后调节" 2 "向前调节" 1 "停止调节" 0 "invalid" ;
+VAL_ 666 MMI_DrvSeatFrontLiftPosPercentVa 1 "有效" 0 "invalid" ;
+VAL_ 666 MMI_DrvSeatFrontLiftPosPercent 63 "Invalid" ;
+VAL_ 666 MMI_DrvSeatFrontLiftCommand 3 "向下调节" 2 "向上调节" 1 "停止调节" 0 "invalid" ;
+VAL_ 666 MMI_DrvSeatReclinerPosPercentVal 1 "有效" 0 "invalid" ;
+VAL_ 666 MMI_DrvSeatReclinerPosPercent 63 "Invalid" ;
+VAL_ 666 MMI_DrvSeatAllLiftPosPercentVali 1 "有效" 0 "invalid" ;
+VAL_ 666 MMI_DrvSeatAllLiftPosPercent 63 "Invalid" ;
+VAL_ 666 MMI_DrvSeatReclinerCommand 3 "向后调节" 2 "向前调节" 1 "停止调节" 0 "invalid" ;
+VAL_ 666 MMI_DrvSeatHeatControlCmd 7 "reserved" 6 "reserved" 5 "reserved" 4 "Heating Level 3" 3 "Heating Level 2" 2 "Heating Level 1" 1 "OFF" 0 "Invalid" ;
+VAL_ 666 MMI_DrvSeatVenControlCmd 7 "reserved" 6 "reserved" 5 "reserved" 4 "Venting Level 3" 3 "Venting Level 2" 2 "Venting Level 1" 1 "OFF" 0 "Invalid" ;
+VAL_ 666 MMI_DrvSeatHandyEntryExitSet 3 "Reserved" 2 "Close" 1 "Open" 0 "invalid" ;
+VAL_ 666 MMI_DrvSeatAllLiftCommand 3 "向下调节" 2 "向上调节" 1 "停止调节" 0 "invalid" ;
+VAL_ 666 MMI_DrvSeatSlidePosPercentValid 1 "有效" 0 "invalid" ;
+VAL_ 666 MMI_DrvSeatSlidePosPercent 63 "Invalid" ;
+VAL_ 668 MMI_PassSeatSlideCommand 3 "向后调节" 2 "向前调节" 1 "停止调节" 0 "invalid" ;
+VAL_ 668 MMI_PassSeatFrontLiftPosPercentV 1 "有效" 0 "invalid" ;
+VAL_ 668 MMI_PassSeatFrontLiftPosPercent 63 "Invalid" ;
+VAL_ 668 MMI_PassSeatFrontLiftCommand 3 "向下调节" 2 "向上调节" 1 "停止调节" 0 "invalid" ;
+VAL_ 668 MMI_PassSeatReclinerPosPercentVa 1 "有效" 0 "invalid" ;
+VAL_ 668 MMI_PassSeatReclinerPosPercent 63 "Invalid" ;
+VAL_ 668 MMI_PassSeatAllLiftPosPercentVal 1 "有效" 0 "invalid" ;
+VAL_ 668 MMI_PassSeatAllLiftPosPercent 63 "Invalid" ;
+VAL_ 668 MMI_PassSeatReclinerCommand 3 "向后调节" 2 "向前调节" 1 "停止调节" 0 "invalid" ;
+VAL_ 668 MMI_PassDrvSeatHeatControlCmd 7 "reserved" 6 "reserved" 5 "reserved" 4 "Heating Level 3" 3 "Heating Level 2" 2 "Heating Level 1" 1 "OFF" 0 "Invalid" ;
+VAL_ 668 MMI_PassDrvSeatVenControlCmd 7 "reserved" 6 "reserved" 5 "reserved" 4 "Venting Level 3" 3 "Venting Level 2" 2 "Venting Level 1" 1 "OFF" 0 "Invalid" ;
+VAL_ 668 MMI_PassSeatAllLiftCommand 3 "向下调节" 2 "向上调节" 1 "停止调节" 0 "invalid" ;
+VAL_ 668 MMI_PassSeatSlidePosPercentValid 1 "有效" 0 "invalid" ;
+VAL_ 668 MMI_PassSeatSlidePosPercent 63 "Invalid" ;
+VAL_ 670 MMI_LockVehicleWarmingTip 3 "Reserved" 2 "flash with horn
+" 1 "flash
+" 0 "invalid
+" ;
+VAL_ 670 MMI_UnlockVetesyLampSW 3 "reserved" 2 "open" 1 "close
+" 0 "invalid
+" ;
+VAL_ 670 MMI_AccLampSet 3 "开启(延迟60s关闭)" 2 "开启(延迟30s关闭)
+" 1 "close
+" 0 " invalid
+" ;
+VAL_ 670 MMI_RearViewMirrorA 3 "reserved" 2 "open" 1 "close" 0 "invalid" ;
+VAL_ 670 MMI_RainAutoClsWindowCmd 3 "Reserved" 2 "Close" 1 "Open" 0 "invalid" ;
+VAL_ 670 MMI_HazardLightCmd 2 "关闭" 1 "打开" 0 "无指令" ;
+VAL_ 670 MMI_DoorLockCmd 2 "关闭锁" 1 "打开锁" 0 "无指令" ;
+VAL_ 670 MMI_LowBeamLightCmd 2 "关闭" 1 "打开" 0 "无指令" ;
+VAL_ 670 MMI_HighBeamLightCmd 2 "关闭" 1 "打开" 0 "无指令" ;
+VAL_ 670 MMI_FoglightCmd 2 "关闭" 1 "打开" 0 "无指令" ;
+VAL_ 670 MMI_WiperCmd 7 "停止" 6 "高速" 5 "低速" 4 "间歇3档" 3 "间歇2档" 2 "间歇1档" 1 "点动" 0 "无指令" ;
+VAL_ 670 MMI_BCMLightCmd 2 "关闭" 1 "打开" 0 "无指令" ;
+VAL_ 670 MMI_FronLeftDoorWindowCmd 4 "点动升主驾窗                                                                    0x5～0x7:Reserved" 3 "点动降主驾窗" 2 "一键升主驾窗" 1 "一键降主驾窗" 0 "Invalid" ;
+VAL_ 670 MMI_FronRightDoorWindowCmd 4 "点动升副驾窗                                                                    0x5～0x7:Reserved" 3 "点动降副驾窗" 2 "一键升副驾窗" 1 "一键降副驾窗" 0 "Invalid" ;
+VAL_ 670 MMI_RearLeftDoorWindowCmd 4 "点动升左后窗                                                                    0x5～0x7:Reserved" 3 "点动降左后窗" 2 "一键升左后窗" 1 "一键降左后窗" 0 "Invalid" ;
+VAL_ 670 MMI_FourDoorWindowCmd 3 "Reserved" 2 "一键升四门车窗" 1 "一键降四门车窗" 0 "Invalid" ;
+VAL_ 670 MMI_FrontDoorWindowCmd 3 "Reserved" 2 "一键降前车窗至30%(通风)" 1 "一键降前车窗至10%(透气)" 0 "Invalid" ;
+VAL_ 670 MMI_AutolightSWCmd 2 "关闭" 1 "打开" 0 "无指令" ;
+VAL_ 670 MMI_TailgateCmd 2 "尾门关闭" 1 "尾门打开" 0 "无指令" ;
+VAL_ 670 MMI_RearRightDoorWindowCmd 4 "点动升右后窗                                                                    0x5～0x7:Reserved" 3 "点动降右后窗" 2 "一键升右后窗" 1 "一键降右后窗" 0 "Invalid" ;
+VAL_ 670 MMI_RearViewMirrorSelect 3 "Reserved" 2 "右后视镜" 1 "左后视镜" 0 "Invalid" ;
+VAL_ 670 MMI_RearViewMirrorUpDown 3 "Reserved" 2 "下调" 1 "上调" 0 "Invalid" ;
+VAL_ 670 MMI_RearViewMirrorLeftRight 3 "Reserved" 2 "右调" 1 "左调" 0 "Invalid" ;
+VAL_ 670 MMI_RearViewCmd 2 "后视镜展开" 1 "后视镜折叠" 0 "无指令" ;
+VAL_ 792 MMI_LicensePlate_ProvinceName 63 "invalid" 31 "新；" 30 "宁；" 29 "藏；" 28 "蒙；" 27 "桂；" 26 "青；" 25 "甘；" 24 "陕；" 23 "云；" 22 "贵；" 21 "川；" 20 "琼；" 19 "粤；" 18 "湘；" 17 "鄂；" 16 "豫；" 15 "鲁；" 14 "赣；" 13 "闽；" 12 "皖；" 11 "浙；" 10 "苏；" 9 "黑；" 8 "吉；" 7 "辽；" 6 "晋；" 5 "冀；" 4 "渝；" 3 "沪；" 2 "津；" 1 "京；" 0 "none；" ;
+VAL_ 792 MMI_LicensePlate_Num2 63 "invalid" 36 "9；" 35 "8；" 34 "7；" 33 "6" 32 "5；" 31 "4；" 30 "3；" 29 "2；" 28 "1" 27 "0；" 26 "Z；" 25 "Y；" 24 "X；" 23 "W；" 22 "V；" 21 "U；" 20 "T；" 19 "S；" 18 "R；" 17 "Q；" 16 "P；" 15 "O；" 14 "N；" 13 "M；" 12 "L；" 11 "K；" 10 "J；" 9 "I；" 8 "H；" 7 "G；" 6 "F；" 5 "E；" 4 "D；" 3 "C；" 2 "B；" 1 "A；" 0 "none；" ;
+VAL_ 792 MMI_LicensePlate_Num3 63 "invalid" 36 "9；" 35 "8；" 34 "7；" 33 "6" 32 "5；" 31 "4；" 30 "3；" 29 "2；" 28 "1" 27 "0；" 26 "Z；" 25 "Y；" 24 "X；" 23 "W；" 22 "V；" 21 "U；" 20 "T；" 19 "S；" 18 "R；" 17 "Q；" 16 "P；" 15 "O；" 14 "N；" 13 "M；" 12 "L；" 11 "K；" 10 "J；" 9 "I；" 8 "H；" 7 "G；" 6 "F；" 5 "E；" 4 "D；" 3 "C；" 2 "B；" 1 "A；" 0 "none；" ;
+VAL_ 792 MMI_LicensePlate_Num4 63 "invalid" 36 "9；" 35 "8；" 34 "7；" 33 "6" 32 "5；" 31 "4；" 30 "3；" 29 "2；" 28 "1" 27 "0；" 26 "Z；" 25 "Y；" 24 "X；" 23 "W；" 22 "V；" 21 "U；" 20 "T；" 19 "S；" 18 "R；" 17 "Q；" 16 "P；" 15 "O；" 14 "N；" 13 "M；" 12 "L；" 11 "K；" 10 "J；" 9 "I；" 8 "H；" 7 "G；" 6 "F；" 5 "E；" 4 "D；" 3 "C；" 2 "B；" 1 "A；" 0 "none；" ;
+VAL_ 792 MMI_LicensePlate_Num5 63 "invalid" 36 "9；" 35 "8；" 34 "7；" 33 "6" 32 "5；" 31 "4；" 30 "3；" 29 "2；" 28 "1" 27 "0；" 26 "Z；" 25 "Y；" 24 "X；" 23 "W；" 22 "V；" 21 "U；" 20 "T；" 19 "S；" 18 "R；" 17 "Q；" 16 "P；" 15 "O；" 14 "N；" 13 "M；" 12 "L；" 11 "K；" 10 "J；" 9 "I；" 8 "H；" 7 "G；" 6 "F；" 5 "E；" 4 "D；" 3 "C；" 2 "B；" 1 "A；" 0 "none；" ;
+VAL_ 792 MMI_LicensePlate_Num6 63 "invalid" 36 "9；" 35 "8；" 34 "7；" 33 "6" 32 "5；" 31 "4；" 30 "3；" 29 "2；" 28 "1" 27 "0；" 26 "Z；" 25 "Y；" 24 "X；" 23 "W；" 22 "V；" 21 "U；" 20 "T；" 19 "S；" 18 "R；" 17 "Q；" 16 "P；" 15 "O；" 14 "N；" 13 "M；" 12 "L；" 11 "K；" 10 "J；" 9 "I；" 8 "H；" 7 "G；" 6 "F；" 5 "E；" 4 "D；" 3 "C；" 2 "B；" 1 "A；" 0 "none；" ;
+VAL_ 792 MMI_LicensePlate_Num7 63 "invalid" 36 "9；" 35 "8；" 34 "7；" 33 "6" 32 "5；" 31 "4；" 30 "3；" 29 "2；" 28 "1" 27 "0；" 26 "Z；" 25 "Y；" 24 "X；" 23 "W；" 22 "V；" 21 "U；" 20 "T；" 19 "S；" 18 "R；" 17 "Q；" 16 "P；" 15 "O；" 14 "N；" 13 "M；" 12 "L；" 11 "K；" 10 "J；" 9 "I；" 8 "H；" 7 "G；" 6 "F；" 5 "E；" 4 "D；" 3 "C；" 2 "B；" 1 "A；" 0 "none；" ;
+VAL_ 792 MMI_LicensePlate_Num1 63 "invalid" 36 "9；" 35 "8；" 34 "7；" 33 "6" 32 "5；" 31 "4；" 30 "3；" 29 "2；" 28 "1" 27 "0；" 26 "Z；" 25 "Y；" 24 "X；" 23 "W；" 22 "V；" 21 "U；" 20 "T；" 19 "S；" 18 "R；" 17 "Q；" 16 "P；" 15 "O；" 14 "N；" 13 "M；" 12 "L；" 11 "K；" 10 "J；" 9 "I；" 8 "H；" 7 "G；" 6 "F；" 5 "E；" 4 "D；" 3 "C；" 2 "B；" 1 "A；" 0 "none；" ;
+VAL_ 352 ACC_Set_Headway 7 "Invalid" 6 "Reserved" 5 "Reserved" 4 "Distance stage 4" 3 "Distance stage 3" 2 "Distance stage 2" 1 "Distance stage 1" 0 "No gap set" ;
+VAL_ 384 APA_MMI_ConnectStatus 15 "invalid/提示用户APA_ECU连接异常" 2 "connected" 1 "disconnect/提示用户APA_ECU断开连接" 0 "reserved" 0 "none/提示用户APA_ECU等待连接" ;
+VAL_ 384 APA_MMI_EcuStatus 15 "invalid/提示用户APA_ECU状态异常" 14 "reserved" 13 "reserved" 12 "reserved" 11 "reserved" 10 "reserved" 9 "reserved" 8 "reserved" 7 "reserved" 6 "reserved" 5 "reserved" 4 "reserved" 3 "reserved" 2 "power on" 1 "power off/提示用户APA_ECU已下电" 0 "none/提示用户APA_ECU上电中" ;
+VAL_ 384 APA_MMI_VideoOutputStatus 3 "invalid/显示MMI画面" 2 "on/显示APA画面" 1 "off/显示MMI画面" 0 "none/显示MMI画面" ;
+VAL_ 384 APA_MMI_3DViewModeStatus 15 "invalid" 14 "reserved" 13 "reserved" 12 "reserved" 11 "reserved" 10 "reserved" 9 "reserved" 8 "reserved" 7 "Rim_Rear" 6 "Rim_Front" 5 "Ctv_Rear" 4 "Ctv_Front" 3 "speed3D" 2 "3d" 1 "2d" 0 "none" ;
+VAL_ 384 APA_MMI_AVM3DViewSwitch 255 "reserved" 254 "reserved" 253 "reserved" 252 "reserved" 251 "reserved" 250 "reserved" 249 "reserved" 248 "reserved" 247 "reserved" 246 "reserved" 245 "reserved" 244 "reserved" 243 "reserved" 242 "reserved" 241 "reserved" 240 "reserved" 239 "reserved" 238 "reserved" 237 "reserved" 236 "reserved" 235 "reserved" 234 "reserved" 233 "reserved" 232 "reserved" 231 "reserved" 230 "reserved" 229 "reserved" 228 "reserved" 227 "reserved" 226 "reserved" 225 "reserved" 224 "reserved" 223 "reserved" 222 "reserved" 221 "reserved" 220 "reserved" 219 "reserved" 218 "reserved" 217 "reserved" 216 "reserved" 215 "reserved" 214 "reserved" 213 "reserved" 212 "reserved" 211 "reserved" 210 "reserved" 209 "reserved" 208 "reserved" 207 "reserved" 206 "reserved" 205 "reserved" 204 "reserved" 203 "reserved" 202 "reserved" 201 "reserved" 200 "reserved" 199 "reserved" 198 "reserved" 197 "reserved" 196 "reserved" 195 "reserved" 194 "reserved" 193 "reserved" 192 "reserved" 191 "reserved" 190 "reserved" 189 "reserved" 188 "reserved" 187 "reserved" 186 "reserved" 185 "reserved" 184 "reserved" 183 "reserved" 182 "reserved" 181 "reserved" 180 "reserved" 179 "reserved" 178 "reserved" 177 "reserved" 176 "reserved" 175 "reserved" 174 "reserved" 173 "reserved" 172 "reserved" 171 "reserved" 170 "reserved" 169 "reserved" 168 "reserved" 167 "reserved" 166 "reserved" 165 "reserved" 164 "reserved" 163 "reserved" 162 "reserved" 161 "reserved" 160 "reserved" 159 "reserved" 158 "reserved" 157 "reserved" 156 "reserved" 155 "reserved" 154 "reserved" 153 "reserved" 152 "reserved" 151 "reserved" 150 "reserved" 149 "reserved" 148 "reserved" 147 "reserved" 146 "reserved" 145 "reserved" 144 "reserved" 143 "reserved" 142 "reserved" 141 "reserved" 140 "reserved" 139 "reserved" 138 "reserved" 137 "reserved" 136 "reserved" 135 "reserved" 134 "reserved" 133 "reserved" 132 "reserved" 131 "reserved" 130 "reserved" 129 "reserved" 128 "reserved" 127 "reserved" 126 "reserved" 125 "reserved" 124 "reserved" 123 "reserved" 122 "reserved" 121 "reserved" 120 "reserved" 119 "reserved" 118 "reserved" 117 "reserved" 116 "reserved" 115 "reserved" 114 "reserved" 113 "reserved" 112 "reserved" 111 "reserved" 110 "reserved" 109 "reserved" 108 "reserved" 107 "reserved" 106 "reserved" 105 "reserved" 104 "reserved" 103 "reserved" 102 "reserved" 101 "reserved" 100 "reserved" 99 "reserved" 98 "reserved" 97 "reserved" 96 "reserved" 95 "reserved" 94 "reserved" 93 "reserved" 92 "reserved" 91 "reserved" 90 "reserved" 89 "reserved" 88 "reserved" 87 "reserved" 86 "reserved" 85 "reserved" 84 "reserved" 83 "reserved" 82 "reserved" 81 "reserved" 80 "reserved" 79 "reserved" 78 "reserved" 77 "reserved" 76 "reserved" 75 "reserved" 74 "reserved" 73 "reserved" 72 "reserved" 71 "reserved" 70 "reserved" 69 "reserved" 68 "reserved" 67 "reserved" 66 "reserved" 65 "reserved" 64 "reserved" 63 "reserved" 62 "reserved" 61 "reserved" 60 "reserved" 59 "reserved" 58 "reserved" 57 "reserved" 56 "reserved" 55 "reserved" 54 "reserved" 53 "reserved" 52 "reserved" 51 "reserved" 50 "reserved" 49 "reserved" 48 "reserved" 47 "reserved" 46 "reserved" 45 "reserved" 44 "reserved" 43 "reserved" 42 "reserved" 41 "reserved" 40 "reserved" 39 "reserved" 38 "reserved" 37 "reserved" 36 "reserved" 35 "reserved" 34 "reserved" 33 "reserved" 32 "reserved" 31 "reserved" 30 "reserved" 29 "reserved" 28 "reserved" 27 "reserved" 26 "reserved" 25 "reserved" 24 "3d_right_rear" 23 "3d_left_rear" 22 "3d_left_front" 21 "3d_right_front" 20 "3d_rear" 19 "3d_left" 18 "3d_right" 17 "3d_front" 16 "reserved" 15 "reserved" 14 "reserved" 13 "reserved" 12 "reserved" 11 "reserved" 10 "reserved" 9 "reserved" 8 "reserved" 7 "reserved" 6 "reserved" 5 "reserved" 4 "2d_rear" 3 "2d_left" 2 "2d_right" 1 "2d_front" 0 "none" ;
+VAL_ 386 APA_BSDLeftWaringSeverity 127 "invalid" 3 "level3" 2 "level2" 1 "level1" 0 "level0" ;
+VAL_ 386 APA_BSDLeftWaringValid 1 "valid" 0 "invalid" ;
+VAL_ 386 APA_BSDRightWaringSeverity 127 "invalid" 3 "level3" 2 "level2" 1 "level1" 0 "level0" ;
+VAL_ 386 APA_BSDRightWaringValid 1 "valid" 0 "invalid" ;
+VAL_ 386 APA_BSDStatus 1 "BSD run" 0 "BSD not run" ;
+VAL_ 386 APA_BSDStatusValid 1 "valid" 0 "invalid" ;
+VAL_ 387 PAS_APA_DistanceLR_RL 511 "Invalid" ;
+VAL_ 387 PAS_APA_DistanceLR_RR 511 "Invalid" ;
+VAL_ 387 PAS_APA_DistanceSR_RL 255 "Invalid" ;
+VAL_ 387 PAS_APA_DistanceSR_RML 255 "Invalid" ;
+VAL_ 387 PAS_APA_DistanceSR_RMR 255 "Invalid" ;
+VAL_ 387 PAS_APA_DistanceSR_RR 255 "Invalid" ;
+VAL_ 388 PAS_APA_DistanceLR_FL 511 "Invalid" ;
+VAL_ 388 PAS_APA_DistanceLR_FR 511 "Invalid" ;
+VAL_ 388 PAS_APA_DistanceSR_FL 255 "Invalid" ;
+VAL_ 388 PAS_APA_DistanceSR_FML 255 "Invalid" ;
+VAL_ 388 PAS_APA_DistanceSR_FMR 255 "Invalid" ;
+VAL_ 388 PAS_APA_DistanceSR_FR 255 "Invalid" ;
+VAL_ 784 APA_AVM_MCU_Version 16777215 "invalid" 0 "none" ;
+VAL_ 784 APA_AVM_BSP_Version 16777215 "invalid" 0 "none" ;
+VAL_ 786 APA_AVM_ZADAS_Version 16777215 "invalid" 0 "none" ;
+VAL_ 786 APA_Avm3d_licenseStatus 3 "invalid" 2 "has license" 1 "no license" 0 "none" ;
+VAL_ 786 APA_BSD_licenseStatus 3 "invalid" 2 "has license" 1 "no license" 0 "none" ;
+VAL_ 390 AVM_BSDLeftWaringSeverity 127 "invalid" 3 "level3" 2 "level2" 1 "level1" 0 "level0" ;
+VAL_ 390 AVM_BSDLeftWaringValid 1 "valid" 0 "invalid" ;
+VAL_ 390 AVM_BSDRightWaringSeverity 127 "invalid" 3 "level3" 2 "level2" 1 "level1" 0 "level0" ;
+VAL_ 390 AVM_BSDRightWaringValid 1 "valid" 0 "invalid" ;
+VAL_ 390 AVM_BSDStatus 1 "BSD run" 0 "BSD not run" ;
+VAL_ 390 AVM_BSDStatusValid 1 "valid" 0 "invalid" ;
+VAL_ 392 AVM_MMI_ConnectStatus 15 "invalid/提示用户AVM_ECU连接异常" 2 "connected" 1 "disconnect/提示用户AVM_ECU断开连接" 0 "reserved" 0 "none/提示用户AVM_ECU等待连接" ;
+VAL_ 392 AVM_MMI_EcuStatus 15 "invalid" 14 "reserved" 13 "reserved" 12 "reserved" 11 "reserved" 10 "reserved" 9 "reserved" 8 "reserved" 7 "reserved" 6 "reserved" 5 "reserved" 4 "reserved" 3 "reserved" 2 "power on" 1 "power off/提示用户AVM_ECU已下电" 0 "none/提示用户AVM_ECU上电中" ;
+VAL_ 392 AVM_MMI_VideoOutputStatus 3 "invalid" 2 "on/显示AVM画面" 1 "off/显示MMI画面" 0 "none/显示MMI画面" ;
+VAL_ 392 AVM_MMI_AVM3DViewModeStatus 15 "invalid" 14 "reserved" 13 "reserved" 12 "reserved" 11 "reserved" 10 "reserved" 9 "reserved" 8 "reserved" 7 "Rim_Rear" 6 "Rim_Front" 5 "Ctv_Rear" 4 "Ctv_Front" 3 "speed3D" 2 "3d" 1 "2d" 0 "none" ;
+VAL_ 392 AVM_MMI_AVM3DViewSwitch 255 "reserved" 254 "reserved" 253 "reserved" 252 "reserved" 251 "reserved" 250 "reserved" 249 "reserved" 248 "reserved" 247 "reserved" 246 "reserved" 245 "reserved" 244 "reserved" 243 "reserved" 242 "reserved" 241 "reserved" 240 "reserved" 239 "reserved" 238 "reserved" 237 "reserved" 236 "reserved" 235 "reserved" 234 "reserved" 233 "reserved" 232 "reserved" 231 "reserved" 230 "reserved" 229 "reserved" 228 "reserved" 227 "reserved" 226 "reserved" 225 "reserved" 224 "reserved" 223 "reserved" 222 "reserved" 221 "reserved" 220 "reserved" 219 "reserved" 218 "reserved" 217 "reserved" 216 "reserved" 215 "reserved" 214 "reserved" 213 "reserved" 212 "reserved" 211 "reserved" 210 "reserved" 209 "reserved" 208 "reserved" 207 "reserved" 206 "reserved" 205 "reserved" 204 "reserved" 203 "reserved" 202 "reserved" 201 "reserved" 200 "reserved" 199 "reserved" 198 "reserved" 197 "reserved" 196 "reserved" 195 "reserved" 194 "reserved" 193 "reserved" 192 "reserved" 191 "reserved" 190 "reserved" 189 "reserved" 188 "reserved" 187 "reserved" 186 "reserved" 185 "reserved" 184 "reserved" 183 "reserved" 182 "reserved" 181 "reserved" 180 "reserved" 179 "reserved" 178 "reserved" 177 "reserved" 176 "reserved" 175 "reserved" 174 "reserved" 173 "reserved" 172 "reserved" 171 "reserved" 170 "reserved" 169 "reserved" 168 "reserved" 167 "reserved" 166 "reserved" 165 "reserved" 164 "reserved" 163 "reserved" 162 "reserved" 161 "reserved" 160 "reserved" 159 "reserved" 158 "reserved" 157 "reserved" 156 "reserved" 155 "reserved" 154 "reserved" 153 "reserved" 152 "reserved" 151 "reserved" 150 "reserved" 149 "reserved" 148 "reserved" 147 "reserved" 146 "reserved" 145 "reserved" 144 "reserved" 143 "reserved" 142 "reserved" 141 "reserved" 140 "reserved" 139 "reserved" 138 "reserved" 137 "reserved" 136 "reserved" 135 "reserved" 134 "reserved" 133 "reserved" 132 "reserved" 131 "reserved" 130 "reserved" 129 "reserved" 128 "reserved" 127 "reserved" 126 "reserved" 125 "reserved" 124 "reserved" 123 "reserved" 122 "reserved" 121 "reserved" 120 "reserved" 119 "reserved" 118 "reserved" 117 "reserved" 116 "reserved" 115 "reserved" 114 "reserved" 113 "reserved" 112 "reserved" 111 "reserved" 110 "reserved" 109 "reserved" 108 "reserved" 107 "reserved" 106 "reserved" 105 "reserved" 104 "reserved" 103 "reserved" 102 "reserved" 101 "reserved" 100 "reserved" 99 "reserved" 98 "reserved" 97 "reserved" 96 "reserved" 95 "reserved" 94 "reserved" 93 "reserved" 92 "reserved" 91 "reserved" 90 "reserved" 89 "reserved" 88 "reserved" 87 "reserved" 86 "reserved" 85 "reserved" 84 "reserved" 83 "reserved" 82 "reserved" 81 "reserved" 80 "reserved" 79 "reserved" 78 "reserved" 77 "reserved" 76 "reserved" 75 "reserved" 74 "reserved" 73 "reserved" 72 "reserved" 71 "reserved" 70 "reserved" 69 "reserved" 68 "reserved" 67 "reserved" 66 "reserved" 65 "reserved" 64 "reserved" 63 "reserved" 62 "reserved" 61 "reserved" 60 "reserved" 59 "reserved" 58 "reserved" 57 "reserved" 56 "reserved" 55 "reserved" 54 "reserved" 53 "reserved" 52 "reserved" 51 "reserved" 50 "reserved" 49 "reserved" 48 "reserved" 47 "reserved" 46 "reserved" 45 "reserved" 44 "reserved" 43 "reserved" 42 "reserved" 41 "reserved" 40 "reserved" 39 "reserved" 38 "reserved" 37 "reserved" 36 "reserved" 35 "reserved" 34 "reserved" 33 "reserved" 32 "reserved" 31 "reserved" 30 "reserved" 29 "reserved" 28 "reserved" 27 "reserved" 26 "reserved" 25 "reserved" 24 "3d_right_rear" 23 "3d_left_rear" 22 "3d_left_front" 21 "3d_right_front" 20 "3d_rear" 19 "3d_left" 18 "3d_right" 17 "3d_front" 16 "reserved" 15 "reserved" 14 "reserved" 13 "reserved" 12 "reserved" 11 "reserved" 10 "reserved" 9 "reserved" 8 "reserved" 7 "reserved" 6 "reserved" 5 "reserved" 4 "2d_rear" 3 "2d_left" 2 "2d_right" 1 "2d_front" 0 "none" ;
+VAL_ 788 AVM_MCU_Version 16777215 "Invalid" ;
+VAL_ 788 AVM_BSP_Version 16777215 "Invalid" ;
+VAL_ 790 AVM_ZADAS_Version 16777215 "Invalid" ;
+VAL_ 790 Avm3d_licenseStatus 3 "Invalid" ;
+VAL_ 790 BSD_licenseStatus 3 "Invalid" ;
+VAL_ 524 BMS_Powertrain_System_fault 3 "Level three faults三级故障" 2 "Second-degree faults二级故障；" 1 "First-level faults一级故障；" 0 "fault-free无故障；" ;
+VAL_ 524 BMS_cell_Voltage_low 3 "Level three faults三级故障" 2 "Second-degree faults二级故障；" 1 "First-level faults一级故障；" 0 "fault-free无故障；" ;
+VAL_ 524 BMS_cell_Voltage_High 3 "Level three faults三级故障" 2 "Second-degree faults二级故障；" 1 "First-level faults一级故障；" 0 "fault-free无故障；" ;
+VAL_ 524 BMS_Battery_LowTemp_warning 3 "Level three faults三级故障" 2 "Second-degree faults二级故障；" 1 "First-level faults一级故障；" 0 "fault-free无故障；" ;
+VAL_ 524 BMS_Battery_HighTemp_warning 3 "Level three faults三级故障" 2 "Second-degree faults二级故障；" 1 "First-level faults一级故障；" 0 "fault-free无故障；" ;
+VAL_ 524 BMS_SOCHigh_Warning 3 "Level three faults三级故障" 2 "Second-degree faults二级故障；" 1 "First-level faults一级故障；" 0 "fault-free无故障；" ;
+VAL_ 524 BMS_SOCLow_Warning 3 "Level three faults三级故障" 2 "Second-degree faults二级故障；" 1 "First-level faults一级故障；" 0 "fault-free无故障；" ;
+VAL_ 524 BMS_Battery_SumVoltage_High 3 "Level three faults三级故障" 2 "Second-degree faults二级故障；" 1 "First-level faults一级故障；" 0 "fault-free无故障；" ;
+VAL_ 524 BMS_Battery_SumVoltage_Low 3 "Level three faults三级故障" 2 "Second-degree faults二级故障；" 1 "First-level faults一级故障；" 0 "fault-free无故障；" ;
+VAL_ 524 BMS_HVBatCellDiffFalt 3 "Level three faults三级故障" 2 "Second-degree faults二级故障；" 1 "First-level faults一级故障；" 0 "fault-free无故障；" ;
+VAL_ 524 BMS_Err_OverVoltageFault 3 "Level three faults三级故障" 2 "Second-degree faults二级故障；" 1 "First-level faults一级故障；" 0 "fault-free无故障；" ;
+VAL_ 524 BMS_Battery_charge_Fault 3 "Level three faults三级故障" 2 "Second-degree faults二级故障；" 1 "First-level faults一级故障；" 0 "fault-free无故障；" ;
+VAL_ 524 BMS_SOCJump_Warning 3 "Level three faults三级故障" 2 "Second-degree faults二级故障；" 1 "First-level faults一级故障；" 0 "fault-free无故障；" ;
+VAL_ 524 BMS_Err_CellT_Low 3 "Level three faults三级故障" 2 "Second-degree faults二级故障；" 1 "First-level faults一级故障；" 0 "fault-free无故障；" ;
+VAL_ 524 BMS_Err_CellT_High 3 "Level three faults三级故障" 2 "Second-degree faults二级故障；" 1 "First-level faults一级故障；" 0 "fault-free无故障；" ;
+VAL_ 524 BMS_BatNotMatchFlt 3 "Reserved" 2 "Reserved" 1 "fault 故障；" 0 "fault-free无故障；" ;
+VAL_ 524 BMS_Err_ISO_LOW 3 "Level three faults三级故障" 2 "Second-degree faults二级故障；" 1 "First-level faults一级故障；" 0 "fault-free无故障；" ;
+VAL_ 524 BMS_Err_ChgCurrent_High 3 "Level three faults三级故障" 2 "Second-degree faults二级故障；" 1 "First-level faults一级故障；" 0 "fault-free无故障；" ;
+VAL_ 524 BMS_Err_DchCurrent_High 3 "Level three faults三级故障" 2 "Second-degree faults二级故障；" 1 "First-level faults一级故障；" 0 "fault-free无故障；" ;
+VAL_ 524 BMS_Err_DtT_High 3 "Level three faults三级故障" 2 "Second-degree faults二级故障；" 1 "First-level faults一级故障；" 0 "fault-free无故障；" ;
+VAL_ 524 BMS_Err_comunicacion 3 "reserved预留" 2 "External communication failure外部通讯故障；" 1 "Internal communication failure内部通讯故障；" 0 "fault-free无故障；" ;
+VAL_ 524 BMS_Err_InterLock 1 "Interlock faults互锁故障" 0 "fault-free无故障；" ;
+VAL_ 524 BMS_Circuit_Protection 1 "open短路保护开启" 0 "normal正常；" ;
+VAL_ 524 BMS_FeedFault 3 "Level three faults三级故障" 2 "Second-degree faults二级故障；" 1 "First-level faults一级故障；" 0 "fault-free无故障；" ;
+VAL_ 524 BMS_TotalErrNumber 255 "Invalid" ;
+VAL_ 528 BMS_Sys_MinCellV 65535 "Invalid" ;
+VAL_ 528 BMS_Sys_MaxCellV 65535 "Invalid" ;
+VAL_ 530 BMS_Sys_MinCellT 255 "Invalid" ;
+VAL_ 530 BMS_Sys_MaxCellT 255 "Invalid" ;
+VAL_ 530 BMS_Sys_MinCellT_No 255 "Invalid" ;
+VAL_ 530 BMS_Sys_MaxCellT_No 255 "Invalid" ;
+VAL_ 530 BMS_FastChrgTemp 255 "Invalid" ;
+VAL_ 534 BMS_Sys_SOC 255 "Invalid" ;
+VAL_ 534 BMS_Sys_SOH 255 "Invalid" ;
+VAL_ 340 RCTA_warm_status_left 3 "Invalid" 2 "Serious Warnning" 1 "warning" 0 "No Alarm" ;
+VAL_ 340 BSDLCA_warm_status_left 3 "Invalid" 2 "Serious Warnning" 1 "warning" 0 "No Alarm" ;
+VAL_ 340 BSD_ConnectionFault_left 1 "异常；" 0 "正常；" ;
+VAL_ 340 BSD_RFICFault_left 1 "异常；" 0 "正常；" ;
+VAL_ 340 BSD_OverTempFault_left 1 "异常；" 0 "正常；" ;
+VAL_ 340 BSD_StoreFault_left 1 "异常；" 0 "正常；" ;
+VAL_ 340 BSDDOW_warm_status_left 3 "Invalid" 2 "Serious Warnning" 1 "warning" 0 "No Alarm" ;
+VAL_ 340 BSD_EnableStatus 3 "BSD系统异常" 2 "BSD系统工作" 1 "BSD系统待机" 0 "Invalid" ;
+VAL_ 344 RCTA_warm_status_right 3 "Invalid" 2 "Serious Warnning" 1 "warning" 0 "No Alarm" ;
+VAL_ 344 BSDLCA_warm_status_right 3 "Invalid" 2 "Serious Warnning" 1 "warning" 0 "No Alarm" ;
+VAL_ 344 BSD_ConnectionFault_right 1 "异常；" 0 "正常；" ;
+VAL_ 344 BSD_RFICFault_right 1 "异常；" 0 "正常；" ;
+VAL_ 344 BSD_OverTempFault_right 1 "异常；" 0 "正常；" ;
+VAL_ 344 BSD_StoreFault_right 1 "异常；" 0 "正常；" ;
+VAL_ 344 BSDDOW_warm_status_right 3 "Invalid" 2 "Serious Warnning" 1 "warning" 0 "No Alarm" ;
+VAL_ 856 CWC_Status_Charge 3 "充电故障" 2 "充满" 1 "充电中" 0 "未充电" ;
+VAL_ 856 CWC_Info_matter 1 "Active" 0 "Inactive" ;
+VAL_ 856 CWC_Info_phoneforgotten 1 "Active" 0 "Inactive" ;
+VAL_ 856 CWC_Over_Temp 1 "异常；" 0 "正常；" ;
+VAL_ 856 CWC_Over_Current 1 "异常；" 0 "正常；" ;
+VAL_ 856 CWC_Over_Voltage 1 "异常；" 0 "正常；" ;
+VAL_ 665 DSM_DrvSeatHandyEntryExitSetStus 3 "Reserved" 2 "Close" 1 "Open" 0 "invalid" ;
+VAL_ 665 DSM_D_SlideDirection 3 "异常" 2 "调节完" 1 "调节中" 0 "无调节" ;
+VAL_ 665 DSM_D_FrontLiftDirection 3 "异常" 2 "调节完" 1 "调节中" 0 "无调节" ;
+VAL_ 665 DSM_D_ReclinerDirection 3 "异常" 2 "调节完" 1 "调节中" 0 "无调节" ;
+VAL_ 665 DSM_D_AllLiftDirection 3 "异常" 2 "调节完" 1 "调节中" 0 "无调节" ;
+VAL_ 665 DSM_D_SlidePosPercentFinal 127 "Invalid" ;
+VAL_ 665 DSM_D_FrontLiftPosPercentFinal 127 "Invalid" ;
+VAL_ 665 DSM_D_ReclinerPosPercentFinal 127 "Invalid" ;
+VAL_ 665 DSM_D_AllLiftPosPercentFinal 127 "Invalid" ;
+VAL_ 667 DSM_P_SlideDirection 3 "异常" 2 "调节完" 1 "调节中" 0 "无调节" ;
+VAL_ 667 DSM_P_FrontLiftDirection 3 "异常" 2 "调节完" 1 "调节中" 0 "无调节" ;
+VAL_ 667 DSM_P_ReclinerDirection 3 "异常" 2 "调节完" 1 "调节中" 0 "无调节" ;
+VAL_ 667 DSM_P_AllLiftDirection 3 "异常" 2 "调节完" 1 "调节中" 0 "无调节" ;
+VAL_ 667 DSM_P_SlidePosPercentFinal 127 "Invalid" ;
+VAL_ 667 DSM_P_FrontLiftPosPercentFinal 127 "Invalid" ;
+VAL_ 667 DSM_P_ReclinerPosPercentFinal 127 "Invalid" ;
+VAL_ 667 DSM_P_AllLiftPosPercentFinal 127 "Invalid" ;
+VAL_ 342 AmphereLampUserDefModeStatus 3 "炫彩呼吸" 2 "单色呼吸
+" 1 "单色常亮
+" 0 "无效
+" ;
+VAL_ 342 AmphereLampMode 3 "驾驶随动模式" 2 "车速随动模式
+" 1 "自定义模式
+" 0 "无效
+" ;
+VAL_ 342 AmphereLampSta_IntePerS 3 "Reserved" 2 "ON
+" 1 "OFF
+" 0 "Invalid
+" ;
+VAL_ 342 SteerWheel_L_OK 1 "pressed" 0 "not pressed" ;
+VAL_ 342 SteerWheel_Voice 1 "pressed" 0 "not pressed" ;
+VAL_ 342 SteerWheel_VOL_Inc 1 "pressed" 0 "not pressed" ;
+VAL_ 342 SteerWheel_VOL_Dec 1 "pressed" 0 "not pressed" ;
+VAL_ 342 SteerWheel_PREV 1 "pressed" 0 "not pressed" ;
+VAL_ 342 SteerWheel_Defi 1 "pressed" 0 "not pressed" ;
+VAL_ 342 SteerWheel_NEXT 1 "pressed" 0 "not pressed" ;
+VAL_ 342 SteerWheel_Mode 1 "pressed" 0 "not pressed" ;
+VAL_ 342 SteerWheel_Return_Home 1 "pressed" 0 "not pressed" ;
+VAL_ 342 SteerWheel_Hang_Down 1 "pressed" 0 "not pressed" ;
+VAL_ 342 AmphereLampSta_SW 3 "Reserved" 2 "ON" 1 "OFF" 0 "Invalid" ;
+VAL_ 342 AmphereLampSta_Colour 7 "紫色" 6 "蓝色" 5 "青色" 4 "绿色" 3 "黄色" 2 "橙色" 1 "红色" 0 "默认颜色" ;
+VAL_ 342 AmphereLampBrtnsVal 255 "Invalid" ;
+VAL_ 594 MCU_F_ResolverFault 1 "Failure" 0 "No_Failure" ;
+VAL_ 594 MCU_F_Err_IGBT 1 "Failure" 0 "No_Failure" ;
+VAL_ 594 MCU_F_CurrentOverload 3 "reserved保留" 2 "Second-degree faults二级故障；" 1 "First-level faults一级故障；" 0 "fault-free无故障；" ;
+VAL_ 594 MCU_F_Controllertemp_Status 3 "reserved保留" 2 "Second-degree faults二级故障；" 1 "First-level faults一级故障；" 0 "fault-free无故障；" ;
+VAL_ 594 MCU_F_SpeedOtLoopFalult 1 "Failure" 0 "No_Failure" ;
+VAL_ 594 MCU_F_MdTepErr 1 "Failure" 0 "No_Failure" ;
+VAL_ 594 MCU_F_ControllerOverVolt_Status 3 "reserved保留" 2 "Second-degree faults二级故障；" 1 "First-level faults一级故障；" 0 "fault-free无故障；" ;
+VAL_ 594 MCU_F_MotorTemp_Fault 3 "reserved保留" 2 "Second-degree faults二级故障；" 1 "First-level faults一级故障；" 0 "fault-free无故障；" ;
+VAL_ 594 MCU_F_MotorOverSpd 1 "Failure" 0 "No_Failure" ;
+VAL_ 594 MCU_F_ControllerLowUnderVolt_Sta 1 "Failure" 0 "No_Failure" ;
+VAL_ 594 MCU_F_ControllerUnderVolt_Status 3 "reserved保留" 2 "Second-degree faults二级故障；" 1 "First-level faults一级故障；" 0 "fault-free无故障；" ;
+VAL_ 594 MCU_F_ControllerFault 7 "Reserved" 6 "Reserved" 5 "Reserved" 4 "Fourth-degree faults四级故障(下高压，不允许上高压，若MCU高压在充电回路，不允许充电 down HV,fobit up HV,if MCU HV is charging,forbit charge)；" 3 "Third-degree faults三级故障" 2 "Second-degree faults二级故障（降功率，无上下电要求 reduce power，no power up and down req）；" 1 "First-level faults一级故障（报警，无上下电要求 Alarm，no power up and down req）；" 0 "(0扭矩输出，不允许进入run模式，不建议充电~0NmTorqueOutput，Forbitrunmode,proposefobitcharge)；" 0 "fault-free无故障；" ;
+VAL_ 594 FMCU_HV_Interlock_Falult 3 "Reserved预留" 2 "Failure故障" 1 "No_Failure无故障" 0 "Invalid" ;
+VAL_ 594 FMCU_Uncap_Falult 3 "Reserved预留" 2 "Failure故障" 1 "No_Failure无故障" 0 "Invalid" ;
+VAL_ 594 MCU_F_MotTepErr 1 "Failure" 0 "No_Failure" ;
+VAL_ 608 MCU_R_ResolverFault 1 "Failure" 0 "No_Failure" ;
+VAL_ 608 MCU_R_Err_IGBT 1 "Failure" 0 "No_Failure" ;
+VAL_ 608 MCU_R_CurrentOverload 3 "reserved保留" 2 "Second-degree faults二级故障；" 1 "First-level faults一级故障；" 0 "fault-free无故障；" ;
+VAL_ 608 MCU_R_Controllertemp_Status 3 "reserved保留" 2 "Second-degree faults二级故障；" 1 "First-level faults一级故障；" 0 "fault-free无故障；" ;
+VAL_ 608 MCU_R_SpeedOtLoopFalult 1 "Failure" 0 "No_Failure" ;
+VAL_ 608 MCU_R_MdTepErr 1 "Failure" 0 "No_Failure" ;
+VAL_ 608 MCU_R_ControllerOverVolt_Status 3 "reserved保留" 2 "Second-degree faults二级故障；" 1 "First-level faults一级故障；" 0 "fault-free无故障；" ;
+VAL_ 608 MCU_R_MotorTemp_Fault 3 "reserved保留" 2 "Second-degree faults二级故障；" 1 "First-level faults一级故障；" 0 "fault-free无故障；" ;
+VAL_ 608 MCU_R_MotorOverSpd 1 "Failure" 0 "No_Failure" ;
+VAL_ 608 MCU_R_ControllerLowUnderVolt_Sta 1 "Failure" 0 "No_Failure" ;
+VAL_ 608 MCU_R_ControllerUnderVolt_Status 3 "reserved保留" 2 "Second-degree faults二级故障；" 1 "First-level faults一级故障；" 0 "fault-free无故障；" ;
+VAL_ 608 MCU_R_ControllerFault 7 "Reserved" 6 "Reserved" 5 "Reserved" 4 "Fourth-degree faults四级故障(下高压，不允许上高压，若MCU高压在充电回路，不允许充电 down HV,fobit up HV,if MCU HV is charging,forbit charge)；" 3 "Third-degree faults三级故障" 2 "Second-degree faults二级故障（降功率，无上下电要求 reduce power，no power up and down req）；" 1 "First-level faults一级故障（报警，无上下电要求 Alarm，no power up and down req）；" 0 "(0扭矩输出，不允许进入run模式，不建议充电~0NmTorqueOutput，Forbitrunmode,proposefobitcharge)；" 0 "fault-free无故障；" ;
+VAL_ 608 RMCU_HV_Interlock_Falult 3 "Reserved预留" 2 "Failure故障" 1 "No_Failure无故障" 0 "Invalid" ;
+VAL_ 608 RMCU_Uncap_Falult 3 "Reserved预留" 2 "Failure故障" 1 "No_Failure无故障" 0 "Invalid" ;
+VAL_ 608 MCU_R_MotTepErr 1 "Failure" 0 "No_Failure" ;
+VAL_ 644 TBOX_StartChgYear 63 "Invalid" ;
+VAL_ 644 TBOX_ReservationChgCommandSet 3 "Invalid" 2 "Cancel" 1 "SET" 0 "Default" ;
+VAL_ 644 TBOX_StartChgMonth 15 "Invalid" ;
+VAL_ 644 TBOX_StartChgDay 0 "Invalid" ;
+VAL_ 644 TBOX_StartChgHour 31 "Invalid" ;
+VAL_ 644 TBOX_ChrgMode 3 "reserved" 2 "效率最高模式" 1 "电池健康模式" 0 "普通模式" ;
+VAL_ 644 TBOX_StartChgMinute 63 "Invalid" ;
+VAL_ 644 TBOX_StopChrgRQ 3 "reserved" 2 "继续充电" 1 "停止充电" 0 "No Command；" ;
+VAL_ 776 DCDC_Status 2 "standby待机" 1 "sleep休眠" 0 "normal正常输出" ;
+VAL_ 776 DCDC_Fault 2 "reserved" 1 "failure故障；" 0 "No failure无故障；" ;
+VAL_ 776 DCDC_OverTemp_Fault 3 "温度过高三级故障；" 2 "温度过高二级故障；" 1 "温度过高一级故障；" 0 "No failure无故障；" ;
+VAL_ 772 OBC_Charger_Fail_State 1 "failure故障；" 0 "No failure无故障；" ;
+VAL_ 772 OBC_CC_Resistance 7 "Reserved；" 6 "Reserved；" 5 "充电电缆数量为63A；" 4 "充电电缆数量为32A；" 3 "充电电缆数量为16A；" 2 "充电电缆数量为10A；" 1 "半连接；" 0 "未连接；" ;
+VAL_ 772 KL30_UnderVolt 3 "Reserved" 2 "欠压；" 1 "过压；" 0 "正常；" ;
+VAL_ 772 ElectronicLockSts 1 "闭锁状态；" 0 "解锁状态；" ;
+VAL_ 772 ElectronicLockFault 3 "Reserved" 2 "闭锁故障；" 1 "解锁故障；" 0 "无故障；" ;
+VAL_ 772 OBC_Charger_Instructions 1 "充电中（OBC输出电流＞0A）；" 0 "未充电；" ;
+VAL_ 570 VCU_AC_ChrgStatus 7 "ChargeShutDown" 6 "HeatToChargeHangup" 5 "ChargeToHeatHangup" 4 "DC_Heating" 3 "DC_Charing" 2 "ChrgFault" 1 "ChrgHandSharking" 0 "DCChrgDisable" ;
+VAL_ 570 VCU_EnergyRecoverySt 7 "invalid" 6 "reserved" 5 "reserved" 4 "reserved" 3 "Lev3" 2 "Lev2" 1 "Lev1" 0 "Lev0" ;
+VAL_ 570 VCU_PwrFlowIndcr 7 "reserved" 6 "reserved" 5 "reserved" 4 "Regener Power Flow" 3 "Driving Power Flow" 2 "Charge Finished Power Flow" 1 "Charging Power Flow" 0 "No Power Flow" ;
+VAL_ 570 VCU_DC_ChrgStatus 7 "ChargeShutDown" 6 "HeatToChargeHangup" 5 "ChargeToHeatHangup" 4 "DC_Heating" 3 "DC_Charing" 2 "ChrgFault" 1 "ChrgHandSharking" 0 "DCChrgDisable" ;
+VAL_ 570 VCU_V2V_ChrgStatus 7 "ChargeShutDown" 6 "HeatToChargeHangup" 5 "ChargeToHeatHangup" 4 "DC_Heating" 3 "DC_Charing" 2 "ChrgFault" 1 "ChrgHandSharking" 0 "DCChrgDisable" ;
+VAL_ 574 VCU_EnduranceMileage 65535 "Invalid" ;
+VAL_ 913 VSP_State 3 "reserved" 2 "Fail（故障）" 1 "ON" 0 "OFF" ;
+VAL_ 913 VSP_VoiceSourceSelectFeedback 3 "保留" 2 "声源切换失败" 1 "声源切换成功" 0 "无反馈" ;
+VAL_ 274 EPS_SteeringWheelAngVD 1 "Valid" 0 "Invalid" ;
+VAL_ 274 EPS_SASFailureSts 1 "Sensor information valid传感器信息有效" 0 "Sensor information invalid an internal sensor fault occurred传感器信息无效发生内部传感器故障" ;
+VAL_ 274 EPS_Fault 2 "flashing 故障灯闪烁（没标中位）" 1 "on 故障灯亮" 0 "off 故障灯灭" ;
+VAL_ 274 EPS_SteeringWheelAng 16383 "Invalid" ;
+VAL_ 274 EPS_SteerWheelRotSpd 255 "Invalid" ;
+VAL_ 274 EPS_SteerWheelRotSpdVD 1 "Valid" 0 "Invalid" ;
+VAL_ 328 EPB_Brake_Lights_Request_L 1 "Request" 0 "No request" ;
+VAL_ 328 EPB_SwitchSta_L 3 "invalid" 2 "Apply" 1 "Release" 0 "Neutral" ;
+VAL_ 328 EPB_WarnLampSta_L 3 "Reserved" 2 "Blinking" 1 "ON" 0 "OFF" ;
+VAL_ 328 EPB_ParkLampSta_L 3 "Reserved" 2 "Blinking" 1 "ON" 0 "OFF" ;
+VAL_ 328 EPB_ActuatorSt_L 7 "ActuatorAdjust" 6 "Hold" 5 "Broken" 4 "Maintenance brake off" 3 "Applying" 2 "Brake Off" 1 "Brake On" 0 "Releasing" ;
+VAL_ 328 EPB_DisplayMsgID_L 3 "Change Gear to no P gear" 2 "push brake pedal" 1 "Fasten seatbelt" 0 "off" ;
+VAL_ 336 EPB_Brake_Lights_Request_R 1 "Request" 0 "No request" ;
+VAL_ 336 EPB_SwitchSta_R 3 "invalid" 2 "Apply" 1 "Release" 0 "Neutral" ;
+VAL_ 336 EPB_WarnLampSta_R 3 "Reserved" 2 "Blinking" 1 "ON" 0 "OFF" ;
+VAL_ 336 EPB_ParkLampSta_R 3 "Reserved" 2 "Blinking" 1 "ON" 0 "OFF" ;
+VAL_ 336 EPB_ActuatorSt_R 7 "ActuatorAdjust" 6 "Hold" 5 "Broken" 4 "Maintenance brake off" 3 "Applying" 2 "Brake Off" 1 "Brake On" 0 "Releasing" ;
+VAL_ 336 EPB_DisplayMsgID_R 3 "Change Gear to no P gear" 2 "push brake pedal" 1 "Fasten seatbelt" 0 "off" ;
+VAL_ 338 BCM_VehicleCourtesyLampFuncStus 3 "Reserved" 2 "open
+" 1 "close
+" 0 "invalid
+" ;
+VAL_ 338 BCM_AccLampSetStus 3 "开启(延迟60s关闭)" 2 "开启(延迟30s关闭)
+" 1 "close
+" 0 "invalid
+" ;
+VAL_ 338 BCM_LockVehicleWarmingTipStus 3 "Reserved" 2 "flash with horn
+" 1 "flash
+" 0 "invalid
+" ;
+VAL_ 338 BCM_CourtesyLampStus 1 "open" 0 "close" ;
+VAL_ 338 BCM_RearViewMirrorAutoFoldFuc 3 "reserved" 2 "open" 1 "close" 0 "invalid" ;
+VAL_ 338 BCM_RainAutoClsWindowFuncStus 3 "Reserved" 2 "Close" 1 "Open" 0 "invalid" ;
+VAL_ 338 BCM_RFDoorSwitchSt 1 "Open" 0 "Close" ;
+VAL_ 338 BCM_LFDoorSwitchSt 1 "Open" 0 "Close" ;
+VAL_ 338 BCM_PositionLampSt 1 "Open" 0 "Close" ;
+VAL_ 338 BCM_FrontFogligthSt 1 "Open" 0 "Close" ;
+VAL_ 338 BCM_BackFogligthSt 1 "Open" 0 "Close" ;
+VAL_ 338 BCM_HighBeamStatus 1 "Open" 0 "Close" ;
+VAL_ 338 BCM_LowBeamStatus 1 "Open" 0 "Close" ;
+VAL_ 338 BCM_TrunkSt 1 "Open" 0 "Close" ;
+VAL_ 338 BCM_TurnLeverLoc 3 "Reserved" 2 "右转向" 1 "左转向" 0 "Invalid(左右转向未开启)" ;
+VAL_ 338 BCM_RightligthFaultSt 1 "Failure" 0 "No_Failure" ;
+VAL_ 338 BCM_RightligthSt 1 "Open" 0 "Close" ;
+VAL_ 338 BCM_LetfligthFaultSt 1 "Failure" 0 "No_Failure" ;
+VAL_ 338 BCM_LetfligthSt 1 "Open" 0 "Close" ;
+VAL_ 338 BCM_LRDoorSwitchSt 1 "Open" 0 "Close" ;
+VAL_ 338 BCM_RRDoorSwitchSt 1 "Open" 0 "Close" ;
+VAL_ 338 BCM_CentralLockSt 1 "Unlock" 0 "Lock" ;
+VAL_ 338 BCM_Reverse_Light 1 "On" 0 "Off" ;
+VAL_ 338 BCM_Mainbeam_Available 1 "Unavailable" 0 "Available" ;
+VAL_ 338 BCM_HazardwarnLampSt 1 "Open" 0 "Close" ;
+VAL_ 338 BCM_PassSeatbeltBucklestatus 1 "Safety belt not tied" 0 "Safety belt tied" ;
+VAL_ 338 BCM_DrvSeatbeltBucklestatus 1 "Safety belt not tied" 0 "Safety belt tied" ;
+VAL_ 338 BCM_FrontCoverSt 1 "Open" 0 "Close" ;
+VAL_ 338 BCM_Auto_LightSwitch 1 "On处于AUTO挡" 0 "Off不处于AUTO挡" ;
+VAL_ 338 BCM_Brake_Light 1 "On" 0 "Off" ;
+VAL_ 338 BCM_Rain_Sensor 2 "Heavy rain(HIGH)" 1 "Light rain(LOW)" 0 "No rain(OFF)" ;
+VAL_ 338 BCM_DrvSeatbeltBucklevalidity 1 "valid" 0 "not valid" ;
+VAL_ 338 BCM_PassSeatbeltBucklevalidity 1 "valid" 0 "not valid" ;
+VAL_ 338 BCM_PowerMode 3 "Remotekeyon                                                          0x4～0x7: Reserved" 2 "Localkeyon" 1 "OffPwr_Sts" 0 "Invalid无效" ;
+VAL_ 338 BCM_RearViewMirror 3 "Reserved" 2 "展开" 1 "折叠" 0 "Invalid" ;
+VAL_ 338 BCM_ChargeCoverLockStatus 1 "lock" 0 "unlock" ;
+VAL_ 338 BCM_RearDeforstSts 1 "ON" 0 "OFF" ;
+VAL_ 338 BCM_BkSeat_1_beltBucklevalidity 1 "valid" 0 "invalid" ;
+VAL_ 338 BCM_BkSeat_1_beltBucklestatus 1 "Safety belt not tied" 0 "Safety belt tied" ;
+VAL_ 338 BCM_BkSeat_2_beltBucklevalidity 1 "valid" 0 "invalid" ;
+VAL_ 338 BCM_BkSeat_2_beltBucklestatus 1 "Safety belt not tied" 0 "Safety belt tied" ;
+VAL_ 338 BCM_BkSeat_3_beltBucklevalidity 1 "valid" 0 "invalid" ;
+VAL_ 338 BCM_BkSeat_3_beltBucklestatus 1 "Safety belt not tied" 0 "Safety belt tied" ;
+VAL_ 354 AEB_State 4 "Active" 3 "Active (no intervention)" 2 "Standby" 1 "Off" 0 "Unavailable state" ;
+VAL_ 354 FCW_State 4 "Active" 3 "Active (no intervention)" 2 "Standby" 1 "Off" 0 "Unavailable state" ;
+VAL_ 354 ADAS_Sensorstatus 7 "Reserved" 6 "Reserved" 5 "Reserved" 4 "Reserved" 3 "service requoired摄像头系统故障" 2 "Sensor blocked摄像头被遮挡" 1 "System Initialize摄像头初始化" 0 "No error" ;
+VAL_ 354 HW_Warning_Level 3 "Reserved" 2 "Warning Level 2" 1 "Warning Level 1" 0 "No warning" ;
+VAL_ 354 FCW_Warning_Level 3 "Reserved" 2 "Warning Level 2" 1 "Warning Level 1" 0 "No warning" ;
+VAL_ 354 ACC_Override_Indicator 1 "Request" 0 "No request" ;
+VAL_ 354 ACC_CIPV_Indicator 1 "Request" 0 "No request" ;
+VAL_ 354 ACC_Auto_Cancel 2 "Function cancel" 1 "Condition dissatisfy" 0 "No request" ;
+VAL_ 354 ACC_Driver_Cancel 1 "Request" 0 "No request" ;
+VAL_ 354 ACC_State 4 "Exit" 3 "Active" 2 "Standby" 1 "Off" 0 "Unavailable state" ;
+VAL_ 354 ACC_Go_Indicator 1 "Request" 0 "No request" ;
+VAL_ 354 ACC_Takeover_Indicator 1 "Request" 0 "No request" ;
+VAL_ 356 TSR_State 4 "Active" 3 "Active (no intervention)" 2 "Standby" 1 "Off" 0 "Unavailable state" ;
+VAL_ 356 DAS_TSR_Main_Switch 1 "on" 0 "off" ;
+VAL_ 356 IHC_State 4 "Active" 3 "Active (no intervention)" 2 "Standby" 1 "Off" 0 "Unavailable state" ;
+VAL_ 356 LDW_Line_Detect_Status 3 "Both side lane marks detected" 2 "Right side lane mark detected" 1 "Left side lane mark detected" 0 "Neither side lane mark detected" ;
+VAL_ 356 LDW_Warning 3 "Reserved" 2 "Right Warning" 1 "Left Warning" 0 "No warning" ;
+VAL_ 356 LDW_State 4 "Active" 3 "Active (no intervention)" 2 "Standby" 1 "Off" 0 "Unavailable state" ;
+VAL_ 356 TSR_Targetspeed_Request 255 "Invalid" 0 "release warning识别到限速解除" ;
+VAL_ 356 LKA_State 5 "Exit" 4 "Active" 3 "Active (no intervene)" 2 "Standby" 1 "Off" 0 "Unavailable state" ;
+VAL_ 356 LKA_Takeover_Request 1 "Request" 0 "No Request" ;
+VAL_ 356 LKA_Hands_Off_Warning 1 "Warning" 0 "No warning" ;
+VAL_ 356 DAS_LDW_Main_Switch 1 "On" 0 "Off" ;
+VAL_ 356 DAS_LDW_Sensitivity 3 "Level 3" 2 "Level 2" 1 "Level 1" 0 "Reserved" ;
+VAL_ 356 DAS_FCW_Main_Switch 1 "On" 0 "Off" ;
+VAL_ 356 DAS_FCW_Sensitivity 3 "Level 3" 2 "Level 2" 1 "Level 1" 0 "Reserved" ;
+VAL_ 356 DAS_AEB_Main_Switch 1 "On" 0 "Off" ;
+VAL_ 356 DAS_IHC_Main_Switch 1 "On" 0 "Off" ;
+VAL_ 372 VCU_Err_BrakeSwitch 1 "Error错误" 0 "No_Error无错误" ;
+VAL_ 372 VCU_Err_AccPedal 1 "Error错误" 0 "No_Error无错误" ;
+VAL_ 372 VCU_GearPosition 15 "Reserved保留" 14 "Reserved保留" 13 "Reserved保留" 12 "Reserved保留" 11 "Reserved保留" 10 "Reserved保留" 9 "Reserved保留" 8 "Reserved保留" 7 "Reserved保留" 6 "Error错误" 5 "Reserved保留" 4 "D前进挡" 3 "N空挡" 2 "R倒挡" 1 "P档" 0 "Invalid" ;
+VAL_ 372 VCU_PTSystem_Satus 3 "reserved预留" 2 "serious严重动力系统故障" 1 "slight一般动力系统故障" 0 "normal无故障" ;
+VAL_ 372 VCU_VehSysStatus 31 "reserved" 30 "reserved" 29 "reserved" 28 "reserved" 27 "reserved" 26 "reserved" 25 "reserved" 24 "reserved" 23 "reserved" 22 "reserved" 21 "reserved" 20 "reserved" 19 "reserved" 18 "reserved" 17 "reserved" 16 "reserved" 15 "Remote_HV" 14 "Initialization_Fail" 13 "FaultShutdownCpt" 12 "NorShutdownCpt" 11 "V2VChargeMode" 10 "DCChargeMode" 9 "ACChargeMode" 8 "Local_READY" 7 "Remote_READY" 6 "Local_HV" 5 "ShutdownHVing" 4 "StartHving_Fault" 3 "StartHVing" 2 "HV_Off" 1 "初始化状态" 0 "invalid" ;
+VAL_ 372 VCU_Cruise_MainSwitch 1 "Cruise_Main_Switch_On打开" 0 "Cruise_Main_Switch_Off关闭" ;
+VAL_ 372 VCU_OperationMode 3 "Sport运动" 2 "Economic经济" 1 "normal正常" 0 "Reserved保留" ;
+VAL_ 372 VCU_DrivingMode 3 "Reservedd" 2 "Auto" 1 "4 drive 四驱" 0 "2 drive 两驱" ;
+VAL_ 372 VCU_SpeedMode 1 "speed_model转速模式" 0 "torque_model转矩模式" ;
+VAL_ 372 VCU_TortoiseIndicator 1 "ON打开" 0 "OFF关闭" ;
+VAL_ 372 VCU_Cruise_Enable 1 "active" 0 "inactive" ;
+VAL_ 372 VCU_UnlockSts 3 "reserved" 2 "failed防盗解除失败" 1 "succeed防盗解除成功" 0 "Invalid" ;
+VAL_ 514 BMS_Sys_ChgorDisChrgSts 3 "Charging（慢充中）" 2 "Charging（快充中）" 1 "Discharging" 0 "Invalid" ;
+VAL_ 514 BMS_FastChrgSts 7 "Reserved保留" 6 "故障断继电器" 5 "Error 一般故障不断继电器" 4 "charged充电完成" 3 "充电中" 2 "充电就绪" 1 "Not charged未充电" 0 "Invalid" ;
+VAL_ 514 BMS_SlowChrgSts 7 "Reserved保留" 6 "故障断继电器" 5 "Error 一般故障不断继电器" 4 "charged充电完成" 3 "充电中" 2 "充电就绪" 1 "Not charged未充电" 0 "Invalid" ;
+VAL_ 514 BMS_ChrgCouplesSt 3 "Reserved" 2 "Reserved" 1 "Quick_charge_Connect" 0 "Disconnected" ;
+VAL_ 514 BMS_PauseContinueChrgStus 3 "reserved" 2 "继续充电" 1 "暂停充电" 0 "invalid" ;
+VAL_ 514 BMS_AllowedChrgMaxPower 127 "Invalid" ;
+VAL_ 518 BMS_ThermalManageReq 3 "pump cycle" 2 "cooling" 1 "heating" 0 "no request" ;
+VAL_ 568 VCU_CoolingFanSt 3 "Reserved" 2 "second_gear" 1 "first_gear" 0 "Invalid" ;
+VAL_ 568 VCU_StartInf 7 "Reserved" 6 "Reserved" 5 "请确保深踩刹车、松开油门、断开充电枪、档位P/N" 4 "请在P挡或N挡启动车辆" 3 "禁止在充电时启动车辆" 2 "启动时请勿睬油门" 1 "启动时请勿松开制动踏板" 0 "无提示" ;
+VAL_ 568 VCU_ChaGearInf 7 "Reserved" 6 "Reserved" 5 "Reserved" 4 "Reserved" 3 "换挡失败，请重新尝试" 2 "车辆行驶中，禁止换挡" 1 "请踩住制动踏板换挡" 0 "无提示" ;
+VAL_ 586 ACU_AirBagSysWrnLmpCmd 1 "On" 0 "Off" ;
+VAL_ 586 ACU_Crashinfo 7 "invalid" 6 "reserved" 5 "reserved" 4 "rear crash" 3 "right side crash" 2 "left side crash" 1 "front crash" 0 "no crash" ;
+VAL_ 588 PEPS_KeyInCarWarning 1 "Active" 0 "Inactive" ;
+VAL_ 588 ReminderPutInP_Nposition_OFF 1 "Active" 0 "Inactive" ;
+VAL_ 588 ReminderPutInP_Nposition_Lock 1 "Active" 0 "Inactive" ;
+VAL_ 588 PEPS_KeyNotInWarning 1 "Active" 0 "Inactive" ;
+VAL_ 588 BCM_FrontWiperSt 3 "Continuous fast" 2 "Continuous slow" 1 "AUTO or INT" 0 "OFF" ;
+VAL_ 588 PEPS_PutKeyInIMMOSocket 1 "Active" 0 "Inactive" ;
+VAL_ 588 PEPS_PowerRelayFault 1 "Active" 0 "Inactive" ;
+VAL_ 588 PEPS_RemoteLowVoltage 1 "Active" 0 "Inactive" ;
+VAL_ 588 PEPS_ESCLFault 1 "fault" 0 "no fault" ;
+VAL_ 588 PEPS_ESCLUnlockFailed 1 "Unlock failed" 0 "Normal" ;
+VAL_ 588 FLWS_POS_VIT_FL 127 "Invalid" ;
+VAL_ 588 FRWS_POS_VIT_FL 127 "Invalid" ;
+VAL_ 588 RLWS_POS_VIT_FL 127 "Invalid" ;
+VAL_ 588 RRWS_POS_VIT_FL 127 "Invalid" ;
+VAL_ 589 BCM_LFDoorLockStatus 7 "Invalid" 2 "locked" 1 "unlock；" 0 "default" ;
+VAL_ 589 BCM_TrunkDoorLockSts 7 "Invalid" 2 "locked" 1 "unlock；" 0 "default" ;
+VAL_ 589 BCM_RFDoorLockStatus 7 "Invalid" 2 "locked" 1 "unlock；" 0 "default" ;
+VAL_ 589 BCM_LRDoorLockStatus 7 "Invalid" 2 "locked" 1 "unlock；" 0 "default" ;
+VAL_ 589 BCM_RRDoorLockStatus 7 "Invalid" 2 "locked" 1 "unlock；" 0 "default" ;
+VAL_ 589 BCM_RLS_RQ_WiperSPD 3 "Not used" 2 "High Speed" 1 "Low Speed" 0 "No wiping" ;
+VAL_ 589 BCM_RLS_Fault 3 "reserved" 2 "reserved" 1 "fault" 0 "No fault" ;
+VAL_ 607 AC_ACMode 15 "Reserved" 14 "Reserved" 13 "Reserved" 12 "Reserved" 11 "Reserved" 10 "Reserved" 9 "Reserved" 8 "Reserved" 7 "Reserved" 6 "Reserved" 5 "Reserved" 4 "Defrost" 3 "Defog" 2 "Cabin heating" 1 "Cabin cooling" 0 "Off" ;
+VAL_ 607 AC_AmbientAirTemperature_Validit 1 "invalid" 0 "valid；" ;
+VAL_ 610 BCM_FL_TirePrs 255 "Invalid" ;
+VAL_ 610 BCM_FR_TirePrs 255 "Invalid" ;
+VAL_ 610 BCM_RL_TirePrs 255 "Invalid" ;
+VAL_ 610 BCM_RR_TirePrs 255 "Invalid" ;
+VAL_ 610 BCM_RR_TirePrsSt 3 "Reserved" 2 "Under-pressure" 1 "Over-pressure" 0 "Normal" ;
+VAL_ 610 BCM_RL_TirePrsSt 3 "Reserved" 2 "Under-pressure" 1 "Over-pressure" 0 "Normal" ;
+VAL_ 610 BCM_FR_TirePrsSt 3 "Reserved" 2 "Under-pressure" 1 "Over-pressure" 0 "Normal" ;
+VAL_ 610 BCM_FL_TirePrsSt 3 "Reserved" 2 "Under-pressure" 1 "Over-pressure" 0 "Normal" ;
+VAL_ 612 BCM_FL_TireTpt 255 "Invalid" ;
+VAL_ 612 BCM_FR_TireTpt 255 "Invalid" ;
+VAL_ 612 BCM_RL_TireTpt 255 "Invalid" ;
+VAL_ 612 BCM_RR_TireTpt 255 "Invalid" ;
+VAL_ 612 BCM_RR_TireTptSt 1 "Over temp" 0 "Normal" ;
+VAL_ 612 BCM_RL_TireTptSt 1 "Over temp" 0 "Normal" ;
+VAL_ 612 BCM_FR_TireTptSt 1 "Over temp" 0 "Normal" ;
+VAL_ 612 BCM_FL_TireTptSt 1 "Over temp" 0 "Normal" ;
+VAL_ 613 BCM_RR_TireLose 1 "RRLose" 0 "Normal" ;
+VAL_ 613 BCM_RL_TireLose 1 "RLLose" 0 "Normal" ;
+VAL_ 613 BCM_FR_TireLose 1 "FRLose" 0 "Normal" ;
+VAL_ 613 BCM_FL_TireLose 1 "FLLose" 0 "Normal" ;
+VAL_ 613 BCM_RR_TireLowVol 1 "LowVoltage" 0 "Normal" ;
+VAL_ 613 BCM_RL_TireLowVol 1 "LowVoltage" 0 "Normal" ;
+VAL_ 613 BCM_FR_TireLowVol 1 "LowVoltage" 0 "Normal" ;
+VAL_ 613 BCM_FL_TireLowVol 1 "LowVoltage" 0 "Normal" ;
+VAL_ 613 BCM_RR_TestSt 1 "System inTest status" 0 "System in normal status" ;
+VAL_ 613 BCM_RL_TestSt 1 "System inTest status" 0 "System in normal status" ;
+VAL_ 613 BCM_FR_TestSt 1 "System inTest status" 0 "System in normal status" ;
+VAL_ 613 BCM_FL_TestSt 1 "System inTest status" 0 "System in normal status" ;
+VAL_ 613 BCM_BatVol_ErrFlag 1 "Abnormal" 0 "Normal" ;
+VAL_ 613 BCM_TPMS_TestSt 3 "Reserved" 2 "Reserved" 1 "System in learn status" 0 "System in normal status" ;
+VAL_ 613 BCM_RR_Quikleakage 1 "Quik leakage" 0 "Normal" ;
+VAL_ 613 BCM_RL_Quikleakage 1 "Quik leakage" 0 "Normal" ;
+VAL_ 613 BCM_FR_Quikleakage 1 "Quik leakage" 0 "Normal" ;
+VAL_ 613 BCM_FL_Quikleakage 1 "Quik leakage" 0 "Normal" ;
+VAL_ 614 AC_WPTC_RunStatus 7 "Invalid" 6 "reserved" 5 "reserved" 4 "reserved" 3 "reserved" 2 "2档" 1 "1档" 0 "default" ;
+VAL_ 614 AC_ACCM_RunStatus 3 "Error；故障" 2 "Reserved" 1 "On；运转" 0 "Off；停机" ;
+VAL_ 624 AC_AutoMode 3 "reserved" 2 "自动模式未开启" 1 "自动模式已开启" 0 "Invalid" ;
+VAL_ 624 AC_ActualBlowingMode 7 "Reserved" 6 "Reserved" 5 "吹玻璃" 4 "吹脚吹玻璃" 3 "吹脚" 2 "吹面吹脚" 1 "吹面" 0 "Invalid" ;
+VAL_ 624 AC_ActualCirculationMode 3 "reserved" 2 "外循环" 1 "内循环" 0 "Invalid" ;
+VAL_ 624 AC_DVDDisplayReq 1 "Req" 0 "No req" ;
+VAL_ 624 AC_TempSetPoint 31 "Invalid" ;
+VAL_ 624 AC_ActualAirQuantity 7 "7档；" 6 "6档；" 5 "5档；" 4 "4档；" 3 "3档；" 2 "2档；" 1 "1档；" 0 "Invalid" ;
+VAL_ 624 AC_FwdDeforstSts 1 "ON" 0 "OFF" ;
+VAL_ 624 AC_RearDeforstSts 1 "ON" 0 "OFF" ;
+VAL_ 624 AC_CoolingStaus 3 "reserved" 2 "closed" 1 "opened" 0 "Invalid" ;
+VAL_ 624 AC_MaxCooingStaus 3 "reserved" 2 "closed" 1 "opened" 0 "Invalid" ;
+VAL_ 624 AC_OffStaus 1 "valid" 0 "Invalid" ;
+VAL_ 624 AC_PM25_Status 1 "valid" 0 "Invalid" ;
+VAL_ 624 AC_RearViewMirroHeatStatus 3 "reserved" 2 "off" 1 "on" 0 "Invalid" ;
+VAL_ 624 AC_NegativeIconGenStus 3 "reserved" 2 "off" 1 "on" 0 "Invalid" ;
+VAL_ 645 TBOX_Year 63 "Invalid" ;
+VAL_ 645 TBOX_TimeCheckBit 1 "invalid" 0 "Valid" ;
+VAL_ 645 TBOX_InvalidByte 255 "Invalid" ;
+VAL_ 659 FSCM_DrvSeatHeat_Sts 7 "reserved" 6 "reserved" 5 "reserved" 4 "Heating Level 3" 3 "Heating Level 2" 2 "Heating Level 1" 1 "OFF" ;
+VAL_ 659 FSCM_DrvSeatVentilation_Sts 7 "reserved" 6 "reserved" 5 "reserved" 4 "Venting Level 3" 3 "Venting Level 2" 2 "Venting Level 1" 1 "OFF" ;
+VAL_ 659 FSCM_PassSeatHeat_Sts 7 "reserved" 6 "reserved" 5 "reserved" 4 "Heating Level 3" 3 "Heating Level 2" 2 "Heating Level 1" 1 "OFF" ;
+VAL_ 659 FSCM_PassSeatVentilation_Sts 7 "reserved" 6 "reserved" 5 "reserved" 4 "Venting Level 3" 3 "Venting Level 2" 2 "Venting Level 1" 1 "OFF" ;
+VAL_ 112 VCU_BrkSw_Sta 1 "pressed" 0 "not pressed" ;
+VAL_ 112 VCU_BrkSw_V 1 "Active" 0 "Inactive" ;
+VAL_ 112 VCU_Acc_Validity 1 "Invalid" 0 "Valid" ;
+VAL_ 112 VCU_Acc_pedal_position 255 "Invalid" ;
+VAL_ 130 MCU_F_NCurrValid 1 "Failure" 0 "Normal" ;
+VAL_ 144 ESC_TCSActive 1 "Active" 0 "Not Active" ;
+VAL_ 144 ESC_HHC_Failure 1 "failure" 0 "no failure" ;
+VAL_ 144 ESC_HHCActive 1 "Active" 0 "Not Active" ;
+VAL_ 144 ESC_EBDFailed 1 "failure" 0 "no failure" ;
+VAL_ 144 ESC_EBDActive 1 "Active" 0 "Not Active" ;
+VAL_ 144 ESC_ABSFailed 1 "failure" 0 "no failure" ;
+VAL_ 144 ESC_ABSActive 1 "Active" 0 "Not Active" ;
+VAL_ 144 ESC_AVHactive 1 "Active" 0 "Not Active" ;
+VAL_ 144 ESC_AutoholdStandby 1 "Standby" 0 "Not standby" ;
+VAL_ 144 ESC_AutoholdFailure 1 "failure" 0 "no failure" ;
+VAL_ 144 ESC_Sw 1 "ESC switch off" 0 "ESC switch on" ;
+VAL_ 144 ESC_HBAActive 1 "Active" 0 "Not Active" ;
+VAL_ 144 ESC_VDCFailure 1 "failure" 0 "no failure" ;
+VAL_ 144 ESC_VDCActive 1 "Active" 0 "Not Active" ;
+VAL_ 144 ESC_TCSFailure 1 "failure" 0 "no failure" ;
+VAL_ 144 ESC_CDPAvailable 1 "failure" 0 "no failure" ;
+VAL_ 144 ESC_CDPActive 1 "Active" 0 "Not Active" ;
+VAL_ 144 ESC_AVH_Warning1 1 "Active" 0 "Inactive" ;
+VAL_ 144 ESC_AVH_Warning2 1 "Active" 0 "Inactive" ;
+VAL_ 144 ESC_AVH_Warning3 1 "Active" 0 "Inactive" ;
+VAL_ 144 ESC_AVH_Warning4 1 "Active" 0 "Inactive" ;
+VAL_ 146 ESC_VehSpd 32767 "Invalid" ;
+VAL_ 146 ESC_VehSpdVd 1 "Valid" 0 "invalid" ;
+VAL_ 148 EHB_FaultSt 7 "Reserved" 6 "Fault state6" 5 "Fault state5" 4 "Fault state4" 3 "Fault state3" 2 "Fault state2" 1 "Fault state1" 0 "No fault" ;
+VAL_ 178 MCU_R_NCurrValid 1 "Failure" 0 "Normal" ;
+

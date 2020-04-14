@@ -20,11 +20,153 @@ class Tools(object):
     """
 
     @staticmethod
-    def get_position(start: int) -> int:
+    def __get_position(start_bit: int) -> tuple:
+        """
+        获取start_bit在整个8Byte中占据的位置以及在1 Byte中的位置
+
+        :param start_bit: 起始点
+
+        :return: 8 Byte中占据的位置，1 Byte中占据的位置
+        """
+        # 根据start_bit以及bin_value_length计算占据的byte有几个
+        # 计算start_bit是在第几个byte中，以及在byte中占据第几个bit
+        # 获取开始点在整个8byte数据的位置
+        byte_index = -1
+        for i in range(8):
+            if 8 * i <= start_bit <= 8 * i + 7:
+                byte_index = i
+                break
+        logger.trace(f"byte_index = [{byte_index}]")
+
+        # 获取在单独这个byte中所占据的位置
+        bit_index = 7 - (start_bit - (start_bit // 8 * 8))
+        logger.trace(f"bit_index = [{bit_index}]")
+        return byte_index, bit_index
+
+    @staticmethod
+    def __get_values(value: int, byte_index: int, bit_index: int, type_: bool) -> list:
+        """
+        根据byte_index以及bit_index来划分value所在的byte
+
+        :param value: 要设置的值
+
+        :param byte_index:  8 Byte中占据的位置
+
+        :param bit_index: 1 Byte中占据的位置
+
+        :param type_:
+            大端还是小端 1=intel(小端模式) ，0=Motorola（大端模式）
+
+            True表示intel， False表示Motorola
+
+        :return: 占据的每个byte的值
+        """
+        values = []
+        # value转换成bit便于计算
+        bin_value = bin(value)[2:]
+        # bin_value_length = len(bin_value)
+        logger.debug(f"bin_value = [{bin_value}]")
+        while bin_value:
+            # 第一次处理数据
+            if bit_index != -1:
+                # 有可能存在bin_value的长度不够bit_index+1的情况
+                if len(bin_value) > (bit_index + 1):
+                    end_position = len(bin_value) - (bit_index + 1)
+                    logger.trace(f"end_position = [{bin(end_position)}]")
+                    slice_value = int(bin_value[end_position:], 2)
+                    logger.trace(f"slice_value = [{bin(slice_value)}]")
+                    # 把数据存起来
+                    values.append(slice_value)
+                    bin_value = bin_value[0:end_position]
+                else:
+                    slice_value = int(bin_value, 2)
+                    logger.trace(f"slice_value = [{bin(slice_value)}]")
+                    # 把数据存起来
+                    values.append(slice_value)
+                    # 处理完了，所以置空
+                    bin_value = None
+                bit_index = -1
+            else:
+                # 剩余的还大于一个byte
+                if len(bin_value) > 8:
+                    end_position = len(bin_value) - 8
+                    logger.trace(f"end_position = [{bin(end_position)}]")
+                    # 把数据存起来
+                    slice_value = int(bin_value[end_position:], 2)
+                    logger.trace(f"slice_value = [{bin(slice_value)}]")
+                    values.append(slice_value)
+                    # 把剩下的保留
+                    bin_value = bin_value[0:end_position]
+                else:
+                    slice_value = int(bin_value, 2)
+                    logger.trace(f"slice_value = [{bin(slice_value)}]")
+                    # 把数据存起来
+                    values.append(slice_value)
+                    # 处理完了，所以置空
+                    bin_value = None
+            # 针对大小端做不同的处理
+            if type_:
+                byte_index += 1
+            else:
+                byte_index -= 1
+        return values
+
+    @staticmethod
+    def __set_values(values: list, byte_index: int, byte_array: list, bit_index: int, type_: bool):
+        """
+        把values设置到每一个对应的byte中
+
+        :param values:  拆分后的 values
+
+        :param byte_index:   8 Byte中占据的位置，
+
+        :param byte_array: data拆分后的数据
+
+        :param bit_index: 1 Byte中占据的位置
+
+        :param type_:
+            大端还是小端 1=intel(小端模式) ，0=Motorola（大端模式）
+
+            True表示intel， False表示Motorola
+        """
+        for i, value in enumerate(values):
+            if type_:
+                index = byte_index + i
+            else:
+                index = byte_index - i
+            logger.trace(f"index = {index}")
+            byte_value = bin(byte_array[index])[2:]
+            # 补齐8位
+            while len(byte_value) != 8:
+                byte_value = "0" + byte_value
+            bin_value = bin(value)[2:]
+            if i == 0:
+                if bit_index + 1 == 8:
+                    calc_value = int(bin_value, 2)
+                else:
+                    # 第一个值可能从Byte的中间开始
+                    raw_value = byte_value[bit_index + 1:]
+                    logger.trace(f"raw_value = {raw_value} and bin_value = {bin_value}")
+                    calc_value = int((bin_value + raw_value), 2)
+                logger.trace(f"calc_value = {calc_value}")
+                byte_array[index] = calc_value
+            elif i == len(values) - 1:
+                # 最后一个值Byte不能填满
+                raw_value = byte_value[:8 - len(bin_value)]
+                calc_value = int((raw_value + bin_value), 2)
+                logger.trace(f"calc_value = {calc_value}")
+                byte_array[index] = calc_value
+            else:
+                logger.trace(f"calc_value = {value}")
+                byte_array[index] = value
+        logger.debug(f"byte_array = [{list(map(lambda x: hex(x), byte_array))}]")
+
+    @staticmethod
+    def get_position(start_bit: int) -> int:
         """
         获取某点在8byte(64bit)的数据中位于第几位
 
-        :param start: 起始点
+        :param start_bit: 起始点
 
         :return:
             start=0 -> 7
@@ -33,16 +175,16 @@ class Tools(object):
         # 获取开始点在整个8byte数据的位置
         index = -1
         for i in range(8):
-            if 8 * i <= start <= 8 * i + 7:
+            if 8 * i <= start_bit <= 8 * i + 7:
                 index = i
                 break
-        logger.debug(f"start is in the {index} byte")
+        logger.trace(f"start is in the [{index}] byte")
         # 获取在单独这个byte中所占据的位置
-        byte_index = start - (start // 8 * 8)
-        logger.debug(f"start is in byte position is {7 - byte_index}")
+        byte_index = start_bit - (start_bit // 8 * 8)
+        logger.trace(f"start in one byte position is [{7 - byte_index}]")
         # 获取在整个8byte数据中所处的位置
         actual_index = (index + 1) * 8 - byte_index - 1
-        logger.debug(f"start in 8 byte position is {actual_index}")
+        logger.trace(f"start in 64 bit position is [{actual_index}]")
         return actual_index
 
     @staticmethod
@@ -63,7 +205,7 @@ class Tools(object):
         return min_ <= value <= max_
 
     @staticmethod
-    def set_msg_data_to_list(data: int) -> list:
+    def convert_to_msg(data: int) -> list:
         """
         将Long型的8byte数字转换成一个CAN Message的列表
 
@@ -71,117 +213,40 @@ class Tools(object):
 
         :return: [0xff, 0, 0, 0, 0, 0, 0, 0]
         """
-        logger.debug("bin data is " + str(hex(data)))
+        logger.debug("data is " + str(hex(data)))
         message = []
         temp = 0xff00000000000000
         for i in range(8):
-            # 指定要获取数据的位置 temp >> (i * 8)
-            # 数据与移位数据做或操作使得不要的数据变成0
-            # 然后再将要操作的数据移位到最后成为正确数据
-            byte = (data & (temp >> (i * 8))) >> (7 - i) * 8
-            # 添加进入列表中
-            message.append(byte)
-        logger.debug(f"after convert message is {message}")
+            # mask >> (i * 8) 表示移位，如i=1的时候，表示mask移动8位为 0x00ff000000000000
+            # data & mask >> (i * 8) 表示把值设置在mask中
+            # 把mask移动到最右边得出byte的值是多少
+            message.append((data & (temp >> (i * 8))) >> (7 - i) * 8)
+        logger.trace(f"after convert message is {list(map(lambda x: hex(x), message))}")
         return message
 
     @staticmethod
-    def set_list_data_to_msg(data: list) -> int:
+    def convert_to_data(message: list) -> int:
         """
         将收到的CAN Message中的8位列表的数字，转换成为一个Long型的数字
 
-        :param data: [0xff, 0, 0, 0, 0, 0, 0, 0]
+        :param message: [0xff, 0, 0, 0, 0, 0, 0, 0]
 
         :return: 0xff00000000000000
         """
         msg = 0
-        for i in range(len(data)):
-            msg |= data[7 - i] << (i * 8)
+        for i, data in enumerate(message):
+            # 依次移位构造msg
+            msg |= data << (7 - i) * 8
         return msg
 
-    @staticmethod
-    def get_position_in_8_bytes(start: int) -> int:
+    def set_data(self, data: int, start_bit: int, bit_length: int, value: int, type_: bool) -> int:
         """
-        获取某点在8byte(64bit)的数据中位于第几位
+        用于设置每个Signal后，计算出8Byte的值
 
-        :param start:  起始点
+        :param type_:
+            大端还是小端 1=intel(小端模式) ，0=Motorola（大端模式）
 
-        :return:
-            start=0 -> 7
-
-            start=16 => 24
-        """
-        # 获取开始点在整个8byte数据的位置
-        index = -1
-        for i in range(8):
-            if 8 * i <= start <= 8 * i + 7:
-                index = i
-                break
-        logger.debug(f"start is in the {index} byte")
-        # 获取在单独这个byte中所占据的位置
-        byte_index = int(start - (start // 8 * 8))
-        logger.debug(f"start is in byte position is {7 - byte_index}")
-        # 获取在整个8byte数据中所处的位置
-        actual_index = (index + 1) * 8 - byte_index - 1
-        logger.debug(f"start in 8 byte position is {actual_index}")
-        return actual_index
-
-    @staticmethod
-    def set_value_by_bit(data: int, length: int, shift: int, value: int) -> int:
-        """
-        替换原来数据中从右开始偏移shift长度的值
-
-        即从右（bit63）开始计算偏移量，偏移长度为length的值替换成value的内容
-
-        :param data: 原始数据
-
-        :param length: 要取多少位的数据
-
-        :param shift: 向左移动多少位，即要取的位置距离右边的数据
-
-        :param value: 要设置的数据
-
-        :return: 返回设置后的数据
-
-                如: data=0b11001100 length=2, shift=4, value=0b11， 则返回0b11111100
-        """
-        # logger.debug(f"value = {bin(value)}")
-        # 移位是shift，也就是8byte中右边的位置，+长度
-        mask = (2 ** length - 1) << (shift + length)
-        return (data & (~mask)) | (value << (shift + length))
-
-    def get_value(self, data: int, start: int, length: int) -> int:
-        """
-        获取指定位置开始的数据
-
-        :param data: 原始数据
-
-        :param start: 要从那个地方取数据
-
-        :param length: 要取的长度
-
-        :return: 取到的数据长度
-
-            如: data=0xff0000ff00ffff00, start=15, length=8,则取到的数据位0xf
-        """
-        # 先计算终点的位置
-        end_position = self.get_position_in_8_bytes(start)
-        # 计算起点的位置
-        # start_position = end_position - length
-        # 构建length长度的全1数据
-        temp = 2 ** length - 1
-        # 取的话是从start_position到end_position的数据
-        # 计算右边即end_position到63之间的距离
-        right_distance = 63 - end_position
-        # 左移temp到指定位置
-        compare = temp << right_distance
-        # &操作取出数据后右移数据到原来位置
-        temp_data = (data & compare) >> right_distance
-        logger.debug(f"get value is {hex(temp_data)}")
-        return temp_data
-
-    def get_raw_data(self, data: int, bit_length: int, start_bit: int, value: int) -> int:
-        """
-        获取计算后的8Byte的值
+            True表示intel， False表示Motorola
 
         :param data: 数据
 
@@ -191,8 +256,79 @@ class Tools(object):
 
         :param value:  要填入的值
 
-        :return: 取到的数据长度
+        :return: 处理后的数据
         """
-        shift = 63 - self.get_position_in_8_bytes(start_bit)
-        logger.debug(f"shift is {shift}")
-        return self.set_value_by_bit(data, bit_length, shift, value)
+        # 设置的值不能超出范围
+        max_value = 2 ** bit_length - 1
+        if value > max_value:
+            raise RuntimeError(f"value[{value}] need less than {max_value}")
+
+        logger.debug(f"data = [{hex(data)}], bit_length = [{bit_length}], "
+                     f"start_bit = [{start_bit}], value = [{value}], type_ = [{type_}]")
+        logger.trace(f"value = {bin(value)}")
+        # 分成了8个byte存储数据
+        byte_array = self.convert_to_msg(data)
+        logger.trace(f"byte_array = [{list(map(lambda x: hex(x), byte_array))}]")
+        # 获取在Bytes中和Byte中的位置
+        byte_index, bit_index = self.__get_position(start_bit)
+        # 计算出来占据的值
+        values = self.__get_values(value, byte_index, bit_index, type_)
+        self.__set_values(values, byte_index, byte_array, bit_index, type_)
+        return self.convert_to_data(byte_array)
+
+    def get_data(self, data: int, start_bit: int, bit_length: int, type_: bool) -> int:
+        """
+        获取指定的signal的值
+
+        :param data: 8 Byte的数据
+
+        :param start_bit:  起始位
+
+        :param bit_length:  长度
+
+        :param type_:
+            大端还是小端 1=intel(小端模式) ，0=Motorola（大端模式）
+
+            True表示intel， False表示Motorola
+
+        :return:  signal对应的值
+        """
+        logger.debug(f"data = [{hex(data)}], bit_length = [{bit_length}], "
+                     f"start_bit = [{start_bit}], type_ = [{type_}]")
+        # 分成了8个byte存储数据
+        byte_array = self.convert_to_msg(data)
+        logger.trace(f"byte_array = [{list(map(lambda x: hex(x), byte_array))}]")
+        # 获取在Bytes中和Byte中的位置
+        byte_index, bit_index = self.__get_position(start_bit)
+        # 计算需要占据几个byte, 至少占据一个byte
+        byte_count = 1
+        # 长度减去第一个占据的值
+        bit_length = bit_length - bit_index - 1
+        # 余数
+        remainder = bit_length - bit_length // 8 * 8
+        logger.trace(f"remainder = [{remainder}]")
+        if remainder == 0:
+            byte_count += bit_length // 8
+        else:
+            byte_count += bit_length // 8 + 1
+        logger.trace(f"byte_count = [{byte_count}]")
+        # 遍历获取value
+        values = []
+        for i in range(byte_count):
+            if type_:
+                index = byte_index + i
+            else:
+                index = byte_index - i
+            logger.trace(f"index = [{index}]")
+            # 第index个byte的值
+            byte_value = bin(byte_array[index])[2:]
+            if i == 0:
+                values.append(byte_value[:bit_index + 1])
+            elif i == byte_count - 1:
+                values.append(byte_value[-remainder:])
+            else:
+                values.append(byte_value)
+        logger.trace(f"values = [{values}]")
+        value = "".join(reversed(values))
+        logger.debug(f"value = [{value}]")
+        return int(value, 2)
