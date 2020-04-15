@@ -109,10 +109,10 @@ class UsbCanBus(CanBus):
 
         :param message: Message对象
         """
-        logger.debug(f"pcan status is {self.__usbcan.is_open}")
+        logger.trace(f"usb can status is {self.__usbcan.is_open}")
         msg_id = message.msg_id
         while self.__usbcan.is_open and not message.stop_flag:
-            logger.debug(f"send msg {hex(msg_id)} and cycle time is {message.cycle_time}")
+            logger.trace(f"send msg {hex(msg_id)} and cycle time is {message.cycle_time}")
             self.__usbcan.transmit(message)
 
             # 循环发送的等待周期
@@ -140,7 +140,7 @@ class UsbCanBus(CanBus):
         msg_id = message.msg_id
         # 事件信号
         for i in range(message.cycle_time_fast_times):
-            logger.info(f"****** Transmit msg id {hex(msg_id)} Once ******")
+            logger.trace(f"****** Transmit msg id {hex(msg_id)} Once ******")
             self.__usbcan.transmit(message)
             sleep(message.cycle_time_fast / 1000.0)
 
@@ -195,16 +195,16 @@ class UsbCanBus(CanBus):
 
         :param msg_id: 停止发送的Message的ID
         """
-        logger.debug(f"send message list size is {len(self._send_messages)}")
+        logger.trace(f"send message list size is {len(self._send_messages)}")
         if msg_id:
-            logger.debug(f"try to stop message {hex(msg_id)}")
+            logger.trace(f"try to stop message {hex(msg_id)}")
             if msg_id in self._send_messages:
                 logger.info(f"Message <{hex(msg_id)}> is stop to send.")
                 self._send_messages[msg_id].stop_flag = True
             else:
                 logger.error(f"Please check message id, Message <{hex(msg_id)}> is not contain.")
         else:
-            logger.debug(f"try to stop all messages")
+            logger.trace(f"try to stop all messages")
             for key, item in self._send_messages.items():
                 logger.info(f"Message <{hex(key)}> is stop to send.")
                 item.stop_flag = True
@@ -216,7 +216,7 @@ class UsbCanBus(CanBus):
         :param msg_id:停止发送的Message的ID
         """
         if msg_id:
-            logger.debug(f"try to resume message {hex(msg_id)}")
+            logger.trace(f"try to resume message {hex(msg_id)}")
             if msg_id in self._send_messages:
                 logger.info(f"Message <{hex(msg_id)}> is resume to send.")
                 pcan_message = self._send_messages[msg_id]
@@ -225,7 +225,7 @@ class UsbCanBus(CanBus):
             else:
                 logger.error(f"Please check message id, Message <{hex(msg_id)}> is not contain.")
         else:
-            logger.debug(f"try to resume all messages")
+            logger.trace(f"try to resume all messages")
             for key, item in self._send_messages.items():
                 logger.info(f"Message <{hex(key)}> is resume to send.")
                 item.stop_flag = False

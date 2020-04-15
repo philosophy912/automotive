@@ -95,21 +95,21 @@ class Message(object):
         for i in range(64):
             bit_list.append(False)
         for name, signal in self.signals.items():
-            logger.debug(f"before bit_list [{bit_list}]")
+            logger.trace(f"before bit_list [{bit_list}]")
             signal.check_value()
             signal.check_bit_length_value()
             signal.check_start_bit_value()
-            logger.debug(f"raw start bit is {signal.start_bit}")
+            logger.trace(f"raw start bit is {signal.start_bit}")
             start = self.__tools.get_position(signal.start_bit)
             length = signal.bit_length
-            logger.debug(f"start = {start} and length = {length}")
+            logger.trace(f"start = {start} and length = {length}")
             for i in range(start, length):
                 if bit_list[i]:
                     raise ValueError(f"bit_list = [{bit_list}] and i = [{i}] and "
                                      f"start-bit area is overlapping start({start}) + "
                                      f"length({length}) and name [{name}]")
                 bit_list[i] = True
-                logger.debug(f"after bit_list [{bit_list}]")
+                logger.trace(f"after bit_list [{bit_list}]")
 
     def check_message(self, need_check_data: bool = False):
         """
@@ -144,19 +144,19 @@ class Message(object):
             else:
                 raw_data = self.__tools.convert_to_data(self.data)
             for name, signal in self.signals.items():
-                logger.debug(f"signal name = {signal.signal_name}")
+                logger.trace(f"signal name = {signal.signal_name}")
                 # 根据原来的数据message_data，替换某一部分的内容
                 raw_data = self.__tools.set_data(raw_data, signal.start_bit, signal.bit_length, signal.value,
                                                  signal.is_float)
-                logger.debug(f"raw_data[{bin(raw_data)}]")
+                logger.trace(f"raw_data[{bin(raw_data)}]")
             self.data = self.__tools.convert_to_msg(raw_data)
-            logger.debug(f"data is {list(map(lambda x: hex(x), self.data))}")
+            logger.trace(f"data is {list(map(lambda x: hex(x), self.data))}")
         # 收到数据
         else:
             raw_data = self.__tools.convert_to_data(self.data)
             for name, signal in self.signals.items():
                 value = self.__tools.get_data(raw_data, signal.start_bit, signal.bit_length, signal.is_float)
-                logger.info(f"signal name {name} value is {value}")
+                logger.trace(f"signal name {name} value is {value}")
                 signal.value = value
 
     def set_value(self, message: dict):

@@ -22,11 +22,11 @@ def control_decorator(func):
             ret = func(*args, **kwargs)
             if ret == 1:
                 if func.__name__ == "init_device":
-                    logger.debug("Method <{}> call success, and init CAN{} success.".format(func.__name__, args[2]))
+                    logger.trace("Method <{}> call success, and init CAN{} success.".format(func.__name__, args[2]))
                 elif func.__name__ == "start_device":
-                    logger.debug("Method <{}> call success, and start CAN{} success.".format(func.__name__, args[2]))
+                    logger.trace("Method <{}> call success, and start CAN{} success.".format(func.__name__, args[2]))
                 else:
-                    logger.debug("Method <{}> call success, and return success.".format(func.__name__))
+                    logger.trace("Method <{}> call success, and return success.".format(func.__name__))
                 return ret
             elif ret == 0:
                 raise RuntimeError("Method <{}> is called, and return failed.".format(func.__name__))

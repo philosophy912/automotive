@@ -77,16 +77,15 @@ class PCanBus(CanBus):
             try:
                 receive_msg, timestamp = self.__pcan.receive()
                 msg_id = receive_msg.id
-                logger.debug(f"msg id = {hex(msg_id)}")
+                logger.trace(f"msg id = {hex(msg_id)}")
                 receive_message = self.__get_message(receive_msg, timestamp)
                 self._receive_messages[msg_id] = receive_message
                 if len(self._stack) == self._max_stack:
                     self._stack.pop()
                 else:
-                    logger.debug(f"stack size is {len(self._stack)}")
+                    logger.trace(f"stack size is {len(self._stack)}")
                     self._stack.append(receive_message)
             except RuntimeError:
-                # logger.debug(f"Not receive messages.")
                 continue
 
     def __transmit(self, pcan_message: Message):
@@ -95,10 +94,10 @@ class PCanBus(CanBus):
 
         :param pcan_message: pcan_message
         """
-        logger.debug(f"pcan status is {self.__pcan.is_open}")
+        logger.trace(f"pcan status is {self.__pcan.is_open}")
         msg_id = pcan_message.msg_id
         while self.__pcan.is_open and not pcan_message.stop_flag:
-            logger.debug(f"send msg {hex(msg_id)} and cycle time is {pcan_message.cycle_time}")
+            logger.trace(f"send msg {hex(msg_id)} and cycle time is {pcan_message.cycle_time}")
             self.__pcan.transmit(pcan_message)
             # 循环发送的等待周期
             sleep(pcan_message.cycle_time / 1000.0)
@@ -130,7 +129,7 @@ class PCanBus(CanBus):
         data = pcan_message.data
         # 事件信号
         for i in range(pcan_message.cycle_time_fast_times):
-            logger.info(f"****** The {i} times send msg[{hex_msg_id}] and data [{list(map(lambda x: hex(x), data))}] "
+            logger.debug(f"****** The {i} times send msg[{hex_msg_id}] and data [{list(map(lambda x: hex(x), data))}] "
                         f"and cycle time [{pcan_message.cycle_time_fast}]")
             self.__pcan.transmit(pcan_message)
             sleep(pcan_message.cycle_time_fast / 1000.0)
@@ -185,16 +184,16 @@ class PCanBus(CanBus):
 
         :param msg_id: 停止发送的Message的ID
         """
-        logger.debug(f"send message list size is {len(self._send_messages)}")
+        logger.trace(f"send message list size is {len(self._send_messages)}")
         if msg_id:
-            logger.debug(f"try to stop message {hex(msg_id)}")
+            logger.trace(f"try to stop message {hex(msg_id)}")
             if msg_id in self._send_messages:
                 logger.info(f"Message <{hex(msg_id)}> is stop to send.")
                 self._send_messages[msg_id].stop_flag = True
             else:
                 logger.error(f"Please check message id, Message <{hex(msg_id)}> is not contain.")
         else:
-            logger.debug(f"try to stop all messages")
+            logger.trace(f"try to stop all messages")
             for key, item in self._send_messages.items():
                 logger.info(f"Message <{hex(key)}> is stop to send.")
                 item.stop_flag = True
@@ -206,7 +205,7 @@ class PCanBus(CanBus):
         :param msg_id:停止发送的Message的ID
         """
         if msg_id:
-            logger.debug(f"try to resume message {hex(msg_id)}")
+            logger.trace(f"try to resume message {hex(msg_id)}")
             if msg_id in self._send_messages:
                 logger.info(f"Message <{hex(msg_id)}> is resume to send.")
                 pcan_message = self._send_messages[msg_id]
@@ -215,7 +214,7 @@ class PCanBus(CanBus):
             else:
                 logger.error(f"Please check message id, Message <{hex(msg_id)}> is not contain.")
         else:
-            logger.debug(f"try to resume all messages")
+            logger.trace(f"try to resume all messages")
             for key, item in self._send_messages.items():
                 logger.info(f"Message <{hex(key)}> is resume to send.")
                 item.stop_flag = False

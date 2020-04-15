@@ -65,7 +65,7 @@ class Tools(object):
         # value转换成bit便于计算
         bin_value = bin(value)[2:]
         # bin_value_length = len(bin_value)
-        logger.debug(f"bin_value = [{bin_value}]")
+        logger.trace(f"bin_value = [{bin_value}]")
         while bin_value:
             # 第一次处理数据
             if bit_index != -1:
@@ -159,7 +159,7 @@ class Tools(object):
             else:
                 logger.trace(f"calc_value = {value}")
                 byte_array[index] = value
-        logger.debug(f"byte_array = [{list(map(lambda x: hex(x), byte_array))}]")
+        logger.trace(f"byte_array = [{list(map(lambda x: hex(x), byte_array))}]")
 
     @staticmethod
     def get_position(start_bit: int) -> int:
@@ -213,7 +213,7 @@ class Tools(object):
 
         :return: [0xff, 0, 0, 0, 0, 0, 0, 0]
         """
-        logger.debug("data is " + str(hex(data)))
+        logger.trace("data is " + str(hex(data)))
         message = []
         temp = 0xff00000000000000
         for i in range(8):
@@ -263,7 +263,7 @@ class Tools(object):
         if value > max_value:
             raise RuntimeError(f"value[{value}] need less than {max_value}")
 
-        logger.debug(f"data = [{hex(data)}], bit_length = [{bit_length}], "
+        logger.trace(f"data = [{hex(data)}], bit_length = [{bit_length}], "
                      f"start_bit = [{start_bit}], value = [{value}], type_ = [{type_}]")
         logger.trace(f"value = {bin(value)}")
         # 分成了8个byte存储数据
@@ -293,7 +293,7 @@ class Tools(object):
 
         :return:  signal对应的值
         """
-        logger.debug(f"data = [{hex(data)}], bit_length = [{bit_length}], "
+        logger.trace(f"data = [{hex(data)}], bit_length = [{bit_length}], "
                      f"start_bit = [{start_bit}], type_ = [{type_}]")
         # 分成了8个byte存储数据
         byte_array = self.convert_to_msg(data)
@@ -330,5 +330,5 @@ class Tools(object):
                 values.append(byte_value)
         logger.trace(f"values = [{values}]")
         value = "".join(reversed(values))
-        logger.debug(f"value = [{value}]")
+        logger.trace(f"value = [{value}]")
         return int(value, 2)

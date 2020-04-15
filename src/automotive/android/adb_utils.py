@@ -93,6 +93,18 @@ class ADBUtils(object):
         return self.execute_adb_cmd(cmd)
 
     @staticmethod
+    def tap_event(x: int, y: int):
+        """
+        通过ADB input tap <x> <y>的方式点击屏幕
+
+        :param x: 被点击点的X坐标位置
+
+        :param y: 被点击点的y坐标位置
+        """
+        cmd = f"adb input tap {x}, {y}"
+        sp.Popen(cmd, stdout=sp.PIPE, stderr=sp.PIPE).wait()
+
+    @staticmethod
     def send_event(x: int, y: int, display_id: int = 1):
         """
         通过屏幕的坐标点进行点击， 本质为sendevent的模拟， 即发送点击信号

@@ -65,13 +65,13 @@ class CANService(metaclass=Singleton):
             :return:
         """
         for msg_id, msg in self.messages.items():
-            logger.debug(f"msg id = {msg_id}")
+            logger.trace(f"msg id = {msg_id}")
             if filter_sender:
                 filter_condition = filter_sender.lower() == msg.sender.lower() if filter_sender else True
             else:
                 filter_condition = False
             if not (msg.nm_message or msg.diag_state or filter_condition):
-                logger.debug(f"will send msg [{hex(msg_id)}]")
+                logger.trace(f"will send msg [{hex(msg_id)}]")
                 for sig_name, sig in msg.signals.items():
                     max_value = 2 ** sig.bit_length - 1
                     value = random.randint(0, max_value)
@@ -174,7 +174,7 @@ class CANService(metaclass=Singleton):
         """
         send_msg.check_message(type_)
         send_msg.update(True)
-        logger.info(f"msg Id {hex(send_msg.msg_id)}, msg data is {list(map(lambda x: hex(x), send_msg.data))}")
+        logger.debug(f"msg Id {hex(send_msg.msg_id)}, msg data is {list(map(lambda x: hex(x), send_msg.data))}")
         self.__can.transmit(send_msg)
 
     def receive_can_message(self, message_id: int) -> Message:
@@ -375,8 +375,3 @@ class CANService(metaclass=Singleton):
         else:
             self.__send_random(filter_sender, interval)
 
-    def check_signal(self):
-        """
-            1、 做一个无线循环加入到线程库中，每隔1s检查是否有期望的结果
-        """
-        pass

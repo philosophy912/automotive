@@ -454,15 +454,15 @@ class UsbCan(CANDevice):
                 can_num = p_info.can_Num
                 str_serial_num = p_info.str_Serial_Num
                 str_hw_type = p_info.str_hw_Type
-                logger.debug(f"Read usb CAN Success.")
-                logger.debug(f'硬件版本: V{hw_version}')
-                logger.debug(f'固件版本: V{fw_version}')
-                logger.debug(f"驱动版本: V{dr_version}")
-                logger.debug(f"动态库版本: V{in_version}")
-                logger.debug(f"板载中断: {irq_num}")
-                logger.debug(f"CAN通道数: {can_num}")
-                logger.debug(f"板卡序列号: {str_serial_num}")
-                logger.debug(f"硬件类型: {str_hw_type}")
+                logger.trace(f"Read usb CAN Success.")
+                logger.trace(f'硬件版本: V{hw_version}')
+                logger.trace(f'固件版本: V{fw_version}')
+                logger.trace(f"驱动版本: V{dr_version}")
+                logger.trace(f"动态库版本: V{in_version}")
+                logger.trace(f"板载中断: {irq_num}")
+                logger.trace(f"CAN通道数: {can_num}")
+                logger.trace(f"板卡序列号: {str_serial_num}")
+                logger.trace(f"硬件类型: {str_hw_type}")
                 return p_info
             elif ret == 0:
                 raise RuntimeError("Read usb CAN Failed.")
@@ -546,7 +546,7 @@ class UsbCan(CANDevice):
             ret = self.__lib_can.VCI_Transmit(self.__device_type, self.__device_index, self.__can_index, byref(p_send),
                                               message.frame_length)
             if ret > 0:
-                logger.debug(f"Usb CAN CAN{self.__can_index} Transmit Success.")
+                logger.trace(f"Usb CAN CAN{self.__can_index} Transmit Success.")
             elif ret == 0:
                 raise RuntimeError(f"Usb CAN CAN{self.__can_index} Transmit Failed.")
             elif ret == -1:

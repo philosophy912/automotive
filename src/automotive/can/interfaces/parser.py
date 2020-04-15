@@ -39,5 +39,5 @@ class Parser(object):
             message.set_value(msg)
             id_messages[message.msg_id] = message
             name_messages[message.msg_name] = message
-        logger.debug(f"total read message is {len(id_messages)}")
+        logger.trace(f"total read message is {len(id_messages)}")
         return id_messages, name_messages

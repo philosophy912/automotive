@@ -28,4 +28,8 @@
 - 修复了CAN工具计算值的错误, 涉及src/automotive/can/interfaces/message以及src/automotive/can/interfaces/tools文件
 - 增加了单元测试
 
+#### V1.0.5
+- 修改了CAN层的log打印等级
+- 增加了adb tap的方式点击屏幕坐标
+
 
