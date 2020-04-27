@@ -96,6 +96,13 @@ class SerialPort(object):
             raise RuntimeError(f"connect failed")
         sleep(1)
 
+    def disconnect(self):
+        """
+        关闭串口
+        """
+        if self.__is_connect():
+            self._serial.close()
+
     @staticmethod
     def check_port(port: str) -> bool:
         """

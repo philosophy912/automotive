@@ -323,7 +323,7 @@ class PCan(CANDevice):
             ret, message, timestamp = self.__can_basic.read(channel)
             if ret == pcanbasic.PCAN_ERROR_OK:
                 logger.trace(f"PEAK CAN channel_{hex(channel.value)} Receive Success.")
-                return ret, [message, timestamp]
+                return message, timestamp
             else:
                 raise RuntimeError(f"Method <{stack()[0][3]}> PEAK CAN Receive Failed.")
         except Exception:

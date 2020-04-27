@@ -162,12 +162,15 @@ class PCanBus(CanBus):
         """
         msg_id = message.msg_id
         if message.msg_send_type == self._cycle:
+            logger.trace("cycle send message")
             # 周期信号
             self.__cycle_msg(message)
         elif message.msg_send_type == self._event:
+            logger.trace("event send message")
             # 事件信号
             self.__event(message)
         else:
+            logger.trace("cycle&event send message")
             # 周期事件信号
             if msg_id not in self._send_messages:
                 self.__cycle_msg(message)
@@ -217,8 +220,10 @@ class PCanBus(CanBus):
             logger.trace(f"try to resume all messages")
             for key, item in self._send_messages.items():
                 logger.info(f"Message <{hex(key)}> is resume to send.")
-                item.stop_flag = False
-                self.transmit(item)
+                # 当发现这个msg是停止的时候就恢复发送
+                if item.stop_flag:
+                    item.stop_flag = False
+                    self.transmit(item)
 
     def receive(self, msg_id: int) -> Message:
         """

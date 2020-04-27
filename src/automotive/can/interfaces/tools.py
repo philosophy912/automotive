@@ -20,6 +20,17 @@ class Tools(object):
     """
 
     @staticmethod
+    def __completion_byte(byte_value: str) -> str:
+        """
+        如果不足8位，补齐8位
+        :return:
+        """
+        # 补齐8位
+        while len(byte_value) != 8:
+            byte_value = "0" + byte_value
+        return byte_value
+
+    @staticmethod
     def __get_position(start_bit: int) -> tuple:
         """
         获取start_bit在整个8Byte中占据的位置以及在1 Byte中的位置
@@ -111,8 +122,7 @@ class Tools(object):
                 byte_index -= 1
         return values
 
-    @staticmethod
-    def __set_values(values: list, byte_index: int, byte_array: list, bit_index: int, type_: bool):
+    def __set_values(self, values: list, byte_index: int, byte_array: list, bit_index: int, type_: bool):
         """
         把values设置到每一个对应的byte中
 
@@ -135,10 +145,8 @@ class Tools(object):
             else:
                 index = byte_index - i
             logger.trace(f"index = {index}")
-            byte_value = bin(byte_array[index])[2:]
             # 补齐8位
-            while len(byte_value) != 8:
-                byte_value = "0" + byte_value
+            byte_value = self.__completion_byte(bin(byte_array[index])[2:])
             bin_value = bin(value)[2:]
             if i == 0:
                 if bit_index + 1 == 8:
@@ -298,37 +306,53 @@ class Tools(object):
         # 分成了8个byte存储数据
         byte_array = self.convert_to_msg(data)
         logger.trace(f"byte_array = [{list(map(lambda x: hex(x), byte_array))}]")
-        # 获取在Bytes中和Byte中的位置
+        # 获取在Bytes中和Byte中的位置 如byte 1 bit7， length 2
         byte_index, bit_index = self.__get_position(start_bit)
-        # 计算需要占据几个byte, 至少占据一个byte
-        byte_count = 1
-        # 长度减去第一个占据的值
-        bit_length = bit_length - bit_index - 1
-        # 余数
-        remainder = bit_length - bit_length // 8 * 8
-        logger.trace(f"remainder = [{remainder}]")
-        if remainder == 0:
-            byte_count += bit_length // 8
+        remainder = None
+        # 用于数据存储
+        value = ""
+        # 计算会占据几个byte
+        #  长度小于bit index
+        if bit_index > bit_length:
+            byte_holder = 1
+        #  长度大于了 bit index +1， 比如长度是5， 开始位是3，表示会跨一个byte
+        elif bit_length > (bit_index + 1):
+            # 计算除了本字节外还会占据多少字节
+            length, remainder = (bit_length - bit_index - 1) // 8, (bit_length - bit_index - 1) % 8
+            logger.trace(f"length is {length} and remainder is {remainder}")
+            # 刚好占一个字节， 只多占一个或者n个字节
+            if remainder == 0:
+                byte_holder = length + 1
+            #  多占一个或者n个字节，但是还要多占一个字节
+            else:
+                byte_holder = length + 2
+        # 长度等于bit index + 1
         else:
-            byte_count += bit_length // 8 + 1
-        logger.trace(f"byte_count = [{byte_count}]")
-        # 遍历获取value
-        values = []
-        for i in range(byte_count):
-            if type_:
-                index = byte_index + i
-            else:
-                index = byte_index - i
-            logger.trace(f"index = [{index}]")
-            # 第index个byte的值
-            byte_value = bin(byte_array[index])[2:]
-            if i == 0:
-                values.append(byte_value[:bit_index + 1])
-            elif i == byte_count - 1:
-                values.append(byte_value[-remainder:])
-            else:
-                values.append(byte_value)
-        logger.trace(f"values = [{values}]")
-        value = "".join(reversed(values))
-        logger.trace(f"value = [{value}]")
+            byte_holder = 1
+        logger.trace(f"byte_holder is {byte_holder}")
+        range_length = byte_index + byte_holder
+        if type_:
+            for i in range(byte_index, range_length):
+                byte_data = self.__completion_byte(bin(byte_array[i])[2:])
+                if i == byte_index:
+                    value = value + byte_data[:bit_index + 1]
+                elif i == range_length - 1:
+                    if remainder:
+                        value = value + byte_data[:remainder]
+                    else:
+                        value = value + byte_data
+                else:
+                    value = value + byte_data
+        else:
+            for i in range(byte_index, range_length):
+                byte_data = self.__completion_byte(bin(byte_array[i]))
+                if i == byte_index:
+                    value = value + byte_data[bit_index + 1:]
+                elif i == range_length - 1:
+                    if remainder:
+                        value = value + byte_data[remainder:]
+                    else:
+                        value = value + byte_data
+                else:
+                    value = value + byte_data
         return int(value, 2)

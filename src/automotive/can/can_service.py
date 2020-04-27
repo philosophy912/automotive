@@ -173,7 +173,8 @@ class CANService(metaclass=Singleton):
             False: signals方式发送
         """
         send_msg.check_message(type_)
-        send_msg.update(True)
+        if not type_:
+            send_msg.update(True)
         logger.debug(f"msg Id {hex(send_msg.msg_id)}, msg data is {list(map(lambda x: hex(x), send_msg.data))}")
         self.__can.transmit(send_msg)
 
@@ -274,14 +275,6 @@ class CANService(metaclass=Singleton):
         time.sleep(continue_time)
         return len(self.__can.get_stack()) == 0
 
-    def clear_stack_data(self):
-        """
-        清除栈数据
-        """
-        # 清除message记录的时间
-        self.__last_msg_time_in_stack.clear()
-        self.__can.clear_stack_data()
-
     def is_msg_value_changed(self, msg_id: int, continue_time: int = 5) -> bool:
         """
         检测某个msg是否有变化，只能检测到整个8byte数据是否有变化
@@ -336,6 +329,14 @@ class CANService(metaclass=Singleton):
             duplicate.add(signal.value)
         return len(duplicate) > 1
 
+    def clear_stack_data(self):
+        """
+        清除栈数据
+        """
+        # 清除message记录的时间
+        self.__last_msg_time_in_stack.clear()
+        self.__can.clear_stack_data()
+
     def get_stack(self) -> list:
         """
         获取当前栈中所收到的消息
@@ -374,4 +375,3 @@ class CANService(metaclass=Singleton):
                 self.__send_random(filter_sender, interval)
         else:
             self.__send_random(filter_sender, interval)
-

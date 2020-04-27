@@ -114,7 +114,7 @@ class UsbCanBus(CanBus):
         while self.__usbcan.is_open and not message.stop_flag:
             logger.trace(f"send msg {hex(msg_id)} and cycle time is {message.cycle_time}")
             self.__usbcan.transmit(message)
-
+            logger.trace(f"sleep time is {message.cycle_time / 1000.0}")
             # 循环发送的等待周期
             sleep(message.cycle_time / 1000.0)
 
@@ -228,8 +228,10 @@ class UsbCanBus(CanBus):
             logger.trace(f"try to resume all messages")
             for key, item in self._send_messages.items():
                 logger.info(f"Message <{hex(key)}> is resume to send.")
-                item.stop_flag = False
-                self.transmit(item)
+                # 当发现这个msg是停止的时候就恢复发送
+                if item.stop_flag:
+                    item.stop_flag = False
+                    self.transmit(item)
 
     def receive(self, msg_id: int) -> Message:
         """

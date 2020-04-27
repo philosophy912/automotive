@@ -43,11 +43,11 @@ class Message(object):
         # message在CAN网络上发送类型（支持CYCLE/EVENT/CE)
         self.msg_send_type = None
         # 报文快速发送的次数
-        self.cycle_time_fast_times = None
+        self.cycle_time_fast_times = 0
         # 报文发送的快速周期
-        self.cycle_time_fast = None
+        self.cycle_time_fast = 0
         # 报文延时时间
-        self.delay_time = None
+        self.delay_time = 0
         # 是否是网络管理帧
         self.nm_message = False
         # diag请求
@@ -139,6 +139,7 @@ class Message(object):
         """
         # 发送数据
         if type_:
+            logger.debug("send message")
             if not self.data:
                 raw_data = 0
             else:
@@ -153,6 +154,7 @@ class Message(object):
             logger.trace(f"data is {list(map(lambda x: hex(x), self.data))}")
         # 收到数据
         else:
+            logger.debug("receive message")
             raw_data = self.__tools.convert_to_data(self.data)
             for name, signal in self.signals.items():
                 value = self.__tools.get_data(raw_data, signal.start_bit, signal.bit_length, signal.is_float)
@@ -314,7 +316,7 @@ class Signal(object):
         """
         self.__value = value
         self.__physical_value = int((float(value) * float(self.factor)) + float(self.offset))
-        logger.trace(f"value is {self.__value} and physical value is {self.__physical_value}")
+        logger.trace(f"signal[{self.signal_name}]value is {self.__value} and physical value is {self.__physical_value}")
 
     @property
     def physical_value(self):
