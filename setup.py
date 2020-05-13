@@ -53,7 +53,9 @@ setuptools.setup(
         "PyYAML>=5.1.2",
         "pypiwin32>=223",
         "wheel>=0.34.2",
-        "airtest>=1.1.3"
+        "airtest>=1.1.3",
+        "pytest>5.3.5",
+        "allure-pytest>2.8.12"
     ],
     classifiers=[
         "Programming Language :: Python :: 3.6",
