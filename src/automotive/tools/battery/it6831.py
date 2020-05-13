@@ -9,6 +9,8 @@
 # --------------------------------------------------------
 from time import sleep
 from loguru import logger
+
+from .base_battery import BaseBattery
 from ..serial_port.serial_port import SerialPort
 
 
@@ -28,22 +30,28 @@ class Status(object):
         self.available_flag = False
 
 
-class IT6831:
+class IT6831(BaseBattery):
     """
-        用于通过串口控制IT6831可编程电源，需要接上串口转TTL
+    用于通过串口控制IT6831可编程电源，需要接上串口转TTL。
+
+    说明：
+
+      目前IT6831支持电源电压最大18V，电流最大20A，调节的时候不要超过该设定电压，否则会调节失败。
+
+    操作步骤：
+
+
     """
 
     def __init__(self, port: str, baud_rate: int = 9600):
 
         self.__serial = SerialPort()
-        self.__serial.connect(port=port, baud_rate=baud_rate)
+        self.__port = port
+        self.__baud_rate = baud_rate
         self.__address = '00'
         self.__max_voltage = 18.000
         self.__max_current = 10.000
-        if self.get_all_status().available_flag:
-            self.connected = True
-        else:
-            self.connected = False
+        self.connected = False
 
     def __get_frame(self, length: int = 26, init_value: int = '00') -> str:
         """
@@ -120,6 +128,27 @@ class IT6831:
             sum_ = sum_[:2] + '0' + sum_[2:]
         return self.__set_frame(start, length, sum_[2:], input_frame)
 
+    def check_status(func):
+        """
+        检查设备是否已经连接
+        :param func: 装饰器函数
+        """
+
+        def wrapper(self, *args, **kwargs):
+            if not self.connected:
+                raise RuntimeError("it6381 is not connect, please call function(open) to connect device")
+            return func(self, *args, **kwargs)
+
+        return wrapper
+
+    def open(self):
+        """
+        打开并连接IT6831电源
+        """
+        self.__serial.connect(port=self.__port, baud_rate=self.__baud_rate)
+        if self.get_all_status().available_flag:
+            self.connected = True
+
     def close(self):
         """
         关闭串口，必须在任务结束后调用，否则串口会阻塞，需要重新插拔一下
@@ -127,6 +156,7 @@ class IT6831:
         self.__serial.close()
         self.connected = False
 
+    @check_status
     def set_power_control_mode(self, switch: bool = True):
         """
         设置控制电源的操作模式
@@ -147,6 +177,7 @@ class IT6831:
         logger.debug(f"set power contrl mode frame: {frame}")
         self.__send(frame)
 
+    @check_status
     def set_power_output_status(self, switch: bool = True):
         """
         设置控制电源输出状态
@@ -167,6 +198,7 @@ class IT6831:
         logger.debug(f"set power output status frame: {frame}")
         self.__send(frame)
 
+    @check_status
     def set_voltage_limit(self, limit: float = 18.000):
         """
         设置电源的电压上限
@@ -190,6 +222,7 @@ class IT6831:
         self.__max_voltage = limit
         self.__send(frame)
 
+    @check_status
     def set_voltage_value(self, value: float):
         """
         设置电源的输出电压
@@ -211,6 +244,7 @@ class IT6831:
         logger.debug(f"set voltage output value frame : {frame}")
         return self.__send(frame)
 
+    @check_status
     def set_current_value(self, value):
         """
         设置电源的输出电流
@@ -230,6 +264,7 @@ class IT6831:
         logger.debug(f"set current output value frame : {frame}")
         self.__send(frame)
 
+    @check_status
     def set_power_supply_address(self, address: str):
         """
         设置电源的新地址
@@ -250,6 +285,7 @@ class IT6831:
         logger.debug(f"new address is: {address}, set power supply address frame: {frame}")
         self.__send(frame)
 
+    @check_status
     def get_all_status(self) -> Status:
         """
         读取电源的电流、电压和电源状态
@@ -316,6 +352,7 @@ class IT6831:
         logger.debug(f"is get power supply all status : {battery_status.available_flag}")
         return battery_status
 
+    @check_status
     def set_power_calibrate_protect_status(self, switch: bool):
         """
         设置电源校准保护状态
@@ -338,6 +375,7 @@ class IT6831:
         logger.debug(f"set power calibrate protect status frame is : {frame}")
         self.__send(frame)
 
+    @check_status
     def get_power_calibrate_protect_status(self) -> bool:
         """
         读取电源校准保护状态

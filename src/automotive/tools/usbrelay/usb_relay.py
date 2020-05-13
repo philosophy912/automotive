@@ -11,7 +11,6 @@ import sys
 import os
 import platform
 from ctypes import c_char_p, c_int, CDLL, byref, c_uint64, Structure, POINTER
-
 from loguru import logger
 
 # C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\amd64> cl /LD needforspeed.c /o nfs.dll
@@ -37,6 +36,18 @@ UsbRelayDeviceInfo._fields_ = [('serial_number', c_char_p),
 class USBRelay(object):
     """
     USB继电器基础类，利用ctypes操作dll文件
+
+    使用方法：
+
+    1、使用open_relay_device打开继电器，
+
+    2、并根据通道使用one_relay_channel_on/off选择某一个通道进行开关操作，或者使用all_relay_channel_on/off进行全部的开关操作
+
+    3、完成后调用close_relay_device关闭继电器
+
+    特别注意：
+
+    进行第二步即打开继电器的时候，需要一定的时间，建议的延时时间为1s，否则继电器可能没有实际打开
     """
 
     def __init__(self):
@@ -44,6 +55,19 @@ class USBRelay(object):
         self.__handle = None
         self.is_open = False
         self.__channel_count = 0
+
+    def check_status(func):
+        """
+        检查设备是否已经连接
+        :param func: 装饰器函数
+        """
+
+        def wrapper(self, *args, **kwargs):
+            if not self.is_open:
+                raise RuntimeError("please open relay device first")
+            return func(self, *args, **kwargs)
+
+        return wrapper
 
     def open_relay_device(self):
         """
@@ -78,6 +102,7 @@ class USBRelay(object):
             else:
                 self.is_open = True
 
+    @check_status
     def one_relay_channel_on(self, channel_index: int):
         """
         闭合继电器的某一个开关。
@@ -93,6 +118,7 @@ class USBRelay(object):
             if self.__lib.usb_relay_device_open_one_relay_channel(self.__handle, channel_index) != 0:
                 raise RuntimeError(f"open channel [{channel_index}] failed")
 
+    @check_status
     def one_relay_channel_off(self, channel_index: int):
         """
         打开继电器的某一个开关。
@@ -108,6 +134,7 @@ class USBRelay(object):
             if self.__lib.usb_relay_device_close_one_relay_channel(self.__handle, channel_index) != 0:
                 raise RuntimeError(f"close channel [{channel_index}] failed")
 
+    @check_status
     def all_relay_channel_on(self):
         """
         闭合继电器的所有开关。
@@ -118,6 +145,7 @@ class USBRelay(object):
             if self.__lib.usb_relay_device_open_all_relay_channel(self.__handle) != 0:
                 raise RuntimeError(f"open all channel failed")
 
+    @check_status
     def all_relay_channel_off(self):
         """
         关闭继电器的所有开关。

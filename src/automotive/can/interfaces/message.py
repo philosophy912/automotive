@@ -151,7 +151,7 @@ class Message(object):
                                                  signal.is_float)
                 logger.trace(f"raw_data[{bin(raw_data)}]")
             self.data = self.__tools.convert_to_msg(raw_data)
-            logger.trace(f"data is {list(map(lambda x: hex(x), self.data))}")
+            logger.info(f"msg id {hex(self.msg_id)} and data is {list(map(lambda x: hex(x), self.data))}")
         # 收到数据
         else:
             logger.debug("receive message")

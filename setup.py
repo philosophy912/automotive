@@ -51,7 +51,9 @@ setuptools.setup(
         "ImageHash>=4.0",
         "paramiko>=2.7.1",
         "PyYAML>=5.1.2",
-        "pypiwin32>=223"
+        "pypiwin32>=223",
+        "wheel>=0.34.2",
+        "airtest>=1.1.3"
     ],
     classifiers=[
         "Programming Language :: Python :: 3.6",

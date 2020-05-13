@@ -30,6 +30,7 @@ class KonstanterActions(PowerActions):
         logger.info("初始化konstanter电源模块")
         logger.info(f"打开串口{self.__port}")
         self.__konstanter = KonstanterControl(port=self.__port, baud_rate=self.__baud_rate)
+        self.__konstanter.open()
         logger.info("获取电源状态")
         idn = self.__konstanter.get("IDN")
         logger.debug(f"电源状态{idn}")

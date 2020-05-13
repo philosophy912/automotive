@@ -9,10 +9,12 @@
 # --------------------------------------------------------
 from time import sleep
 from loguru import logger
+
+from .base_battery import BaseBattery
 from ..serial_port.serial_port import SerialPort
 
 
-class Konstanter(object):
+class Konstanter(BaseBattery):
     """
         KONSTANTER SSP 240-20可编程电源：
 
@@ -157,10 +159,12 @@ class Konstanter(object):
 
     def __init__(self, port: str, baud_rate: int = 19200, address: str = "713"):
         self.__serial = SerialPort()
-        self.__serial.connect(port=port, baud_rate=baud_rate)
+        self.__port = port
+        self.__baud_rate = baud_rate
         self.__address = address
         self.__max_current = 20.0
         self.__max_voltage = 20.0
+        self.is_connect = False
 
     @staticmethod
     def __check_time(time: float):
@@ -196,6 +200,27 @@ class Konstanter(object):
         """
         return "OUTPUT " + self.__address + ";"
 
+    def check_status(func):
+        """
+        检查设备是否已经连接
+        :param func: 装饰器函数
+        """
+
+        def wrapper(self, *args, **kwargs):
+            if not self.is_connect:
+                raise RuntimeError("please connect konstanter device first")
+            return func(self, *args, **kwargs)
+
+        return wrapper
+
+    def open(self):
+        """
+        连接串口
+        """
+        self.__serial.connect(port=self.__port, baud_rate=self.__baud_rate)
+        if self.get("IDN"):
+            self.is_connect = True
+
     def close(self):
         """
         所有操作结束后关闭串口端口
@@ -203,6 +228,7 @@ class Konstanter(object):
         logger.info("closing serial port.")
         self.__serial.close()
 
+    @check_status
     def wait(self, time: float):
         """
         WAIT
@@ -222,6 +248,7 @@ class Konstanter(object):
         cmd = self.__header() + "WAIT " + str(time)
         self.__send(cmd)
 
+    @check_status
     def tmode(self, mod: str):
         """
         T_MODE 触发输入功能选择
@@ -252,6 +279,7 @@ class Konstanter(object):
             raise ValueError(f"unsupport mode: {mod}.")
         self.__send(cmd)
 
+    @check_status
     def set_time_for_sequence(self, time: float):
         """
         TSET
@@ -272,6 +300,7 @@ class Konstanter(object):
         cmd = self.__header() + "TSET " + str(time)
         self.__send(cmd)
 
+    @check_status
     def default_time_for_sequence(self, time: float):
         """
         TDEF
@@ -290,6 +319,7 @@ class Konstanter(object):
         cmd = self.__header() + "TDEF " + str(time)
         self.__send(cmd)
 
+    @check_status
     def get_store(self, start: int = None, stop: int = None, split: str = None):
         """
         STORE?
@@ -321,6 +351,7 @@ class Konstanter(object):
                     cmd = cmd + ", " + split
         return self.__send(cmd, receive=True)
 
+    @check_status
     def store(self, location: int, uset: float, iset: float, tset: float, sset: str = 'ON'):
         """
         STORE
@@ -371,6 +402,7 @@ class Konstanter(object):
         self.__send(cmd)
         sleep(0.1)
 
+    @check_status
     def switching_signal_level(self, switch: bool):
         """
         SSET
@@ -391,6 +423,7 @@ class Konstanter(object):
         self.__send(cmd)
         return True
 
+    @check_status
     def start_stop(self, start: int, stop: int):
         """
         START_STOP
@@ -411,6 +444,7 @@ class Konstanter(object):
         cmd = self.__header() + "START_STOP " + str(start) + ", " + str(stop)
         self.__send(cmd)
 
+    @check_status
     def sequence(self, action: str):
         """
         SEQUENCE
@@ -439,6 +473,7 @@ class Konstanter(object):
             raise ValueError(f"action[{action}] is incorrect, only support{types}")
         self.__send(cmd)
 
+    @check_status
     def sequence_repetition(self, reps: int = 1):
         """
         REPETITION
@@ -459,6 +494,7 @@ class Konstanter(object):
         cmd = self.__header() + "REPETITION " + str(reps)
         self.__send(cmd)
 
+    @check_status
     def power_on(self, status: str):
         """
         功能：POWER_ON
@@ -480,6 +516,7 @@ class Konstanter(object):
             raise ValueError(f"un support power_on parameter: status={status}, must be one of {types}.")
         self.__send(cmd)
 
+    @check_status
     def output_enable(self, switch: bool = True):
         """
         OUTPUT
@@ -498,6 +535,7 @@ class Konstanter(object):
             cmd = cmd + "OUTPUT OFF"
         self.__send(cmd)
 
+    @check_status
     def over_voltage_protection_value(self, value: float = 22.0):
         """
         OVSET
@@ -517,6 +555,7 @@ class Konstanter(object):
         cmd = self.__header() + "OVSET " + str(value)
         self.__send(cmd)
 
+    @check_status
     def over_current_protection(self, switch: bool = True):
         """
         OCP
@@ -535,6 +574,7 @@ class Konstanter(object):
             cmd = cmd + "OCP OFF"
         self.__send(cmd)
 
+    @check_status
     def set_voltage(self, voltage: float = 12.0):
         """
         USET
@@ -554,6 +594,7 @@ class Konstanter(object):
         cmd = self.__header() + "USET " + str(voltage)
         self.__send(cmd)
 
+    @check_status
     def set_current(self, current: float = 5.0):
         """
         ISET
@@ -568,6 +609,7 @@ class Konstanter(object):
         cmd = self.__header() + "ISET " + str(current)
         self.__send(cmd)
 
+    @check_status
     def set_voltage_limit(self, voltage: float = 20.0):
         """
         ULIM
@@ -583,6 +625,7 @@ class Konstanter(object):
         self.__send(cmd)
         self.__max_voltage = voltage
 
+    @check_status
     def set_current_limit(self, current: float = 20.0):
         """
         ILIM
@@ -598,6 +641,7 @@ class Konstanter(object):
         self.__send(cmd)
         self.__max_current = current
 
+    @check_status
     def enable_registers(self, ese: int = None, erae: int = None, erbe: int = None, sre: int = None, pre: int = None):
         """
         针对这五个寄存器(ESE ERAE ERBE SRE PRE)使能
@@ -641,6 +685,7 @@ class Konstanter(object):
                 cmd = cmd + str(reg) + " " + str(set_list[reg]) + ";"
         self.__send(cmd)
 
+    @check_status
     def display(self, switch: bool = True):
         """
         DISPLAY
@@ -661,6 +706,7 @@ class Konstanter(object):
             cmd = cmd + "OFF"
         self.__send(cmd)
 
+    @check_status
     def min_max(self, status: str = 'OFF'):
         """
         MINMAX
@@ -683,6 +729,7 @@ class Konstanter(object):
             cmd = cmd + "OFF"
         self.__send(cmd)
 
+    @check_status
     def output_off_delay_for_ocp(self, delay: float):
         """
         DELAY
@@ -706,6 +753,7 @@ class Konstanter(object):
         cmd = self.__header() + "DELAY " + str(delay)
         self.__send(cmd)
 
+    @check_status
     def device_clear_function(self):
         """
         DCL
@@ -715,6 +763,7 @@ class Konstanter(object):
         cmd = self.__header() + "DCL"
         self.__send(cmd)
 
+    @check_status
     def interface_address(self, n: int):
         """
         ADDRESS
@@ -728,6 +777,7 @@ class Konstanter(object):
         cmd = self.__header() + "ADDRESS " + str(n)
         self.__send(cmd)
 
+    @check_status
     def start_self_test(self):
         """
         TST?
@@ -746,6 +796,7 @@ class Konstanter(object):
         logger.info(f"<<< get power supply information from serial buffer: {result}")
         return result == 0
 
+    @check_status
     def saving_device_settings(self, n: int):
         """
         SAV
@@ -771,6 +822,7 @@ class Konstanter(object):
         if msg:
             logger.info(f"saving device settings has a command response: {msg}")
 
+    @check_status
     def reset_device_settings(self):
         """
         RST
@@ -818,6 +870,7 @@ class Konstanter(object):
         cmd = self.__header() + "*RST"
         self.__send(cmd)
 
+    @check_status
     def recalling_stored_settings(self, n: int):
         """
         RCL
@@ -841,6 +894,7 @@ class Konstanter(object):
         if msg:
             logger.info(f"recalling stored settings has a command response: {msg}")
 
+    @check_status
     def power_on_status_clear(self, clear=False):
         """
         PSC/POC
@@ -859,6 +913,7 @@ class Konstanter(object):
             cmd = cmd + "*PSC 0"
         self.__send(cmd)
 
+    @check_status
     def operation_complete(self, *args):
         """
         OPC， 如set_device_trigger("USET 10", "ISET 5.5")
@@ -886,6 +941,7 @@ class Konstanter(object):
         else:
             logger.info(f"empty parameter: [{args}], command ignored.")
 
+    @check_status
     def set_device_trigger(self, *args):
         """
         DDT 如set_device_trigger("USET 10", "ISET 5.5", "TEST 5.00", "OUTPUT ON", "USET 2")
@@ -1048,6 +1104,7 @@ class Konstanter(object):
                 response[arg] = res
             return response
 
+    @check_status
     def clear_status(self):
         """
         1.清除所有事件寄存器：ESR, ERA, ERB

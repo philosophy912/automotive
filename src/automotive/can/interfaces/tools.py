@@ -20,13 +20,13 @@ class Tools(object):
     """
 
     @staticmethod
-    def __completion_byte(byte_value: str) -> str:
+    def __completion_byte(byte_value: str, size: int = 8) -> str:
         """
-        如果不足8位，补齐8位
+        如果不足size位，补齐size位
         :return:
         """
         # 补齐8位
-        while len(byte_value) != 8:
+        while len(byte_value) != size:
             byte_value = "0" + byte_value
         return byte_value
 
@@ -47,23 +47,24 @@ class Tools(object):
             if 8 * i <= start_bit <= 8 * i + 7:
                 byte_index = i
                 break
-        logger.trace(f"byte_index = [{byte_index}]")
-
         # 获取在单独这个byte中所占据的位置
         bit_index = 7 - (start_bit - (start_bit // 8 * 8))
-        logger.trace(f"bit_index = [{bit_index}]")
+        logger.trace(f"byte_index = [{byte_index}] && bit_index = [{bit_index}]")
         return byte_index, bit_index
 
-    @staticmethod
-    def __get_values(value: int, byte_index: int, bit_index: int, type_: bool) -> list:
+    def __get_values(self, value: int, byte_index: int, bit_index: int, bit_length: int, type_: bool) -> list:
         """
         根据byte_index以及bit_index来划分value所在的byte
+
+        即计算出来value在每个byte的实际的值是什么？
 
         :param value: 要设置的值
 
         :param byte_index:  8 Byte中占据的位置
 
         :param bit_index: 1 Byte中占据的位置
+
+        :param bit_length: signal所占据的长度
 
         :param type_:
             大端还是小端 1=intel(小端模式) ，0=Motorola（大端模式）
@@ -75,8 +76,10 @@ class Tools(object):
         values = []
         # value转换成bit便于计算
         bin_value = bin(value)[2:]
-        # bin_value_length = len(bin_value)
-        logger.trace(f"bin_value = [{bin_value}]")
+        # 补充长度
+        if len(bin_value) != bit_length:
+            bin_value = self.__completion_byte(bin_value, bit_length)
+        logger.trace(f"bin_value = 0b[{bin_value}]")
         while bin_value:
             # 第一次处理数据
             if bit_index != -1:
@@ -84,14 +87,14 @@ class Tools(object):
                 if len(bin_value) > (bit_index + 1):
                     end_position = len(bin_value) - (bit_index + 1)
                     logger.trace(f"end_position = [{bin(end_position)}]")
-                    slice_value = int(bin_value[end_position:], 2)
-                    logger.trace(f"slice_value = [{bin(slice_value)}]")
+                    slice_value = bin_value[end_position:]
+                    logger.trace(f"slice_value = [{slice_value}]")
                     # 把数据存起来
                     values.append(slice_value)
                     bin_value = bin_value[0:end_position]
                 else:
-                    slice_value = int(bin_value, 2)
-                    logger.trace(f"slice_value = [{bin(slice_value)}]")
+                    slice_value = bin_value
+                    logger.trace(f"slice_value = [{slice_value}]")
                     # 把数据存起来
                     values.append(slice_value)
                     # 处理完了，所以置空
@@ -103,14 +106,14 @@ class Tools(object):
                     end_position = len(bin_value) - 8
                     logger.trace(f"end_position = [{bin(end_position)}]")
                     # 把数据存起来
-                    slice_value = int(bin_value[end_position:], 2)
-                    logger.trace(f"slice_value = [{bin(slice_value)}]")
+                    slice_value = bin_value[end_position:]
+                    logger.trace(f"slice_value = [{slice_value}]")
                     values.append(slice_value)
                     # 把剩下的保留
                     bin_value = bin_value[0:end_position]
                 else:
-                    slice_value = int(bin_value, 2)
-                    logger.trace(f"slice_value = [{bin(slice_value)}]")
+                    slice_value = bin_value
+                    logger.trace(f"slice_value = [{slice_value}]")
                     # 把数据存起来
                     values.append(slice_value)
                     # 处理完了，所以置空
@@ -128,7 +131,7 @@ class Tools(object):
 
         :param values:  拆分后的 values
 
-        :param byte_index:   8 Byte中占据的位置，
+        :param byte_index:  8 Byte中占据的位置，
 
         :param byte_array: data拆分后的数据
 
@@ -140,6 +143,9 @@ class Tools(object):
             True表示intel， False表示Motorola
         """
         for i, value in enumerate(values):
+            size = len(value)
+            logger.trace(f"the [{i}] size is [{size}]")
+            value = int(value, 2)
             if type_:
                 index = byte_index + i
             else:
@@ -147,24 +153,30 @@ class Tools(object):
             logger.trace(f"index = {index}")
             # 补齐8位
             byte_value = self.__completion_byte(bin(byte_array[index])[2:])
+            logger.trace(f"the [{index}] byte_value is ob{byte_value}")
             bin_value = bin(value)[2:]
+            logger.trace(f"bin_value = 0b{bin_value}")
             if i == 0:
+                logger.trace("first")
                 if bit_index + 1 == 8:
                     calc_value = int(bin_value, 2)
                 else:
                     # 第一个值可能从Byte的中间开始
                     raw_value = byte_value[bit_index + 1:]
-                    logger.trace(f"raw_value = {raw_value} and bin_value = {bin_value}")
+                    logger.trace(f"raw_value = {raw_value}")
                     calc_value = int((bin_value + raw_value), 2)
                 logger.trace(f"calc_value = {calc_value}")
                 byte_array[index] = calc_value
             elif i == len(values) - 1:
+                logger.trace("last")
                 # 最后一个值Byte不能填满
-                raw_value = byte_value[:8 - len(bin_value)]
+                raw_value = byte_value[:8 - size]
+                logger.trace(f"raw_value = {raw_value}")
                 calc_value = int((raw_value + bin_value), 2)
                 logger.trace(f"calc_value = {calc_value}")
                 byte_array[index] = calc_value
             else:
+                logger.trace("middle")
                 logger.trace(f"calc_value = {value}")
                 byte_array[index] = value
         logger.trace(f"byte_array = [{list(map(lambda x: hex(x), byte_array))}]")
@@ -270,17 +282,16 @@ class Tools(object):
         max_value = 2 ** bit_length - 1
         if value > max_value:
             raise RuntimeError(f"value[{value}] need less than {max_value}")
-
         logger.trace(f"data = [{hex(data)}], bit_length = [{bit_length}], "
-                     f"start_bit = [{start_bit}], value = [{value}], type_ = [{type_}]")
-        logger.trace(f"value = {bin(value)}")
+                     f"start_bit = [{start_bit}], value[{value}]={bin(value)}, type_ = [{type_}]")
         # 分成了8个byte存储数据
         byte_array = self.convert_to_msg(data)
         logger.trace(f"byte_array = [{list(map(lambda x: hex(x), byte_array))}]")
-        # 获取在Bytes中和Byte中的位置
+        # 获取在Bytes(8个Byte)中和Byte(一个byte)中的位置
         byte_index, bit_index = self.__get_position(start_bit)
         # 计算出来占据的值
-        values = self.__get_values(value, byte_index, bit_index, type_)
+        values = self.__get_values(value, byte_index, bit_index, bit_length, type_)
+        logger.trace(f"place holder values length is {len(values)} and values is [{values}]")
         self.__set_values(values, byte_index, byte_array, bit_index, type_)
         return self.convert_to_data(byte_array)
 
@@ -311,11 +322,11 @@ class Tools(object):
         remainder = None
         # 用于数据存储
         value = ""
-        # 计算会占据几个byte
-        #  长度小于bit index
+        # byte_holder 表示读取数据一共需要占据多少个byte，总共分三种情况
+        # 情况1：占据一个byte，即bit_index大于了bit_length，如bit_index为7的时候，表示一个整字节，当bit_length只有2位
         if bit_index > bit_length:
             byte_holder = 1
-        #  长度大于了 bit index +1， 比如长度是5， 开始位是3，表示会跨一个byte
+        # 长度大于了 bit index +1， 比如长度是5， 开始位是3，表示会跨一个byte
         elif bit_length > (bit_index + 1):
             # 计算除了本字节外还会占据多少字节
             length, remainder = (bit_length - bit_index - 1) // 8, (bit_length - bit_index - 1) % 8
@@ -330,29 +341,43 @@ class Tools(object):
         else:
             byte_holder = 1
         logger.trace(f"byte_holder is {byte_holder}")
-        range_length = byte_index + byte_holder
+        # 计算循环终结的点
+        # range_length = byte_index + byte_holder
+        # logger.trace(f"range_length is {range_length}")
         if type_:
-            for i in range(byte_index, range_length):
-                byte_data = self.__completion_byte(bin(byte_array[i])[2:])
-                if i == byte_index:
-                    value = value + byte_data[:bit_index + 1]
-                elif i == range_length - 1:
+            for i in range(byte_holder):
+                byte_data = self.__completion_byte(bin(byte_array[byte_index + i])[2:])
+                if i == 0:
+                    # 表示第一位取数据
+                    if byte_holder == 1:
+                        value = value + byte_data[bit_index + 1 - bit_length:bit_index + 1]
+                    else:
+                        value = value + byte_data[bit_index + 1:]
+                elif i == byte_holder - 1:
+                    # 表示最后一位取数据
                     if remainder:
                         value = value + byte_data[:remainder]
                     else:
                         value = value + byte_data
                 else:
                     value = value + byte_data
+                logger.trace(f"{i} times value is 0b{value}")
         else:
-            for i in range(byte_index, range_length):
-                byte_data = self.__completion_byte(bin(byte_array[i]))
-                if i == byte_index:
-                    value = value + byte_data[bit_index + 1:]
-                elif i == range_length - 1:
-                    if remainder:
-                        value = value + byte_data[remainder:]
+            for i in range(byte_holder):
+                byte_data = self.__completion_byte(bin(byte_array[byte_index - i])[2:])
+                if i == 0:
+                    # 表示第一位取数据
+                    if byte_holder == 1:
+                        value = byte_data[bit_index + 1 - bit_length:bit_index + 1]+ value
                     else:
-                        value = value + byte_data
+                        value = byte_data[:bit_index + 1] + value
+                elif i == byte_holder - 1:
+                    # 表示最后一位取数据
+                    if remainder:
+                        value = byte_data[remainder:] + value
+                    else:
+                        value = byte_data + value
                 else:
-                    value = value + byte_data
+                    value = byte_data + value
+                logger.trace(f"{i} times value is 0b{value}")
         return int(value, 2)

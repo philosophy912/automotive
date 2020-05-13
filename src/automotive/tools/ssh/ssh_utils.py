@@ -19,12 +19,26 @@ class SSHUtils(object):
     SSH工具类, 未完成
     后续需要将SSHLibrary导入到其中
     """
+
     def __init__(self):
         self.__ssh = paramiko.SSHClient()
         # 加载创建的白名单
         self.__ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         self.__utils = Utils()
         self.is_connect = False
+
+    def check_status(func):
+        """
+        检查设备是否已经连接
+        :param func: 装饰器函数
+        """
+
+        def wrapper(self, *args, **kwargs):
+            if not self.is_connect:
+                raise RuntimeError("please connect target first")
+            return func(self, *args, **kwargs)
+
+        return wrapper
 
     def connect(self, hostname: str, username: str, password: str, port: int = 22):
         """
@@ -54,6 +68,7 @@ class SSHUtils(object):
         """
         self.__ssh.close()
 
+    @check_status
     def exec_command(self, cmd: str) -> tuple:
         """
         执行命令

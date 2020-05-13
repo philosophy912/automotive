@@ -32,6 +32,7 @@ class It6831Actions(PowerActions):
         """
         logger.info("初始化IT6831电源模块")
         self.__it6831 = IT6831(port=self.__port, baud_rate=self.__baud_rate)
+        self.__it6831.open()
         logger.info("获取电源状态")
         self.__it6831.get_all_status()
         logger.info(f"*************IT6831电源模块初始化成功*************")

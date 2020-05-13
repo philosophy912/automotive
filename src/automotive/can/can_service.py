@@ -31,8 +31,10 @@ class CANService(metaclass=Singleton):
     def __init__(self, message: (str, list), encoding: str = "utf-8",
                  can_box_device: CanBoxDevice = CanBoxDevice.PEAKCAN):
         if can_box_device == CanBoxDevice.PEAKCAN:
+            logger.info("user pcan")
             self.__can = PCanBus()
         else:
+            logger.info("user can box")
             self.__can = UsbCanBus(can_box_device)
         self.__tools = Tools()
         self.__parser = Parser()

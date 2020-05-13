@@ -9,24 +9,68 @@
 # --------------------------------------------------------
 import math
 from loguru import logger
+
+from .base_battery import BaseBattery
 from .konstanter import Konstanter
 
 
-class KonstanterControl(object):
+class KonstanterControl(BaseBattery):
     """
     Konstanter简化操作类
+
+    1、设置电流电压的最大最小值
+
+    使用set_limit(voltage=20.0, current=20.0)
+
+    2、设置输出的电流电压值
+
+    使用set_voltage_current(voltage=12.0, current=10.0)
+
+    3、电源变动测试
+
+      a. 设置电源变动的值到寄存器中【set_raise_down】，得到反馈的寄存器位置(start, middle, end)
+
+      b. 调用【start】函数一次调用寄存器中的值完成电源变动
+
+    4、整车电源电压变动测试
+
+      a. 利用读取到的电压序列设置【set_user_voltages】到寄存器中
+
+      b. 调用【start】函数一次调用寄存器中的值完成电源变动
+
+    5、开启/关闭电源
+
+    使用【output_enable】即可
+
     """
 
     def __init__(self, port: str, baud_rate: int = 19200, over_voltage: float = 22.0):
-        self.__kon = Konstanter(port=port, baud_rate=baud_rate)
+        self.__port = port
+        self.__baud_rate = baud_rate
+        self.__over_voltage = over_voltage
+        self.__kon = Konstanter(port=self.__port, baud_rate=self.__baud_rate)
+
+    def open(self):
+        """
+        打开konstanter
+        """
+        self.__kon.open()
         self.__kon.over_current_protection(True)
         self.__kon.output_off_delay_for_ocp(0.3)
-        self.__kon.over_voltage_protection_value(over_voltage)
-        self.__kon.output_enable(True)
-        if self.__kon.get("IDN") is not None:
-            self.connected = True
-        else:
-            self.connected = False
+        self.__kon.over_voltage_protection_value(self.__over_voltage)
+
+    def close(self, output_off: bool = False):
+        """
+        程序执行结束后关闭输出，关闭串口
+
+        :param output_off:
+            True: 同时关闭输出
+
+            False: 不关闭输出，保持状态
+        """
+        if output_off:
+            self.__kon.output_enable(False)
+        self.__kon.close()
 
     def set_limit(self, voltage: float = 20.0, current: float = 20.0):
         """
@@ -156,20 +200,6 @@ class KonstanterControl(object):
         self.__kon.sequence_repetition(repeat)
         self.__kon.get_store()
         return registers
-
-    def close(self, output_off: bool = False):
-        """
-        程序执行结束后关闭输出，关闭串口
-
-        :param output_off:
-            True: 同时关闭输出
-
-            False: 不关闭输出，保持状态
-        """
-        if output_off:
-            self.__kon.output_enable(False)
-        self.__kon.close()
-        self.connected = False
 
     def get(self, *args):
         """

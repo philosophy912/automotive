@@ -22,6 +22,15 @@ from .singleton import Singleton
 
 
 class PinyinEnum(Enum):
+    """
+    枚举类，仅仅列出了拼音的类型
+
+    DIACRITICAL: 输出的拼音含有声调
+
+    NUMERICAL: 输出拼音音调以数字形式紧随拼音
+
+    STRIP: 不包含声调
+    """
     # 输出的拼音含有声调
     DIACRITICAL = "diacritical"
     # 输出拼音音调以数字形式紧随拼音
@@ -39,7 +48,19 @@ class PinyinEnum(Enum):
 
 class Utils(metaclass=Singleton):
     """
-        工具类（单例模式), 提供常用的一些方法，如随机数生成，时间戳等等，详细见api文档
+    工具类（单例模式), 提供常用的一些方法.
+
+    1、 get_time_as_string： 返回格式化之后的系统时间，默认时间为年-月-日_小时-分钟-秒
+
+    2、random_decimal/random_int： 返回随机小数和整数
+
+    3、get_pin_yin: 返回中文的拼音，可以结合speaker下面的player在Windows10上进行TTS的测试
+
+    4、get_current_function_name：用于获取当前函数名的名字
+
+    5、sleep：改进型的sleep，当sleep超过1分钟的时候，可能会导致程序死锁，
+
+    6、read_yml_full/read_yml_safe/read_yml_un_safe: YML相关的读取函数
     """
 
     @staticmethod

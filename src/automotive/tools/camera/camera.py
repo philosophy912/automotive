@@ -124,10 +124,10 @@ class FrameID(object):
         self.autofocus = cv2.CAP_PROP_AUTOFOCUS
         self.sar_num = cv2.CAP_PROP_SAR_NUM
         self.sar_den = cv2.CAP_PROP_SAR_DEN
-        self.backend = cv2.CAP_PROP_BACKEND
-        self.channel = cv2.CAP_PROP_CHANNEL
-        self.auto_wb = cv2.CAP_PROP_AUTO_WB
-        self.wb_temperatrue = cv2.CAP_PROP_WB_TEMPERATURE
+        # self.backend = cv2.CAP_PROP_BACKEND
+        # self.channel = cv2.CAP_PROP_CHANNEL
+        # self.auto_wb = cv2.CAP_PROP_AUTO_WB
+        # self.wb_temperatrue = cv2.CAP_PROP_WB_TEMPERATURE
 
 
 class Mark(object):
@@ -160,22 +160,28 @@ class Camera(object):
         # 摄像头的高
         self.__height = 0
 
-    def __check_capture_status(self):
+    def check_status(func):
         """
-        检查当前capture状态
+        检查设备是否已经连接
+        :param func: 装饰器函数
         """
-        if not self.__capture:
-            raise RuntimeError("please init capture first")
 
+        def wrapper(self, *args, **kwargs):
+            if not self.__capture:
+                raise RuntimeError("please open camera first")
+            return func(self, *args, **kwargs)
+
+        return wrapper
+
+    @check_status
     def __take_frame(self, name: str = 'test.png', gray=False):
         """
         获取一帧图像并保存
 
-        :param name:保存照片的路径,如: D:/GIT/automatedtest_5X3/test.png
+        :param name: 要保存图片的完整路径
 
         :param gray: [False:拍摄彩色照片, True:拍摄灰度照片]
         """
-        self.__check_capture_status()
         ret, frame = self.__capture.read()
         if ret:
             if gray:
@@ -188,7 +194,7 @@ class Camera(object):
         """
         录制视频, 仅负责录制，
 
-        :param name: 保存视频的路径, 如: D:/GIT/automatedtest_5X3/test.avi
+        :param name: 保存视频的完整路径
 
         :param fps: 帧率设置[5.0, 30.0], default=20
 
@@ -237,7 +243,6 @@ class Camera(object):
                 self.set_property(frame_id)
             else:
                 raise RuntimeError(f"open camera[{camera_id}] failed")
-        # logger.debug(f"camera open status {self.__capture.isOpened()}")
 
     def close_camera(self):
         """
@@ -247,13 +252,14 @@ class Camera(object):
             self.__capture.release()
             cv2.destroyAllWindows()
 
+    @check_status
     def stop_record(self):
         """
         停止录制
         """
-        self.__check_capture_status()
         self.__stop_flag = True
 
+    @check_status
     def get_picture_from_record(self, path: str):
         """
         在录像过程中获取照片,与record_video配合使用
@@ -262,6 +268,7 @@ class Camera(object):
         """
         cv2.imwrite(path, self.__frame)
 
+    @check_status
     def take_picture(self, path: str, gray: bool = False):
         """
         拍照
@@ -272,6 +279,7 @@ class Camera(object):
         """
         self.__take_frame(path, gray)
 
+    @check_status
     def record_video(self, name: str, fps: float = 20, total_time: float = None, width: int = None,
                      height: int = None, codec: str = 'MJPG', mark: Mark = Mark()):
         """
@@ -317,6 +325,7 @@ class Camera(object):
             self.__utils.sleep(total_time * 60)
             self.stop_record()
 
+    @check_status
     def camera_test(self, wait: float = 2, frame_id: FrameID = FrameID()):
         """
         测试摄像头摄像，可用于调节摄像头距离，查看录像效果时，一般作为调试使用
@@ -338,6 +347,7 @@ class Camera(object):
                 break
         self.close_camera()
 
+    @check_status
     def set_property(self, frame_id: FrameID = FrameID()):
         """
         设置摄像头参数
@@ -347,6 +357,7 @@ class Camera(object):
         for key, item in frame_id.__dict__.items():
             self.__capture.set(key, item)
 
+    @check_status
     def reset_property(self):
         """
         重置所有摄像头参数为初始值
@@ -355,6 +366,7 @@ class Camera(object):
         for key, item in frame_id.__dict__.items():
             self.__capture.set(key, item)
 
+    @check_status
     def get_property(self, property_name: str = '') -> (str, dict):
         """
         获取摄像头当前参数设置

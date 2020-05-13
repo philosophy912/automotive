@@ -7,7 +7,7 @@
 # @Author:      lizhe
 # @Created:     2019/11/30 22:35  
 # --------------------------------------------------------
-from time import sleep
+import time
 from loguru import logger
 from concurrent.futures import ThreadPoolExecutor
 from .pcan import PCan
@@ -25,6 +25,19 @@ class PCanBus(CanBus):
         self.__thread_pool = None
         # PCAN实例化
         self.__pcan = PCan()
+
+    def check_status(func):
+        """
+        检查设备是否已经连接
+        :param func: 装饰器函数
+        """
+
+        def wrapper(self, *args, **kwargs):
+            if not self.__thread_pool:
+                raise RuntimeError("please open pcan device first")
+            return func(self, *args, **kwargs)
+
+        return wrapper
 
     @staticmethod
     def __get_data(data, length: int) -> list:
@@ -88,51 +101,60 @@ class PCanBus(CanBus):
             except RuntimeError:
                 continue
 
-    def __transmit(self, pcan_message: Message):
+    def __transmit(self, message: Message, cycle_time: float):
         """
         CAN发送帧函数，在线程中执行。
 
-        :param pcan_message: pcan_message
+        :param message: message
         """
-        logger.trace(f"pcan status is {self.__pcan.is_open}")
-        msg_id = pcan_message.msg_id
-        while self.__pcan.is_open and not pcan_message.stop_flag:
-            logger.trace(f"send msg {hex(msg_id)} and cycle time is {pcan_message.cycle_time}")
-            self.__pcan.transmit(pcan_message)
+        logger.trace(f"peak can status is {self.__pcan.is_open}")
+        logger.trace(f"cycle_time = {cycle_time}")
+        msg_id = message.msg_id
+        while self.__pcan.is_open and not message.stop_flag:
+            logger.trace(f"send msg {hex(msg_id)} and cycle time is {message.cycle_time}")
+            self.__pcan.transmit(message)
+            start_time = time.time()
             # 循环发送的等待周期
-            sleep(pcan_message.cycle_time / 1000.0)
+            time.sleep(cycle_time)
+            end_time = time.time()
+            different = end_time - start_time
+            logger.trace(f"{start_time} to {end_time} and different is {different}")
 
-    def __cycle_msg(self, pcan_message: Message):
+    def __cycle_msg(self, message: Message):
         """
         发送周期性型号
 
-        :param pcan_message: message的集合对象
+        :param message: message的集合对象
         """
-        msg_id = pcan_message.msg_id
-        # 周期信号
-        self._send_messages[msg_id] = pcan_message
-        cycle_time = pcan_message.cycle_time
-        data = pcan_message.data
-        hex_msg_id = hex(msg_id)
-        logger.info(f"****** Transmit msg id {hex_msg_id} data is {list(map(lambda x: hex(x), data))} "
-                    f"Circle time is {cycle_time}ms ******")
-        self.__thread_pool.submit(self.__transmit, pcan_message)
+        msg_id = message.msg_id
+        if msg_id not in self._send_messages:
+            # 周期信号
+            self._send_messages[msg_id] = message
+            data = message.data
+            hex_msg_id = hex(msg_id)
+            cycle_time = message.cycle_time / 1000.0
+            logger.info(f"****** Transmit msg id {hex_msg_id} data is {list(map(lambda x: hex(x), data))} "
+                        f"Circle time is {message.cycle_time}ms ******")
+            self.__thread_pool.submit(self.__transmit, message, cycle_time)
 
-    def __event(self, pcan_message: Message):
+    def __event(self, message: Message):
         """
         发送事件信号
 
-        :param pcan_message: message的集合对象
+        :param message: message的集合对象
         """
-        msg_id = pcan_message.msg_id
+        msg_id = message.msg_id
         hex_msg_id = hex(msg_id)
-        data = pcan_message.data
+        data = message.data
+        cycle_time = message.cycle_time_fast / 1000.0
         # 事件信号
-        for i in range(pcan_message.cycle_time_fast_times):
+        for i in range(message.cycle_time_fast_times):
             logger.debug(f"****** The {i} times send msg[{hex_msg_id}] and data [{list(map(lambda x: hex(x), data))}] "
-                        f"and cycle time [{pcan_message.cycle_time_fast}]")
-            self.__pcan.transmit(pcan_message)
-            sleep(pcan_message.cycle_time_fast / 1000.0)
+                         f"and cycle time [{message.cycle_time_fast}]")
+            self.__pcan.transmit(message)
+            start_time = time.time()
+            logger.debug(f"start time is {start_time}")
+            time.sleep(cycle_time)
 
     def open_can(self):
         """
@@ -152,6 +174,7 @@ class PCanBus(CanBus):
         """
         self.__pcan.close_device()
 
+    @check_status
     def transmit(self, message: Message):
         """
         发送CAN帧函数。
@@ -161,7 +184,8 @@ class PCanBus(CanBus):
         :param message: message对象
         """
         msg_id = message.msg_id
-        if message.msg_send_type == self._cycle:
+        cycle_time = message.cycle_time
+        if message.msg_send_type == self._cycle or cycle_time > 0:
             logger.trace("cycle send message")
             # 周期信号
             self.__cycle_msg(message)
@@ -181,6 +205,7 @@ class PCanBus(CanBus):
             self._send_messages[msg_id].stop_flag = False
             self.__cycle_msg(message)
 
+    @check_status
     def stop_transmit(self, msg_id: int = None):
         """
         停止某一帧CAN数据的发送。(当message_id为None时候停止所有发送的CAN数据)
@@ -201,6 +226,7 @@ class PCanBus(CanBus):
                 logger.info(f"Message <{hex(key)}> is stop to send.")
                 item.stop_flag = True
 
+    @check_status
     def resume_transmit(self, msg_id: int = None):
         """
         恢复某一帧数据的发送函数。
@@ -211,9 +237,9 @@ class PCanBus(CanBus):
             logger.trace(f"try to resume message {hex(msg_id)}")
             if msg_id in self._send_messages:
                 logger.info(f"Message <{hex(msg_id)}> is resume to send.")
-                pcan_message = self._send_messages[msg_id]
-                pcan_message.stop_flag = False
-                self.transmit(pcan_message)
+                message = self._send_messages[msg_id]
+                message.stop_flag = False
+                self.transmit(message)
             else:
                 logger.error(f"Please check message id, Message <{hex(msg_id)}> is not contain.")
         else:
@@ -225,6 +251,7 @@ class PCanBus(CanBus):
                     item.stop_flag = False
                     self.transmit(item)
 
+    @check_status
     def receive(self, msg_id: int) -> Message:
         """
         接收函数。此函数从指定的设备CAN通道的接收缓冲区中读取数据。
@@ -249,12 +276,14 @@ class PCanBus(CanBus):
         """
         return self.__pcan.is_open
 
+    @check_status
     def get_stack(self) -> list:
         """
         获取CAN的stack
         """
         return self._stack
 
+    @check_status
     def clear_stack_data(self):
         """
         清除栈数据

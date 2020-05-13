@@ -11,11 +11,44 @@
 # @Created:     2018-09-12
 # --------------------------------------------------------
 import copy
+from enum import Enum
+
 import cv2
 import numpy as np
 import imagehash
 from PIL import Image
 from loguru import logger
+from automotive.tools.deprecated import deprecated
+
+# 2960*1440设备 内存耗费： kaze (2GB) >> sift > akaze >> surf > brisk > brief > orb > tpl
+# 单纯效果,推荐程度： tpl > surf ≈ sift > kaze > brisk > akaze> brief > orb
+# 有限内存,推荐程度： tpl > surf > sift > brisk > akaze > brief > orb >kaze
+from automotive.tools.images.aircv.keypoint_matching import KAZEMatching, BRISKMatching, AKAZEMatching, ORBMatching
+from automotive.tools.images.aircv.keypoint_matching_contrib import SIFTMatching, SURFMatching, BRIEFMatching
+from automotive.tools.images.aircv.template_matching import TemplateMatching
+
+
+class FindType(Enum):
+    """
+    2960*1440设备 内存耗费： kaze (2GB) >> sift > akaze >> surf > brisk > brief > orb > tpl
+    单纯效果,推荐程度： tpl > surf ≈ sift > kaze > brisk > akaze> brief > orb
+    有限内存,推荐程度： tpl > surf > sift > brisk > akaze > brief > orb >kaze
+    """
+    TEMPLATE = "tpl"
+    # 慢,最稳定
+    SIFT = "sift"
+    # 较快,效果较差,很不稳定
+    AKAZE = "akaze"
+    # 较慢,稍微稳定一点.
+    KAZE = "kaze"
+    # 快,效果不错
+    SURF = "surf"
+    # 快,效果一般,不太稳定
+    BRISK = "brisk"
+    # 识别特征点少,只适合强特征图像的匹配
+    BRIEF = "brief"
+    # 很快,效果垃圾
+    ORB = "orb"
 
 
 class Images(object):
@@ -56,7 +89,7 @@ class Images(object):
         return binary
 
     @staticmethod
-    def __get_image_nd_array(image: str, gray: bool) -> np.ndarray:
+    def __get_image_nd_array(image: (str, np.ndarray), gray: bool = False) -> np.ndarray:
         """
         获取图片的nd array矩阵
 
@@ -66,10 +99,15 @@ class Images(object):
 
         :return:  是否读取灰度图像
         """
-        if gray:
-            return cv2.imread(image, cv2.IMREAD_GRAYSCALE)
+        if isinstance(image, np.ndarray):
+            return image
         else:
-            return cv2.imread(image)
+            if gray:
+                return cv2.imread(image, cv2.IMREAD_GRAYSCALE)
+            elif image.endswith(".png"):
+                return cv2.imread(image, cv2.IMREAD_UNCHANGED)
+            else:
+                return cv2.imread(image)
 
     @staticmethod
     def __check_area(start_x: int, start_y: int, end_x: int, end_y: int, width: int, height: int):
@@ -101,6 +139,17 @@ class Images(object):
             raise ValueError(f"start_x[{start_x}] >= end_x[{end_x}]")
         if start_y >= end_y:
             raise ValueError(f"start_y[{start_y}] >= end_y[{end_y}]")
+
+    @staticmethod
+    def __check_area_same(position1: tuple, position2: tuple):
+        x1, y1, x2, y2 = position1
+        x3, y3, x4, y4 = position2
+        width1 = x2 - x1
+        height1 = y2 - y1
+        width2 = x4 - x3
+        height2 = y4 - y3
+        if width1 != width2 or height1 != height2:
+            raise ValueError(f"position1[{position1}] area is not equal position2[{position2}]")
 
     @staticmethod
     def __check_threshold(value: int):
@@ -318,6 +367,7 @@ class Images(object):
             return start_x, start_y, end_x, end_y
         raise ValueError(f"only support both end_x and  end_y or width and height")
 
+    @deprecated
     def is_image_contain(self, small_image: str, big_image: str, small_position: tuple = None,
                          big_position: tuple = None, gray: bool = False, threshold: int = None) -> bool:
         """
@@ -347,6 +397,17 @@ class Images(object):
         logger.debug(f"find_x [{find_x}] and find_y[{find_y}]")
         return find_x != -1 or find_y != -1
 
+    def cut_image_array(self, image: str, position: tuple) -> np.ndarray:
+        """
+        剪切区域图片返回数组
+        :param image:  原始图片
+
+        :param position:  剪贴区域，位置start_x, start_y, end_x, end_y
+
+        :return: np.ndarray
+        """
+        return self.__get_image_matrix(image, position)
+
     def cut_image(self, image: str, target_image: str, position: tuple):
         """
         剪切图片并保存到文件中
@@ -360,6 +421,7 @@ class Images(object):
         cut_image = self.__get_image_matrix(image, position)
         cv2.imwrite(target_image, cut_image)
 
+    @deprecated
     def get_position_in_image(self, image1: (str, np.ndarray), image2: (str, np.ndarray),
                               gray: bool = False, threshold: int = None) -> tuple:
         """
@@ -541,6 +603,7 @@ class Images(object):
 
             different_percent: 不同像素点的百分比
         """
+        self.__check_area_same(position1, position2)
         diff, total = self.__compare_by_matrix_in_same_area(image1, image2, position1, position2, gray, threshold)
         return self.__calc_compare_result(diff, total)
 
@@ -565,3 +628,79 @@ class Images(object):
             cv2.imwrite(target_image, image_array)
         else:
             cv2.imwrite(image, image_array)
+
+    def find_best_result(self, small_image: (str, np.array), big_image: (str, np.array), threshold: float = 0.7,
+                         rgb: bool = True, find_type: FindType = FindType.TEMPLATE) -> dict:
+        """
+        查找小图是否在大图中匹配, 当小图在大图中无法找到，则返回None
+
+        :param small_image: 小图片
+
+        :param big_image: 大图片
+
+        :param threshold: 阈值，默认0.7
+
+        :param rgb: 默认True
+
+        :param find_type: 默认tpl方式
+
+        :return: 返回了五个坐标点以及对比结果
+
+            {
+
+            "result": (center_x,center_y),
+
+            "rectangle": (
+
+                          (left_top_x, left_top_y),
+
+                          (left_bottom_x, left_bottom_y),
+
+                          (right_bottom_x, right_bottom_y),
+
+                          (right_top_x, right_top_y)
+
+                         )
+
+            "confidence": 0.99999
+
+            }
+        """
+        small_image = self.__get_image_nd_array(small_image)
+        big_image = self.__get_image_nd_array(big_image)
+        if find_type == FindType.TEMPLATE:
+            # Template matching.
+            return TemplateMatching(small_image, big_image, threshold=threshold, rgb=rgb).find_best_result()
+        elif find_type == FindType.KAZE:
+            # 较慢,稍微稳定一点.
+            return KAZEMatching(small_image, big_image, threshold=threshold, rgb=rgb).find_best_result()
+        elif find_type == FindType.BRISK:
+            # 快,效果一般,不太稳定
+            return BRISKMatching(small_image, big_image, threshold=threshold, rgb=rgb).find_best_result()
+        elif find_type == FindType.AKAZE:
+            # 较快,效果较差,很不稳定
+            return AKAZEMatching(small_image, big_image, threshold=threshold, rgb=rgb).find_best_result()
+        elif find_type == FindType.ORB:
+            # 很快,效果垃圾
+            return ORBMatching(small_image, big_image, threshold=threshold, rgb=rgb).find_best_result()
+        elif find_type == FindType.SIFT:
+            # 慢,最稳定
+            return SIFTMatching(small_image, big_image, threshold=threshold, rgb=rgb).find_best_result()
+        elif find_type == FindType.SURF:
+            # 快,效果不错
+            return SURFMatching(small_image, big_image, threshold=threshold, rgb=rgb).find_best_result()
+        elif find_type == FindType.BRIEF:
+            # 识别特征点少,只适合强特征图像的匹配
+            return BRIEFMatching(small_image, big_image, threshold=threshold, rgb=rgb).find_best_result()
+
+    def find_best_result_by_position(self, small_image: (str, np.array), big_image: (str, np.array),
+                                     position1: tuple, position2: tuple = None, threshold: float = 0.7,
+                                     rgb: bool = True) -> dict:
+        # 当position2填写的时候需要判断大小是否与position1相同
+        image1 = self.cut_image_array(small_image, position1)
+        if position2:
+            self.__check_area_same(position1, position2)
+            image2 = self.cut_image_array(big_image, position2)
+        else:
+            image2 = self.cut_image_array(big_image, position1)
+        return self.find_best_result(image1, image2, threshold, rgb, FindType.TEMPLATE)

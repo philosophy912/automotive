@@ -62,12 +62,18 @@ class PCan(CANDevice):
         self.__channel = pcanbasic.PCAN_USBBUS1
         self.is_open = False
 
-    def __check_open(self):
+    def check_status(func):
         """
-        检查PCAN是否处于打开状态，未打开的时候抛出RuntimeError
+        检查设备是否已经连接
+        :param func: 装饰器函数
         """
-        if not self.is_open:
-            raise RuntimeError("please open device first")
+
+        def wrapper(self, *args, **kwargs):
+            if not self.is_open:
+                raise RuntimeError("please open pcan device first")
+            return func(self, *args, **kwargs)
+
+        return wrapper
 
     def __init_device(self, baud_rate: str, channel: int = None):
         """
@@ -199,6 +205,7 @@ class PCan(CANDevice):
             else:
                 logger.error(f"Method <{stack()[0][3]}> Close PEAK CAN Failed.")
 
+    @check_status
     def read_board_info(self, channel: int = None) -> bool:
         """
         Gets the current status of a PEAK CAN Channel
@@ -256,9 +263,9 @@ class PCan(CANDevice):
             PCAN_ERROR_INITIALIZE = TPCANStatus(0x40000)
         """
         channel = self.__channel if channel else pcanbasic.PCAN_USBBUS1
-        self.__check_open()
         return self.__can_basic.get_status(channel) == pcanbasic.PCAN_ERROR_OK
 
+    @check_status
     def reset_device(self, channel: int = None):
         """
         Resets the receive and transmit queues of the PEAK CAN Channel
@@ -270,6 +277,7 @@ class PCan(CANDevice):
         if ret != pcanbasic.PCAN_ERROR_OK:
             raise RuntimeError(f"Method <{stack()[0][3]}> Reset PEAK CAN Failed.")
 
+    @check_status
     def transmit(self, message: Message, channel: int = None):
         """
         Transmits a CAN message。
@@ -290,6 +298,7 @@ class PCan(CANDevice):
         except Exception:
             raise RuntimeError('PEAK CAN transmit failed.')
 
+    @check_status
     def transmit_fd(self, message: Message, channel: int = None):
         """
         Transmits a CAN message。(预留，目前的PeakCAN不支持CANFD)
@@ -310,6 +319,7 @@ class PCan(CANDevice):
         except Exception:
             raise RuntimeError('PEAK CAN transmit failed.')
 
+    @check_status
     def receive(self, channel: int = None) -> tuple:
         """
         Reads a CAN message from the receive queue of a PEAK CAN Channel
@@ -329,6 +339,7 @@ class PCan(CANDevice):
         except Exception:
             raise RuntimeError('PEAK CAN receive failed.')
 
+    @check_status
     def receive_fd(self, channel: int = None) -> tuple:
         """
         Reads a CAN message from the receive queue of a PEAK CAN Channel

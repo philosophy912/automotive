@@ -12,6 +12,8 @@
 class Singleton(type):
     """
     单例方法，所有的类要使用则需要继承该类
+
+    目前CANService使用到了单例方法
     """
 
     def __init__(cls, what, bases=None, dict_=None):

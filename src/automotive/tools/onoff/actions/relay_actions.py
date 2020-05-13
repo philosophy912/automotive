@@ -92,10 +92,3 @@ class RelayActions(BaseActions):
             self.channel_off(channel, interval)
         sleep(1)
         logger.info(f"随机{duration}开关继电器通道{channel}结束")
-
-
-if __name__ == '__main__':
-    relay = RelayActions()
-    relay.open()
-    relay.channel_on(1)
-    relay.close()

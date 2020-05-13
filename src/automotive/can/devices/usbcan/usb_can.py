@@ -177,16 +177,22 @@ class UsbCan(CANDevice):
         self.__can_index = 0
         self.is_open = False
 
+    def check_status(func):
+        """
+        检查设备是否已经连接
+        :param func: 装饰器函数
+        """
+
+        def wrapper(self, *args, **kwargs):
+            if not self.is_open:
+                raise RuntimeError("please open pcan device first")
+            return func(self, *args, **kwargs)
+
+        return wrapper
+
     @staticmethod
     def __get_string(raw: int) -> str:
         return str(hex(raw)[2]) + '.' + str(hex(raw)[-2:])
-
-    def __check_open_status(self):
-        """
-        检查设备打开状态
-        """
-        if not self.is_open:
-            raise RuntimeError("please open device first")
 
     @staticmethod
     def __get_access_code_and_mask(access_code: int = None) -> tuple:
@@ -435,13 +441,13 @@ class UsbCan(CANDevice):
             if self.__lib_can.VCI_CloseDevice(self.__device_type, self.__device_index) == 1:
                 self.is_open = False
 
+    @check_status
     def read_board_info(self) -> VciBoardInfo:
         """
         获取设备信息。
 
         :return: VciBoardInfo对象
         """
-        self.__check_open_status()
         p_info = VciBoardInfo()
         try:
             ret = self.__lib_can.VCI_ReadBoardInfo(self.__device_type, self.__device_index, byref(p_info))
@@ -475,6 +481,7 @@ class UsbCan(CANDevice):
             logger.error('ERROR: ' + str(error[0]) + ' : ' + str(error[1]))
             raise RuntimeError(error[1])
 
+    @check_status
     def get_hw_type(self) -> str:
         """
         获取硬件类型
@@ -486,6 +493,7 @@ class UsbCan(CANDevice):
         self.close_device()
         return hw_type
 
+    @check_status
     @control_decorator
     def reset_device(self, can_index: int = 0) -> bool:
         """
@@ -500,9 +508,9 @@ class UsbCan(CANDevice):
 
             False: 失败
         """
-        self.__check_open_status()
         return self.__lib_can.VCI_ResetCAN(self.__device_type, self.__device_index, can_index) == 1
 
+    @check_status
     @control_decorator
     def clear_buffer(self, can_index: int = 0):
         """
@@ -515,9 +523,9 @@ class UsbCan(CANDevice):
 
             False: 失败
         """
-        self.__check_open_status()
         return self.__lib_can.VCI_ClearBuffer(self.__device_type, self.__device_index, can_index) == 1
 
+    @check_status
     @control_decorator
     def get_receive_num(self, can_index: int = 0) -> int:
         """
@@ -528,9 +536,9 @@ class UsbCan(CANDevice):
 
         :return: 返回尚未被读取的帧数；
         """
-        self.__check_open_status()
         return self.__lib_can.VCI_GetReceiveNum(self.__device_type, self.__device_index, can_index)
 
+    @check_status
     def transmit(self, message: Message):
         """
         发送函数。
@@ -538,13 +546,14 @@ class UsbCan(CANDevice):
         :param message: Message
 
         """
-        p_send = self.__data_package(message.frame_length, message.msg_id, message.time_flag, message.send_type,
+        p_send = self.__data_package(message.frame_length, message.msg_id, message.time_flag, message.usb_can_send_type,
                                      message.remote_flag, message.external_flag, message.data_length, message.data,
                                      message.reserved)
         self.__lib_can.VCI_Transmit.restype = DWORD
         try:
             ret = self.__lib_can.VCI_Transmit(self.__device_type, self.__device_index, self.__can_index, byref(p_send),
                                               message.frame_length)
+            logger.trace(f"ret = {ret}")
             if ret > 0:
                 logger.trace(f"Usb CAN CAN{self.__can_index} Transmit Success.")
             elif ret == 0:
@@ -556,9 +565,10 @@ class UsbCan(CANDevice):
                 raise RuntimeError("Unknown error.")
         except Exception:
             error = sys.exc_info()
-            logger.error('ERROR: ' + str(error[0]) + ' : ' + str(error[1]))
+            logger.trace('ERROR: ' + str(error[0]) + ' : ' + str(error[1]))
             raise RuntimeError(error[1])
 
+    @check_status
     def receive(self, frame_length: int = 2500, wait_time: int = 100) -> tuple:
         """
         接收函数。此函数从指定的设备CAN通道的接收缓冲区中读取数据。

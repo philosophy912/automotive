@@ -13,8 +13,10 @@ from functools import wraps
 
 def deprecated(new_function: str = None, class_name: str = None):
     """
-    废弃方法装饰器
+    废弃方法装饰器(目前没有废弃方法或者废弃函数)
+
     :param new_function: 函数名
+
     :param class_name: 类名
     """
 

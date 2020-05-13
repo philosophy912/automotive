@@ -7,7 +7,7 @@
 # @Author:      lizhe  
 # @Created:     2019/12/2 12:57  
 # --------------------------------------------------------
-from time import sleep
+import time
 from concurrent.futures import ThreadPoolExecutor
 from loguru import logger
 from .usb_can import UsbCan
@@ -21,12 +21,25 @@ class UsbCanBus(CanBus):
 
     def __init__(self, can_box_device: CanBoxDevice):
         super().__init__()
-        # 线程池句柄
+        # 设置线程池，最大线程数为100
         self.__thread_pool = None
         # PCAN实例化
         self.__usbcan = UsbCan(can_box_device)
         # Default TimeStamp有效
         self.__time_flag = 1
+
+    def check_status(func):
+        """
+        检查设备是否已经连接
+        :param func: 装饰器函数
+        """
+
+        def wrapper(self, *args, **kwargs):
+            if not self.__thread_pool:
+                raise RuntimeError("please open usb can device first")
+            return func(self, *args, **kwargs)
+
+        return wrapper
 
     @staticmethod
     def __get_data(data, length: int) -> list:
@@ -58,24 +71,24 @@ class UsbCanBus(CanBus):
             reserved_list.append(reserved_value[i])
         return reserved_list
 
-    def __get_message(self, message) -> Message:
+    def __get_message(self, p_receive) -> Message:
         """
         获取message对象
 
-        :param message: message信息
+        :param p_receive: message信息
 
         :return: PeakCanMessage对象
         """
         msg = Message()
-        msg.msg_id = message.id
-        msg.time_stamp = hex(message.time_stamp)
-        msg.time_flag = message.time_flag
-        msg.send_type = message.usb_can_send_type
-        msg.remote_flag = message.remote_flag
-        msg.external_flag = message.extern_flag
-        msg.reserved = self.__get_reserved(message.reserved)
-        msg.data_length = 8 if message.data_len > 8 else message.data_len
-        msg.data = self.__get_data(message.data, msg.data_length)
+        msg.msg_id = p_receive.id
+        msg.time_stamp = hex(p_receive.time_stamp)
+        msg.time_flag = p_receive.time_flag
+        msg.send_type = p_receive.send_type
+        msg.remote_flag = p_receive.remote_flag
+        msg.external_flag = p_receive.extern_flag
+        msg.reserved = self.__get_reserved(p_receive.reserved)
+        msg.data_length = 8 if p_receive.data_len > 8 else p_receive.data_len
+        msg.data = self.__get_data(p_receive.data, msg.data_length)
         return msg
 
     def __receive(self):
@@ -103,20 +116,27 @@ class UsbCanBus(CanBus):
             except RuntimeError:
                 continue
 
-    def __transmit(self, message: Message):
+    def __transmit(self, message: Message, cycle_time: float):
         """
         CAN发送帧函数，在线程中执行。
 
         :param message: Message对象
         """
         logger.trace(f"usb can status is {self.__usbcan.is_open}")
+        logger.trace(f"cycle_time = {cycle_time}")
         msg_id = message.msg_id
         while self.__usbcan.is_open and not message.stop_flag:
             logger.trace(f"send msg {hex(msg_id)} and cycle time is {message.cycle_time}")
-            self.__usbcan.transmit(message)
-            logger.trace(f"sleep time is {message.cycle_time / 1000.0}")
+            try:
+                self.__usbcan.transmit(message)
+            except RuntimeError:
+                logger.trace("some issue found")
+            start_time = time.time()
             # 循环发送的等待周期
-            sleep(message.cycle_time / 1000.0)
+            time.sleep(cycle_time)
+            end_time = time.time()
+            different = end_time - start_time
+            logger.trace(f"{start_time} to {end_time} and different is {different}")
 
     def __cycle_msg(self, message: Message):
         """
@@ -125,11 +145,13 @@ class UsbCanBus(CanBus):
         :param message: message的集合对象
         """
         msg_id = message.msg_id
-        # 周期信号
-        self._send_messages[msg_id] = message
-        # 周期性发送
-        logger.info(f"****** Transmit msg id {hex(msg_id)} Circle time is {message.cycle_time}ms ******")
-        self.__thread_pool.submit(self.__transmit, message)
+        if msg_id not in self._send_messages:
+            # 周期信号
+            self._send_messages[msg_id] = message
+            cycle_time = message.cycle_time / 1000.0
+            # 周期性发送
+            logger.info(f"****** Transmit msg id {hex(msg_id)} Circle time is {message.cycle_time}ms ******")
+            self.__thread_pool.submit(self.__transmit, message, cycle_time)
 
     def __event(self, message: Message):
         """
@@ -138,11 +160,14 @@ class UsbCanBus(CanBus):
         :param message: message的集合对象
         """
         msg_id = message.msg_id
+        cycle_time = message.cycle_time_fast / 1000.0
         # 事件信号
         for i in range(message.cycle_time_fast_times):
             logger.trace(f"****** Transmit msg id {hex(msg_id)} Once ******")
             self.__usbcan.transmit(message)
-            sleep(message.cycle_time_fast / 1000.0)
+            start_time = time.time()
+            logger.debug(f"start time is {start_time}")
+            time.sleep(cycle_time)
 
     def open_can(self):
         """
@@ -162,6 +187,7 @@ class UsbCanBus(CanBus):
         """
         self.__usbcan.close_device()
 
+    @check_status
     def transmit(self, message: Message):
         """
         发送CAN帧函数。
@@ -172,13 +198,17 @@ class UsbCanBus(CanBus):
         """
         msg_id = message.msg_id
         message.usb_can_send_type = 1
-        if message.msg_send_type == self._cycle:
+        cycle_time = message.cycle_time
+        if message.msg_send_type == self._cycle or cycle_time > 0:
+            logger.trace("cycle time transmit")
             # 周期信号
             self.__cycle_msg(message)
         elif message.msg_send_type == self._event:
+            logger.trace("event time transmit")
             # 事件信号
             self.__event(message)
         else:
+            logger.trace("cycle and event time transmit")
             # 周期信号
             if msg_id not in self._send_messages:
                 self.__cycle_msg(message)
@@ -189,6 +219,7 @@ class UsbCanBus(CanBus):
             self._send_messages[msg_id].stop_flag = False
             self.__cycle_msg(message)
 
+    @check_status
     def stop_transmit(self, msg_id: int = None):
         """
         停止某一帧CAN数据的发送。(当message_id为None时候停止所有发送的CAN数据)
@@ -209,6 +240,7 @@ class UsbCanBus(CanBus):
                 logger.info(f"Message <{hex(key)}> is stop to send.")
                 item.stop_flag = True
 
+    @check_status
     def resume_transmit(self, msg_id: int = None):
         """
         恢复某一帧数据的发送函数。
@@ -219,9 +251,9 @@ class UsbCanBus(CanBus):
             logger.trace(f"try to resume message {hex(msg_id)}")
             if msg_id in self._send_messages:
                 logger.info(f"Message <{hex(msg_id)}> is resume to send.")
-                pcan_message = self._send_messages[msg_id]
-                pcan_message.stop_flag = False
-                self.transmit(pcan_message)
+                message = self._send_messages[msg_id]
+                message.stop_flag = False
+                self.transmit(message)
             else:
                 logger.error(f"Please check message id, Message <{hex(msg_id)}> is not contain.")
         else:
@@ -233,6 +265,7 @@ class UsbCanBus(CanBus):
                     item.stop_flag = False
                     self.transmit(item)
 
+    @check_status
     def receive(self, msg_id: int) -> Message:
         """
         接收函数。此函数从指定的设备CAN通道的接收缓冲区中读取数据。
