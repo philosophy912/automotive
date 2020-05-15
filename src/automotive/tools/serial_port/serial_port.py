@@ -22,6 +22,19 @@ class SerialPort(object):
     def __init__(self):
         self._serial = None
 
+    def check_status(func):
+        """
+        检查设备是否已经连接
+        :param func: 装饰器函数
+        """
+
+        def wrapper(self, *args, **kwargs):
+            if not self._serial:
+                raise RuntimeError("please connect serial first")
+            return func(self, *args, **kwargs)
+
+        return wrapper
+
     @staticmethod
     def __detect_codec(string: bytes):
         """
@@ -34,13 +47,6 @@ class SerialPort(object):
         encode = chardet.detect(string)
         logger.debug(f"codec is {encode['encoding']}")
         return encode['encoding']
-
-    def __is_connect(self):
-        """
-        串口是否已经连接
-        """
-        if self._serial is None:
-            raise RuntimeError("please connect serial first")
 
     def __get_line(self, line: bytes, type_: bool = None) -> str:
         """
@@ -100,8 +106,9 @@ class SerialPort(object):
         """
         关闭串口
         """
-        if self.__is_connect():
+        if self._serial:
             self._serial.close()
+            self._serial = None
 
     @staticmethod
     def check_port(port: str) -> bool:
@@ -123,6 +130,7 @@ class SerialPort(object):
         logger.warning(f"un support COM port: {port}, should be one of :{ports}")
         return False
 
+    @check_status
     def send(self, cmd: (bytes, str), type_: bool = True, end: str = '\r'):
         """
         发送命令到串口
@@ -137,35 +145,20 @@ class SerialPort(object):
 
         :param end:是否增加结束符，默认为为\r
         """
-        self.__is_connect()
         cmd = cmd + end if end else cmd
         if type_:
             if not isinstance(cmd, bytes):
                 cmd = cmd.encode("utf-8")
         return self._serial.write(cmd)
 
+    @check_status
     def send_break(self):
         """
         发送终止命令，停止打印
         """
-        self.__is_connect()
         self._serial.sendBreak(duration=0.25)
 
-    def open(self):
-        """
-        开启新的串口会话
-        """
-        self.__is_connect()
-        self._serial.open()
-
-    def close(self):
-        """
-        关闭串口会话连接
-        """
-        if self._serial is not None:
-            self._serial.close()
-            self._serial = None
-
+    @check_status
     def read_bytes(self, byte_number: int = None, type_: bool = None) -> bytes:
         """
         读取串口输出，按byte读取
@@ -182,13 +175,13 @@ class SerialPort(object):
 
         :return: 读取到的串口输出bytes
         """
-        self.__is_connect()
         byte_ = self._serial.read(byte_number) if byte_number is not None else self._serial.read()
         if type_ is None:
             return byte_.decode(self.__detect_codec(byte_))
         else:
             return byte_.decode('utf-8') if type_ else byte_
 
+    @check_status
     def read_line(self, type_: bool = None) -> str:
         """
         读取串口输出，按行读取，调用一次读取一行
@@ -203,10 +196,10 @@ class SerialPort(object):
 
         :return: 读取到的串口输出string
         """
-        self.__is_connect()
         line = self._serial.readline()
         return self.__get_line(line, type_)
 
+    @check_status
     def read_lines(self, type_: bool = None) -> list:
         """
         读取串口输出，读取所有行，返回列表
@@ -221,13 +214,13 @@ class SerialPort(object):
 
         :return: 读取到的串口输出list
         """
-        self.__is_connect()
         lines = self._serial.readlines()
         result = []
         for line in lines:
             result.append(self.__get_line(line, type_))
         return result
 
+    @check_status
     def read_all(self, type_: bool = None) -> str:
         """
         读取串口输出，一次性把所有输出读取
@@ -242,63 +235,63 @@ class SerialPort(object):
 
         :return: 读取到的串口输出string
         """
-        self.__is_connect()
         all_lines = self._serial.readall()
         return self.__get_line(all_lines, type_)
 
+    @check_status
     def in_waiting(self) -> int:
         """
         获取接收缓存区数据大小
 
         :return: 接收缓存区数据字节数:int
         """
-        self.__is_connect()
         return self._serial.in_waiting
 
+    @check_status
     def out_waiting(self) -> int:
         """
         获取写命令缓存区数据大小
 
         :return: 写命令缓存区数据字节数:int
         """
-        self.__is_connect()
         return self._serial.out_waiting
 
+    @check_status
     def flush(self):
         """
         清空所有缓存
         """
-        self.__is_connect()
         self._serial.flush()
 
+    @check_status
     def flush_input(self):
         """
         清空输入缓存
         """
-        self.__is_connect()
         self._serial.flushInput()
 
+    @check_status
     def flush_output(self):
         """
         清空输出缓存
         """
-        self.__is_connect()
         self._serial.flushOutput()
 
+    @check_status
     def reset_input_buffer(self):
         """
         清除串口输入缓存
         """
-        self.__is_connect()
         self._serial.reset_input_buffer()
 
+    @check_status
     def reset_output_buffer(self):
         """
         清除串口输出缓存
         """
-        self.__is_connect()
         self._serial.reset_output_buffer()
 
+    @check_status
     def get_connection_status(self) -> bool:
         """
         获取串口的连接状态
@@ -309,11 +302,11 @@ class SerialPort(object):
             False : 已断开
         """
         try:
-            self.__is_connect()
             return self._serial.isOpen
         except RuntimeError:
             return False
 
+    @check_status
     def set_buffer(self, rx_size: int = 4096, tx_size: int = 4096):
         """
         设置串口缓存大小，默认4096
@@ -322,5 +315,4 @@ class SerialPort(object):
 
         :param tx_size: 发送缓存区大小设置
         """
-        self.__is_connect()
         self._serial.set_buffer_size(rx_size, tx_size)

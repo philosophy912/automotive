@@ -136,6 +136,11 @@ class PCanBus(CanBus):
             logger.info(f"****** Transmit msg id {hex_msg_id} data is {list(map(lambda x: hex(x), data))} "
                         f"Circle time is {message.cycle_time}ms ******")
             self.__thread_pool.submit(self.__transmit, message, cycle_time)
+        else:
+            # 已经在里面了，所以修改data值而已
+            self._send_messages[msg_id].data = message.data
+            # 反向update一下保证signal是对的
+            self._send_messages[msg_id].update(False)
 
     def __event(self, message: Message):
         """
