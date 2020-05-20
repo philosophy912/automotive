@@ -94,9 +94,11 @@ class PCan(CANDevice):
             ret = self.__can_basic.initialize(channel, btr0btr1, hw_type, io_port, interrupt)
             if ret == 0:
                 self.is_open = True
+                logger.debug(f"pcan is open success")
             else:
                 logger.error(f"Method <{stack()[0][3]}> Init PEAK CAN channel_{hex(channel.value)} Failed.")
                 self.is_open = False
+                logger.debug(f"pcan is open failed")
 
     @staticmethod
     def __data_package(frame_length: int, message_id: int, send_type: int, data_length: int, data: list):
@@ -201,6 +203,7 @@ class PCan(CANDevice):
         if self.is_open:
             ret = self.__can_basic.uninitialize(channel)
             if ret == pcanbasic.PCAN_ERROR_OK:
+                logger.debug(f"close pcan success")
                 self.is_open = False
             else:
                 logger.error(f"Method <{stack()[0][3]}> Close PEAK CAN Failed.")

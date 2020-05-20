@@ -7,8 +7,8 @@
 # @Author:      lizhe  
 # @Created:     2019/12/2 12:57  
 # --------------------------------------------------------
-import time
-from concurrent.futures import ThreadPoolExecutor
+from time import sleep
+from concurrent.futures import ThreadPoolExecutor, wait, ALL_COMPLETED
 from loguru import logger
 from .usb_can import UsbCan
 from automotive.can.interfaces import CanBus, CanBoxDevice, Message
@@ -21,12 +21,20 @@ class UsbCanBus(CanBus):
 
     def __init__(self, can_box_device: CanBoxDevice):
         super().__init__()
-        # 设置线程池，最大线程数为100
+        # # 设置线程池，最大线程数为100
         self.__thread_pool = None
-        # PCAN实例化
+        # USB CAN BOX实例化
         self.__usbcan = UsbCan(can_box_device)
         # Default TimeStamp有效
         self.__time_flag = 1
+        # 是否需要接收，用于线程关闭
+        self.__need_receive = True
+        # 是否需要一直发送
+        self.__need_transmit = True
+        # 发送线程
+        self.__transmit_thread = []
+        # 接收线程
+        self.__receive_thread = []
 
     def check_status(func):
         """
@@ -35,7 +43,7 @@ class UsbCanBus(CanBus):
         """
 
         def wrapper(self, *args, **kwargs):
-            if not self.__thread_pool:
+            if not self.__usbcan.is_open:
                 raise RuntimeError("please open usb can device first")
             return func(self, *args, **kwargs)
 
@@ -44,7 +52,7 @@ class UsbCanBus(CanBus):
     @staticmethod
     def __get_data(data, length: int) -> list:
         """
-        转换pcan收的data为list
+        转换CAN BOX收的data为list
 
         :param data: 收到的data数据
 
@@ -95,7 +103,7 @@ class UsbCanBus(CanBus):
         """
         CAN接收帧函数，在接收线程中执行
         """
-        while self.__usbcan.is_open:
+        while self.__usbcan.is_open and self.__need_receive:
             try:
                 ret, p_receive = self.__usbcan.receive()
                 for i in range(ret):
@@ -125,18 +133,14 @@ class UsbCanBus(CanBus):
         logger.trace(f"usb can status is {self.__usbcan.is_open}")
         logger.trace(f"cycle_time = {cycle_time}")
         msg_id = message.msg_id
-        while self.__usbcan.is_open and not message.stop_flag:
+        while self.__usbcan.is_open and not message.stop_flag and self.__need_transmit:
             logger.trace(f"send msg {hex(msg_id)} and cycle time is {message.cycle_time}")
             try:
                 self.__usbcan.transmit(message)
-            except RuntimeError:
-                logger.trace("some issue found")
-            start_time = time.time()
+            except RuntimeError as e:
+                logger.trace(f"some issue found, error is {e}")
             # 循环发送的等待周期
-            time.sleep(cycle_time)
-            end_time = time.time()
-            different = end_time - start_time
-            logger.trace(f"{start_time} to {end_time} and different is {different}")
+            sleep(cycle_time)
 
     def __cycle_msg(self, message: Message):
         """
@@ -148,10 +152,13 @@ class UsbCanBus(CanBus):
         if msg_id not in self._send_messages:
             # 周期信号
             self._send_messages[msg_id] = message
+            data = message.data
+            hex_msg_id = hex(msg_id)
             cycle_time = message.cycle_time / 1000.0
             # 周期性发送
-            logger.info(f"****** Transmit msg id {hex(msg_id)} Circle time is {message.cycle_time}ms ******")
-            self.__thread_pool.submit(self.__transmit, message, cycle_time)
+            logger.info(f"****** Transmit msg id {hex_msg_id} data is {list(map(lambda x: hex(x), data))} "
+                        f"Circle time is {message.cycle_time}ms ******")
+            self.__transmit_thread.append(self.__thread_pool.submit(self.__transmit, message, cycle_time))
         else:
             # 已经在里面了，所以修改data值而已
             self._send_messages[msg_id].data = message.data
@@ -165,14 +172,15 @@ class UsbCanBus(CanBus):
         :param message: message的集合对象
         """
         msg_id = message.msg_id
+        hex_msg_id = hex(msg_id)
+        data = message.data
         cycle_time = message.cycle_time_fast / 1000.0
         # 事件信号
         for i in range(message.cycle_time_fast_times):
-            logger.trace(f"****** Transmit msg id {hex(msg_id)} Once ******")
+            logger.debug(f"****** The {i} times send msg[{hex_msg_id}] and data [{list(map(lambda x: hex(x), data))}] "
+                         f"and cycle time [{message.cycle_time_fast}]")
             self.__usbcan.transmit(message)
-            start_time = time.time()
-            logger.debug(f"start time is {start_time}")
-            time.sleep(cycle_time)
+            sleep(cycle_time)
 
     def open_can(self):
         """
@@ -183,13 +191,22 @@ class UsbCanBus(CanBus):
         # 打开设备，并初始化设备
         self.__usbcan.open_device()
         # 开启设备的接收线程
+        self.__need_receive = True
+        # 开启设备的发送线程
+        self.__need_transmit = True
         # 把接收函数submit到线程池中
-        self.__thread_pool.submit(self.__receive)
+        self.__receive_thread.append(self.__thread_pool.submit(self.__receive))
 
     def close_can(self):
         """
         关闭USB CAN设备。
         """
+        self.__need_transmit = False
+        wait(self.__transmit_thread, return_when=ALL_COMPLETED)
+        self.__need_receive = False
+        wait(self.__receive_thread, return_when=ALL_COMPLETED)
+        self.__thread_pool.shutdown()
+        self._send_messages.clear()
         self.__usbcan.close_device()
 
     @check_status
@@ -209,12 +226,12 @@ class UsbCanBus(CanBus):
             # 周期信号
             self.__cycle_msg(message)
         elif message.msg_send_type == self._event:
-            logger.trace("event time transmit")
+            logger.trace("event send message")
             # 事件信号
             self.__event(message)
         else:
-            logger.trace("cycle and event time transmit")
-            # 周期信号
+            logger.trace("cycle&event send message")
+            # 周期事件信号
             if msg_id not in self._send_messages:
                 self.__cycle_msg(message)
             # 暂停已发送的消息
@@ -295,12 +312,14 @@ class UsbCanBus(CanBus):
         """
         return self.__usbcan.is_open
 
+    @check_status
     def get_stack(self) -> list:
         """
-         获取CAN的stack
+        获取CAN的stack
         """
         return self._stack
 
+    @check_status
     def clear_stack_data(self):
         """
         清除栈数据

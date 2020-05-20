@@ -26,9 +26,11 @@ class CANService(metaclass=Singleton):
     """
         CAN的服务类，主要用于CAN信号的发送，接收等操作。
 
+        默认设备为Peak Can， 如果要师勇can分析仪，需要使用参数can_box_device = CanBoxDevice.PEAKCAN
+
     """
 
-    def __init__(self, message: (str, list), encoding: str = "utf-8",
+    def __init__(self, messages: (str, list), encoding: str = "utf-8",
                  can_box_device: CanBoxDevice = CanBoxDevice.PEAKCAN):
         if can_box_device == CanBoxDevice.PEAKCAN:
             logger.info("user pcan")
@@ -38,8 +40,8 @@ class CANService(metaclass=Singleton):
             self.__can = UsbCanBus(can_box_device)
         self.__tools = Tools()
         self.__parser = Parser()
-        logger.debug(f"read message from file {message}")
-        self.__messages, self.__name_messages = self.__parser.get_message(message, encoding=encoding)
+        logger.debug(f"read message from file {messages}")
+        self.__messages, self.__name_messages = self.__parser.get_message(messages, encoding=encoding)
         # 用于记录当前栈中msg的最后一个数据的时间点
         self.__last_msg_time_in_stack = dict()
 

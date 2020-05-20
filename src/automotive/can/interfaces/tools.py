@@ -172,6 +172,8 @@ class Tools(object):
                 # 最后一个值Byte不能填满
                 raw_value = byte_value[:8 - size]
                 logger.trace(f"raw_value = {raw_value}")
+                # 可能存在值长度不够位数的问题，所以要补0
+                bin_value = self.__completion_byte(bin_value, size)
                 calc_value = int((raw_value + bin_value), 2)
                 logger.trace(f"calc_value = {calc_value}")
                 byte_array[index] = calc_value
@@ -341,34 +343,34 @@ class Tools(object):
         else:
             byte_holder = 1
         logger.trace(f"byte_holder is {byte_holder}")
-        # 计算循环终结的点
-        # range_length = byte_index + byte_holder
-        # logger.trace(f"range_length is {range_length}")
         if type_:
             for i in range(byte_holder):
+                # 占满8bit的数据
                 byte_data = self.__completion_byte(bin(byte_array[byte_index + i])[2:])
                 if i == 0:
                     # 表示第一位取数据
                     if byte_holder == 1:
-                        value = value + byte_data[bit_index + 1 - bit_length:bit_index + 1]
+                        # 如0位开始占据3位 则[7+1-2:7+1] = [6:8]
+                        value = byte_data[bit_index + 1 - bit_length:bit_index + 1]
                     else:
-                        value = value + byte_data[bit_index + 1:]
+                        value = byte_data[:bit_index + 1]
                 elif i == byte_holder - 1:
                     # 表示最后一位取数据
                     if remainder:
-                        value = value + byte_data[:remainder]
+                        value = byte_data[8 - remainder:] + value
                     else:
-                        value = value + byte_data
+                        value = byte_data + value
                 else:
-                    value = value + byte_data
+                    value = byte_data + value
                 logger.trace(f"{i} times value is 0b{value}")
         else:
             for i in range(byte_holder):
+                # 占满8bit的数据
                 byte_data = self.__completion_byte(bin(byte_array[byte_index - i])[2:])
                 if i == 0:
                     # 表示第一位取数据
                     if byte_holder == 1:
-                        value = byte_data[bit_index + 1 - bit_length:bit_index + 1]+ value
+                        value = byte_data[bit_index + 1 - bit_length:bit_index + 1] + value
                     else:
                         value = byte_data[:bit_index + 1] + value
                 elif i == byte_holder - 1:

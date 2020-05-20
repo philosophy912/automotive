@@ -428,8 +428,11 @@ class UsbCan(CANDevice):
             else:
                 self.is_open = False
         if self.is_open:
+            logger.debug(f"device is opened")
             if self.__init_device(baud_rate.value) == 1:
                 self.__start_device()
+            else:
+                raise RuntimeError("open can box failed")
         else:
             raise RuntimeError("can box is not opened")
 
@@ -440,6 +443,7 @@ class UsbCan(CANDevice):
         if self.is_open:
             if self.__lib_can.VCI_CloseDevice(self.__device_type, self.__device_index) == 1:
                 self.is_open = False
+                logger.info(f"device is closed")
 
     @check_status
     def read_board_info(self) -> VciBoardInfo:

@@ -7,9 +7,9 @@
 # @Author:      lizhe
 # @Created:     2019/11/30 22:35  
 # --------------------------------------------------------
-import time
+from time import sleep
 from loguru import logger
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, wait, ALL_COMPLETED
 from .pcan import PCan
 from automotive.can.interfaces import Message, CanBus
 
@@ -25,6 +25,14 @@ class PCanBus(CanBus):
         self.__thread_pool = None
         # PCAN实例化
         self.__pcan = PCan()
+        # 是否需要接收，用于线程关闭
+        self.__need_receive = True
+        # 是否需要一直发送
+        self.__need_transmit = True
+        # 发送线程
+        self.__transmit_thread = []
+        # 接收线程
+        self.__receive_thread = []
 
     def check_status(func):
         """
@@ -33,7 +41,7 @@ class PCanBus(CanBus):
         """
 
         def wrapper(self, *args, **kwargs):
-            if not self.__thread_pool:
+            if not self.__pcan.is_open:
                 raise RuntimeError("please open pcan device first")
             return func(self, *args, **kwargs)
 
@@ -86,7 +94,7 @@ class PCanBus(CanBus):
         """
         CAN接收帧函数，在接收线程中执行
         """
-        while self.__pcan.is_open:
+        while self.__pcan.is_open and self.__need_receive:
             try:
                 receive_msg, timestamp = self.__pcan.receive()
                 msg_id = receive_msg.id
@@ -110,15 +118,14 @@ class PCanBus(CanBus):
         logger.trace(f"peak can status is {self.__pcan.is_open}")
         logger.trace(f"cycle_time = {cycle_time}")
         msg_id = message.msg_id
-        while self.__pcan.is_open and not message.stop_flag:
+        while self.__pcan.is_open and not message.stop_flag and self.__need_transmit:
             logger.trace(f"send msg {hex(msg_id)} and cycle time is {message.cycle_time}")
-            self.__pcan.transmit(message)
-            start_time = time.time()
+            try:
+                self.__pcan.transmit(message)
+            except RuntimeError as e:
+                logger.trace(f"some issue found, error is {e}")
             # 循环发送的等待周期
-            time.sleep(cycle_time)
-            end_time = time.time()
-            different = end_time - start_time
-            logger.trace(f"{start_time} to {end_time} and different is {different}")
+            sleep(cycle_time)
 
     def __cycle_msg(self, message: Message):
         """
@@ -133,9 +140,10 @@ class PCanBus(CanBus):
             data = message.data
             hex_msg_id = hex(msg_id)
             cycle_time = message.cycle_time / 1000.0
+            # 周期性发送
             logger.info(f"****** Transmit msg id {hex_msg_id} data is {list(map(lambda x: hex(x), data))} "
                         f"Circle time is {message.cycle_time}ms ******")
-            self.__thread_pool.submit(self.__transmit, message, cycle_time)
+            self.__transmit_thread.append(self.__thread_pool.submit(self.__transmit, message, cycle_time))
         else:
             # 已经在里面了，所以修改data值而已
             self._send_messages[msg_id].data = message.data
@@ -157,9 +165,7 @@ class PCanBus(CanBus):
             logger.debug(f"****** The {i} times send msg[{hex_msg_id}] and data [{list(map(lambda x: hex(x), data))}] "
                          f"and cycle time [{message.cycle_time_fast}]")
             self.__pcan.transmit(message)
-            start_time = time.time()
-            logger.debug(f"start time is {start_time}")
-            time.sleep(cycle_time)
+            sleep(cycle_time)
 
     def open_can(self):
         """
@@ -170,13 +176,22 @@ class PCanBus(CanBus):
         # 打开设备，并初始化设备
         self.__pcan.open_device()
         # 开启设备的接收线程
+        self.__need_receive = True
+        # 开启设备的发送线程
+        self.__need_transmit = True
         # 把接收函数submit到线程池中
-        self.__thread_pool.submit(self.__receive)
+        self.__receive_thread.append(self.__thread_pool.submit(self.__receive))
 
     def close_can(self):
         """
         关闭USB CAN设备。
         """
+        self.__need_transmit = False
+        wait(self.__transmit_thread, return_when=ALL_COMPLETED)
+        self.__need_receive = False
+        wait(self.__receive_thread, return_when=ALL_COMPLETED)
+        self.__thread_pool.shutdown()
+        self._send_messages.clear()
         self.__pcan.close_device()
 
     @check_status
