@@ -149,7 +149,12 @@ class UsbCanBus(CanBus):
         :param message: message的集合对象
         """
         msg_id = message.msg_id
-        if msg_id not in self._send_messages:
+        # msg_id不在发送队列中
+        condition1 = msg_id not in self._send_messages
+        # msg_id在发送队列中，且stop_flag为真，即停止发送了得
+        condition2 = msg_id in self._send_messages and self._send_messages[msg_id].stop_flag
+        logger.debug(f"condition1[{condition1}] and condition2 = [{condition2}]")
+        if condition1 or condition2:
             # 周期信号
             self._send_messages[msg_id] = message
             data = message.data
@@ -274,7 +279,6 @@ class UsbCanBus(CanBus):
             if msg_id in self._send_messages:
                 logger.info(f"Message <{hex(msg_id)}> is resume to send.")
                 message = self._send_messages[msg_id]
-                message.stop_flag = False
                 self.transmit(message)
             else:
                 logger.error(f"Please check message id, Message <{hex(msg_id)}> is not contain.")
@@ -284,7 +288,6 @@ class UsbCanBus(CanBus):
                 logger.info(f"Message <{hex(key)}> is resume to send.")
                 # 当发现这个msg是停止的时候就恢复发送
                 if item.stop_flag:
-                    item.stop_flag = False
                     self.transmit(item)
 
     @check_status

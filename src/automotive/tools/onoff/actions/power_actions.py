@@ -45,7 +45,7 @@ class PowerActions(BaseActions):
         pass
 
     @abstractmethod
-    def change_voltage(self, start: float, end: float, step: float, interval: float = 0.5, current: float = 10) -> bool:
+    def change_voltage(self, start: float, end: float, step: float, interval: float = 0.5, current: float = 10):
         """
         调节电压
 

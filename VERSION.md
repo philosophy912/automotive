@@ -1,5 +1,10 @@
 ## 版本更新说明
 
+##### V1.1.0
+- 修复了CAN消息stop之后无法resume的问题
+- 修改了konstanter的start函数返回值为None，并添加自动判断
+- 联动修复了onoff的actions实现类
+
 ##### V1.0.9
 
 - 修复了CAN消息关闭的时候没有结束线程的问题

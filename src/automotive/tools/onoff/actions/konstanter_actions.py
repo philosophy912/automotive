@@ -72,7 +72,7 @@ class KonstanterActions(PowerActions):
         logger.info(f"设置电压为{voltage}, 电流为{current}")
         self.__konstanter.set_voltage_current(voltage, current=current)
 
-    def change_voltage(self, start: float, end: float, step: float, interval: float = 0.5, current: float = 10) -> bool:
+    def change_voltage(self, start: float, end: float, step: float, interval: float = 0.5, current: float = 10):
         """
             调节电压
 
@@ -98,9 +98,9 @@ class KonstanterActions(PowerActions):
         start, middle, end = self.__konstanter.set_raise_down(start, end, step, interval, current=current)
         logger.debug(f"from {start} and middle {middle} and end{end}")
         logger.info("开始执行电压变动")
-        return self.__konstanter.start(start, middle)
+        self.__konstanter.start(start, middle)
 
-    def adjust_voltage_by_curve(self, curve: list, current: int = 5, interval: float = 0.01) -> bool:
+    def adjust_voltage_by_curve(self, curve: list, current: int = 5, interval: float = 0.01):
         """
         按照电压曲线来设置电压
 
@@ -117,4 +117,4 @@ class KonstanterActions(PowerActions):
         logger.debug(f"设置当前电压为起始电压[{curve[0]}]")
         self.__konstanter.set_voltage_current(curve[0])
         start, end = self.__konstanter.set_user_voltages(curve, interval, current)
-        return self.__konstanter.start(start, end)
+        self.__konstanter.start(start, end)

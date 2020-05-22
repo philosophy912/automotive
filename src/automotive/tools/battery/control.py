@@ -9,6 +9,7 @@
 # --------------------------------------------------------
 import math
 from loguru import logger
+from time import sleep
 
 from .base_battery import BaseBattery
 from .konstanter import Konstanter
@@ -140,7 +141,7 @@ class KonstanterControl(BaseBattery):
         self.__kon.get_store()
         return result
 
-    def start(self, begin: int, end: int, check_time: int = 1000) -> bool:
+    def start(self, begin: int, end: int, check_time: float = 0.01):
         """
         执行设置好的电源参数，即依次调用寄存器， begin以及end可以通过set_user_voltages以及set_voltage_current的返回值得到
 
@@ -148,23 +149,19 @@ class KonstanterControl(BaseBattery):
 
         :param end: 设置要执行的序列的终止寄存器地址
 
-        :param check_time:
-            超时设置，当此次数内检测到序列已执行完毕则直接返回，如果一直未检测到序列执行完毕则超过次数后返回，默认=1000次
+        :param check_time: 每一次检测的间隔时间，默认时间10ms
 
-        :return:
-            True:执行成功
-
-            False: 执行失败
         """
-
         self.__kon.start_stop(begin, end)
         self.__kon.sequence('GO')
-        for i in range(int(check_time)):
+        flag = True
+        while flag:
             status = self.__kon.get('SEQ')
             tmp = status.split()[-1]
             if tmp.split(',')[0] == 'RDY' and tmp.split(',')[1] == '000':
-                return True
-        return False
+                flag = False
+            sleep(check_time)
+        logger.info(f"voltage operator finished")
 
     def set_user_voltages(self, voltages: (list, tuple), times: int = 0.01, current: float = 5,
                           repeat: int = 1) -> tuple:

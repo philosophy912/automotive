@@ -488,9 +488,9 @@ class Konstanter(BaseBattery):
         if reps < 0 or reps > 255:
             raise ValueError(f"sequence repetition time must be >=0 and <= 255, [{reps}] is not supported.")
         if reps == 0:
-            logger.info("sequence will repeat forever.")
+            logger.debug("sequence will repeat forever.")
         else:
-            logger.info(f"sequence will repeat for {reps} times.")
+            logger.debug(f"sequence will repeat for {reps} times.")
         cmd = self.__header() + "REPETITION " + str(reps)
         self.__send(cmd)
 

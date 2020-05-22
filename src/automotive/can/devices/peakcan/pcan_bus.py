@@ -115,7 +115,6 @@ class PCanBus(CanBus):
 
         :param message: message
         """
-        logger.trace(f"peak can status is {self.__pcan.is_open}")
         logger.trace(f"cycle_time = {cycle_time}")
         msg_id = message.msg_id
         while self.__pcan.is_open and not message.stop_flag and self.__need_transmit:
@@ -134,12 +133,18 @@ class PCanBus(CanBus):
         :param message: message的集合对象
         """
         msg_id = message.msg_id
-        if msg_id not in self._send_messages:
+        # msg_id不在发送队列中
+        condition1 = msg_id not in self._send_messages
+        # msg_id在发送队列中，且stop_flag为真，即停止发送了得
+        condition2 = msg_id in self._send_messages and self._send_messages[msg_id].stop_flag
+        logger.debug(f"condition1[{condition1}] and condition2 = [{condition2}]")
+        if condition1 or condition2:
             # 周期信号
             self._send_messages[msg_id] = message
             data = message.data
             hex_msg_id = hex(msg_id)
             cycle_time = message.cycle_time / 1000.0
+            message.stop_flag = False
             # 周期性发送
             logger.info(f"****** Transmit msg id {hex_msg_id} data is {list(map(lambda x: hex(x), data))} "
                         f"Circle time is {message.cycle_time}ms ******")
@@ -206,15 +211,15 @@ class PCanBus(CanBus):
         msg_id = message.msg_id
         cycle_time = message.cycle_time
         if message.msg_send_type == self._cycle or cycle_time > 0:
-            logger.trace("cycle send message")
+            logger.debug("cycle send message")
             # 周期信号
             self.__cycle_msg(message)
         elif message.msg_send_type == self._event:
-            logger.trace("event send message")
+            logger.debug("event send message")
             # 事件信号
             self.__event(message)
         else:
-            logger.trace("cycle&event send message")
+            logger.debug("cycle&event send message")
             # 周期事件信号
             if msg_id not in self._send_messages:
                 self.__cycle_msg(message)
@@ -238,6 +243,7 @@ class PCanBus(CanBus):
             if msg_id in self._send_messages:
                 logger.info(f"Message <{hex(msg_id)}> is stop to send.")
                 self._send_messages[msg_id].stop_flag = True
+                self._send_messages[msg_id].pause_flag = True
             else:
                 logger.error(f"Please check message id, Message <{hex(msg_id)}> is not contain.")
         else:
@@ -245,6 +251,7 @@ class PCanBus(CanBus):
             for key, item in self._send_messages.items():
                 logger.info(f"Message <{hex(key)}> is stop to send.")
                 item.stop_flag = True
+                item.pause_flag = True
 
     @check_status
     def resume_transmit(self, msg_id: int = None):
@@ -258,7 +265,7 @@ class PCanBus(CanBus):
             if msg_id in self._send_messages:
                 logger.info(f"Message <{hex(msg_id)}> is resume to send.")
                 message = self._send_messages[msg_id]
-                message.stop_flag = False
+                # message.stop_flag = False
                 self.transmit(message)
             else:
                 logger.error(f"Please check message id, Message <{hex(msg_id)}> is not contain.")
@@ -268,7 +275,7 @@ class PCanBus(CanBus):
                 logger.info(f"Message <{hex(key)}> is resume to send.")
                 # 当发现这个msg是停止的时候就恢复发送
                 if item.stop_flag:
-                    item.stop_flag = False
+                    # item.stop_flag = False
                     self.transmit(item)
 
     @check_status

@@ -82,7 +82,7 @@ class It6831Actions(PowerActions):
         logger.info(f"设置电压为{voltage}")
         self.__it6831.set_voltage_value(voltage)
 
-    def change_voltage(self, start: float, end: float, step: float, interval: float = 0.5, current: float = 10) -> bool:
+    def change_voltage(self, start: float, end: float, step: float, interval: float = 0.5, current: float = 10):
         """
         调节电压
 
@@ -139,5 +139,3 @@ class It6831Actions(PowerActions):
                     self._utils.sleep(interval)
                 logger.info(f"设置电压为{end}伏")
                 self.__it6831.set_voltage_value(end)
-        # 返回值无实际意义
-        return True
