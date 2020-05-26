@@ -233,7 +233,8 @@ class Camera(object):
         """
         if self.__capture is not None:
             self.close_camera()
-        self.__capture = cv2.VideoCapture(camera_id, cv2.CAP_DSHOW)
+        # self.__capture = cv2.VideoCapture(camera_id, cv2.CAP_DSHOW)
+        self.__capture = cv2.VideoCapture(camera_id)
         self.__width = self.__capture.get(int(cv2.CAP_PROP_FRAME_WIDTH))
         self.__height = self.__capture.get(int(cv2.CAP_PROP_FRAME_HEIGHT))
         if not self.__capture.isOpened():
@@ -325,7 +326,6 @@ class Camera(object):
             self.__utils.sleep(total_time * 60)
             self.stop_record()
 
-    @check_status
     def camera_test(self, wait: float = 2, frame_id: FrameID = FrameID()):
         """
         测试摄像头摄像，可用于调节摄像头距离，查看录像效果时，一般作为调试使用
@@ -339,7 +339,7 @@ class Camera(object):
         while self.__capture.isOpened():
             ret, frame = self.__capture.read()
             if ret:
-                cv2.imshow('f', frame)
+                cv2.imshow('camera', frame)
                 if cv2.waitKey(1) & 0xFF == ord('q'):
                     break
             check_time = time.time()

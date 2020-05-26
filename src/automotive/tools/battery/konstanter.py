@@ -226,7 +226,7 @@ class Konstanter(BaseBattery):
         所有操作结束后关闭串口端口
         """
         logger.info("closing serial port.")
-        self.__serial.close()
+        self.__serial.disconnect()
 
     @check_status
     def wait(self, time: float):

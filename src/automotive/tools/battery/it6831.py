@@ -153,7 +153,7 @@ class IT6831(BaseBattery):
         """
         关闭串口，必须在任务结束后调用，否则串口会阻塞，需要重新插拔一下
         """
-        self.__serial.close()
+        self.__serial.disconnect()
         self.connected = False
 
     @check_status
@@ -285,7 +285,6 @@ class IT6831(BaseBattery):
         logger.debug(f"new address is: {address}, set power supply address frame: {frame}")
         self.__send(frame)
 
-    @check_status
     def get_all_status(self) -> Status:
         """
         读取电源的电流、电压和电源状态

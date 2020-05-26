@@ -1,5 +1,11 @@
 ## 版本更新说明
 
+##### V1.1.1
+- 修复了it6831电源操作在get_all_status的时候检测了电源是否处于打开状态的问题
+- 修复了konstanter无法断开串口连接的问题
+- 修复了更新opencv之后，camera无法打开的问题,修改了camera_test的窗口名
+- 修复了继电器on/off反接需要调整接口的问题，增加了reverse用于翻转操作
+
 ##### V1.1.0
 - 修复了CAN消息stop之后无法resume的问题
 - 修改了konstanter的start函数返回值为None，并添加自动判断

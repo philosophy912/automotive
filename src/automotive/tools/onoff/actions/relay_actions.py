@@ -35,32 +35,40 @@ class RelayActions(BaseActions):
         logger.info("关闭继电器")
         self.__relay.close_relay_device()
 
-    def channel_on(self, channel: int = None, interval: float = 1):
+    def channel_on(self, channel: int = None, interval: float = 1, reverse: bool = False):
         """
         打开继电器通道
 
+        :param reverse: 翻转状态
         :param channel: 通道序号
 
         :param interval: 打开通道后的间隔时间，默认1秒
         """
         if channel:
             logger.debug(f"打开继电器的{channel}通道")
-            self.__relay.one_relay_channel_on(channel)
+            if reverse:
+                self.__relay.one_relay_channel_on(channel)
+            else:
+                self.__relay.one_relay_channel_off(channel)
             sleep(interval)
         else:
             raise RuntimeError(f"channel[{channel}] is not support")
 
-    def channel_off(self, channel: int = None, interval: float = 1):
+    def channel_off(self, channel: int = None, interval: float = 1, reverse: bool = False):
         """
         关闭继电器通道
 
+        :param reverse: 翻转状态
         :param channel: 通道序号
 
         :param interval: 打开通道后的间隔时间，默认1秒
         """
         if channel:
             logger.debug(f"关闭继电器的{channel}通道")
-            self.__relay.one_relay_channel_off(channel)
+            if reverse:
+                self.__relay.one_relay_channel_off(channel)
+            else:
+                self.__relay.one_relay_channel_on(channel)
             sleep(interval)
         else:
             raise RuntimeError(f"channel[{channel}] is not support")
