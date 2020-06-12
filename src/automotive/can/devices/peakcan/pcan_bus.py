@@ -101,11 +101,7 @@ class PCanBus(CanBus):
                 logger.trace(f"msg id = {hex(msg_id)}")
                 receive_message = self.__get_message(receive_msg, timestamp)
                 self._receive_messages[msg_id] = receive_message
-                if len(self._stack) == self._max_stack:
-                    self._stack.pop()
-                else:
-                    logger.trace(f"stack size is {len(self._stack)}")
-                    self._stack.append(receive_message)
+                self._stack.append(receive_message)
             except RuntimeError:
                 continue
 
@@ -150,10 +146,17 @@ class PCanBus(CanBus):
                         f"Circle time is {message.cycle_time}ms ******")
             self.__transmit_thread.append(self.__thread_pool.submit(self.__transmit, message, cycle_time))
         else:
-            # 已经在里面了，所以修改data值而已
-            self._send_messages[msg_id].data = message.data
-            # 反向update一下保证signal是对的
-            self._send_messages[msg_id].update(False)
+            # 周期事件信号，当周期信号发送的时候，只在变化data的时候会进行快速发送消息
+            if message.msg_send_type == self._cycle_event:
+                # 暂停已发送的消息
+                self.stop_transmit(msg_id)
+                self._send_messages[msg_id].data = message.data
+                self.__event(message)
+                # 发送完成了周期性事件信号，恢复信号发送
+                self.resume_transmit(msg_id)
+            else:
+                # 已经在里面了，所以修改data值而已
+                self._send_messages[msg_id].data = message.data
 
     def __event(self, message: Message):
         """
@@ -195,7 +198,8 @@ class PCanBus(CanBus):
         wait(self.__transmit_thread, return_when=ALL_COMPLETED)
         self.__need_receive = False
         wait(self.__receive_thread, return_when=ALL_COMPLETED)
-        self.__thread_pool.shutdown()
+        if self.__thread_pool:
+            self.__thread_pool.shutdown()
         self._send_messages.clear()
         self.__pcan.close_device()
 
@@ -218,16 +222,9 @@ class PCanBus(CanBus):
             logger.debug("event send message")
             # 事件信号
             self.__event(message)
-        else:
+        elif message.msg_send_type == self._cycle_event:
             logger.debug("cycle&event send message")
             # 周期事件信号
-            if msg_id not in self._send_messages:
-                self.__cycle_msg(message)
-            # 暂停已发送的消息
-            self._send_messages[msg_id].stop_flag = True
-            self.__event(message)
-            # 发送完成了周期性事件信号，恢复信号发送
-            self._send_messages[msg_id].stop_flag = False
             self.__cycle_msg(message)
 
     @check_status
@@ -316,11 +313,3 @@ class PCanBus(CanBus):
         清除栈数据
         """
         self._stack.clear()
-
-    def set_stack_size(self, size: int):
-        """
-        设置栈大小
-
-        :param size: 用于定义最大的保存数据数量
-        """
-        self._max_stack = size

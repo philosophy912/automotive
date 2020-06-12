@@ -14,11 +14,10 @@ from time import sleep
 
 from automotive.can.devices.usbcan import UsbCanBus
 from automotive.can.devices.peakcan import PCanBus
-from automotive.can.interfaces import CanBoxDevice
+from automotive.can.interfaces import CanBoxDevice, CanBus
 from loguru import logger
 from automotive.tools import Singleton
 from .interfaces.parser import Parser
-from .interfaces.tools import Tools
 from .interfaces.message import Message
 
 
@@ -26,24 +25,49 @@ class CANService(metaclass=Singleton):
     """
         CAN的服务类，主要用于CAN信号的发送，接收等操作。
 
-        默认设备为Peak Can， 如果要师勇can分析仪，需要使用参数can_box_device = CanBoxDevice.PEAKCAN
+        参数can_box_device用于指定设备，默认为None，即会依次寻找PCan、Can分析仪以及UsbCan三个设备
+
+        也可以指定某个设备。
 
     """
 
     def __init__(self, messages: (str, list), encoding: str = "utf-8",
-                 can_box_device: CanBoxDevice = CanBoxDevice.PEAKCAN):
-        if can_box_device == CanBoxDevice.PEAKCAN:
-            logger.info("user pcan")
-            self.__can = PCanBus()
-        else:
-            logger.info("user can box")
-            self.__can = UsbCanBus(can_box_device)
-        self.__tools = Tools()
+                 can_box_device: CanBoxDevice = None):
+        self.__can = self.__get_can_bus(can_box_device)
         self.__parser = Parser()
         logger.debug(f"read message from file {messages}")
         self.__messages, self.__name_messages = self.__parser.get_message(messages, encoding=encoding)
         # 用于记录当前栈中msg的最后一个数据的时间点
         self.__last_msg_time_in_stack = dict()
+
+    def __get_can_bus(self, can_box_device: CanBoxDevice) -> CanBus:
+        if not can_box_device:
+            can_box_device = self.__get_can_box_device()
+        if can_box_device == CanBoxDevice.PEAKCAN:
+            logger.info("use pcan")
+            return PCanBus()
+        else:
+            logger.info("use can box")
+            return UsbCanBus(can_box_device)
+
+    @staticmethod
+    def __get_can_box_device() -> CanBoxDevice:
+        can = PCanBus()
+        can.open_can()
+        if can.is_open():
+            can.close_can()
+            return CanBoxDevice.PEAKCAN
+        can = UsbCanBus(can_box_device=CanBoxDevice.CANALYST)
+        can.open_can()
+        if can.is_open():
+            can.close_can()
+            return CanBoxDevice.CANALYST
+        can = UsbCanBus(can_box_device=CanBoxDevice.USBCAN)
+        can.open_can()
+        if can.is_open():
+            can.close_can()
+            return CanBoxDevice.USBCAN
+        raise RuntimeError("no device found")
 
     @property
     def name_messages(self):
@@ -348,14 +372,6 @@ class CANService(metaclass=Singleton):
         :return:  栈中数据List<Message>
         """
         return self.__can.get_stack()
-
-    def set_stack_size(self, size: int):
-        """
-        设置栈大小
-
-        :param size: 用于定义最大的保存数据数量
-        """
-        self.__can.set_stack_size(size)
 
     def send_random(self, filter_sender: str = None, cycle_time: int = None, interval: int = 0.1):
         """

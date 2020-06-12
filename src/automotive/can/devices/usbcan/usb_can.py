@@ -443,7 +443,7 @@ class UsbCan(CANDevice):
         if self.is_open:
             if self.__lib_can.VCI_CloseDevice(self.__device_type, self.__device_index) == 1:
                 self.is_open = False
-                logger.info(f"device is closed")
+                logger.debug(f"device is closed")
 
     @check_status
     def read_board_info(self) -> VciBoardInfo:

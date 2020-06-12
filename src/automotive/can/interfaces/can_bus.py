@@ -68,23 +68,12 @@ class CanBus(metaclass=ABCMeta):
         self._send_messages = dict()
         # 用于存放接收到的数据
         self._stack = []
-        # 用于定义最大的保存数据数量
-        self._max_stack = 5000
         # 周期性信号
         self._cycle = "Cycle"
         # 事件性信号
         self._event = "Event"
         # 周期事件性信号
         self._cycle_event = "Cycle and Event"
-
-    @abstractmethod
-    def set_stack_size(self, size: int):
-        """
-        设置栈大小
-
-        :param size: 用于定义最大的保存数据数量
-        """
-        pass
 
     @abstractmethod
     def open_can(self):

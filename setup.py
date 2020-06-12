@@ -12,7 +12,6 @@ import setuptools
 from os.path import abspath, dirname, join
 
 current_folder = dirname(abspath(__file__))
-# test = setuptools.find_packages("src")
 with open(join(current_folder, "src", "automotive", "version.py"), "rt", encoding="utf-8") as f:
     VERSION = re.search("\nVERSION = '(.*)'", f.read()).group(1)
 with open("README.md", "r", encoding="utf-8") as fh:
@@ -26,8 +25,6 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     author="lizhe",
     author_email="lizhe@bdstar.com",
-    # maintainer="liluo",
-    # maintainer_email="liluo@bdstar.com",
     packages=setuptools.find_packages("src"),
     package_dir={"": "src"},
     # 依赖的相关文件

@@ -1,7 +1,9 @@
 from .can_service import CANService
-from .interfaces import Parser
+from .interfaces import Parser, Message, CanBoxDevice
 
 __all__ = [
     "CANService",
-    "Parser"
+    "Parser",
+    "Message",
+    "CanBoxDevice"
 ]

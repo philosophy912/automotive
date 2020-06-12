@@ -25,7 +25,7 @@ class Message(object):
         # 信号数据长度
         self.data_length = 8
         # 信号数据
-        self.data = None
+        self.data = [0, 0, 0, 0, 0, 0, 0, 0]
         # 信号停止标志
         self.stop_flag = False
         # 信号的名字
@@ -90,26 +90,9 @@ class Message(object):
     def __check_signals(self):
         """
         检查signals对象
+        todo 需要根据signals对象的设置来检查
         """
-        bit_list = []
-        for i in range(64):
-            bit_list.append(False)
-        for name, signal in self.signals.items():
-            logger.trace(f"before bit_list [{bit_list}]")
-            signal.check_value()
-            signal.check_bit_length_value()
-            signal.check_start_bit_value()
-            logger.trace(f"raw start bit is {signal.start_bit}")
-            start = self.__tools.get_position(signal.start_bit)
-            length = signal.bit_length
-            logger.trace(f"start = {start} and length = {length}")
-            for i in range(start, length):
-                if bit_list[i]:
-                    raise ValueError(f"bit_list = [{bit_list}] and i = [{i}] and "
-                                     f"start-bit area is overlapping start({start}) + "
-                                     f"length({length}) and name [{name}]")
-                bit_list[i] = True
-                logger.trace(f"after bit_list [{bit_list}]")
+        pass
 
     def check_message(self, need_check_data: bool = False):
         """
@@ -140,25 +123,18 @@ class Message(object):
         # 发送数据
         if type_:
             logger.debug("send message")
-            if not self.data:
-                raw_data = 0
-            else:
-                raw_data = self.__tools.convert_to_data(self.data)
             for name, signal in self.signals.items():
                 logger.trace(f"signal name = {signal.signal_name}")
                 # 根据原来的数据message_data，替换某一部分的内容
-                raw_data = self.__tools.set_data(raw_data, signal.start_bit, signal.bit_length, signal.value,
-                                                 signal.is_float)
-                logger.trace(f"raw_data[{bin(raw_data)}]")
-            self.data = self.__tools.convert_to_msg(raw_data)
+                self.__tools.set_data(self.data, signal.start_bit, signal.byte_type, signal.value, signal.bit_length)
             logger.info(f"msg id {hex(self.msg_id)} and data is {list(map(lambda x: hex(x), self.data))}")
         # 收到数据
         else:
             logger.debug("receive message")
-            raw_data = self.__tools.convert_to_data(self.data)
             for name, signal in self.signals.items():
-                value = self.__tools.get_data(raw_data, signal.start_bit, signal.bit_length, signal.is_float)
-                logger.trace(f"signal name {name} value is {value}")
+                logger.trace(f"signal name = {signal.signal_name}")
+                value = self.__tools.get_data(self.data, signal.start_bit, signal.byte_type, signal.bit_length)
+                logger.trace(f"value is {value}")
                 signal.value = value
 
     def set_value(self, message: dict):
@@ -217,10 +193,10 @@ class Signal(object):
         self.signal_name = None
         # 信号的位长度
         self.bit_length = None
+        # 模式  intel还是motorola
+        self.byte_type = None
         # 信号的开始位
         self.start_bit = None
-        # 值类型，是否是float类型
-        self.is_float = None
         # 计算因子
         self.factor = None
         # 偏移量
@@ -256,7 +232,7 @@ class Signal(object):
         self.bit_length = signal['signal_size']
         self.start_bit = signal["start_bit"]
         self.is_sign = signal["is_sign"]
-        self.is_float = signal["byte_type"]
+        self.byte_type = signal["byte_type"]
         self.factor = signal["factor"]
         self.offset = signal["offset"]
         self.minimum = signal["minimum"]
@@ -280,7 +256,7 @@ class Signal(object):
         :param need_check： 是否检查值是否处于物理值最大最小值之间
         """
         if need_check:
-            if self.is_float:
+            if self.is_sign:
                 if not float(self.minimum) <= self.value <= float(self.maximum):
                     raise ValueError(f"value[{self.value}] must in [{self.minimum} , {self.maximum}]")
             else:

@@ -8,7 +8,6 @@
 # @Created:     2019/8/21 10:32
 # --------------------------------------------------------
 import json
-import threading
 import time
 import os
 import random
