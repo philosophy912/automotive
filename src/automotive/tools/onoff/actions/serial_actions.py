@@ -63,3 +63,10 @@ class SerialActions(BaseActions):
         清空串口缓存数据
         """
         self.__serial.read_all()
+
+    def check_can_available(self) -> bool:
+        self.__serial.flush()
+        self.__serial.send("ls", type_=False)
+        content = self.__serial.read_lines()
+        return len(content) > 0
+

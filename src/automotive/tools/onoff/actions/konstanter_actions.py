@@ -88,7 +88,7 @@ class KonstanterActions(PowerActions):
 
             :return: 只针对konstanter实际有效
             """
-        if not 0 <= start <= 20 or 0 <= end <= 20:
+        if not (0 <= start <= 20 or 0 <= end <= 20):
             raise RuntimeError(f"电源只支持0-20V电压，当前要设置的起[{start}]始[{end}]电压为超过了范围")
         if start == end:
             raise RuntimeError(f"开始值{start}不能和结束值{end}相同")

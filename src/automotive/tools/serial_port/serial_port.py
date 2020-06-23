@@ -29,7 +29,7 @@ class SerialPort(object):
         """
 
         def wrapper(self, *args, **kwargs):
-            if not self._serial:
+            if not (self._serial and self._serial.isOpen):
                 raise RuntimeError("please connect serial first")
             return func(self, *args, **kwargs)
 
@@ -149,7 +149,7 @@ class SerialPort(object):
         if type_:
             if not isinstance(cmd, bytes):
                 cmd = cmd.encode("utf-8")
-        return self._serial.write(cmd)
+        self._serial.write(cmd)
 
     @check_status
     def send_break(self):
@@ -290,21 +290,6 @@ class SerialPort(object):
         清除串口输出缓存
         """
         self._serial.reset_output_buffer()
-
-    @check_status
-    def get_connection_status(self) -> bool:
-        """
-        获取串口的连接状态
-
-        :return:
-            True : 已连接
-
-            False : 已断开
-        """
-        try:
-            return self._serial.isOpen
-        except RuntimeError:
-            return False
 
     @check_status
     def set_buffer(self, rx_size: int = 4096, tx_size: int = 4096):

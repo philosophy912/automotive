@@ -22,12 +22,13 @@ class Config(metaclass=Singleton):
     配置类，只允许有一个配置存在
     """
 
-    def __init__(self, file_name: str):
+    def __init__(self, config: (str, dict)):
         """
         配置类所在的文件
-        :param file_name: yml文件路径
+        :param config: yml文件路径 或者读取出来的内容
         """
-        config = Utils().read_yml_full(file_name)
+        if isinstance(config, str):
+            config = Utils().read_yml_full(config)
         # 初始化并设置值更新内容
         self.device = Device()
         self.device.update(config["device_config"])

@@ -338,6 +338,25 @@ class Images(object):
         return round(same_percent, percent), round(different_percent, percent)
 
     @staticmethod
+    def convert_png_to_jpg(origin: str, target: str, color: tuple = (255, 255, 255), quality: int = 100):
+        """Alpha composite an RGBA Image with a specified color.
+
+        Simpler, faster version than the solutions above.
+
+        Source: http://stackoverflow.com/a/9459208/284318
+
+        Keyword Arguments:
+        image -- PIL RGBA Image object
+        color -- Tuple r, g, b (default 255, 255, 255)
+
+        """
+        image = Image.open(origin)
+        image.load()  # needed for split()
+        background = Image.new('RGB', image.size, color)
+        background.paste(image, mask=image.split()[3])  # 3 is the alpha channel
+        background.save(target, "jpeg", quality=quality)
+
+    @staticmethod
     def convert_position(start_x: int, start_y: int, end_x: int = None, end_y: int = None, width: int = None,
                          height: int = None) -> tuple:
         """
@@ -704,3 +723,5 @@ class Images(object):
         else:
             image2 = self.cut_image_array(big_image, position1)
         return self.find_best_result(image1, image2, threshold, rgb, FindType.TEMPLATE)
+
+

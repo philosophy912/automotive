@@ -91,3 +91,5 @@ class CanActions(BaseActions):
         sleep(event[3])
         logger.debug("避免出现倒档信号发送了没有停止，这个地方停止所有信号发送")
         self.__can.stop_all_messages()
+
+

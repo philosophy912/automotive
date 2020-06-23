@@ -9,7 +9,7 @@
 # --------------------------------------------------------
 import math
 from loguru import logger
-from time import sleep
+import time
 
 from .base_battery import BaseBattery
 from .konstanter import Konstanter
@@ -97,7 +97,7 @@ class KonstanterControl(BaseBattery):
         if current:
             self.__kon.set_current(current)
 
-    def set_raise_down(self, start: float, end: float, step: float, time: float, repeat: int = 1,
+    def set_raise_down(self, start: float, end: float, step: float, operator_time: float, repeat: int = 1,
                        current: int = 3) -> tuple:
         """
         设置电源的上升或下降的参数，测试电源的电压变动
@@ -108,7 +108,7 @@ class KonstanterControl(BaseBattery):
 
         :param step: 上升或下降过程中的步进值
 
-        :param time: 每次上升或下降过程的时间
+        :param operator_time: 每次上升或下降过程的时间
 
         :param repeat: 重复执行的次数
 
@@ -123,17 +123,17 @@ class KonstanterControl(BaseBattery):
         if mid_register > 255:
             mid_register = 255
         for k in range(11, mid_register):
-            self.__kon.store(k, start + step * (k - 11), current, time, 'ON')
-        self.__kon.store(mid_register, end, current, time, 'ON')
+            self.__kon.store(k, start + step * (k - 11), current, operator_time, 'ON')
+        self.__kon.store(mid_register, end, current, operator_time, 'ON')
         if (255 - mid_register) > steps:
             end_register = mid_register + steps
         else:
             end_register = 255
         step = step * (-1)
         for m in range(mid_register + 1, end_register):
-            self.__kon.store(m, end + step * (m - mid_register), current, time, 'ON')
+            self.__kon.store(m, end + step * (m - mid_register), current, operator_time, 'ON')
         if mid_register != 255:
-            self.__kon.store(end_register, start, current, time, 'ON')
+            self.__kon.store(end_register, start, current, operator_time, 'ON')
         self.__kon.sequence_repetition(repeat)
         result = 11, mid_register, end_register
         logger.info(
@@ -160,7 +160,7 @@ class KonstanterControl(BaseBattery):
             tmp = status.split()[-1]
             if tmp.split(',')[0] == 'RDY' and tmp.split(',')[1] == '000':
                 flag = False
-            sleep(check_time)
+            time.sleep(check_time)
         logger.info(f"voltage operator finished")
 
     def set_user_voltages(self, voltages: (list, tuple), times: int = 0.01, current: float = 5,

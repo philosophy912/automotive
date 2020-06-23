@@ -125,8 +125,6 @@ class USBRelay(object):
 
         :param channel_index: 继电器的开关编号。(从1开始)
         """
-        if not self.is_open:
-            raise RuntimeError("please open relay device first")
         if not 1 <= channel_index <= self.__channel_count:
             raise RuntimeError(
                 f"current relay device only support channel {self.__channel_count} but input {channel_index}")
@@ -139,8 +137,6 @@ class USBRelay(object):
         """
         闭合继电器的所有开关。
         """
-        if not self.is_open:
-            raise RuntimeError("please open relay device first")
         if self.__handle:
             if self.__lib.usb_relay_device_open_all_relay_channel(self.__handle) != 0:
                 raise RuntimeError(f"open all channel failed")
@@ -150,8 +146,6 @@ class USBRelay(object):
         """
         关闭继电器的所有开关。
         """
-        if not self.is_open:
-            raise RuntimeError("please open relay device first")
         if self.__handle:
             if self.__lib.usb_relay_device_close_all_relay_channel(self.__handle) != 0:
                 raise RuntimeError(f"close all channel failed")
@@ -378,3 +372,4 @@ class _LibUsbRelay(object):
         """
         self.usbRelayDll.usb_relay_device_get_status.argtypes = [c_uint64, c_uint64]
         self.usbRelayDll.usb_relay_device_get_status(h_handle, status)
+

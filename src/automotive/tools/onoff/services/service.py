@@ -24,7 +24,7 @@ class Service(object):
     on off测试中的Service类，提供相关的api接口
     """
 
-    def __init__(self, config: str):
+    def __init__(self, config: (str, dict)):
         # 工具类
         self._utils = Utils()
         # 图像对比工具
@@ -476,3 +476,22 @@ class Service(object):
                 raise RuntimeError(f"only KONSTANTER can be used in battery, but now config [{battery_type}]")
         except ValueError:
             raise RuntimeError(f"only KONSTANTER can be used in battery, but now config [{battery_type}]")
+
+    def judge_text_in_serial(self):
+        """
+        检查是否有重启
+        """
+        contents = self.__config.environment.serial
+        self.__devices[DeviceEnum.SERIAL].judge_text_in_serial(contents)
+
+    def check_can_available(self):
+        """
+        检查CAN Bus是否还活着
+        """
+        return self.__devices[DeviceEnum.CAN].check_can_available()
+
+    def check_system_available(self):
+        """
+        检查系统是否还活着
+        """
+        return self.__devices[DeviceEnum.CAN].check_can_available()

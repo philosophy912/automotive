@@ -393,3 +393,5 @@ class IT6831(BaseBattery):
         result = [hex(e)[2:] for e in list(result)]
         logger.debug(f"get power calibrate protect status as hex : {result}")
         return int(result[3], 16) == 1
+
+
