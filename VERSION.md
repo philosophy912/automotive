@@ -1,5 +1,23 @@
 ## 版本更新说明
 
+##### V2.1
+
+- 增加了电源自动化测试的模板代码
+
+- 优化了CAN消息的CAN Bus接口，提取了重复代码
+
+- 增加了trace发送的代码
+
+  ```python
+  from automotive import TraceService, TraceType
+  file = r"d:\a.asc"
+  service = TraceService()
+  service.open_can()
+  service.send_trace(file, TraceType.PCAN)
+  service.close_can()
+  ```
+
+
 ##### V2.0
 
 - 完善了周期事件信号的发送

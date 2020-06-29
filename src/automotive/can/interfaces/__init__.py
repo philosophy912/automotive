@@ -1,4 +1,5 @@
-from .can_bus import CanBoxDevice, CanBus
+from .can_device import CanBoxDevice
+from .can_bus import CanBus
 from .message import Message, Signal
 from .parser import Parser
 from .tools import Tools

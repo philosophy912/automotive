@@ -16,7 +16,7 @@ from ctypes import memmove, c_uint
 from automotive.can.interfaces import Message
 from loguru import logger
 from . import pcanbasic
-from ...interfaces.can_bus import CANDevice, BaudRate
+from ...interfaces.can_device import CANDevice, BaudRate
 
 baud_rate_list = {
     #   波特率
@@ -362,3 +362,7 @@ class PCan(CANDevice):
                 raise RuntimeError(f"Method <{stack()[0][3]}> PEAK CAN Receive Failed.")
         except Exception:
             raise RuntimeError('PEAK CAN receive failed.')
+
+    def get_status(self) -> bool:
+        return self.is_open
+

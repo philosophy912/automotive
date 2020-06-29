@@ -24,7 +24,8 @@ from automotive.tools.deprecated import deprecated
 # 单纯效果,推荐程度： tpl > surf ≈ sift > kaze > brisk > akaze> brief > orb
 # 有限内存,推荐程度： tpl > surf > sift > brisk > akaze > brief > orb >kaze
 from automotive.tools.images.aircv.keypoint_matching import KAZEMatching, BRISKMatching, AKAZEMatching, ORBMatching
-from automotive.tools.images.aircv.keypoint_matching_contrib import SIFTMatching, SURFMatching, BRIEFMatching
+from automotive.tools.images.aircv.keypoint_matching_contrib import SIFTMatching, SURFMatching, BRIEFMatching, \
+    NoMatchPointError
 from automotive.tools.images.aircv.template_matching import TemplateMatching
 
 
@@ -687,6 +688,62 @@ class Images(object):
         """
         small_image = self.__get_image_nd_array(small_image)
         big_image = self.__get_image_nd_array(big_image)
+        return self.__find_by_template(small_image, big_image, threshold=threshold, rgb=rgb, find_type=find_type)
+
+    def find_best_result_in_templates(self, small_image: (str, np.array), big_image: (str, np.array),
+                                      threshold: float = 0.7, rgb: bool = True) -> dict:
+        """
+        查找小图是否在大图中匹配, 当小图在大图中无法找到，则返回None
+
+        :param small_image: 小图片
+
+        :param big_image: 大图片
+
+        :param threshold: 阈值，默认0.7
+
+        :param rgb: 默认True
+
+        :return: 返回了五个坐标点以及对比结果
+
+            {
+
+            "result": (center_x,center_y),
+
+            "rectangle": (
+
+                          (left_top_x, left_top_y),
+
+                          (left_bottom_x, left_bottom_y),
+
+                          (right_bottom_x, right_bottom_y),
+
+                          (right_top_x, right_top_y)
+
+                         )
+
+            "confidence": 0.99999
+
+            }
+        """
+        small_image = self.__get_image_nd_array(small_image)
+        big_image = self.__get_image_nd_array(big_image)
+        compare_result = None
+        confidence = 0
+        for key, value in FindType.__dict__.items():
+            logger.debug(f"current type is {value}")
+            try:
+                result = self.__find_by_template(small_image, big_image, threshold, rgb, find_type=value)
+                if result:
+                    logger.debug(f"result = {result}")
+                    if result["confidence"] > confidence:
+                        compare_result = result
+            except NoMatchPointError:
+                logger.debug(f"skip")
+        return compare_result
+
+    @staticmethod
+    def __find_by_template(small_image: (str, np.array), big_image: (str, np.array), threshold: float = 0.7,
+                           rgb: bool = True, find_type: FindType = FindType.TEMPLATE):
         if find_type == FindType.TEMPLATE:
             # Template matching.
             return TemplateMatching(small_image, big_image, threshold=threshold, rgb=rgb).find_best_result()
@@ -723,5 +780,3 @@ class Images(object):
         else:
             image2 = self.cut_image_array(big_image, position1)
         return self.find_best_result(image1, image2, threshold, rgb, FindType.TEMPLATE)
-
-

@@ -395,3 +395,5 @@ class CANService(metaclass=Singleton):
                 self.__send_random(filter_sender, interval)
         else:
             self.__send_random(filter_sender, interval)
+
+

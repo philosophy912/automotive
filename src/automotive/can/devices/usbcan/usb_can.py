@@ -19,7 +19,7 @@ from automotive.can.interfaces import CanBoxDevice, Message
 
 # ===============================================================================
 # 定义数据类型
-from automotive.can.interfaces.can_bus import CANDevice, BaudRate, control_decorator
+from automotive.can.interfaces.can_device import CANDevice, BaudRate, control_decorator
 
 UBYTE = c_ubyte
 USHORT = c_ushort
@@ -610,3 +610,7 @@ class UsbCan(CANDevice):
             error = sys.exc_info()
             logger.trace('ERROR: ' + str(error[0]) + ' : ' + str(error[1]))
             raise RuntimeError(error[1])
+
+    def get_status(self) -> bool:
+        return self.is_open
+

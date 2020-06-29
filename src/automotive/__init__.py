@@ -9,7 +9,7 @@ from .tools.serial_port import SerialPort
 from .tools.speaker import Player
 from .tools.ssh import SSHUtils
 from .tools.usbrelay import USBRelay
-from .can import CANService, Parser, Message, CanBoxDevice
+from .can import CANService, Parser, Message, CanBoxDevice, TraceService, TraceType
 from .android import ADBUtils, AppiumPythonClient
 
 __all__ = [
@@ -23,6 +23,6 @@ __all__ = [
     "Player",
     "SSHUtils",
     "USBRelay",
-    "CANService", "Parser", "Message", "CanBoxDevice",
+    "CANService", "Parser", "Message", "CanBoxDevice", "TraceService", "TraceType",
     "ADBUtils", "AppiumPythonClient"
 ]

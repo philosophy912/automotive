@@ -7,9 +7,7 @@
 # @Author:      lizhe
 # @Created:     2019/11/30 22:35  
 # --------------------------------------------------------
-from time import sleep
 from loguru import logger
-from concurrent.futures import ThreadPoolExecutor, wait, ALL_COMPLETED
 from .pcan import PCan
 from automotive.can.interfaces import Message, CanBus
 
@@ -21,18 +19,8 @@ class PCanBus(CanBus):
 
     def __init__(self):
         super().__init__()
-        # 线程池句柄
-        self.__thread_pool = None
         # PCAN实例化
         self.__pcan = PCan()
-        # 是否需要接收，用于线程关闭
-        self.__need_receive = True
-        # 是否需要一直发送
-        self.__need_transmit = True
-        # 发送线程
-        self.__transmit_thread = []
-        # 接收线程
-        self.__receive_thread = []
 
     def check_status(func):
         """
@@ -94,7 +82,7 @@ class PCanBus(CanBus):
         """
         CAN接收帧函数，在接收线程中执行
         """
-        while self.__pcan.is_open and self.__need_receive:
+        while self.__pcan.is_open and self._need_receive:
             try:
                 receive_msg, timestamp = self.__pcan.receive()
                 msg_id = receive_msg.id
@@ -105,127 +93,39 @@ class PCanBus(CanBus):
             except RuntimeError:
                 continue
 
-    def __transmit(self, message: Message, cycle_time: float):
-        """
-        CAN发送帧函数，在线程中执行。
-
-        :param message: message
-        """
-        logger.trace(f"cycle_time = {cycle_time}")
-        msg_id = message.msg_id
-        while self.__pcan.is_open and not message.stop_flag and self.__need_transmit:
-            logger.trace(f"send msg {hex(msg_id)} and cycle time is {message.cycle_time}")
-            try:
-                self.__pcan.transmit(message)
-            except RuntimeError as e:
-                logger.trace(f"some issue found, error is {e}")
-            # 循环发送的等待周期
-            sleep(cycle_time)
-
-    def __cycle_msg(self, message: Message):
-        """
-        发送周期性型号
-
-        :param message: message的集合对象
-        """
-        msg_id = message.msg_id
-        # msg_id不在发送队列中
-        condition1 = msg_id not in self._send_messages
-        # msg_id在发送队列中，且stop_flag为真，即停止发送了得
-        condition2 = msg_id in self._send_messages and self._send_messages[msg_id].stop_flag
-        logger.debug(f"condition1[{condition1}] and condition2 = [{condition2}]")
-        if condition1 or condition2:
-            # 周期信号
-            self._send_messages[msg_id] = message
-            data = message.data
-            hex_msg_id = hex(msg_id)
-            cycle_time = message.cycle_time / 1000.0
-            message.stop_flag = False
-            # 周期性发送
-            logger.info(f"****** Transmit msg id {hex_msg_id} data is {list(map(lambda x: hex(x), data))} "
-                        f"Circle time is {message.cycle_time}ms ******")
-            self.__transmit_thread.append(self.__thread_pool.submit(self.__transmit, message, cycle_time))
-        else:
-            # 周期事件信号，当周期信号发送的时候，只在变化data的时候会进行快速发送消息
-            if message.msg_send_type == self._cycle_event:
-                # 暂停已发送的消息
-                self.stop_transmit(msg_id)
-                self._send_messages[msg_id].data = message.data
-                self.__event(message)
-                # 发送完成了周期性事件信号，恢复信号发送
-                self.resume_transmit(msg_id)
-            else:
-                # 已经在里面了，所以修改data值而已
-                self._send_messages[msg_id].data = message.data
-
-    def __event(self, message: Message):
-        """
-        发送事件信号
-
-        :param message: message的集合对象
-        """
-        msg_id = message.msg_id
-        hex_msg_id = hex(msg_id)
-        data = message.data
-        cycle_time = message.cycle_time_fast / 1000.0
-        # 事件信号
-        for i in range(message.cycle_time_fast_times):
-            logger.debug(f"****** The {i} times send msg[{hex_msg_id}] and data [{list(map(lambda x: hex(x), data))}] "
-                         f"and cycle time [{message.cycle_time_fast}]")
-            self.__pcan.transmit(message)
-            sleep(cycle_time)
-
     def open_can(self):
         """
         对CAN设备进行打开、初始化等操作，并同时开启设备的帧接收线程。
         """
-        # 设置线程池，最大线程数为100
-        self.__thread_pool = ThreadPoolExecutor(max_workers=self._max_workers)
+        super()._open_can()
         # 打开设备，并初始化设备
         self.__pcan.open_device()
-        # 开启设备的接收线程
-        self.__need_receive = True
-        # 开启设备的发送线程
-        self.__need_transmit = True
         # 把接收函数submit到线程池中
-        self.__receive_thread.append(self.__thread_pool.submit(self.__receive))
+        self._receive_thread.append(self._thread_pool.submit(self.__receive))
 
     def close_can(self):
         """
         关闭USB CAN设备。
         """
-        self.__need_transmit = False
-        wait(self.__transmit_thread, return_when=ALL_COMPLETED)
-        self.__need_receive = False
-        wait(self.__receive_thread, return_when=ALL_COMPLETED)
-        if self.__thread_pool:
-            self.__thread_pool.shutdown()
-        self._send_messages.clear()
+        super()._close_can()
         self.__pcan.close_device()
 
     @check_status
     def transmit(self, message: Message):
         """
         发送CAN帧函数。
-
-        TODO: 延时没有实现
-
         :param message: message对象
         """
-        msg_id = message.msg_id
-        cycle_time = message.cycle_time
-        if message.msg_send_type == self._cycle or cycle_time > 0:
-            logger.debug("cycle send message")
-            # 周期信号
-            self.__cycle_msg(message)
-        elif message.msg_send_type == self._event:
-            logger.debug("event send message")
-            # 事件信号
-            self.__event(message)
-        elif message.msg_send_type == self._cycle_event:
-            logger.debug("cycle&event send message")
-            # 周期事件信号
-            self.__cycle_msg(message)
+        super()._transmit(self.__pcan, message)
+
+    @check_status
+    def transmit_one(self, message: Message):
+        """
+        仅发一帧数据
+        :param message:
+        :return:
+        """
+        super()._transmit_one(self.__pcan, message)
 
     @check_status
     def stop_transmit(self, msg_id: int = None):
@@ -234,21 +134,7 @@ class PCanBus(CanBus):
 
         :param msg_id: 停止发送的Message的ID
         """
-        logger.trace(f"send message list size is {len(self._send_messages)}")
-        if msg_id:
-            logger.trace(f"try to stop message {hex(msg_id)}")
-            if msg_id in self._send_messages:
-                logger.info(f"Message <{hex(msg_id)}> is stop to send.")
-                self._send_messages[msg_id].stop_flag = True
-                self._send_messages[msg_id].pause_flag = True
-            else:
-                logger.error(f"Please check message id, Message <{hex(msg_id)}> is not contain.")
-        else:
-            logger.trace(f"try to stop all messages")
-            for key, item in self._send_messages.items():
-                logger.info(f"Message <{hex(key)}> is stop to send.")
-                item.stop_flag = True
-                item.pause_flag = True
+        super()._stop_transmit(msg_id)
 
     @check_status
     def resume_transmit(self, msg_id: int = None):
@@ -257,23 +143,7 @@ class PCanBus(CanBus):
 
         :param msg_id:停止发送的Message的ID
         """
-        if msg_id:
-            logger.trace(f"try to resume message {hex(msg_id)}")
-            if msg_id in self._send_messages:
-                logger.info(f"Message <{hex(msg_id)}> is resume to send.")
-                message = self._send_messages[msg_id]
-                # message.stop_flag = False
-                self.transmit(message)
-            else:
-                logger.error(f"Please check message id, Message <{hex(msg_id)}> is not contain.")
-        else:
-            logger.trace(f"try to resume all messages")
-            for key, item in self._send_messages.items():
-                logger.info(f"Message <{hex(key)}> is resume to send.")
-                # 当发现这个msg是停止的时候就恢复发送
-                if item.stop_flag:
-                    # item.stop_flag = False
-                    self.transmit(item)
+        super()._resume_transmit(self.__pcan, msg_id)
 
     @check_status
     def receive(self, msg_id: int) -> Message:
@@ -284,10 +154,7 @@ class PCanBus(CanBus):
 
         :return: Message对象
         """
-        if msg_id in self._receive_messages:
-            return self._receive_messages[msg_id]
-        else:
-            raise RuntimeError(f"message_id {msg_id} not receive")
+        return super()._receive(msg_id)
 
     def is_open(self) -> bool:
         """
@@ -305,11 +172,11 @@ class PCanBus(CanBus):
         """
         获取CAN的stack
         """
-        return self._stack
+        return super().get_stack()
 
     @check_status
     def clear_stack_data(self):
         """
         清除栈数据
         """
-        self._stack.clear()
+        super().clear_stack_data()
