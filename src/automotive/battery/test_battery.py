@@ -82,8 +82,102 @@ def __prepare(startup_time: int):
     service.init_template_light_pic()
 
 
+def __tear_down():
+    logger.info("关闭所有设备")
+    service.close_devices()
+    logger.info("过滤图片，后续人工检查")
+    service.filter_saved_images()
+
+
+def __close_device(startup_time: int, min_: float, max_: float, cycle_time: int,
+                   step: float, interval: float):
+    __prepare(startup_time)
+    for i in range(cycle_time):
+        logger.info(f"开始进行第{i + 1}次测试")
+        logger.info(f"调节电压从{min_}到{max_}，每隔{interval}秒变化{step}V")
+        service.change_voltage(min_, max_, step, interval)
+        logger.info(f"拍照检查工作是否正常")
+        if service.take_a_picture_and_compare_light():
+            logger.error(f"检查到不正常的情况")
+            continue
+        if service.check_system_available():
+            logger.error(f"系统没有恢复正常的情况")
+            break
+        if service.check_can_available():
+            logger.error(f"检查到CAN总线丢失")
+            break
+        logger.info(f"调节电压从{min_}到{max_}，每隔{interval}秒变化{step}V")
+        service.change_voltage(max_, min_, 1, 1)
+        logger.info(f"拍照检查工作是否正常")
+        if service.take_a_picture_and_compare_dark():
+            logger.error(f"检查到不正常的情况")
+            continue
+        if not service.check_system_available():
+            logger.error(f"系统仍然正常")
+            break
+        if service.check_can_available():
+            logger.error(f"检查到CAN总线丢失")
+            break
+    __tear_down()
+
+
+def __close_display(startup_time: int, min_: float, max_: float, cycle_time: int,
+                    step: float, interval: float):
+    __prepare(startup_time)
+    for i in range(cycle_time):
+        logger.info(f"开始进行第{i + 1}次测试")
+        logger.info(f"调节电压从{min_}到{max_}，每隔{interval}秒变化{step}V")
+        service.change_voltage(min_, max_, step, interval)
+        logger.info(f"拍照检查工作是否正常")
+        if service.take_a_picture_and_compare_light():
+            logger.error(f"检查到不正常的情况")
+            continue
+        if service.check_system_available():
+            logger.error(f"系统没有恢复正常的情况")
+            break
+        if service.check_can_available():
+            logger.error(f"检查到CAN总线丢失")
+            break
+        logger.info(f"调节电压从{min_}到{max_}，每隔{interval}秒变化{step}V")
+        service.change_voltage(max_, min_, 1, 1)
+        logger.info(f"拍照检查工作是否正常")
+        if service.take_a_picture_and_compare_dark():
+            logger.error(f"检查到不正常的情况")
+            continue
+        if service.check_system_available():
+            logger.error(f"系统没有恢复正常的情况")
+            break
+        if service.check_can_available():
+            logger.error(f"检查到CAN总线丢失")
+            break
+    __tear_down()
+
+
+def __raise(startup_time: int, start: float, end: float, cycle_time: int, step: float, interval: float):
+    __prepare(startup_time)
+    for i in range(cycle_time):
+        logger.info(f"开始进行第{i + 1}次测试")
+        logger.info(f"调节电压从{start}到{end}，每隔{interval}秒变化{step}V")
+        service.change_voltage(start, end, step, interval)
+        sleep(1)
+        logger.info(f"调节电压从{end}到{start}，每隔{interval}秒变化{step}V")
+        service.change_voltage(end, start, step, interval)
+        sleep(1)
+        logger.info(f"拍照检查工作是否正常")
+        if service.take_a_picture_and_compare_light():
+            logger.error(f"检查到不正常的情况")
+            continue
+        if service.check_system_available():
+            logger.error(f"系统没有恢复正常的情况")
+            break
+        if service.check_can_available():
+            logger.error(f"检查到CAN总线丢失")
+            break
+    __tear_down()
+
+
 def voltage_change_between_normal_min_and_normal_max(startup_time: int, min_voltage: float, max_voltage: float,
-                                                     cycle_time: int, step: float = 1, interval: float = 1):
+                                                     cycle_time: int, step: float = 0.1, interval: float = 0.1):
     """
     电源在正常电压之间变动，
 
@@ -131,80 +225,139 @@ def voltage_change_between_normal_min_and_normal_max(startup_time: int, min_volt
         if service.check_can_available():
             logger.error(f"检查到CAN总线丢失")
             break
-    logger.info("关闭所有设备")
-    service.close_devices()
-    logger.info("过滤图片，后续人工检查")
-    service.filter_saved_images()
+    __tear_down()
 
 
-def voltage_low_close_device(startup_time: int, low_voltage: float, normal_voltage_min: float, cycle_time: int,
-                             step: float, interval: float):
+def voltage_low_close_device(startup_time: int, low_voltage: float, normal_voltage_min: float, cycle_time: int):
     """
     电压关机测试
+
     :param startup_time: 开机启动完成需要的时间
+
     :param low_voltage:  低电压阈值（关机)
+
     :param normal_voltage_min: 正常电压的最低值
+
     :param cycle_time: 循环次数
-    :param step:
-    :param interval:
-    :return:
+
     """
     # 阈值处理，
     min_ = low_voltage - 0.5
     max_ = normal_voltage_min + 0.5
-    __prepare(startup_time)
-    for i in range(cycle_time):
-        logger.info(f"开始进行第{i + 1}次测试")
-        logger.info(f"调节电压从{min_}到{max_}，每隔{interval}秒变化{step}V")
-        service.change_voltage(min_, max_, step, interval)
-        logger.info(f"拍照检查工作是否正常")
-        if service.take_a_picture_and_compare_light():
-            logger.error(f"检查到不正常的情况")
-            continue
-        if service.check_system_available():
-            logger.error(f"系统没有恢复正常的情况")
-            break
-        if service.check_can_available():
-            logger.error(f"检查到CAN总线丢失")
-            break
-        logger.info(f"调节电压从{min_}到{max_}，每隔{interval}秒变化{step}V")
-        service.change_voltage(max_, min_, 1, 1)
-        logger.info(f"拍照检查工作是否正常")
-        if service.take_a_picture_and_compare_dark():
-            logger.error(f"检查到不正常的情况")
-            continue
-        if not service.check_system_available():
-            logger.error(f"系统仍然正常")
-            break
-        if service.check_can_available():
-            logger.error(f"检查到CAN总线丢失")
-            break
-    logger.info("关闭所有设备")
-    service.close_devices()
-    logger.info("过滤图片，后续人工检查")
-    service.filter_saved_images()
+    __close_device(startup_time, min_, max_, cycle_time, 0.1, 0.1)
 
 
-def voltage_low_close_display(startup_time: int, low_voltage: float, normal_voltage_min: float, cycle_time: int,
-                              step: float, interval: float):
+def voltage_low_close_display(startup_time: int, low_voltage: float, normal_voltage_min: float, cycle_time: int):
     """
     电压关屏测试
+
     :param startup_time: 开机启动完成需要的时间
     :param low_voltage:  低电压阈值（关机)
     :param normal_voltage_min: 正常电压的最低值
     :param cycle_time: 循环次数
-    :param step:
-    :param interval:
     :return:
     """
     # 阈值处理，
     min_ = low_voltage - 0.5
     max_ = normal_voltage_min + 0.5
+    __close_display(startup_time, min_, max_, cycle_time, 0.1, 0.1)
+
+
+def voltage_high_close_device(startup_time: int, high_voltage: float, normal_voltage_max: float, cycle_time: int):
+    """
+    电压关机测试
+
+    :param startup_time: 开机启动完成需要的时间
+
+    :param high_voltage:  高电压阈值（关机)
+
+    :param normal_voltage_max: 正常电压的最高值
+
+    :param cycle_time: 循环次数
+    """
+    # 阈值处理
+    min_ = normal_voltage_max + 0.5
+    max_ = high_voltage - 0.5
+    __close_device(startup_time, min_, max_, cycle_time, 0.1, 0.1)
+
+
+def voltage_high_close_display(startup_time: int, low_voltage: float, normal_voltage_min: float, cycle_time: int):
+    """
+    电压关屏测试
+
+    :param startup_time: 开机启动完成需要的时间
+
+    :param low_voltage:  低电压阈值（关机)
+
+    :param normal_voltage_min: 正常电压的最低值
+
+    :param cycle_time: 循环次数
+
+    """
+    # 阈值处理
+    min_ = low_voltage - 0.5
+    max_ = normal_voltage_min + 0.5
+    __close_display(startup_time, min_, max_, cycle_time, 0.1, 0.1)
+
+
+def voltage_raise_up_slowly(startup_time: int, cycle_time: int):
+    """
+    电压慢速从12V变化到20V, 步长0.1V, 变化间隔时间0.3S
+
+    :param startup_time: 开机启动完成需要的时间
+
+    :param cycle_time: 循环次数
+    """
+    __raise(startup_time, 12, 20, cycle_time, 0.1, 0.3)
+
+
+def voltage_raise_up_quickly(startup_time: int, cycle_time: int):
+    """
+    电压快速从12V变化到20V, 步长0.1V, 变化间隔时间0.1s
+
+    :param startup_time: 开机启动完成需要的时间
+
+    :param cycle_time: 循环次数
+    """
+    __raise(startup_time, 12, 20, cycle_time, 0.1, 0.1)
+
+
+def voltage_raise_down_slowly(startup_time: int, cycle_time: int):
+    """
+    电压慢速从12V变化到3V, 步长0.1V, 变化间隔时间0.3S
+
+    :param startup_time: 开机启动完成需要的时间
+
+    :param cycle_time: 循环次数
+    """
+    __raise(startup_time, 12, 3, cycle_time, 0.1, 0.3)
+
+
+def voltage_raise_down_quickly(startup_time: int, cycle_time: int):
+    """
+    电压快速从12V变化到20V, 步长0.1V, 变化间隔时间0.1s
+
+    :param startup_time: 开机启动完成需要的时间
+
+    :param cycle_time: 循环次数
+    """
+    __raise(startup_time, 12, 3, cycle_time, 0.1, 0.1)
+
+
+def crank_car(startup_time: int, cycle_time: int, crank_curve: str):
+    """
+    正常电压情况下点火
+
+    :param startup_time: 开机启动完成需要的时间
+
+    :param cycle_time: 循环次数
+
+    :param crank_curve: 点火曲线文件
+    """
     __prepare(startup_time)
     for i in range(cycle_time):
         logger.info(f"开始进行第{i + 1}次测试")
-        logger.info(f"调节电压从{min_}到{max_}，每隔{interval}秒变化{step}V")
-        service.change_voltage(min_, max_, step, interval)
+        service.adjust_voltage_by_curve(crank_curve)
         logger.info(f"拍照检查工作是否正常")
         if service.take_a_picture_and_compare_light():
             logger.error(f"检查到不正常的情况")
@@ -215,10 +368,24 @@ def voltage_low_close_display(startup_time: int, low_voltage: float, normal_volt
         if service.check_can_available():
             logger.error(f"检查到CAN总线丢失")
             break
-        logger.info(f"调节电压从{min_}到{max_}，每隔{interval}秒变化{step}V")
-        service.change_voltage(max_, min_, 1, 1)
+    __tear_down()
+
+
+def acc_on_off(startup_time: int, cycle_time: int):
+    """
+    ACC ON OFF测试
+
+    :param startup_time: 开机启动完成需要的时间
+
+    :param cycle_time: 循环次数
+    """
+    __prepare(startup_time)
+    for i in range(cycle_time):
+        logger.info(f"开始进行第{i + 1}次测试")
+        service.acc_on()
+        sleep(startup_time)
         logger.info(f"拍照检查工作是否正常")
-        if service.take_a_picture_and_compare_dark():
+        if service.take_a_picture_and_compare_light():
             logger.error(f"检查到不正常的情况")
             continue
         if service.check_system_available():
@@ -227,8 +394,76 @@ def voltage_low_close_display(startup_time: int, low_voltage: float, normal_volt
         if service.check_can_available():
             logger.error(f"检查到CAN总线丢失")
             break
-    logger.info("关闭所有设备")
-    service.close_devices()
-    logger.info("过滤图片，后续人工检查")
-    service.filter_saved_images()
+        service.acc_off()
+        service.bus_sleep()
+    __tear_down()
 
+
+def reverse_car_normal(startup_time: int, cycle_time: int):
+    """
+    正常情况下倒车
+
+    :param startup_time:  开机启动完成需要的时间
+
+    :param cycle_time: 循环次数
+    """
+    __prepare(startup_time)
+    for i in range(cycle_time):
+        logger.info(f"开始进行第{i + 1}次测试")
+        service.reverse_on()
+        sleep(5)
+        logger.info(f"拍照检查工作是否正常")
+        if service.take_a_picture_and_compare_light():
+            logger.error(f"检查到不正常的情况")
+            continue
+        service.reverse_off()
+        sleep(5)
+    __tear_down()
+
+
+def reverse_car_when_battery_on(startup_time: int, cycle_time: int):
+    """
+    battery ON的时候同时倒车
+
+    :param startup_time: 开机启动完成需要的时间
+
+    :param cycle_time: 循环次数
+    """
+    __prepare(startup_time)
+    for i in range(cycle_time):
+        logger.info(f"开始进行第{i + 1}次测试")
+        service.battery_on()
+        service.reverse_on()
+        sleep(startup_time)
+        logger.info(f"拍照检查工作是否正常")
+        if service.take_a_picture_and_compare_light():
+            logger.error(f"检查到不正常的情况")
+            continue
+        service.reverse_off()
+        service.battery_off()
+        sleep(5)
+    __tear_down()
+
+
+def reverse_car_when_crank(startup_time: int, cycle_time: int, crank_curve: str):
+    """
+    点火的时候同时倒车
+
+    :param startup_time: 开机启动完成需要的时间
+
+    :param cycle_time: 循环次数
+
+    :param crank_curve: 电压曲线
+    """
+    __prepare(startup_time)
+    for i in range(cycle_time):
+        logger.info(f"开始进行第{i + 1}次测试")
+        service.adjust_voltage_by_curve(crank_curve)
+        service.reverse_on()
+        logger.info(f"拍照检查工作是否正常")
+        if service.take_a_picture_and_compare_light():
+            logger.error(f"检查到不正常的情况")
+            continue
+        service.reverse_off()
+        sleep(5)
+    __tear_down()
