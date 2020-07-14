@@ -86,11 +86,14 @@ class TraceService(object):
         """
         self.__can.close_can()
 
-    def send_trace(self, file: str, trace_type: TraceType):
+    def read_trace(self, file: str, trace_type: TraceType) -> list:
         reader = self.__get_reader(trace_type)
         logger.info(f"read all messages in trace file[{file}]")
         traces = reader.read(file)
         logger.info(f"done read work, it will send {len(traces)} messages")
+        return traces
+
+    def send_trace(self, traces):
         # 初始的时间
         current_time = None
         logger.info("start to send message")
