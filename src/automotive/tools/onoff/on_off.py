@@ -179,18 +179,18 @@ class OnOff(object):
         files = os.listdir(folder)
         return list(filter(lambda x: x.endswith(".yml"), files))
 
-    def __run_test_case(self, test_case_file: str, config: str):
+    def __run_test_case(self, test_case_content: (str, dict), config: (str, dict)):
         """
         执行测试用例
 
-        :param test_case_file: 测试用例文件
+        :param test_case_content: 测试用例文件
 
         :param config: config文件
         """
-        content = Utils().read_yml_full(test_case_file)
+        contents = Utils().read_yml_full(test_case_content) if isinstance(test_case_content, str) else test_case_content
         test_case = OnOffTestCase()
         # 从设置到类中
-        test_case.update(content)
+        test_case.update(contents)
         # 检查设置的是否正确
         test_case.check()
         service = Service(config)
@@ -212,6 +212,7 @@ class OnOff(object):
                         break
                 # 跳出最外层循环
                 else:
+                    logger.info("out cycle")
                     continue
                 break
             logger.info("开始执行测试用例result部分")

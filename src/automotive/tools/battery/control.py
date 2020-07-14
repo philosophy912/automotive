@@ -136,7 +136,7 @@ class KonstanterControl(BaseBattery):
             self.__kon.store(end_register, start, current, operator_time, 'ON')
         self.__kon.sequence_repetition(repeat)
         result = 11, mid_register, end_register
-        logger.info(
+        logger.debug(
             f"power setting register:(11, {mid_register}, {end_register}) maps voltage:({start}, {end}, {start})")
         self.__kon.get_store()
         return result

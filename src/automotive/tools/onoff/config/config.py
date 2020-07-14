@@ -127,24 +127,37 @@ class Config(metaclass=Singleton):
         can = "r_shift", "n_shift", "fast_sleep"
         # 外部扫描检查设备
         scan_devices = [self.environment.battery, self.environment.acc,
-                        self.environment.reverse, self.environment.bus_sleep]
+                        self.environment.reverse, self.environment.bus_sleep, self.environment.serial]
         # 用到的can信号，便于后面检查
         used_can = set()
         for device in scan_devices:
             logger.debug(f"device is [{device}]")
+            # 由于bus sleep不能算做
             if device:
-                # 判断是否用到了相关的串口
-                if isinstance(device, str) and device in serials:
-                    self.devices.add(DeviceEnum.from_value(device))
-                # 判断是否用到了can
-                elif isinstance(device, str) and device in can:
-                    used_can.add(device)
-                    self.devices.add(DeviceEnum.CAN)
-                # 继电器只允许配置小于8个通道
-                elif isinstance(device, int) and 1 <= device <= 8:
-                    self.devices.add(DeviceEnum.RELAY)
+                if device == self.environment.bus_sleep:
+                    if isinstance(device, str) and device == "fast_sleep":
+                        self.devices.add(DeviceEnum.CAN)
+                    elif isinstance(device, int):
+                        logger.info(f"bus sleep is wait time[{device}] ")
+                    else:
+                        raise ValueError(f"only support time or fast_sleep")
+                elif device == self.environment.serial:
+                    if len(device) > 0:
+                        self.devices.add(DeviceEnum.SERIAL)
                 else:
-                    raise ValueError(f"only support type[{serials}] or relay channel [0-8]")
+                    # 判断是否用到了相关的串口
+                    if isinstance(device, str) and device in serials:
+                        self.devices.add(DeviceEnum.from_value(device))
+                    # 判断是否用到了can
+                    elif isinstance(device, str) and device in can:
+                        used_can.add(device)
+                        self.devices.add(DeviceEnum.CAN)
+                    # 继电器只允许配置小于8个通道
+                    elif isinstance(device, int) and 1 <= device <= 8:
+                        self.devices.add(DeviceEnum.RELAY)
+                    else:
+                        raise ValueError(f"only support type[{serials}] or relay channel [0-8] or can[{can}]")
+
         logger.info(f"add devices is {self.devices}")
         # 如果base_path不存在，抛出异常
         if not os.path.exists(self.environment.base_path):
@@ -177,7 +190,7 @@ class Config(metaclass=Singleton):
                     else:
                         raise ValueError(f"config [{can}] not found")
             else:
-                raise ValueError(f"please config message as [automatedtest.lib.can.dbc.gse_3j2] first ")
+                raise ValueError(f"please config message as [{messages_package}] first ")
         # 检查串口相关设备
         for device in self.devices:
             if device in serials_enum:

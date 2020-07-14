@@ -1,9 +1,3 @@
-# -*- coding:utf-8 -*-
-# --------------------------------------------------------
-# Copyright (C), 2016-2020, China TSP, All rights reserved
-# --------------------------------------------------------
-# @Name:        __init__.py.py
-# @Purpose:     todo
-# @Author:      lizhe
-# @Created:     2020/6/19 - 11:19
-# --------------------------------------------------------
+from .test_battery import device_config, TestBattery
+
+__all__ = ["device_config", "TestBattery"]

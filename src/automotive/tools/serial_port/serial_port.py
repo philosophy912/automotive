@@ -46,7 +46,8 @@ class SerialPort(object):
         """
         encode = chardet.detect(string)
         logger.debug(f"codec is {encode['encoding']}")
-        return encode['encoding']
+        encoding = encode['encoding']
+        return encoding if encoding else "utf-8"
 
     def __get_line(self, line: bytes, type_: bool = None) -> str:
         """
@@ -58,10 +59,10 @@ class SerialPort(object):
 
         :return 行数据
         """
-        if type_ is None:
-            return line.decode(self.__detect_codec(line))
-        else:
+        if type_:
             return line if type_ else line.decode("utf-8")
+        else:
+            return line.decode(self.__detect_codec(line))
 
     def connect(self, port: str, baud_rate: int, byte_size: int = serial.EIGHTBITS, parity: str = serial.PARITY_NONE,
                 stop_bits: int = serial.STOPBITS_ONE, xon_xoff: bool = False, rts_cts: bool = False,
@@ -262,6 +263,14 @@ class SerialPort(object):
         清空所有缓存
         """
         self._serial.flush()
+
+    @check_status
+    def flush_all(self):
+        """
+        同时清空input和output
+        """
+        self.flush_output()
+        self.flush_input()
 
     @check_status
     def flush_input(self):

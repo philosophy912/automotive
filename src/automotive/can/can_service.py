@@ -33,16 +33,19 @@ class CANService(metaclass=Singleton):
 
     def __init__(self, messages: (str, list), encoding: str = "utf-8",
                  can_box_device: CanBoxDevice = None):
-        self.__can = self.__get_can_bus(can_box_device)
+        if can_box_device:
+            self.__can_box_device = can_box_device
+        else:
+            self.__can_box_device = self.__get_can_box_device()
+        self.__can = self.__get_can_bus(self.__can_box_device)
         self.__parser = Parser()
         logger.debug(f"read message from file {messages}")
         self.__messages, self.__name_messages = self.__parser.get_message(messages, encoding=encoding)
         # 用于记录当前栈中msg的最后一个数据的时间点
         self.__last_msg_time_in_stack = dict()
 
-    def __get_can_bus(self, can_box_device: CanBoxDevice) -> CanBus:
-        if not can_box_device:
-            can_box_device = self.__get_can_box_device()
+    @staticmethod
+    def __get_can_bus(can_box_device: CanBoxDevice) -> CanBus:
         if can_box_device == CanBoxDevice.PEAKCAN:
             logger.info("use pcan")
             return PCanBus()
@@ -70,7 +73,11 @@ class CANService(metaclass=Singleton):
         raise RuntimeError("no device found")
 
     @property
-    def name_messages(self):
+    def can_box_device(self) -> CanBoxDevice:
+        return self.__can_box_device
+
+    @property
+    def name_messages(self) -> dict:
         return self.__name_messages
 
     @name_messages.setter
@@ -78,7 +85,7 @@ class CANService(metaclass=Singleton):
         self.__name_messages = name_messages
 
     @property
-    def messages(self):
+    def messages(self) -> dict:
         return self.__messages
 
     @messages.setter
@@ -395,5 +402,3 @@ class CANService(metaclass=Singleton):
                 self.__send_random(filter_sender, interval)
         else:
             self.__send_random(filter_sender, interval)
-
-

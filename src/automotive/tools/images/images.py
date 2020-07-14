@@ -339,6 +339,34 @@ class Images(object):
         return round(same_percent, percent), round(different_percent, percent)
 
     @staticmethod
+    def __find_by_template(small_image: (str, np.array), big_image: (str, np.array), threshold: float = 0.7,
+                           rgb: bool = True, find_type: FindType = FindType.TEMPLATE):
+        if find_type == FindType.TEMPLATE:
+            # Template matching.
+            return TemplateMatching(small_image, big_image, threshold=threshold, rgb=rgb).find_best_result()
+        elif find_type == FindType.KAZE:
+            # 较慢,稍微稳定一点.
+            return KAZEMatching(small_image, big_image, threshold=threshold, rgb=rgb).find_best_result()
+        elif find_type == FindType.BRISK:
+            # 快,效果一般,不太稳定
+            return BRISKMatching(small_image, big_image, threshold=threshold, rgb=rgb).find_best_result()
+        elif find_type == FindType.AKAZE:
+            # 较快,效果较差,很不稳定
+            return AKAZEMatching(small_image, big_image, threshold=threshold, rgb=rgb).find_best_result()
+        elif find_type == FindType.ORB:
+            # 很快,效果垃圾
+            return ORBMatching(small_image, big_image, threshold=threshold, rgb=rgb).find_best_result()
+        elif find_type == FindType.SIFT:
+            # 慢,最稳定
+            return SIFTMatching(small_image, big_image, threshold=threshold, rgb=rgb).find_best_result()
+        elif find_type == FindType.SURF:
+            # 快,效果不错
+            return SURFMatching(small_image, big_image, threshold=threshold, rgb=rgb).find_best_result()
+        elif find_type == FindType.BRIEF:
+            # 识别特征点少,只适合强特征图像的匹配
+            return BRIEFMatching(small_image, big_image, threshold=threshold, rgb=rgb).find_best_result()
+
+    @staticmethod
     def convert_png_to_jpg(origin: str, target: str, color: tuple = (255, 255, 255), quality: int = 100):
         """Alpha composite an RGBA Image with a specified color.
 
@@ -542,6 +570,7 @@ class Images(object):
 
         :return: a_hash p_hash d_hash
         """
+        logger.debug(f"img1 = {img1} and img2 = {img2}")
         image1 = Image.open(img1)
         image2 = Image.open(img2)
         a_hash1 = str(imagehash.average_hash(image1))
@@ -693,7 +722,7 @@ class Images(object):
     def find_best_result_in_templates(self, small_image: (str, np.array), big_image: (str, np.array),
                                       threshold: float = 0.7, rgb: bool = True) -> dict:
         """
-        查找小图是否在大图中匹配, 当小图在大图中无法找到，则返回None
+        查找小图是否在大图中匹配, 当小图在大图中无法找到，尝试所有FindType的所有比较方式
 
         :param small_image: 小图片
 
@@ -741,42 +770,37 @@ class Images(object):
                 logger.debug(f"skip")
         return compare_result
 
-    @staticmethod
-    def __find_by_template(small_image: (str, np.array), big_image: (str, np.array), threshold: float = 0.7,
-                           rgb: bool = True, find_type: FindType = FindType.TEMPLATE):
-        if find_type == FindType.TEMPLATE:
-            # Template matching.
-            return TemplateMatching(small_image, big_image, threshold=threshold, rgb=rgb).find_best_result()
-        elif find_type == FindType.KAZE:
-            # 较慢,稍微稳定一点.
-            return KAZEMatching(small_image, big_image, threshold=threshold, rgb=rgb).find_best_result()
-        elif find_type == FindType.BRISK:
-            # 快,效果一般,不太稳定
-            return BRISKMatching(small_image, big_image, threshold=threshold, rgb=rgb).find_best_result()
-        elif find_type == FindType.AKAZE:
-            # 较快,效果较差,很不稳定
-            return AKAZEMatching(small_image, big_image, threshold=threshold, rgb=rgb).find_best_result()
-        elif find_type == FindType.ORB:
-            # 很快,效果垃圾
-            return ORBMatching(small_image, big_image, threshold=threshold, rgb=rgb).find_best_result()
-        elif find_type == FindType.SIFT:
-            # 慢,最稳定
-            return SIFTMatching(small_image, big_image, threshold=threshold, rgb=rgb).find_best_result()
-        elif find_type == FindType.SURF:
-            # 快,效果不错
-            return SURFMatching(small_image, big_image, threshold=threshold, rgb=rgb).find_best_result()
-        elif find_type == FindType.BRIEF:
-            # 识别特征点少,只适合强特征图像的匹配
-            return BRIEFMatching(small_image, big_image, threshold=threshold, rgb=rgb).find_best_result()
-
-    def find_best_result_by_position(self, small_image: (str, np.array), big_image: (str, np.array),
+    def find_best_result_by_position(self, image1: (str, np.array), image2: (str, np.array),
                                      position1: tuple, position2: tuple = None, threshold: float = 0.7,
                                      rgb: bool = True) -> dict:
+        """
+        在两张图片中的相同区域进行图片对比，如果两个区域的位置相同，则position2可以不填
+        :param image1: 图1
+        :param image2: 图2
+        :param position1: 位置1
+        :param position2: 位置2
+        :param threshold: 阈值，默认0.7
+        :param rgb: 默认True
+        :return:
+        """
         # 当position2填写的时候需要判断大小是否与position1相同
-        image1 = self.cut_image_array(small_image, position1)
+        image1 = self.cut_image_array(image1, position1)
         if position2:
             self.__check_area_same(position1, position2)
-            image2 = self.cut_image_array(big_image, position2)
+            image2 = self.cut_image_array(image2, position2)
         else:
-            image2 = self.cut_image_array(big_image, position1)
+            image2 = self.cut_image_array(image2, position1)
         return self.find_best_result(image1, image2, threshold, rgb, FindType.TEMPLATE)
+
+    def show_images(self, image1: (str, np.array), image2: (str, np.array), time: float = 0.5):
+        """
+        拼接两张图片进行显示
+        :param image1: 图片1
+        :param image2: 图片2
+        :param time: 显示时间
+        """
+        image1 = self.__get_image_nd_array(image1)
+        image2 = self.__get_image_nd_array(image2)
+        two_images = np.hstack([image1, image2])
+        cv2.imshow("compare_images", two_images)
+        cv2.waitKey(time * 1000)

@@ -8,6 +8,8 @@
 # @Created:     2020/02/05 21:33
 # --------------------------------------------------------
 from loguru import logger
+
+from automotive.tools.serial_port import SerialPort
 from .base_actions import BaseActions
 
 
@@ -18,7 +20,7 @@ class SerialActions(BaseActions):
 
     def __init__(self, port: str, baud_rate: int):
         super().__init__()
-        self.__serial = None
+        self.__serial = SerialPort()
         self.__port = port.upper()
         self.__baud_rate = baud_rate
 
@@ -39,7 +41,7 @@ class SerialActions(BaseActions):
         关闭串口
         """
         logger.info("关闭串口")
-        self.__serial.close()
+        self.__serial.disconnect()
 
     def judge_text_in_serial(self, contents: list) -> bool:
         """

@@ -10,6 +10,8 @@
 import importlib
 import os
 import shutil
+import cv2
+import numpy as np
 from time import sleep
 from loguru import logger
 from automotive.tools.images import Images
@@ -53,7 +55,7 @@ class Service(object):
         logger.debug(f"初始化所有配置的设备[{self.__config.devices}]")
         for device in self.__config.devices:
             # 获取设备的包名
-            module_name = f"..actions.{device.value}_actions"
+            module_name = f"automotive.tools.onoff.actions.{device.value}_actions"
             module = importlib.import_module(module_name)
             # 获取类名
             class_name = device.value.capitalize() + "Actions"
@@ -100,6 +102,7 @@ class Service(object):
         logger.debug(f"图片1[{pic1}]和图片2[{pic2}] 相比为[{a}:{p}:{d}], 要对比的阈值[{threshold}]")
         if a > threshold or p > threshold or d > threshold:
             logger.info(f"图片1[{pic1}]和图片2[{pic2}] 相比为[{a}:{p}:{d}], 超过阈值{threshold}")
+            self._images.show_images(pic1, pic2, 1)
             return False
         return True
 
@@ -122,18 +125,29 @@ class Service(object):
     def __take_a_picture_and_compare(self, type_: bool) -> bool:
         """
         拍照然后对比图片
-
+        :param type_ 亮图/暗图
         :return:  成功/失败
         """
         self.__check_template_exist(type_)
         # 图片对比的阈值
         threshold = self.__config.environment.camera["compare_threshold"]
+        pic_type = "light" if type_ else "dark"
         # 先拍照
-        temp_pic = self.take_a_picture()
+        temp_pic = self.take_a_picture(pic_type)
         if type_:
             return self.__two_pic_compare(self.__template_light, temp_pic, threshold)
         else:
             return self.__two_pic_compare(self.__template_dark, temp_pic, threshold)
+
+    def __filter_images(self, images: list, temp_folder: str, threshold: int):
+        while len(images) > 1:
+            first = images[0]
+            second = images[1]
+            if not self.__two_pic_compare(first, second, threshold):
+                logger.info(f"{first}和{second}比较超过阈值{threshold},两个文件将被拷贝到{temp_folder}文件夹")
+                shutil.copy(first, temp_folder)
+                shutil.copy(second, temp_folder)
+            images.pop(0)
 
     def sleep(self, time: int, text=None):
         """
@@ -208,7 +222,7 @@ class Service(object):
         """
         self.__check_image_save_path()
         # 设置亮图图片地址
-        self.__template_light = self.__image_save_path + "\\" + self.__config.environment.camera["base"][0]
+        self.__template_light = "\\".join([self.__image_save_path, self.__config.environment.camera["base"][0]])
         logger.debug(f"初始化基准亮图")
         self.__devices[DeviceEnum.CAMERA].init_template_image(self.__template_light)
 
@@ -218,7 +232,7 @@ class Service(object):
         """
         self.__check_image_save_path()
         # 设置暗图图片地址
-        self.__template_light = self.__image_save_path + "\\" + self.__config.environment.camera["base"][1]
+        self.__template_dark = "\\".join([self.__image_save_path, self.__config.environment.camera["base"][1]])
         logger.debug(f"初始化基准亮图")
         self.__devices[DeviceEnum.CAMERA].init_template_image(self.__template_dark)
 
@@ -228,22 +242,22 @@ class Service(object):
         """
         self.__check_image_save_path()
         threshold = self.__config.environment.camera["filter_threshold"]
-        logger.debug(f"测完后过滤图片阈值是")
+        logger.info(f"测完后过滤图片阈值是{threshold}")
         image_files = []
         for dir_, subdir, file_name_list in os.walk(self.__image_save_path):
             for file_name in file_name_list:
+                logger.debug(f"file_name = [{file_name}]")
                 image_files.append(os.path.join(dir_, file_name))
         logger.debug("在当前位置生成新的文件夹")
         temp_folder = self.__image_save_path + "\\" + self._utils.get_time_as_string()
         os.makedirs(temp_folder)
-        while len(image_files) > 1:
-            first = image_files[0]
-            second = image_files[1]
-            if not self.__two_pic_compare(first, second, threshold):
-                logger.info(f"{first}和{second}比较超过阈值{threshold},两个文件将被拷贝到{temp_folder}文件夹")
-                shutil.copy(first, temp_folder)
-                shutil.copy(second, temp_folder)
-            image_files.pop(0)
+        # 要过滤出来dark和light两种不同的，并去掉template文件
+        dark_files = list(filter(lambda x: x.startswith("dark") and not x == "dark_template.png", image_files))
+        light_files = list(filter(lambda x: x.startswith("light") and not x == "light_template.png", image_files))
+        logger.debug(f"dark = {dark_files}")
+        logger.debug(f"light = {dark_files}")
+        self.__filter_images(dark_files, temp_folder, threshold)
+        self.__filter_images(light_files, temp_folder, threshold)
         logger.info("图像筛选完成，请手动再次筛选")
 
     def bus_sleep(self):
@@ -254,6 +268,7 @@ class Service(object):
         if isinstance(bus_sleep, str):
             self.__devices[DeviceEnum.CAN].bus_sleep()
         else:
+            bus_sleep = bus_sleep * 60
             logger.info(f"系统会在{bus_sleep}秒后休眠")
             # 超过1分钟的休眠会分段休息
             if bus_sleep > 60:
@@ -262,7 +277,7 @@ class Service(object):
             else:
                 sleep(bus_sleep)
 
-    def take_a_picture(self) -> str:
+    def take_a_picture(self, pic_type: str = "light") -> str:
         """
         拍照
 
@@ -271,7 +286,7 @@ class Service(object):
         self.__check_image_save_path()
         logger.debug(f"拍照")
         camera_actions = self.__devices[DeviceEnum.CAMERA]
-        camera_actions.take_a_pic(self.__image_save_path)
+        camera_actions.take_a_pic(self.__image_save_path, pic_type)
         return camera_actions.get_temp_pic()
 
     def take_a_picture_and_compare_light(self, is_skip: bool = False) -> bool:
@@ -284,6 +299,7 @@ class Service(object):
             True 图片对比成功
             False 图片对比失败
         """
+        logger.info("亮图检查")
         result = self.__take_a_picture_and_compare(True)
         return True if is_skip else result
 
@@ -297,6 +313,7 @@ class Service(object):
             True 图片对比成功
             False 图片对比失败
         """
+        logger.info("暗图检查")
         result = self.__take_a_picture_and_compare(False)
         return True if is_skip else result
 
@@ -477,21 +494,21 @@ class Service(object):
         except ValueError:
             raise RuntimeError(f"only KONSTANTER can be used in battery, but now config [{battery_type}]")
 
-    def judge_text_in_serial(self):
+    def judge_text_in_serial(self, is_skip: bool = False):
         """
         检查是否有重启
         """
         contents = self.__config.environment.serial
-        self.__devices[DeviceEnum.SERIAL].judge_text_in_serial(contents)
+        return True if is_skip else self.__devices[DeviceEnum.SERIAL].judge_text_in_serial(contents)
 
-    def check_can_available(self):
+    def check_can_available(self, is_skip: bool = False):
         """
         检查CAN Bus是否还活着
         """
-        return self.__devices[DeviceEnum.CAN].check_can_available()
+        return True if is_skip else self.__devices[DeviceEnum.CAN].check_can_available()
 
-    def check_system_available(self):
+    def check_system_available(self, is_skip: bool = False):
         """
         检查系统是否还活着
         """
-        return self.__devices[DeviceEnum.CAN].check_can_available()
+        return True if is_skip else self.__devices[DeviceEnum.CAN].check_can_available()

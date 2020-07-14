@@ -101,7 +101,7 @@ class ADBUtils(object):
 
         :param y: 被点击点的y坐标位置
         """
-        cmd = f"adb input tap {x}, {y}"
+        cmd = f"adb shell input tap {x} {y}"
         sp.Popen(cmd, stdout=sp.PIPE, stderr=sp.PIPE).wait()
 
     @staticmethod

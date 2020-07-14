@@ -185,7 +185,7 @@ class Utils(metaclass=Singleton):
         if text is None:
             logger.info(f"--------------------休息{sleep_time}秒--------------------")
         else:
-            logger.info(f"--------------------休息{text},休息{sleep_time}--------------------")
+            logger.info(f"--------------------休息{text},休息{sleep_time}秒--------------------")
         integer = int(sleep_time // 1)
         decimal = sleep_time - integer
         # 超过1分钟的休眠会分段休息

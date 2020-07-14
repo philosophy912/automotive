@@ -88,10 +88,13 @@ class TraceService(object):
 
     def send_trace(self, file: str, trace_type: TraceType):
         reader = self.__get_reader(trace_type)
+        logger.info(f"read all messages in trace file[{file}]")
         traces = reader.read(file)
+        logger.info(f"done read work, it will send {len(traces)} messages")
         # 初始的时间
         current_time = None
         logger.info("start to send message")
+        count = 1
         while len(traces) > 0:
             trace_time, message = traces[0]
             logger.debug(f"{trace_time}, {current_time}")
@@ -101,6 +104,11 @@ class TraceService(object):
                 logger.debug(f"sleep {interval} seconds")
                 sleep(interval)
             current_time = trace_time
-            self.__can.transmit_one(message)
+            logger.info(f"transmit the {count} message")
+            try:
+                self.__can.transmit_one(message)
+            except RuntimeError:
+                logger.error(f"the {count} message transmit failed")
             traces.pop(0)
+            count += 1
         logger.info("message send done")

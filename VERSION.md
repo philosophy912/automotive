@@ -1,5 +1,13 @@
 ## 版本更新说明
 
+##### V2.2
+
+- CANService中增加了设备获取的接口 -> 通过调用self.can_box_device获取当前设备的类型
+
+- 修复了adb工具的错误
+
+- 增加了Linux的performance的测试 
+
 ##### V2.1
 
 - 增加了电源自动化测试的模板代码

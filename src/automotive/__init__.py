@@ -9,8 +9,10 @@ from .tools.serial_port import SerialPort
 from .tools.speaker import Player
 from .tools.ssh import SSHUtils
 from .tools.usbrelay import USBRelay
+from .tools.performance import Performance
 from .can import CANService, Parser, Message, CanBoxDevice, TraceService, TraceType
 from .android import ADBUtils, AppiumPythonClient
+from .battery import device_config, TestBattery
 
 __all__ = [
     "Singleton", "Utils", "deprecated",
@@ -23,6 +25,8 @@ __all__ = [
     "Player",
     "SSHUtils",
     "USBRelay",
+    "Performance",
     "CANService", "Parser", "Message", "CanBoxDevice", "TraceService", "TraceType",
-    "ADBUtils", "AppiumPythonClient"
+    "ADBUtils", "AppiumPythonClient",
+    "device_config", "TestBattery"
 ]

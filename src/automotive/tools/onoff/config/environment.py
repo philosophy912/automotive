@@ -16,6 +16,7 @@ class Environment(BaseConfig):
 
     该类仅配置了environment部分的数据
     """
+
     def __init__(self):
         # 配置电源
         self.battery = None
@@ -38,6 +39,7 @@ class Environment(BaseConfig):
             # 基准图片配置（亮图和暗图）
             "base": ["light_template.png", "dark_template.png"]
         }
+        self.serial = []
         # 配置基准路径（必须配置)
         self.base_path = None
 

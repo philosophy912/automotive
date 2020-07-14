@@ -38,6 +38,7 @@ class CameraActions(BaseActions):
         self.__camera.open_camera()
         sleep(1)
         logger.debug("代码有问题，需要拍两张照片")
+        logger.info(f"拍摄照片[{pic_name}]")
         for i in range(2):
             self.__camera.take_picture(pic_name)
             sleep(1)
@@ -68,13 +69,14 @@ class CameraActions(BaseActions):
         logger.debug(f"你有{time}分钟时间调整摄像头位置")
         self.__camera.camera_test(time)
 
-    def take_a_pic(self, image_save_path: str):
+    def take_a_pic(self, image_save_path: str, pic_type: str = "light"):
         """
         拍照片
 
+        :param pic_type: 亮图还是暗图，标识符
         :param image_save_path: 图片存放的位置
         """
-        self._temp_image = image_save_path + "\\" + self._utils.get_time_as_string() + ".png"
+        self._temp_image = f"{image_save_path}\\{pic_type}_{self._utils.get_time_as_string()}.png"
         self.__camera.take_picture(self._temp_image)
 
     def get_temp_pic(self):
