@@ -1,0 +1,228 @@
+# -*- coding:utf-8 -*-
+# --------------------------------------------------------
+# Copyright (C), 2016-2020, China TSP, All rights reserved
+# --------------------------------------------------------
+# @Name:        adb.py.py
+# @Purpose:     todo
+# @Author:      lizhe
+# @Created:     2020/7/22 - 16:18
+# --------------------------------------------------------
+import subprocess as sp
+from automotive.logger import logger
+from .keycode import KeyCode
+from time import sleep
+
+
+class ADB(object):
+
+    @staticmethod
+    def __execute(command: str) -> list:
+        logger.debug(f"execute command {command}")
+        pi = sp.Popen(command, stdout=sp.PIPE, stderr=sp.PIPE)
+        pi.wait()
+        return list(map(lambda x: x.decode("utf-8"), pi.stdout.readlines()))
+
+    def __adb_command(self, command: str, device_id: str = None) -> list:
+        """
+        执行ADB命令，可以传入如 adb shell dumpsys window，如果传入了device_id则会加上-s参数
+        :param command: adb命令
+        :param device_id: 设备编号
+        """
+        if "adb" in command:
+            command = command.split("adb")[1]
+        if device_id:
+            return self.__execute(f"adb -s {device_id} {command}")
+        else:
+            return self.__execute(f"adb {command}")
+
+    def devices(self) -> list:
+        """
+        列出当前ADB连接的设备
+        """
+        return self.__execute(f"adb devices")
+
+    def disconnect(self):
+        """
+        断开所有的ADB连接
+        """
+        self.__execute(f"adb disconnect")
+
+    def start_server(self):
+        """
+        启动ADB服务
+        """
+        self.__execute(f"adb start-server")
+
+    def kill_server(self):
+        """
+        杀掉ADB服务
+        """
+        self.__execute(f"adb kill-server")
+
+    def version(self) -> list:
+        """
+        查看ADB的版本号
+        """
+        return self.__execute(f"adb version")
+
+    def root(self):
+        """
+        ADB ROOT
+        """
+        self.__execute(f"adb root")
+
+    def push(self, local: str, remote: str, device_id: str = None):
+        """
+        推送文件到服务器
+
+        :param device_id: 设备编号
+
+        :param local:  本地文件
+
+        :param remote:  远程文件地址
+        """
+        self.__adb_command(f"push {local} {remote}", device_id)
+
+    def pull(self, remote: str, local: str, device_id: str = None):
+        """
+        拉取文件到本地电脑
+
+        :param remote: 远程文件地址
+
+        :param local: 本地文件
+
+        :param device_id: 设备编号
+        """
+        self.__adb_command(f"pull {remote} {local}", device_id)
+
+    def input_text(self, text: str, device_id: str = None):
+        """
+        输入文字到对话框中
+
+        :param text: 文字内容
+
+        :param device_id:  设备编号
+        """
+        self.__adb_command(f"shell input {text}", device_id)
+        sleep(0.1)
+
+    def click(self, x: int, y: int, display_id: int = None, device_id: str = None):
+        """
+        利用adb命令点击屏幕
+
+        :param x: 坐标点x
+
+        :param y: 坐标点y
+
+        :param display_id: 要点击的屏幕
+
+        :param device_id: 设备编号
+        """
+        if display_id and 1 <= display_id <= 3:
+            # 利用传入的显示屏来生成用到的屏幕设备
+            device = f"/dev/input/event{display_id - 1}"
+            commands = ["sendevent " + device + " 3 53 " + str(x),
+                        "sendevent " + device + " 3 54 " + str(y),
+                        "sendevent " + device + " 1 330 1",
+                        "sendevent " + device + " 0 0 0",
+                        "sendevent " + device + " 1 330 0 ",
+                        "sendevent " + device + " 0 0 0"]
+            for cmd in commands:
+                self.__adb_command(cmd, device_id)
+        else:
+            self.__adb_command(f"shell input tap {x} {y}", device_id)
+        sleep(0.1)
+
+    def press_key(self, key_code: KeyCode, device_id: str = None):
+        """
+        利用adb输入按键事件 设备编号
+
+        :param key_code: 按键类型
+
+        :param device_id:  device id
+        """
+        self.__adb_command(f"shell input keyevent {key_code.value}", device_id)
+        sleep(0.1)
+
+    def screen_shot(self, remote_file: str, display_id: int = None, device_id: str = None):
+        """
+        截图并保存在remote端
+
+        :param device_id: 设备编号
+
+        :param display_id: 屏幕编号
+
+        :param remote_file: 截图放置的位置
+        """
+        if display_id:
+            self.__adb_command(f"shell screencap -p -d {display_id} {remote_file}", device_id)
+        else:
+            self.__adb_command(f"shell screencap -p {remote_file}", device_id)
+        sleep(0.1)
+
+    def is_keyboard_show(self, device_id: str = None) -> bool:
+        """
+        键盘是否显示
+
+        :param device_id: 设备编号
+        """
+        results = "".join(self.__adb_command("shell dumpsys input_method", device_id))
+        return "mInputShown=true" in results if results else False
+
+    def start_app(self, package: str, activity: str, device_id: str = None):
+        """
+        启动app
+
+        :param device_id:设备编号
+
+        :param package: package
+
+        :param activity: activity
+        """
+        self.__adb_command(f"shell am start -n {package}/{activity}", device_id)
+
+    def stop_app(self, package: str, device_id: str = None):
+        """
+        关闭app并清理数据app
+
+        :param device_id:设备编号
+
+        :param package: package
+        """
+        self.__adb_command(f"shell am clear {package}", device_id)
+
+    def force_stop_app(self, package: str, device_id: str = None):
+        """
+        强制停止app
+
+        :param device_id:设备编号
+
+        :param package: package
+        """
+        self.__adb_command(f"shell am force-stop {package}", device_id)
+
+    def install(self, local_apk: str, device_id: str = None):
+        """
+        安装app
+        :param local_apk: 要安装的文件
+
+        :param device_id: 设备编号
+        """
+        if not local_apk.endswith("apk"):
+            raise ValueError(f"local_apk not endswith apk")
+        cmd = f"install {local_apk}"
+        return self.__adb_command(cmd, device_id)
+
+    def uninstall(self, package_name: str, keep_data: bool = False, device_id: str = None):
+        """
+        卸载app
+        :param device_id:设备编号
+
+        :param package_name:包名
+
+        :param keep_data: 是否保持文件内容
+
+        :return:
+        """
+        cmd = f"uninstall {package_name}" if keep_data else f"uninstall -k {package_name}"
+        self.__adb_command(cmd, device_id)

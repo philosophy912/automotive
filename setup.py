@@ -35,9 +35,9 @@ setuptools.setup(
     # 安装依赖的包
     install_requires=[
         "pinyin>=0.4.0",
-        "loguru>=0.3.2",
+        "loguru>=0.4.3",
         "sounddevice>=0.3.14",
-        "numpy>=1.16.2",
+        "numpy>=1.18.1",
         "opencv-python>=4.1.0.25",
         "pandas>=1.0.0",
         "pyserial>=3.4",
@@ -51,8 +51,10 @@ setuptools.setup(
         "pypiwin32>=223",
         "wheel>=0.34.2",
         "airtest>=1.1.3",
-        "pytest>5.3.5",
-        "allure-pytest>2.8.12"
+        "pytest>=5.3.5",
+        "allure-pytest>=2.8.12",
+        "uiautomator2>=2.10.0",
+        "weditor>-0.5.0"
     ],
     classifiers=[
         "Programming Language :: Python :: 3.6",

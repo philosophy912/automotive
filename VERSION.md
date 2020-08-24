@@ -1,5 +1,35 @@
 ## 版本更新说明
 
+##### V2.3
+- 增加默认的logger， 参考配置说明
+
+```python
+"""
+使用方法：
+
+    1、 from automotive import logger
+    
+    2、 在运行代码目录及父目录到根目录的任意目录放置config.yml文件，其中yml中包含level和log_folder用于定义log等级及log存放文件路径
+    
+    3、 如果找不到配置文件，默认使用info级别输出log，并且不保存log内容到文件
+"""
+```
+
+- 调整了代码结构（若上层代码非使用全路径方式，不影响上层代码使用) 
+
+- 新增了hypervisor和qnx两个模块，主要实现功能
+ 
+  - 相应的QNX系统中的截图（Hypervisor是通过ADB htalk方式截图, qnx则通过串口截图)
+  
+  - 相应的QNX系统的点击操作（仅空调屏)
+  
+- 修复了文档错误
+
+- 废弃了AppiumPythonClient模块（但仍然可以使用）
+
+- 新增了AndroidService，用于统一uiautomator2(python)以及appium的接口，便于切换
+
+
 ##### V2.2
 
 - CANService中增加了设备获取的接口 -> 通过调用self.can_box_device获取当前设备的类型

@@ -1,32 +1,19 @@
 #  这里需要写对外的包
-from .tools import Singleton, Utils, deprecated
-from .tools.battery import IT6831, KonstanterControl, Konstanter
-from .tools.camera import Camera, CameraProperty, MicroPhone
-from .tools.images import Images
-from .tools.mail import ElectronicMail, EmailObject, EmailConfig
-from .tools.onoff import OnOff, CameraActions, CanActions, It6831Actions, KonstanterActions, RelayActions, SerialActions
-from .tools.serial_port import SerialPort
-from .tools.speaker import Player
-from .tools.ssh import SSHUtils
-from .tools.usbrelay import USBRelay
-from .tools.performance import Performance
-from .can import CANService, Parser, Message, CanBoxDevice, TraceService, TraceType
-from .android import ADBUtils, AppiumPythonClient
-from .battery import device_config, TestBattery
+from .core import Singleton, deprecated, CANService, CanBoxDevice, Message, TraceType, TracePlayback, \
+    HypervisorScreenShot, \
+    QnxActions, QnxDevice, QnxLocalScreenShot, AirCondition, Device, ScreenShot, Actions, ImageCompare, \
+    CompareProperty, CompareTypeEnum, ADB, AndroidService, SwipeDirectorEnum, ElementAttributeEnum, DirectorEnum, \
+    KeyCode, AppiumPythonClient, AppiumClient, UiAutomator2Client
+from .utils import Utils, Camera, CameraProperty, MicroPhone, Images, SerialPort, USBRelay, Player, Performance, \
+    SSHUtils
+from .logger import logger
 
 __all__ = [
-    "Singleton", "Utils", "deprecated",
-    "IT6831", "KonstanterControl", "Konstanter",
-    "Camera", "CameraProperty", "MicroPhone",
-    "Images",
-    "ElectronicMail", "EmailObject", "EmailConfig",
-    "OnOff", "CameraActions", "CanActions", "It6831Actions", "KonstanterActions", "RelayActions", "SerialActions",
-    "SerialPort",
-    "Player",
+    "Singleton", "deprecated", "CANService", "CanBoxDevice", "Message", "TraceType", "TracePlayback",
+    "HypervisorScreenShot", "QnxActions", "QnxDevice", "QnxLocalScreenShot", "AirCondition", "Device", "ScreenShot",
+    "Actions", "ImageCompare", "CompareProperty", "CompareTypeEnum", "ADB", "AndroidService", "SwipeDirectorEnum",
+    "ElementAttributeEnum", "DirectorEnum", "KeyCode", "AppiumPythonClient", "AppiumClient", "UiAutomator2Client",
+    "Utils", "Camera", "CameraProperty", "MicroPhone", "Images", "SerialPort", "USBRelay", "Player", "Performance",
     "SSHUtils",
-    "USBRelay",
-    "Performance",
-    "CANService", "Parser", "Message", "CanBoxDevice", "TraceService", "TraceType",
-    "ADBUtils", "AppiumPythonClient",
-    "device_config", "TestBattery"
+    "logger",
 ]

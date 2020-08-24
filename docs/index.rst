@@ -10,61 +10,69 @@ automotive模块文档说明
    :maxdepth: 2
    :caption: Contents:
 
-基础tools工具
+基础工具
 ======================================
-.. automodule:: automotive.tools
+.. automodule:: automotive.utils.utils
    :members:
 
-
-IT6831和Konstanter电源
+摄像头工具
 ======================================
-.. automodule:: automotive.tools.battery
+.. automodule:: automotive.utils.camera
    :members:
 
-摄像头
+图像处理工具
 ======================================
-.. automodule:: automotive.tools.camera
+.. automodule:: automotive.utils.images
    :members:
 
-
-图片处理
+内存CPU测试工具
 ======================================
-.. automodule:: automotive.tools.images
+.. automodule:: automotive.utils.performance
    :members:
 
-邮件发送接收（未完成)
+TTS播放工具
 ======================================
-.. automodule:: automotive.tools.mail
+.. automodule:: automotive.utils.player
    :members:
 
-电源变动测试
+串口工具
 ======================================
-.. automodule:: automotive.tools.onoff
+.. automodule:: automotive.utils.serial_port
    :members:
 
-Serial串口
+继电器工具
 ======================================
-.. automodule:: automotive.tools.serial_port
+.. automodule:: automotive.utils.usb_relay
    :members:
 
-SSH操作（未完成)
+电源控制工具
 ======================================
-.. automodule:: automotive.tools.ssh
+.. automodule:: automotive.core.actions.battery
    :members:
 
-USB继电器
+控制框架
 ======================================
-.. automodule:: automotive.tools.usbrelay
+.. automodule:: automotive.core.actions
    :members:
 
 CAN盒
 ======================================
-.. automodule:: automotive.can
+.. automodule:: automotive.core.can
    :members:
 
-Android Appium
+Android测试
 ======================================
-.. automodule:: automotive.android
+.. automodule:: automotive.core.android
+   :members:
+
+Hypervisor高通虚拟化
+======================================
+.. automodule:: automotive.core.hypervisor
+   :members:
+
+QNX系统
+======================================
+.. automodule:: automotive.core.qnx
    :members:
 
 索引和表

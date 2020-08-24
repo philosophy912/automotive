@@ -1,0 +1,49 @@
+# -*- coding:utf-8 -*-
+# --------------------------------------------------------
+# Copyright (C), 2016-2020, China TSP, All rights reserved
+# --------------------------------------------------------
+# @Name:        air_condition.py
+# @Purpose:     todo
+# @Author:      lizhe
+# @Created:     2020/8/10 - 15:17
+# --------------------------------------------------------
+from .qnx_device import QnxDevice
+from .qnx_actions import QnxActions
+from .qnx_local_screenshot import QnxLocalScreenShot
+from ..api import ScreenShot, Actions, Device
+
+
+class AirCondition(ScreenShot, Actions, Device):
+
+    def __init__(self, save_path: str, port: str):
+        self.__device = QnxDevice(port)
+        self.__actions = QnxActions(self.__device)
+        self.__screen_shot = QnxLocalScreenShot(save_path, self.__device)
+        self.__path = save_path
+
+    def connect(self, username: str = None, password: str = None):
+        self.__device.connect(username, password)
+        self.__device.init_actions_service()
+        self.__device.init_screenshot_folder(self.__path)
+
+    def disconnect(self):
+        self.__device.copy_images_to_usb(self.__path)
+        self.__device.disconnect()
+
+    def screen_shot(self, image_name: str, count: int, interval_time: float):
+        self.__screen_shot.screen_shot(image_name, count, interval_time)
+
+    def screen_shot_area(self, position: tuple, image_name: str, count: int, interval_time: float):
+        self.__screen_shot.screen_shot_area(image_name, count, interval_time)
+
+    def click(self, display: int, x: int, y: int, interval: float = 0.2):
+        self.__actions.click(display, x, y, interval)
+
+    def double_click(self, display: int, x: int, y: int, interval: float):
+        self.__actions.double_click(display, x, y, interval)
+
+    def press(self, display: int, x: int, y: int, continue_time: float):
+        self.__actions.press(display, x, y, continue_time)
+
+    def swipe(self, display: int, start_x: int, start_y: int, end_x: int, end_y: int, continue_time: float):
+        self.__actions.swipe(display, start_x, start_y, end_x, end_y, continue_time)
