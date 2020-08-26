@@ -138,7 +138,7 @@ class BaseCanBus(metaclass=ABCMeta):
         # 接收线程
         self._receive_thread = []
 
-    def __transmit(self, can, message: Message, cycle_time: float):
+    def __transmit(self, can: BaseCanDevice, message: Message, cycle_time: float):
         """
         CAN发送帧函数，在线程中执行。
         :param can can设备实例化
@@ -155,7 +155,7 @@ class BaseCanBus(metaclass=ABCMeta):
             # 循环发送的等待周期
             sleep(cycle_time)
 
-    def __cycle_msg(self, can, message: Message):
+    def __cycle_msg(self, can: BaseCanDevice, message: Message):
         """
         发送周期性型号
         :param can can设备实例化
@@ -193,7 +193,7 @@ class BaseCanBus(metaclass=ABCMeta):
                 self._send_messages[msg_id].data = message.data
 
     @staticmethod
-    def __event(can, message: Message):
+    def __event(can: BaseCanDevice, message: Message):
         """
         发送事件信号
         :param can can设备实例化
@@ -233,7 +233,7 @@ class BaseCanBus(metaclass=ABCMeta):
         self._send_messages.clear()
 
     @staticmethod
-    def _transmit_one(can, message: Message):
+    def _transmit_one(can: BaseCanDevice, message: Message):
         """
         发送一帧数据
 
@@ -243,7 +243,7 @@ class BaseCanBus(metaclass=ABCMeta):
         """
         can.transmit(message)
 
-    def _transmit(self, can, message: Message):
+    def _transmit(self, can: BaseCanDevice, message: Message):
         """
         发送CAN帧函数。
 
@@ -295,7 +295,7 @@ class BaseCanBus(metaclass=ABCMeta):
                 item.stop_flag = True
                 item.pause_flag = True
 
-    def _resume_transmit(self, can, message_id: int):
+    def _resume_transmit(self, can: BaseCanDevice, message_id: int):
         """
         恢复某一帧数据的发送函数。
 

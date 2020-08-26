@@ -293,7 +293,7 @@ def get_message(messages: (str, list), encoding: str = "utf-8") -> tuple:
     id_messages = dict()
     name_messages = dict()
     if isinstance(messages, str):
-        messages = Utils().get_json_obj(messages, encoding=encoding)["messages"]
+        messages = Utils().get_json_obj(messages, encoding=encoding)
     for msg in messages:
         message = Message()
         message.set_value(msg)
@@ -456,7 +456,9 @@ class Message(object):
         self.is_standard_can = message["is_standard_can"]
         try:
             self.cycle_time = message["msg_cycle_time"]
-            self.msg_send_type = "Cycle"
+            # 必须加上msg_cycle_time大于0才可以判断当前信号为周期信号
+            if self.cycle_time > 0:
+                self.msg_send_type = "Cycle"
         except KeyError:
             self.cycle_time = 0
         try:
