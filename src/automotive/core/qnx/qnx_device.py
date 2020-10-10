@@ -33,21 +33,21 @@ class QnxDevice(metaclass=Singleton):
         :param double_check: 二次确认
         """
         self.serial.flush_output()
-        self.serial.send("\r\n", type_=False)
+        self.send_command("\r\n")
         sleep(0.5)
         output = self.serial.read_all()
         if "login" in output:
             logger.debug(f"input login username[{username}]")
-            self.serial.send(username, type_=True)
+            self.send_command(username)
             sleep(1)
             output = self.serial.read_all()
             if "Password" in output:
                 logger.debug(f"input login password[{password}]")
-                self.serial.send(password, type_=True)
+                self.send_command(password)
         if double_check:
             # 再次校验是否登陆成功
             self.serial.flush_output()
-            self.serial.send("\r\n", type_=False)
+            self.send_command("\r\n")
             sleep(0.5)
             output = self.serial.read_all()
             if "login" in output:
@@ -80,7 +80,7 @@ class QnxDevice(metaclass=Singleton):
         :param command: 命令
         """
         logger.debug(f"command is {command}")
-        self.serial.send(command, type_=False)
+        self.serial.send(command)
 
     def send_commands(self, commands: list, interval: float = 0):
         """
@@ -99,7 +99,7 @@ class QnxDevice(metaclass=Singleton):
         准备屏幕点击操作(启动InjectEvents服务)
         """
         commands = [
-            f"cd /user/bin"
+            f"cd /usr/bin",
             f"slay InjectEvents",
             f"./InjectEvents &",
             "cd -"
@@ -127,17 +127,26 @@ class QnxDevice(metaclass=Singleton):
         sleep(10)
         current_time = Utils.get_time_as_string("%Y%m%d%H%M%S")
         usb_path = "/fs/usb0"
-        screenshot_path = f"{usb_path}/screenshot"
-        current_time_path = f"{screenshot_path}/{current_time}"
-        commands = [
-            f"mkdir {screenshot_path}",
-            f"rm -rvf {current_time_path}",
-            f"mkdir {current_time_path}",
-            f"cp {path}/* {current_time_path}/ &"
-            f"sync"
-        ]
-        self.send_commands(commands, 1)
-        self.__check_copy_status()
+        self.serial.flush_output()
+        self.serial.flush_input()
+        self.send_command(f"ls {usb_path}")
+        result = self.serial.read_all()
+        logger.debug(f"check usb device exist = {result}")
+        if "No such file or directory" not in result:
+            logger.info("usb device is found, now copy......")
+            screenshot_path = f"{usb_path}/screenshot"
+            current_time_path = f"{screenshot_path}/{current_time}"
+            commands = [
+                f"mkdir {screenshot_path}",
+                f"rm -rvf {current_time_path}",
+                f"mkdir {current_time_path}",
+                f"cp {path}/* {current_time_path}/ &"
+                f"sync"
+            ]
+            self.send_commands(commands, 1)
+            self.__check_copy_status()
+        else:
+            logger.info("usb device is not found, please copy file manual")
 
     def connect(self, username: str = None, password: str = None):
         try:

@@ -162,10 +162,11 @@ class CANService(BaseCan):
 
     def __send_random(self, filter_sender: str, interval: int):
         """
-            随机发送CAN消息
-            :param filter_sender:  过滤发送者，如HU。仅支持单个节点过滤
-            :param interval: 每个信号值改变的间隔时间，默认是1秒
-            :return:
+        随机发送CAN消息
+
+        :param filter_sender:  过滤发送者，如HU。仅支持单个节点过滤
+
+        :param interval: 每个信号值改变的间隔时间，默认是1秒
         """
         for msg_id, msg in self.messages.items():
             logger.trace(f"msg id = {msg_id}")
@@ -187,6 +188,19 @@ class CANService(BaseCan):
                 except RuntimeError:
                     logger.error(f"transmit message {hex(msg_id)} failed")
                 sleep(interval)
+
+    def __set_message(self, msg_id: int, data: list) -> Message:
+        """
+        :param msg_id: 消息ID
+
+        :param data: 数据
+
+        :return: Message对象
+        """
+        msg = self.messages[msg_id]
+        msg.data = data
+        msg.update(False)
+        return msg
 
     def send_can_message_by_id_or_name(self, msg: (int, str)):
         """
@@ -416,19 +430,19 @@ class CANService(BaseCan):
 
     def send_random(self, filter_sender: str = None, cycle_time: int = None, interval: int = 0.1):
         """
-            随机发送信号
+        随机发送信号
 
-            1、不发送诊断帧和网络管理帧
+        1、不发送诊断帧和网络管理帧
 
-            2、信号的值随机设置
+        2、信号的值随机设置
 
-            3、需要过滤指定的发送者
+        3、需要过滤指定的发送者
 
-            :param filter_sender: 过滤发送者，如HU。仅支持单个节点过滤
+        :param filter_sender: 过滤发送者，如HU。仅支持单个节点过滤
 
-            :param cycle_time: 循环次数，当没有传入的时候无线循环
+        :param cycle_time: 循环次数，当没有传入的时候无线循环
 
-            :param interval: 每个信号值改变的间隔时间，默认是0.1秒
+        :param interval: 每个信号值改变的间隔时间，默认是0.1秒
         """
         if cycle_time:
             for i in range(cycle_time):
@@ -436,3 +450,44 @@ class CANService(BaseCan):
                 self.__send_random(filter_sender, interval)
         else:
             self.__send_random(filter_sender, interval)
+
+    def check_signal_value(self, stack: list, msg_id: int, sig_name: str, expect_value: int, count: int = None,
+                           exact: bool = True):
+        """
+        检查signal的值是否符合要求
+
+        :param exact: 是否精确对比
+
+        :param msg_id: msg id
+
+        :param sig_name:  sig name
+
+        :param expect_value: expect value
+
+        :param count: 检查数量
+
+        :param stack: 栈中消息
+        """
+        if count:
+            # 过滤需要的msg
+            filter_messages = list(filter(lambda x: x.msg_id == msg_id, stack))
+            logger.debug(f"filter messages length is {len(filter_messages)}")
+            msg_count = 0
+            for msg in filter_messages:
+                logger.debug(f"msg data = {msg.data}")
+                # 此时的msg只有data，需要调用方法更新内容
+                message = self.__set_message(msg.msg_id, msg.data)
+                actual_value = message.signals[sig_name].physical_value
+                logger.debug(f"actual_value = {actual_value}")
+                if actual_value == expect_value:
+                    msg_count += 1
+            logger.info(f"except count is {count}, actual count = {msg_count}")
+            if exact:
+                return msg_count == count
+            else:
+                return msg_count >= count
+        else:
+            # 直接读取can上的最后的值
+            actual_value = self.receive_can_message_signal_value(msg_id, sig_name)
+            logger.info(f"current value is {actual_value}, expect value is {expect_value}")
+            return expect_value == actual_value

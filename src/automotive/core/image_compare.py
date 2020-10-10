@@ -22,9 +22,16 @@ class CompareTypeEnum(Enum):
 
     亮图、暗图、闪烁
     """
-    LIGHT = 0
-    DARK = 1
-    BLINK = 2
+    LIGHT = "light", "亮图"
+    DARK = "dark", "暗图"
+    BLINK = "blink", "闪烁图"
+
+    @staticmethod
+    def from_value(value: str):
+        for key, item in CompareTypeEnum.__members__.items():
+            if value in item.value:
+                return item
+        raise ValueError(f"can not cast value{value} to CompareTypeEnum")
 
 
 class CompareProperty(object):
@@ -35,7 +42,7 @@ class CompareProperty(object):
 
         self.type: 对比类型 CompareTypeEnum枚举，只支持LIGHT/DARK/BLINK
 
-        self.screen_shot_images: 要对比的图片或者图片列表
+        self.screen_shot_images: 根据name从传入的screen_shot_images_path中查询到的所有图片文件
 
         self.light_template: 模板亮图
 
@@ -60,6 +67,21 @@ class CompareProperty(object):
         self.similarity = None
         self.gray = False
         self.gray_threshold = 240
+
+    def set_value(self, name: str, compare_type: str, screen_shot_images_path: str, light_template: str,
+                  dark_template: str, positions: list, similarity: float, gray: bool = None,
+                  gray_threshold: int = None):
+        self.name = name
+        self.type = CompareTypeEnum.fromValue(compare_type)
+        self.screen_shot_images = Utils.filter_images(name, screen_shot_images_path)
+        self.light_template = light_template
+        self.dark_template = dark_template
+        self.positions = positions
+        self.similarity = similarity
+        if gray:
+            self.gray = gray
+        if gray_threshold:
+            self.gray_threshold = gray_threshold
 
 
 class ImageCompare(object):

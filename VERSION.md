@@ -1,6 +1,14 @@
 ## 版本更新说明
 
+**V2.4**
+
+- 修复了Camera中重复录像导致不成功的问题（修改为线程池的方式实现）
+- CanService中增加了检查signal的方法check_signal_value
+- TracePlayback中修复了回放的错误（待验证）
+- 开放了Action的操作，如CameraAction、It6831Action等方便操作
+
 ##### V2.3
+
 - 增加默认的logger， 参考配置说明
 
 ```python
@@ -18,7 +26,7 @@
 - 调整了代码结构（若上层代码非使用全路径方式，不影响上层代码使用) 
 
 - 新增了hypervisor和qnx两个模块，主要实现功能
- 
+
   - 相应的QNX系统中的截图（Hypervisor是通过ADB htalk方式截图, qnx则通过串口截图)
   
   - 相应的QNX系统的点击操作（仅空调屏)

@@ -14,5 +14,6 @@ __all__ = [
     "KonstanterActions",
     "RelayActions",
     "SerialActions",
+    "Curve",
     "IT6831", "KonstanterControl", "Konstanter"
 ]

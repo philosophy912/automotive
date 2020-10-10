@@ -40,6 +40,7 @@ class RelayActions(BaseActions):
         打开继电器通道
 
         :param reverse: 翻转状态
+
         :param channel: 通道序号
 
         :param interval: 打开通道后的间隔时间，默认1秒
@@ -59,6 +60,7 @@ class RelayActions(BaseActions):
         关闭继电器通道
 
         :param reverse: 翻转状态
+
         :param channel: 通道序号
 
         :param interval: 打开通道后的间隔时间，默认1秒

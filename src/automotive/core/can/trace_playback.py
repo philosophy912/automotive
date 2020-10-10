@@ -54,11 +54,15 @@ class TracePlayback(object):
         :param traces:
         """
         handle_traces = []
-        start_time = traces[0][1]
-        while len(traces) > 0:
-            current_time, trace = traces[0]
-            handle_traces.append((current_time - start_time, trace))
-            traces.pop(0)
+        for i, trace in enumerate(traces):
+            message = traces[i][1]
+            if i == 0:
+                handle_traces.append((0, message))
+            else:
+                # 计算间隔时间
+                last_time = traces[i - 1][0]
+                current_time = traces[i][0]
+                handle_traces.append((current_time - last_time, message))
         return handle_traces
 
     def open_can(self):
@@ -84,7 +88,7 @@ class TracePlayback(object):
         :return: trace 列表
         """
         module_name, class_name = trace_type.value
-        module = importlib.import_module(f"automotive.can.trace_reader.{module_name}")
+        module = importlib.import_module(f"automotive.core.can.trace_reader.{module_name}")
         reader = getattr(module, class_name)()
         logger.info(f"read all messages in trace file[{file}]")
         traces = reader.read(file)
@@ -101,7 +105,8 @@ class TracePlayback(object):
         logger.info("start to send message")
         for index, trace in enumerate(traces):
             sleep_time, msg = trace
-            sleep(sleep_time)
+            if index != 0:
+                sleep(sleep_time)
             try:
                 self.__can.transmit_one(msg)
             except RuntimeError:

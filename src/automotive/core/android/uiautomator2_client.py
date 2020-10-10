@@ -139,11 +139,14 @@ class UiAutomator2Client(BaseAndroid):
     def get_element_attribute(self, locator: (str, dict, UiObject), timeout: float = DEFAULT_TIME_OUT) -> dict:
         self._check_instance(locator, (str, dict, UiObject))
         attributes = dict()
-        info = self.get_element(locator, timeout).info
+        element = self.get_element(locator, timeout)
+        info = element.info
         for key, item in ElementAttributeEnum.__members__.items():
             # display不支持，所以暂时要抛弃这个，貌似appium支持
             if key.lower() != ElementAttributeEnum.DISPLAYED.value:
                 attributes[item] = info[item.value]
+            if key.lower() == ElementAttributeEnum.TEXT.value:
+                attributes[item] = element.get_text()
             else:
                 logger.warning(f"due to no attribute in uiautomator2 so default value is True")
                 attributes[item] = True

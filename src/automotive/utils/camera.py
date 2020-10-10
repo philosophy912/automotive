@@ -8,6 +8,8 @@
 # @Created:     2018/12/27 9:47
 # --------------------------------------------------------
 import os
+from concurrent.futures.thread import ThreadPoolExecutor
+
 import cv2
 import time
 import threading
@@ -159,6 +161,8 @@ class Camera(object):
         self.__width = 0
         # 摄像头的高
         self.__height = 0
+        # 线程池句柄
+        self.__thread_pool = ThreadPoolExecutor(max_workers=1)
 
     def check_status(func):
         """
@@ -207,11 +211,13 @@ class Camera(object):
         :param mark: Mark对象
         """
         # 设置fps，当fps在[5, 30]之外直接设置成20
-        fps = fps if 5 <= fps <= 30 else 20
-        # 各种编码格式每分钟压缩后大小:MJPG(80M),
+        fps = float(fps if 5 <= fps <= 30 else 20)
         fourcc = cv2.VideoWriter_fourcc(*codec)
         out = cv2.VideoWriter(name, fourcc, fps, (width, height))
-        while self.__capture.isOpened() and not self.__stop_flag:
+        while self.__capture.isOpened():
+            if self.__stop_flag:
+                logger.debug(f"stop thread")
+                break
             ret, self.__frame = self.__capture.read()
             # 如果需要生成水印则生成水印，水印内容就是时间戳
             if mark.mark:
@@ -222,6 +228,7 @@ class Camera(object):
             if ret:
                 out.write(self.__frame)
         out.release()
+        logger.debug("done record thread")
 
     def open_camera(self, camera_id: int = 0, frame_id: FrameID = FrameID()):
         """
@@ -233,10 +240,9 @@ class Camera(object):
         """
         if self.__capture is not None:
             self.close_camera()
-        # self.__capture = cv2.VideoCapture(camera_id, cv2.CAP_DSHOW)
-        self.__capture = cv2.VideoCapture(camera_id)
-        self.__width = self.__capture.get(int(cv2.CAP_PROP_FRAME_WIDTH))
-        self.__height = self.__capture.get(int(cv2.CAP_PROP_FRAME_HEIGHT))
+        self.__capture = cv2.VideoCapture(cv2.CAP_DSHOW)
+        self.__width = int(self.__capture.get(cv2.CAP_PROP_FRAME_WIDTH))
+        self.__height = int(self.__capture.get(cv2.CAP_PROP_FRAME_HEIGHT))
         if not self.__capture.isOpened():
             logger.debug(f"camera is not opened, open it now")
             result = self.__capture.open(camera_id)
@@ -259,6 +265,7 @@ class Camera(object):
         停止录制
         """
         self.__stop_flag = True
+        time.sleep(1)
 
     @check_status
     def get_picture_from_record(self, path: str):
@@ -282,7 +289,7 @@ class Camera(object):
 
     @check_status
     def record_video(self, name: str, fps: float = 20, total_time: float = None, width: int = None,
-                     height: int = None, codec: str = 'MJPG', mark: Mark = Mark()):
+                     height: int = None, codec: str = 'XVID', mark: Mark = Mark()):
         """
         录制视频(请在开始之前调用open_camera打开摄像头，并在结束后调用close_camera关闭摄像头)
 
@@ -315,12 +322,12 @@ class Camera(object):
 
         :param mark: 水印
         """
+        # 恢复成初始值
+        self.__stop_flag = False
         # 如果没有设置则为读取到的高宽
         width = width if width and 0 <= width <= self.__width else self.__width
         height = height if height and 0 <= height <= self.__height else self.__height
-        rec = threading.Thread(target=self.__record, args=(name, fps, width, height, codec, mark))
-        rec.setDaemon(False)
-        rec.start()
+        self.__thread_pool.submit(self.__record, name, fps, width, height, codec, mark)
         # 只有设置了时间之后，到时间才会主动停止录像，否则不会主动停止，需要外部调用stop_record停止录像
         if total_time:
             self.__utils.sleep(total_time * 60)

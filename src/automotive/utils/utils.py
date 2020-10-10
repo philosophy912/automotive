@@ -206,7 +206,7 @@ class Utils(metaclass=Singleton):
         """
         if end < start:
             raise ValueError(f"开始{start}必须大于结束{end}")
-        sleep_time = self.random_decimal(start, end)
+        sleep_time = int(self.random_decimal(start, end))
         logger.info(f"随机休眠时间{sleep_time}")
         # 超过1分钟的休眠会分段休息
         if sleep_time > 60:
@@ -337,3 +337,20 @@ class Utils(metaclass=Singleton):
             content = yaml.unsafe_load(fp)
             logger.debug(f"content is {content}")
             return content
+
+    @staticmethod
+    def filter_images(folder: str, image_name: str) -> list:
+        """
+        遍历文件夹取出名字是测试用例名字的图片
+
+        :param folder: 要查找的文件夹路径
+
+        :param image_name: 截图保存的文件名
+
+        :return: 筛选出来的图片集合
+        """
+        # 在screen_shot_path路径中查找
+        images = list(map(lambda x: folder + "\\" + x, os.listdir(folder)))
+        filter_images = list(filter(lambda x: x.find(image_name.lower()) >= 0, images))
+        logger.debug(f"function {image_name} contain {len(filter_images)}")
+        return filter_images

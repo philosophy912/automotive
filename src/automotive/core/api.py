@@ -35,7 +35,7 @@ class Device(metaclass=ABCMeta):
 class ScreenShot(metaclass=ABCMeta):
 
     @abstractmethod
-    def screen_shot(self, image_name: str, count: int, interval_time: float):
+    def screen_shot(self, image_name: str, count: int, interval_time: float, display: int = None):
         """
         截图操作, 当截图有多张的时候，以__下划线分割并加编号
 
@@ -44,11 +44,13 @@ class ScreenShot(metaclass=ABCMeta):
         :param count: 截图张数
 
         :param interval_time: 截图间隔时间
+
+        :param display: 屏幕序号
         """
         pass
 
     @abstractmethod
-    def screen_shot_area(self, position: tuple, image_name: str, count: int, interval_time: float):
+    def screen_shot_area(self, position: tuple, image_name: str, count: int, interval_time: float, display: int = None):
         """
         区域截图, 当截图有多张的时候，以__下划线分割并加编号
 
@@ -59,6 +61,8 @@ class ScreenShot(metaclass=ABCMeta):
         :param count: 截图张数
 
         :param interval_time: 截图间隔时间
+
+        :param display: 屏幕序号
         """
         pass
 

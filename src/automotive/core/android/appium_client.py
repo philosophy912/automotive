@@ -345,7 +345,10 @@ class AppiumClient(BaseAndroid):
         attributes = dict()
         element = self.get_element(locator, timeout)
         for attr in list(map(lambda x: x.value, ElementAttributeEnum.__members__.values())):
-            value = element.get_attribute(attr)
+            if attr == "text":
+                value = element.text
+            else:
+                value = element.get_attribute(attr)
             logger.trace(f"The {attr} attribute is {value}")
             attributes[ElementAttributeEnum.from_value(attr)] = True if value == "true" else False
         return attributes

@@ -12,12 +12,14 @@ from enum import Enum, unique
 from appium.webdriver import WebElement
 from appium.webdriver.common.touch_action import TouchAction
 from appium.webdriver.webdriver import WebDriver
+from selenium.common.exceptions import NoSuchElementException
 from uiautomator2 import Device, UiObject
 
 from .api import SwipeDirectorEnum, ElementAttributeEnum
 from .uiautomator2_client import UiAutomator2Client
 from .appium_client import AppiumClient
 from automotive.core.singleton import Singleton
+from .adb import ADB
 
 
 @unique
@@ -30,16 +32,33 @@ class ToolTypeEnum(Enum):
     APPIUM = "appium"
     UIAUTOMATOR2 = "uiautomator2"
 
+    @staticmethod
+    def from_value(value: str):
+        """
+        从枚举的值获取枚举对象
+
+        :param value: 枚举对象对应的值
+
+        :return: 枚举对象本身
+        """
+        for key, item in ElementAttributeEnum.__members__.items():
+            if value.lower() == item.value.lower():
+                return item
+        raise ValueError(f"{value} can not be found in ToolTypeEnum")
+
 
 class AndroidService(metaclass=Singleton):
     _DEFAULT_TIME_OUT = 3
 
     def __init__(self, tool_type: ToolTypeEnum):
+        self.adb = ADB()
         self.__type = tool_type
         if tool_type == ToolTypeEnum.APPIUM:
             self.__client = AppiumClient()
-        else:
+        elif tool_type == ToolTypeEnum.UIAUTOMATOR2:
             self.__client = UiAutomator2Client()
+        else:
+            raise TypeError(f"{tool_type} not support, only support APPIUM and UIAUTOMATOR2")
 
     @property
     def actions(self) -> TouchAction:
@@ -793,3 +812,14 @@ class AndroidService(metaclass=Singleton):
         :return: xml结构字符串
         """
         return self.__client.get_xml_struct()
+
+    def exist(self, locator: (str, dict, WebElement, UiObject), timeout: float = _DEFAULT_TIME_OUT) -> bool:
+        """
+        元素是否存在
+        :return: 存在/不存在
+        """
+        try:
+            self.__client.get_element(locator, timeout)
+            return True
+        except NoSuchElementException:
+            return False

@@ -17,8 +17,6 @@ from selenium.common.exceptions import NoSuchElementException
 from uiautomator2 import UiObject, Device
 from automotive.logger import logger
 
-from .adb import ADB
-
 
 @unique
 class SwipeDirectorEnum(Enum):
@@ -29,8 +27,8 @@ class SwipeDirectorEnum(Enum):
     """
     LEFT = 1
     RIGHT = 2
-    UP = 9
-    DOWN = 10
+    UP = 3
+    DOWN = 4
 
 
 @unique
@@ -68,6 +66,7 @@ class ElementAttributeEnum(Enum):
     LONG_CLICKABLE = "longClickable"
     DISPLAYED = "displayed"
     SELECTED = "selected"
+    TEXT = "text"
 
     @staticmethod
     def from_value(value: str):
@@ -79,7 +78,7 @@ class ElementAttributeEnum(Enum):
         :return: 枚举对象本身
         """
         for key, item in ElementAttributeEnum.__members__.items():
-            if value == item.value:
+            if value.lower() == item.value.lower():
                 return item
         raise ValueError(f"{value} can not be found in ElementAttributeEnum")
 
@@ -110,7 +109,6 @@ class BaseAndroid(metaclass=ABCMeta):
     _LOWER_UISELECTORS = list(map(lambda x: x.lower(), _UISELECTORS))
 
     def __init__(self):
-        self._adb = ADB()
         self._driver = None
         self._actions = None
 
