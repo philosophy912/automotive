@@ -67,6 +67,28 @@ class It6831Actions(PowerActions):
         logger.info(f"设置IT6831电源模式为OFF")
         self.__it6831.set_power_output_status(False)
 
+    def set_voltage(self, voltage: float):
+        """
+        设置电源电压电流
+
+        :param voltage: 电压
+
+        :param current: 电流， 默认10A
+        """
+        if not 0 <= voltage <= 20:
+            raise RuntimeError(f"电源只支持0-20V电压，当前要设置的电压为{voltage}")
+        logger.info(f"设置电压为{voltage}")
+        self.__it6831.set_voltage_value(voltage)
+
+    def set_current(self, current: float):
+        """
+        设置电源电压电流
+
+        :param current: 电流， 默认10A
+        """
+        logger.debug(f"设置电流值{current}")
+        self.__it6831.set_current_value(current)
+
     def set_voltage_current(self, voltage: float, current: float = 10):
         """
         设置电源电压电流

@@ -129,10 +129,13 @@ class QnxDevice(metaclass=Singleton):
         usb_path = "/fs/usb0"
         self.serial.flush_output()
         self.serial.flush_input()
-        self.send_command(f"ls {usb_path}")
-        result = self.serial.read_all()
-        logger.debug(f"check usb device exist = {result}")
-        if "No such file or directory" not in result:
+        self.send_commands([f"cd /", f"ls -l"])
+        results = self.serial.read_lines()
+        usb_exist = False
+        for result in results:
+            if result.strip().endswith("fs"):
+                usb_exist = True
+        if usb_exist:
             logger.info("usb device is found, now copy......")
             screenshot_path = f"{usb_path}/screenshot"
             current_time_path = f"{screenshot_path}/{current_time}"

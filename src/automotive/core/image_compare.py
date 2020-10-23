@@ -72,8 +72,8 @@ class CompareProperty(object):
                   dark_template: str, positions: list, similarity: float, gray: bool = None,
                   gray_threshold: int = None):
         self.name = name
-        self.type = CompareTypeEnum.fromValue(compare_type)
-        self.screen_shot_images = Utils.filter_images(name, screen_shot_images_path)
+        self.type = CompareTypeEnum.from_value(compare_type)
+        self.screen_shot_images = Utils.filter_images(screen_shot_images_path, name)
         self.light_template = light_template
         self.dark_template = dark_template
         self.positions = positions
@@ -121,9 +121,16 @@ class ImageCompare(object):
         template_position = self.__images.convert_position(x, y, width=width, height=height)
         target_position = self.__images.convert_position(0, 0, width=width,
                                                          height=height) if is_area else template_position
-        result = self.__images.compare_by_matrix_in_same_area(template_image, target_image, template_position,
-                                                              target_position, gray=gray, threshold=threshold)
-        return result[0] > similarity
+        # 先按照air test方式对比
+        result = self.__images.find_best_result_by_position(template_image, target_image, template_position,
+                                                            target_position, threshold=float(similarity / 100),
+                                                            rgb=True)
+        if not result:
+            result = self.__images.compare_by_matrix_in_same_area(template_image, target_image, template_position,
+                                                                  target_position, gray=gray, threshold=threshold)
+            return result[0] >= similarity
+        else:
+            return True
 
     def __compare_image(self, template_image: str, target_image: str, positions: list, gray: bool,
                         threshold: int, similarity: float, is_area) -> bool:

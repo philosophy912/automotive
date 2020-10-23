@@ -4,9 +4,9 @@ from .core import Singleton, deprecated, CANService, CanBoxDevice, Message, Trac
     QnxActions, QnxDevice, QnxLocalScreenShot, AirCondition, Device, ScreenShot, Actions, ImageCompare, \
     CompareProperty, CompareTypeEnum, ADB, AndroidService, SwipeDirectorEnum, ElementAttributeEnum, DirectorEnum, \
     KeyCode, AppiumPythonClient, AppiumClient, UiAutomator2Client, It6831Actions, KonstanterActions, RelayActions, \
-    SerialActions, CanActions, CameraActions, KonstanterControl, IT6831, ToolTypeEnum, Curve
+    SerialActions, CanActions, CameraActions, KonstanterControl, IT6831, ToolTypeEnum, Curve, ClusterHmi
 from .utils import Utils, Camera, CameraProperty, MicroPhone, Images, SerialPort, USBRelay, Player, Performance, \
-    SSHUtils
+    SSHUtils, FtpUtils, TelnetUtils
 from .logger import logger
 
 __all__ = [
@@ -15,8 +15,8 @@ __all__ = [
     "Actions", "ImageCompare", "CompareProperty", "CompareTypeEnum", "ADB", "AndroidService", "SwipeDirectorEnum",
     "ElementAttributeEnum", "DirectorEnum", "KeyCode", "AppiumPythonClient", "AppiumClient", "UiAutomator2Client",
     "It6831Actions", "KonstanterActions", "RelayActions", "SerialActions", "CanActions", "CameraActions",
-    "KonstanterControl", "IT6831", "ToolTypeEnum", "Curve",
+    "KonstanterControl", "IT6831", "ToolTypeEnum", "Curve", "ClusterHmi",
     "Utils", "Camera", "CameraProperty", "MicroPhone", "Images", "SerialPort", "USBRelay", "Player", "Performance",
-    "SSHUtils",
+    "SSHUtils", "FtpUtils", "TelnetUtils",
     "logger",
 ]

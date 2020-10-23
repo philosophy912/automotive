@@ -8,12 +8,13 @@
 # @Created:     2020/7/22 - 16:18
 # --------------------------------------------------------
 import subprocess as sp
+from ..api import ScreenShot
 from automotive.logger import logger
 from .keycode import KeyCode
 from time import sleep
 
 
-class ADB(object):
+class ADB(ScreenShot):
 
     @staticmethod
     def __execute(command: str) -> list:
@@ -89,11 +90,26 @@ class ADB(object):
 
         :param remote: 远程文件地址
 
-        :param local: 本地文件
+        :param local: 本地文件夹
 
         :param device_id: 设备编号
         """
         self.__adb_command(f"pull {remote} {local}", device_id)
+
+    def pull_files(self, files: list, local: str, device_id: str = None):
+        """
+        拉取所有文件到本地电脑
+
+        :param files: 文件列表
+
+        :param local:  本地文件夹
+
+        :param device_id: 设备编号
+        """
+        for file in files:
+            self.pull(file, local, device_id)
+            sleep(1)
+        sleep(1)
 
     def input_text(self, text: str, device_id: str = None):
         """
@@ -144,21 +160,33 @@ class ADB(object):
         self.__adb_command(f"shell input keyevent {key_code.value}", device_id)
         sleep(0.1)
 
-    def screen_shot(self, remote_file: str, display_id: int = None, device_id: str = None):
+    def screen_shot(self, image_name: str, count: int, interval_time: float, display: int = None,
+                    device_id: str = None):
         """
-        截图并保存在remote端
+        截图操作, 当截图有多张的时候，以__下划线分割并加编号
 
         :param device_id: 设备编号
 
-        :param display_id: 屏幕编号
+        :param image_name: 截图保存图片名称
 
-        :param remote_file: 截图放置的位置
+        :param count: 截图张数
+
+        :param interval_time: 截图间隔时间
+
+        :param display: 屏幕序号
         """
-        if display_id:
-            self.__adb_command(f"shell screencap -p -d {display_id} {remote_file}", device_id)
-        else:
-            self.__adb_command(f"shell screencap -p {remote_file}", device_id)
-        sleep(0.1)
+        if image_name.endswith(".jpg"):
+            image_name = image_name.split(".jpg")[0]
+        for i in range(count):
+            image_name = f"{image_name}__{i + 1}.jpg"
+            if display:
+                self.__adb_command(f"shell screencap -p -d {display} {image_name}", device_id)
+            else:
+                self.__adb_command(f"shell screencap -p {image_name}", device_id)
+            sleep(0.1)
+
+    def screen_shot_area(self, position: tuple, image_name: str, count: int, interval_time: float, display: int = None):
+        raise RuntimeError("not support this function")
 
     def is_keyboard_show(self, device_id: str = None) -> bool:
         """

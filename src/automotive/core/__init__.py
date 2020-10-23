@@ -9,6 +9,7 @@ from .api import Device, ScreenShot, Actions
 from .image_compare import ImageCompare, CompareProperty, CompareTypeEnum
 from .android import ADB, AndroidService, SwipeDirectorEnum, ElementAttributeEnum, DirectorEnum, KeyCode, \
     AppiumPythonClient, AppiumClient, UiAutomator2Client, ToolTypeEnum
+from .cluster_hmi import ClusterHmiScreenshot, ClusterHmi
 
 __all__ = [
     "Singleton",
@@ -21,5 +22,6 @@ __all__ = [
     "Device", "ScreenShot", "Actions",
     "ImageCompare", "CompareProperty", "CompareTypeEnum",
     "ADB", "AndroidService", "SwipeDirectorEnum", "ElementAttributeEnum", "DirectorEnum", "KeyCode",
-    "AppiumPythonClient", "AppiumClient", "UiAutomator2Client", "ToolTypeEnum"
+    "AppiumPythonClient", "AppiumClient", "UiAutomator2Client", "ToolTypeEnum",
+    "ClusterHmiScreenshot", "ClusterHmi"
 ]

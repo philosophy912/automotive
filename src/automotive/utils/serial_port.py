@@ -7,11 +7,15 @@
 # @Author:      liluo
 # @Created:     2019-05-09
 # --------------------------------------------------------
+import os
+from concurrent.futures.thread import ThreadPoolExecutor
+
 import serial
 import serial.tools.list_ports as list_ports
 import chardet
 from time import sleep
 from automotive.logger import logger
+from ..utils import Utils
 
 
 class SerialPort(object):
@@ -21,6 +25,12 @@ class SerialPort(object):
 
     def __init__(self):
         self._serial = None
+        # 端口号，用于写文件
+        self._port = None
+        # 文件写入循环
+        self._flag = False
+        # 线程池句柄
+        self._thread_pool = ThreadPoolExecutor(max_workers=1)
 
     def check_status(func):
         """
@@ -45,7 +55,7 @@ class SerialPort(object):
         :return  返回编码类型
         """
         encode = chardet.detect(string)
-        logger.debug(f"codec is {encode['encoding']}")
+        logger.trace(f"codec is {encode['encoding']}")
         encoding = encode['encoding']
         return encoding if encoding else "utf-8"
 
@@ -64,11 +74,49 @@ class SerialPort(object):
         else:
             return line.decode(self.__detect_codec(line))
 
+    def __write_log_file(self, log_folder: str):
+        """
+        log_folder，传入文件夹
+
+        :param log_folder: 文件或者文件夹
+        """
+        self._flag = True
+        file_fmt = "%Y%m%d_%H%M%S"
+        content_fmt = "%Y/%m/%d %H:%M:%S"
+        parent = log_folder.split("\"")[0]
+        if os.path.exists(log_folder):
+            if os.path.isdir(log_folder):
+                log_file = fr"{log_folder}\{self._port}_{Utils().get_time_as_string(fmt=file_fmt)}.log"
+            else:
+                log_file = fr"{parent}\{self._port}_{Utils().get_time_as_string(fmt=file_fmt)}.log"
+        else:
+            if os.path.exists(parent):
+                log_file = f"{self._port}_{Utils().get_time_as_string(fmt=file_fmt)}.log"
+            else:
+                raise RuntimeError(f"{log_folder} is not exist, please check it")
+        with open(log_file, "a+", encoding="utf-8") as f:
+            count = 1
+            while self._flag:
+                current_time = Utils.get_time_as_string(fmt=content_fmt)
+                content = self.read_line()
+                if content != "":
+                    content = content.replace("\r\n", "").replace("\r", "")
+                    line = f"[{current_time}] {content} \r"
+                    f.write(line)
+                # 100行内容写入一次
+                if count % 100 == 0:
+                    logger.debug("flush to file")
+                    f.flush()
+                count += 1
+            f.flush()
+
     def connect(self, port: str, baud_rate: int, byte_size: int = serial.EIGHTBITS, parity: str = serial.PARITY_NONE,
                 stop_bits: int = serial.STOPBITS_ONE, xon_xoff: bool = False, rts_cts: bool = False,
-                dsr_dtr: bool = False, timeout: float = 0.5, write_timeout: float = 3):
+                dsr_dtr: bool = False, timeout: float = 0.5, write_timeout: float = 3, log_folder: str = None):
         """
         创建新的串口会话窗口、
+
+        :param log_folder: 记录日志的log
 
         :param port: 串口端口：COM1， 必填
 
@@ -102,13 +150,18 @@ class SerialPort(object):
         else:
             raise RuntimeError(f"connect failed")
         sleep(1)
+        self._port = port
+        if log_folder:
+            self._thread_pool.submit(self.__write_log_file, log_folder)
 
     def disconnect(self):
         """
         关闭串口
         """
         if self._serial:
+            self._flag = False
             self._serial.close()
+            self._port = None
             self._serial = None
 
     @staticmethod

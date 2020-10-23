@@ -19,6 +19,7 @@ from .api import SwipeDirectorEnum, ElementAttributeEnum
 from .uiautomator2_client import UiAutomator2Client
 from .appium_client import AppiumClient
 from automotive.core.singleton import Singleton
+from automotive.logger.logger import logger
 from .adb import ADB
 
 
@@ -41,7 +42,7 @@ class ToolTypeEnum(Enum):
 
         :return: 枚举对象本身
         """
-        for key, item in ElementAttributeEnum.__members__.items():
+        for key, item in ToolTypeEnum.__members__.items():
             if value.lower() == item.value.lower():
                 return item
         raise ValueError(f"{value} can not be found in ToolTypeEnum")
@@ -116,7 +117,7 @@ class AndroidService(metaclass=Singleton):
         """
         self.__client.close_app(package)
 
-    def get_element(self, locator: (dict, WebElement, UiObject), timeout: str = _DEFAULT_TIME_OUT) -> (
+    def get_element(self, locator: (dict, WebElement, UiObject), timeout: float = _DEFAULT_TIME_OUT) -> (
             WebElement, UiObject):
         """
         根据定位符获取元素
@@ -131,9 +132,9 @@ class AndroidService(metaclass=Singleton):
 
             u2: 获取的是UiObject对象
         """
-        return self.get_element(locator, timeout)
+        return self.__client.get_element(locator, timeout)
 
-    def get_elements(self, locator: dict, timeout: str = _DEFAULT_TIME_OUT) -> list:
+    def get_elements(self, locator: dict, timeout: float = _DEFAULT_TIME_OUT) -> list:
         """
         根据定位符获取元素列表
 
@@ -147,10 +148,10 @@ class AndroidService(metaclass=Singleton):
 
             u2: 获取的是UiObject对象列表
         """
-        return self.get_elements(locator, timeout)
+        return self.__client.get_elements(locator, timeout)
 
     def get_child_element(self, parent: (dict, WebElement, UiObject), locator: dict,
-                          timeout: str = _DEFAULT_TIME_OUT) -> (WebElement, UiObject):
+                          timeout: float = _DEFAULT_TIME_OUT) -> (WebElement, UiObject):
         """
         在父元素中查找子元素
 
@@ -166,10 +167,10 @@ class AndroidService(metaclass=Singleton):
 
             u2: 获取的是UiObject对象列表
         """
-        return self.get_child_element(parent, locator, timeout)
+        return self.__client.get_child_element(parent, locator, timeout)
 
     def get_child_elements(self, parent: (dict, WebElement, UiObject), locator: dict,
-                           timeout: str = _DEFAULT_TIME_OUT) -> list:
+                           timeout: float = _DEFAULT_TIME_OUT) -> list:
         """
         在父元素中查找子元素列表
 
@@ -185,9 +186,9 @@ class AndroidService(metaclass=Singleton):
 
             u2: 获取的是UiObject对象列表
         """
-        return self.get_child_elements(parent, locator, timeout)
+        return self.__client.get_child_elements(parent, locator, timeout)
 
-    def get_element_attribute(self, locator: (dict, WebElement, UiObject), timeout: str = _DEFAULT_TIME_OUT) -> dict:
+    def get_element_attribute(self, locator: (dict, WebElement, UiObject), timeout: float = _DEFAULT_TIME_OUT) -> dict:
         """
         获取元素的属性，以列表方式返回
 
@@ -201,9 +202,9 @@ class AndroidService(metaclass=Singleton):
 
             value: bool类型，True or False
         """
-        return self.get_element_attribute(locator, timeout)
+        return self.__client.get_element_attribute(locator, timeout)
 
-    def is_checkable(self, locator: (dict, WebElement, UiObject), timeout: str = _DEFAULT_TIME_OUT) -> bool:
+    def is_checkable(self, locator: (dict, WebElement, UiObject), timeout: float = _DEFAULT_TIME_OUT) -> bool:
         """
         元素是否可选择
 
@@ -213,9 +214,9 @@ class AndroidService(metaclass=Singleton):
 
         :return: 是/否
         """
-        return self.get_element_attribute(locator, timeout)[ElementAttributeEnum.CHECKABLE]
+        return self.__client.get_element_attribute(locator, timeout)[ElementAttributeEnum.CHECKABLE]
 
-    def is_checked(self, locator: (dict, WebElement, UiObject), timeout: str = _DEFAULT_TIME_OUT) -> bool:
+    def is_checked(self, locator: (dict, WebElement, UiObject), timeout: float = _DEFAULT_TIME_OUT) -> bool:
         """
         元素是否可选中
 
@@ -225,9 +226,9 @@ class AndroidService(metaclass=Singleton):
 
         :return: 是/否
         """
-        return self.get_element_attribute(locator, timeout)[ElementAttributeEnum.CHECKED]
+        return self.__client.get_element_attribute(locator, timeout)[ElementAttributeEnum.CHECKED]
 
-    def is_clickable(self, locator: (dict, WebElement, UiObject), timeout: str = _DEFAULT_TIME_OUT) -> bool:
+    def is_clickable(self, locator: (dict, WebElement, UiObject), timeout: float = _DEFAULT_TIME_OUT) -> bool:
         """
         元素是否可点击
 
@@ -237,9 +238,9 @@ class AndroidService(metaclass=Singleton):
 
         :return: 是/否
         """
-        return self.get_element_attribute(locator, timeout)[ElementAttributeEnum.CLICKABLE]
+        return self.__client.get_element_attribute(locator, timeout)[ElementAttributeEnum.CLICKABLE]
 
-    def is_enable(self, locator: (dict, WebElement, UiObject), timeout: str = _DEFAULT_TIME_OUT) -> bool:
+    def is_enable(self, locator: (dict, WebElement, UiObject), timeout: float = _DEFAULT_TIME_OUT) -> bool:
         """
         元素是否可用
 
@@ -249,9 +250,9 @@ class AndroidService(metaclass=Singleton):
 
         :return: 是/否
         """
-        return self.get_element_attribute(locator, timeout)[ElementAttributeEnum.ENABLED]
+        return self.__client.get_element_attribute(locator, timeout)[ElementAttributeEnum.ENABLED]
 
-    def is_focusable(self, locator: (dict, WebElement, UiObject), timeout: str = _DEFAULT_TIME_OUT) -> bool:
+    def is_focusable(self, locator: (dict, WebElement, UiObject), timeout: float = _DEFAULT_TIME_OUT) -> bool:
         """
         元素是否可以存在焦点
 
@@ -261,9 +262,9 @@ class AndroidService(metaclass=Singleton):
 
         :return: 是/否
         """
-        return self.get_element_attribute(locator, timeout)[ElementAttributeEnum.FOCUSABLE]
+        return self.__client.get_element_attribute(locator, timeout)[ElementAttributeEnum.FOCUSABLE]
 
-    def is_focused(self, locator: (dict, WebElement, UiObject), timeout: str = _DEFAULT_TIME_OUT) -> bool:
+    def is_focused(self, locator: (dict, WebElement, UiObject), timeout: float = _DEFAULT_TIME_OUT) -> bool:
         """
         元素是否焦点中
 
@@ -273,9 +274,9 @@ class AndroidService(metaclass=Singleton):
 
         :return: 是/否
         """
-        return self.get_element_attribute(locator, timeout)[ElementAttributeEnum.FOCUSED]
+        return self.__client.get_element_attribute(locator, timeout)[ElementAttributeEnum.FOCUSED]
 
-    def is_scrollable(self, locator: (dict, WebElement, UiObject), timeout: str = _DEFAULT_TIME_OUT) -> bool:
+    def is_scrollable(self, locator: (dict, WebElement, UiObject), timeout: float = _DEFAULT_TIME_OUT) -> bool:
         """
         元素是否可滑动
 
@@ -285,9 +286,9 @@ class AndroidService(metaclass=Singleton):
 
         :return: 是/否
         """
-        return self.get_element_attribute(locator, timeout)[ElementAttributeEnum.SCROLLABLE]
+        return self.__client.get_element_attribute(locator, timeout)[ElementAttributeEnum.SCROLLABLE]
 
-    def is_long_clickable(self, locator: (dict, WebElement, UiObject), timeout: str = _DEFAULT_TIME_OUT) -> bool:
+    def is_long_clickable(self, locator: (dict, WebElement, UiObject), timeout: float = _DEFAULT_TIME_OUT) -> bool:
         """
         元素是否可长按
 
@@ -297,9 +298,9 @@ class AndroidService(metaclass=Singleton):
 
         :return: 是/否
         """
-        return self.get_element_attribute(locator, timeout)[ElementAttributeEnum.LONG_CLICKABLE]
+        return self.__client.get_element_attribute(locator, timeout)[ElementAttributeEnum.LONG_CLICKABLE]
 
-    def is_display(self, locator: (dict, WebElement, UiObject), timeout: str = _DEFAULT_TIME_OUT) -> bool:
+    def is_display(self, locator: (dict, WebElement, UiObject), timeout: float = _DEFAULT_TIME_OUT) -> bool:
         """
         元素是否可显示，对于uiautomator2来说，默认可显示，即不准
 
@@ -309,9 +310,9 @@ class AndroidService(metaclass=Singleton):
 
         :return: 是/否
         """
-        return self.get_element_attribute(locator, timeout)[ElementAttributeEnum.CHECKABLE]
+        return self.__client.get_element_attribute(locator, timeout)[ElementAttributeEnum.CHECKABLE]
 
-    def is_selected(self, locator: (dict, WebElement, UiObject), timeout: str = _DEFAULT_TIME_OUT) -> bool:
+    def is_selected(self, locator: (dict, WebElement, UiObject), timeout: float = _DEFAULT_TIME_OUT) -> bool:
         """
         元素是否可选择
 
@@ -321,7 +322,7 @@ class AndroidService(metaclass=Singleton):
 
         :return: 是/否
         """
-        return self.get_element_attribute(locator, timeout)[ElementAttributeEnum.SELECTED]
+        return self.__client.get_element_attribute(locator, timeout)[ElementAttributeEnum.SELECTED]
 
     def scroll_get_element(self, element: (dict, WebElement, UiObject), locator: dict, text: str,
                            exact_match: bool = False, duration: float = None,
@@ -354,8 +355,38 @@ class AndroidService(metaclass=Singleton):
 
             u2: 获取的是UiObject对象列表
         """
-        return self.scroll_get_element(element, locator, text, exact_match, duration, direct, swipe_time, swipe_percent,
-                                       timeout)
+        return self.__client.scroll_get_element(element, locator, text, exact_match, duration, direct, swipe_time,
+                                                swipe_percent, timeout)
+
+    def scroll_get_element_and_click(self, element: (dict, WebElement, UiObject), locator: dict, text: str,
+                                     exact_match: bool = False, duration: float = None,
+                                     direct: SwipeDirectorEnum = SwipeDirectorEnum.UP, swipe_time: int = None,
+                                     swipe_percent: float = 0.8, timeout: float = _DEFAULT_TIME_OUT):
+        """
+        在可滑动的空间中，查找文字所在的控件
+
+        :param swipe_time: 滑动次数，默认为None，即滑动到头
+
+        :param timeout: 超时时间
+
+        :param text: 行/列控件中要查找的文字
+
+        :param element: 可滑动的控件
+
+        :param locator: 滑动控件中行/列控件，一般来说是一般来说是classname: android.widget.LinearLayout
+
+        :param exact_match: 是否精确查找
+
+        :param duration: 滑动持续时间
+
+        :param direct: 滑动方向
+
+        :param swipe_percent: 滑动的比例
+        """
+        e = self.scroll_get_element(element=element, locator=locator, text=text, exact_match=exact_match,
+                                    duration=duration, direct=direct, swipe_time=swipe_time,
+                                    swipe_percent=swipe_percent, timeout=timeout)
+        self.__client.click(e)
 
     def scroll_up_get_element(self, element: (dict, WebElement, UiObject), locator: dict, text: str,
                               exact_match: bool = False, duration: float = None, swipe_time: int = None,
@@ -382,8 +413,34 @@ class AndroidService(metaclass=Singleton):
 
         :return: 查询到的对象
         """
-        return self.scroll_get_element(element, locator, text, exact_match, duration, SwipeDirectorEnum.UP, swipe_time,
-                                       swipe_percent, timeout)
+        return self.__client.scroll_get_element(element, locator, text, exact_match, duration, SwipeDirectorEnum.UP,
+                                                swipe_time, swipe_percent, timeout)
+
+    def scroll_up_get_element_and_click(self, element: (dict, WebElement, UiObject), locator: dict, text: str,
+                                        exact_match: bool = False, duration: float = None, swipe_time: int = None,
+                                        swipe_percent: float = 0.8, timeout: float = _DEFAULT_TIME_OUT):
+        """
+         在可滑动的空间中，向上滑动并查找文字所在的控件, 并点击
+
+        :param element: 可滑动的控件
+
+        :param locator: 滑动控件中行/列控件，一般来说是一般来说是classname: android.widget.LinearLayout
+
+        :param text: 行/列控件中要查找的文字
+
+        :param exact_match: 是否精确查找
+
+        :param duration: 滑动持续时间
+
+        :param swipe_time: 滑动次数，默认为None，即滑动到头
+
+        :param swipe_percent: 滑动的比例
+
+        :param timeout: 超时时间
+        """
+        e = self.scroll_up_get_element(element, locator, text, exact_match, duration, swipe_time, swipe_percent,
+                                       timeout)
+        self.__client.click(e)
 
     def scroll_down_get_element(self, element: (dict, WebElement, UiObject), locator: dict, text: str,
                                 exact_match: bool = False, duration: float = None, swipe_time: int = None,
@@ -410,9 +467,34 @@ class AndroidService(metaclass=Singleton):
 
         :return: 查询到的对象
         """
-        return self.scroll_get_element(element, locator, text, exact_match, duration, SwipeDirectorEnum.DOWN,
-                                       swipe_time,
-                                       swipe_percent, timeout)
+        return self.__client.scroll_get_element(element, locator, text, exact_match, duration, SwipeDirectorEnum.DOWN,
+                                                swipe_time, swipe_percent, timeout)
+
+    def scroll_down_get_element_and_click(self, element: (dict, WebElement, UiObject), locator: dict, text: str,
+                                          exact_match: bool = False, duration: float = None, swipe_time: int = None,
+                                          swipe_percent: float = 0.8, timeout: float = _DEFAULT_TIME_OUT):
+        """
+         在可滑动的空间中，向下滑动并查找文字所在的控件，并点击
+
+        :param element: 可滑动的控件
+
+        :param locator: 滑动控件中行/列控件，一般来说是一般来说是classname: android.widget.LinearLayout
+
+        :param text: 行/列控件中要查找的文字
+
+        :param exact_match: 是否精确查找
+
+        :param duration: 滑动持续时间
+
+        :param swipe_time: 滑动次数，默认为None，即滑动到头
+
+        :param swipe_percent: 滑动的比例
+
+        :param timeout: 超时时间
+        """
+        e = self.scroll_down_get_element(element, locator, text, exact_match, duration, swipe_time, swipe_percent,
+                                         timeout)
+        self.__client.click(e)
 
     def scroll_left_get_element(self, element: (dict, WebElement, UiObject), locator: dict, text: str,
                                 exact_match: bool = False, duration: float = None, swipe_time: int = None,
@@ -439,8 +521,36 @@ class AndroidService(metaclass=Singleton):
 
         :return: 查询到的对象
         """
-        return self.scroll_get_element(element, locator, text, exact_match, duration, SwipeDirectorEnum.UP, swipe_time,
-                                       swipe_percent, timeout)
+        return self.__client.scroll_get_element(element, locator, text, exact_match, duration, SwipeDirectorEnum.UP,
+                                                swipe_time, swipe_percent, timeout)
+
+    def scroll_left_get_element_and_click(self, element: (dict, WebElement, UiObject), locator: dict, text: str,
+                                          exact_match: bool = False, duration: float = None, swipe_time: int = None,
+                                          swipe_percent: float = 0.8, timeout: float = _DEFAULT_TIME_OUT):
+        """
+         在可滑动的空间中，向左滑动并查找文字所在的控件, 并点击
+
+        :param element: 可滑动的控件
+
+        :param locator: 滑动控件中行/列控件，一般来说是一般来说是classname: android.widget.LinearLayout
+
+        :param text: 行/列控件中要查找的文字
+
+        :param exact_match: 是否精确查找
+
+        :param duration: 滑动持续时间
+
+        :param swipe_time: 滑动次数，默认为None，即滑动到头
+
+        :param swipe_percent: 滑动的比例
+
+        :param timeout: 超时时间
+
+        :return: 查询到的对象
+        """
+        e = self.scroll_left_get_element(element, locator, text, exact_match, duration, swipe_time, swipe_percent,
+                                         timeout)
+        self.__client.click(e)
 
     def scroll_right_get_element(self, element: (dict, WebElement, UiObject), locator: dict, text: str,
                                  exact_match: bool = False, duration: float = None, swipe_time: int = None,
@@ -467,8 +577,36 @@ class AndroidService(metaclass=Singleton):
 
         :return: 查询到的对象
         """
-        return self.scroll_get_element(element, locator, text, exact_match, duration, SwipeDirectorEnum.UP, swipe_time,
-                                       swipe_percent, timeout)
+        return self.__client.scroll_get_element(element, locator, text, exact_match, duration, SwipeDirectorEnum.UP,
+                                                swipe_time, swipe_percent, timeout)
+
+    def scroll_right_get_element_and_click(self, element: (dict, WebElement, UiObject), locator: dict, text: str,
+                                           exact_match: bool = False, duration: float = None, swipe_time: int = None,
+                                           swipe_percent: float = 0.8, timeout: float = _DEFAULT_TIME_OUT):
+        """
+         在可滑动的空间中，向右滑动并查找文字所在的控件
+
+        :param element: 可滑动的控件
+
+        :param locator: 滑动控件中行/列控件，一般来说是一般来说是classname: android.widget.LinearLayout
+
+        :param text: 行/列控件中要查找的文字
+
+        :param exact_match: 是否精确查找
+
+        :param duration: 滑动持续时间
+
+        :param swipe_time: 滑动次数，默认为None，即滑动到头
+
+        :param swipe_percent: 滑动的比例
+
+        :param timeout: 超时时间
+
+        :return: 查询到的对象
+        """
+        e = self.scroll_right_get_element(element, locator, text, exact_match, duration, swipe_time, swipe_percent,
+                                          timeout)
+        self.__client.click(e)
 
     def get_location(self, locator: (dict, WebElement, UiObject), timeout: float = _DEFAULT_TIME_OUT) -> tuple:
         """
@@ -508,6 +646,7 @@ class AndroidService(metaclass=Singleton):
 
         :param timeout: 超时时间， 默认3秒
         """
+        logger.debug(f"locator is {locator}")
         self.__client.click(locator, timeout)
 
     def double_click(self, locator: (tuple, str, dict, WebElement, UiObject),

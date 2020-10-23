@@ -32,10 +32,34 @@ class Device(metaclass=ABCMeta):
         pass
 
 
+class SocketDevice(metaclass=ABCMeta):
+
+    @abstractmethod
+    def connect(self, ipaddress: str, username: str, password: str):
+        """
+        连接并登陆系统
+
+        :param ipaddress: ip地址
+
+        :param username: 用户名
+
+        :param password: 密码
+
+        """
+        pass
+
+    @abstractmethod
+    def disconnect(self):
+        """
+        断开
+        """
+        pass
+
+
 class ScreenShot(metaclass=ABCMeta):
 
     @abstractmethod
-    def screen_shot(self, image_name: str, count: int, interval_time: float, display: int = None):
+    def screen_shot(self, image_name: str, count: int, interval_time: float, display: int = None) -> list:
         """
         截图操作, 当截图有多张的时候，以__下划线分割并加编号
 
@@ -50,7 +74,8 @@ class ScreenShot(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def screen_shot_area(self, position: tuple, image_name: str, count: int, interval_time: float, display: int = None):
+    def screen_shot_area(self, position: tuple, image_name: str, count: int, interval_time: float,
+                         display: int = None) -> list:
         """
         区域截图, 当截图有多张的时候，以__下划线分割并加编号
 

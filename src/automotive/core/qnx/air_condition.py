@@ -30,11 +30,12 @@ class AirCondition(ScreenShot, Actions, Device):
         self.__device.copy_images_to_usb(self.__path)
         self.__device.disconnect()
 
-    def screen_shot(self, image_name: str, count: int, interval_time: float, display: int = None):
-        self.__screen_shot.screen_shot(image_name, count, interval_time, display)
+    def screen_shot(self, image_name: str, count: int, interval_time: float, display: int = None) -> list:
+        return self.__screen_shot.screen_shot(image_name, count, interval_time, display)
 
-    def screen_shot_area(self, position: tuple, image_name: str, count: int, interval_time: float, display: int = None):
-        self.__screen_shot.screen_shot_area(position, image_name, count, interval_time, display)
+    def screen_shot_area(self, position: tuple, image_name: str, count: int, interval_time: float,
+                         display: int = None) -> list:
+        return self.__screen_shot.screen_shot_area(position, image_name, count, interval_time, display)
 
     def click(self, display: int, x: int, y: int, interval: float = 0.2):
         self.__actions.click(display, x, y, interval)

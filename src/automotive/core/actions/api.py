@@ -74,6 +74,24 @@ class PowerActions(BaseActions):
         pass
 
     @abstractmethod
+    def set_voltage(self, voltage: float):
+        """
+        设置电源电压
+
+        :param voltage: 电压
+        """
+        pass
+
+    @abstractmethod
+    def set_current(self, current):
+        """
+        设置电源电流
+
+        :param current: 电流
+        """
+        pass
+
+    @abstractmethod
     def set_voltage_current(self, voltage: float, current: float = 10):
         """
         设置电源电压电流

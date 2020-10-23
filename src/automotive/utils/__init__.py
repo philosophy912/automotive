@@ -6,6 +6,8 @@ from .usbrelay import USBRelay
 from .player import Player
 from .performance import Performance
 from .ssh_utils import SSHUtils
+from .ftp_utils import FtpUtils
+from .telnet_utils import TelnetUtils
 
 __all__ = [
     "Utils",
@@ -15,5 +17,7 @@ __all__ = [
     "USBRelay",
     "Player",
     "Performance",
-    "SSHUtils"
+    "SSHUtils",
+    "FtpUtils",
+    "TelnetUtils"
 ]

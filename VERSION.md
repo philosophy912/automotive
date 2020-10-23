@@ -1,4 +1,13 @@
 ## 版本更新说明
+**V2.5**
+ - 增加了FTP工具类FtpUtils
+ - 增加了Telnet工具类TelnetUtils
+ - 增加了诺创项目使用的clusterHmi类
+ - 修复了空调屏截屏和仪表屏截屏的错误，并统一了截屏的接口
+ - 修复了AndroidService调用的错误
+ - 修复了Camera的中录制视频的错误
+ - 增加了SerialPort中关于日志保存到文件的方法
+
 
 **V2.4**
 

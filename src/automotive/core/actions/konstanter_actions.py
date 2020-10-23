@@ -59,6 +59,26 @@ class KonstanterActions(PowerActions):
         logger.info(f"设置konstanter电源模式为OFF")
         self.__konstanter.output_enable(False)
 
+    def set_voltage(self, voltage: float):
+        """
+        设置电源电压电流
+
+        :param voltage: 电压
+        """
+        if not 0 <= voltage <= 20:
+            raise RuntimeError(f"电源只支持0-20V电压，当前要设置的电压为{voltage}")
+        logger.info(f"设置电压为{voltage}")
+        self.__konstanter.set_voltage_current(voltage=voltage)
+
+    def set_current(self, current: float):
+        """
+        设置电源电压电流
+
+        :param current: 电流
+        """
+        logger.info(f"设置电流为{current}")
+        self.__konstanter.set_voltage_current(current=current)
+
     def set_voltage_current(self, voltage: float, current: float = 10):
         """
         设置电源电压电流

@@ -23,20 +23,19 @@ class QnxLocalScreenShot(ScreenShot):
         self.__path = save_path
         self.__device = device
 
-    def screen_shot(self, image_name: str, count: int, interval_time: float, display: int = None):
-        self.__screen_shot_image(image_name, count, interval_time, display=display)
+    def screen_shot(self, image_name: str, count: int, interval_time: float, display: int = None) -> list:
+        return self.__screen_shot_image(image_name, count, interval_time, display=display)
 
-    def screen_shot_area(self, position: tuple, image_name: str, count: int, interval_time: float, display: int = None):
-        self.__screen_shot_image(image_name, count, interval_time, position, display=display)
+    def screen_shot_area(self, position: tuple, image_name: str, count: int, interval_time: float,
+                         display: int = None) -> list:
+        return self.__screen_shot_image(image_name, count, interval_time, position, display=display)
 
     def __screen_shot(self, image_name: str, display: int = None):
         """
         执行截图命令
 
-        :param image_name: 图片名字，如果图片名字不带.bmp后缀，则增加bmp后缀
+        :param image_name: 图片名字，已包含后缀名
         """
-        if not image_name.endswith(".bmp"):
-            image_name = f"{image_name}.bmp"
         command = f"screenshot -file=/{self.__path}/{image_name}"
         if display:
             command = f"{command} -display={display}"
@@ -46,10 +45,8 @@ class QnxLocalScreenShot(ScreenShot):
         """
         执行截图命令(TODO， 目前QNX系统下不支持区域截图)
 
-        :param image_name: 图片名字，如果图片名字不带.bmp后缀，则增加bmp后缀
+        :param image_name: 图片名字，已包含后缀名
         """
-        if not image_name.endswith(".bmp"):
-            image_name = f"{image_name}.bmp"
         x, y, width, height = position
         command = f"screen_capture -file=/{self.__path}/{image_name} -pos={x},{y} -size={width}x{height}"
         if display:
@@ -59,7 +56,7 @@ class QnxLocalScreenShot(ScreenShot):
         raise RuntimeError("not support area screenshot")
 
     def __screen_shot_image(self, image_name: str, count: int, interval_time: float, position: tuple = None,
-                            display: int = None):
+                            display: int = None) -> list:
         """
         截图操作，当position为None的时候为全屏截图
 
@@ -73,13 +70,16 @@ class QnxLocalScreenShot(ScreenShot):
         """
         if count < 1:
             raise ValueError(f"count must >= 1, but current value is {count}")
+        # 图片列表
         image_files = []
         for i in range(count):
-            ex_image_name = image_name.split(".bmp")[0]
-            image_name = f"{ex_image_name}__{count + 1}"
+            ex_image_name = image_name.split(".jpg")[0]
+            image_name = f"{ex_image_name}__{i + 1}.jpg"
+            logger.debug(f"screenshot image name is {image_name}")
             if position:
                 self.__screen_shot_area(image_name, position, display=display)
             else:
                 self.__screen_shot(image_name, display=display)
             image_files.append(image_name)
             sleep(interval_time)
+        return image_files
