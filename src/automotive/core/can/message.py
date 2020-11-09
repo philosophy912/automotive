@@ -162,9 +162,11 @@ def set_data(data: list, start_bit: int, byte_type: bool, value: int, bit_length
         # 填充最后一位
         elif index == len(holder_bytes) - 1:
             if byte_type:
+                logger.trace(f"intel mode")
                 byte_value = byte_value[:8 - length] + byte
             else:
-                byte_value = byte_value[:-length] + byte
+                logger.trace("motorola mode")
+                byte_value = byte + byte_value[length:]
             logger.trace(f"last byte value = {byte_value}")
         # 填充中间的数据
         else:

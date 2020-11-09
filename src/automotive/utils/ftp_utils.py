@@ -8,6 +8,7 @@
 # @Created:     2020/10/22 - 22:42
 # --------------------------------------------------------
 import os
+from time import sleep
 from ftplib import FTP
 from automotive.logger.logger import logger
 
@@ -112,6 +113,7 @@ class FtpUtils(object):
         local_files = []
         for file in remote_files:
             local_files.append(self.download_file(file, local_folder))
+            sleep(1)
         return local_files
 
     @check_status

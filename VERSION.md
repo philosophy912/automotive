@@ -1,5 +1,15 @@
 ## 版本更新说明
+**V2.6**
+
+- 修复了message中motorola算法的错误
+- 修复了图片对比image_compare中当不填写positions的时候仍然返回正确结果的缺陷
+- 更新了cluster_HMI中需要slay进程的列表
+- 修复了当config.yml中找不到level时候抛出异常的问题，改为当找不到的时候就设置为info级别
+- 新增了email_utils工具，只完成了发送部分，未完成接收部分
+- 修复了ftputil中下载软件不成功的问题，增加了等待时间
+
 **V2.5**
+
  - 增加了FTP工具类FtpUtils
  - 增加了Telnet工具类TelnetUtils
  - 增加了诺创项目使用的clusterHmi类

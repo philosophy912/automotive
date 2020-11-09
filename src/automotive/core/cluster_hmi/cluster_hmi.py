@@ -14,11 +14,14 @@ from automotive.utils.ftp_utils import FtpUtils
 from automotive.utils.telnet_utils import TelnetUtils
 from automotive.logger.logger import logger
 
+_start_service_list = "safety", "clusterNormal_service", "GaugeMagServer", "mcu_ipc_service", "layer-mgr", \
+                      "can_service", "whud", "nobo_whud", "diagnose_eol_service"
+
 
 class ClusterHmi(SocketDevice):
 
     def __init__(self, board_path: str, local_folder: str, test_binary: str = None, cluster: str = None,
-                 whud: str = None):
+                 whud: str = None, service_list: tuple = _start_service_list):
         """
         初始化
 
@@ -41,8 +44,7 @@ class ClusterHmi(SocketDevice):
         self.__whud = whud
         self.__board_path = board_path
         self.__screenshot = ClusterHmiScreenshot(self.__telnet, board_path)
-        self.__service_list = ["CmdAdasSvr", "CmdBaseSvr", "CmdClustermiscSvr", "CmdGaugeSvr", "CmdInteractionSvr",
-                               "CmdWhudkanziSvr"]
+        self.__service_list = service_list
 
     def __replace(self, folder: str, application: str, sw_files: str):
         """
@@ -82,10 +84,17 @@ class ClusterHmi(SocketDevice):
             sleep(1)
             self.__telnet.write(f"chmod -R 777 {self.__board_path}")
             sleep(5)
-        for service in self.__service_list:
-            self.__telnet.write(f"slay {service}")
+        if self.__service_list:
+            for service in self.__service_list:
+                self.__telnet.write(f"slay {service}")
+            # 需要启动
+            self.__telnet.write(f"./CmdLayerMcuSvr l a")
         sleep(5)
         self.__telnet.write(f"cd {self.__board_path}")
+        self.__telnet.write(f"cd rm -r *.jpg")
+        sleep(5)
+        self.__telnet.write(f"cd rm -r *.bmp")
+        sleep(5)
 
     def disconnect(self):
         self.__ftp.disconnect()
@@ -97,8 +106,9 @@ class ClusterHmi(SocketDevice):
         self.__prepare()
 
     def send_command(self, command: str, interval: float = 0.5):
-        logger.debug(f"send command is {command}")
+        logger.info(f"send command is {command}")
         self.__telnet.write(command, interval)
+        sleep(interval)
 
     def read(self) -> str:
         return self.__telnet.read()

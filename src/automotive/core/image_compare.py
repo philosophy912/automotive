@@ -117,6 +117,8 @@ class ImageCompare(object):
 
             False: 小于阈值
         """
+        logger.debug(
+            f"compare template_image[{template_image}] and target_image={target_image} in position[{position}]")
         x, y, width, height = position
         template_position = self.__images.convert_position(x, y, width=width, height=height)
         target_position = self.__images.convert_position(0, 0, width=width,
@@ -157,6 +159,8 @@ class ImageCompare(object):
             False: 小于阈值
         """
         count = 0
+        if len(positions) == 0:
+            return False
         for position in positions:
             if self.__compare_image_area(template_image, target_image, position, gray, threshold, similarity, is_area):
                 count += 1
@@ -190,11 +194,13 @@ class ImageCompare(object):
         """
         count = 0
         for image in target_images:
-            logger.debug(f"image is {image}")
+            logger.debug(f"now compare template_image[{template_image}] and target_image [{image}]")
             if self.__compare_image(template_image, image, positions, gray, threshold, similarity, is_area):
                 if is_break:
+                    logger.debug(f"break compare and return True")
                     return True
                 else:
+                    logger.debug(f"compre success")
                     count += 1
         return count == len(target_images)
 
@@ -210,15 +216,21 @@ class ImageCompare(object):
             False: 不同
         """
         screen_shot_images = compare_property.screen_shot_images
+        logger.debug(f"screen_shot_images = [{screen_shot_images}]")
         light_template = compare_property.light_template
         dark_template = compare_property.dark_template
         positions = compare_property.positions
+        logger.debug(
+            f"light_template = {light_template} and dark_template = {dark_template} and positions = {positions}")
         gray = compare_property.gray
         threshold = compare_property.gray_threshold
         similarity = compare_property.similarity
+        logger.debug(f"similarity is {similarity}")
         if compare_property.type == CompareTypeEnum.LIGHT:
+            logger.trace("compare light template file")
             return self.__compare_images(light_template, screen_shot_images, positions, gray, threshold, similarity)
         else:
+            logger.trace("compare dark template file")
             return self.__compare_images(dark_template, screen_shot_images, positions, gray, threshold, similarity)
 
     def __compare_blink(self, compare_property: CompareProperty) -> bool:

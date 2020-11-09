@@ -85,7 +85,9 @@ def get_config(config_file: str) -> tuple:
         try:
             level = content["level"]
         except KeyError:
-            raise ValueError("not found level in config file")
+            _logger.warning("not found level in config file, set level to info")
+            level = "info"
+            # raise ValueError("not found level in config file")
         try:
             log_folder = content["log_folder"]
             if log_folder and log_folder.lower() == "none":
