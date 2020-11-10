@@ -123,12 +123,12 @@ class HypervisorScreenShot(ScreenShot):
         image_files = []
         for i in range(count):
             ex_image_name = image_name.split(".jpg")[0]
-            image_name = f"{ex_image_name}__{i + 1}.jpg"
+            screenshot_image_name = f"{ex_image_name}__{i + 1}.jpg"
             if position:
-                self.__screen_shot_area(image_name, position, display)
+                self.__screen_shot_area(screenshot_image_name, position, display)
             else:
-                self.__screen_shot(image_name, display)
-            image_files.append(image_name)
+                self.__screen_shot(screenshot_image_name, display)
+            image_files.append(screenshot_image_name)
             sleep(interval_time)
         self.__sync_space()
         return image_files

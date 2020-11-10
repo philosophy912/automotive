@@ -8,6 +8,7 @@ from .performance import Performance
 from .ssh_utils import SSHUtils
 from .ftp_utils import FtpUtils
 from .telnet_utils import TelnetUtils
+from .email_utils import EmailType, EmailUtils
 
 __all__ = [
     "Utils",
@@ -19,5 +20,6 @@ __all__ = [
     "Performance",
     "SSHUtils",
     "FtpUtils",
-    "TelnetUtils"
+    "TelnetUtils",
+    "EmailType", "EmailUtils"
 ]

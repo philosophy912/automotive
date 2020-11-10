@@ -128,11 +128,13 @@ class EmailUtils(object):
                     message.attach(attachment_file)
             message.send()
 
-    def receive_email(self, folder: str = None) -> list:
+    def receive_email(self, email_count: int = 10, folder: str = None) -> list:
         """
         TODO 暂时未完成测试
         接收邮件
-        :return: (subject, content, attachments)
+        :param email_count: 要收取的邮件数量
+        :param folder: 要收取的文件夹，默认为收件箱
+        :return: (author, datetime_received, subject, content, attachments)
         """
         if self.__type == EmailType.SMTP:
             # 返回邮件总数目和占用服务器的空间大小（字节数）， 通过stat()方法即可
@@ -149,7 +151,10 @@ class EmailUtils(object):
             if folder:
                 sub_folder = self.__account.root // '信息存储顶部' // '收件箱' // f'{folder}'
                 for item in sub_folder.all().order_by('-datetime_received')[:100]:
-                    email = item.subject, item.sender
+                    email = item.author, item.datetime_received, item.subject, item.body, item.attachments
+                    emails.append(email)
             else:
                 for item in self.__account.inbox.all().order_by('-datetime_received')[:100]:
-                    pass
+                    email = item.author, item.datetime_received, item.subject, item.body, item.attachments
+                    emails.append(email)
+            return emails

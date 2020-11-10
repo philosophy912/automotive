@@ -6,7 +6,7 @@ from .core import Singleton, deprecated, CANService, CanBoxDevice, Message, Trac
     KeyCode, AppiumPythonClient, AppiumClient, UiAutomator2Client, It6831Actions, KonstanterActions, RelayActions, \
     SerialActions, CanActions, CameraActions, KonstanterControl, IT6831, ToolTypeEnum, Curve, ClusterHmi
 from .utils import Utils, Camera, CameraProperty, MicroPhone, Images, SerialPort, USBRelay, Player, Performance, \
-    SSHUtils, FtpUtils, TelnetUtils
+    SSHUtils, FtpUtils, TelnetUtils, EmailType, EmailUtils
 from .logger import logger
 
 __all__ = [
@@ -17,6 +17,6 @@ __all__ = [
     "It6831Actions", "KonstanterActions", "RelayActions", "SerialActions", "CanActions", "CameraActions",
     "KonstanterControl", "IT6831", "ToolTypeEnum", "Curve", "ClusterHmi",
     "Utils", "Camera", "CameraProperty", "MicroPhone", "Images", "SerialPort", "USBRelay", "Player", "Performance",
-    "SSHUtils", "FtpUtils", "TelnetUtils",
+    "SSHUtils", "FtpUtils", "TelnetUtils", "EmailType", "EmailUtils",
     "logger",
 ]
