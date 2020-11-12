@@ -54,7 +54,9 @@ setuptools.setup(
         "pytest>=5.3.5",
         "allure-pytest>=2.8.12",
         "uiautomator2>=2.10.0",
-        "weditor>=0.5.0"
+        "weditor>=0.5.0",
+        "pytest-rerunfailures>=9.1.1",
+        "exchangelib>=3.3.2"
     ],
     classifiers=[
         "Programming Language :: Python :: 3.6",

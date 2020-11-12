@@ -351,6 +351,6 @@ class Utils(metaclass=Singleton):
         """
         # 在screen_shot_path路径中查找
         images = list(map(lambda x: folder + "\\" + x, os.listdir(folder)))
-        filter_images = list(filter(lambda x: x.find(image_name.lower()) >= 0, images))
+        filter_images = list(filter(lambda x: x.startswith(x.split(".")[0]) and x.endswith(x.split(".")[1]), images))
         logger.debug(f"{folder} contain {len(filter_images)} {image_name} files")
         return filter_images
