@@ -7,6 +7,7 @@
 - 修复了当config.yml中找不到level时候抛出异常的问题，改为当找不到的时候就设置为info级别
 - 新增了email_utils工具，只完成了发送部分，未完成接收部分
 - 修复了ftputil中下载软件不成功的问题，增加了等待时间
+- 修复了Utils中函数filter_images的错误
 
 **V2.5**
 
