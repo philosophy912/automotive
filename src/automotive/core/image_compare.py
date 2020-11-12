@@ -193,6 +193,8 @@ class ImageCompare(object):
             False: 不同
         """
         count = 0
+        if len(target_images) == 0:
+            return False
         for image in target_images:
             logger.debug(f"now compare template_image[{template_image}] and target_image [{image}]")
             if self.__compare_image(template_image, image, positions, gray, threshold, similarity, is_area):
