@@ -8,6 +8,7 @@
 - 新增了email_utils工具，只完成了发送部分，未完成接收部分
 - 修复了ftputil中下载软件不成功的问题，增加了等待时间
 - 修复了Utils中函数filter_images的错误
+- 修复了imagecompare当目标文件为空的时候返回True的错误
 
 **V2.5**
 
