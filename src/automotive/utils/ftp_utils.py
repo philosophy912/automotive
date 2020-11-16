@@ -15,7 +15,9 @@ from automotive.logger.logger import logger
 
 class FtpUtils(object):
     """
-    FTP工具类，提供下载文件的方法，暂无上传文件功能
+    FTP工具类，提供下载文件的方法。
+
+    若下载的文件不存在，会抛出运行异常错误
     """
 
     def __init__(self):
@@ -130,9 +132,17 @@ class FtpUtils(object):
         # remote_file = "/tsp/aaaa__1.jpg"
         file_name = remote_file.split("/")[-1]
         local_file = f"{local_folder}\\{file_name}"
-        with open(local_file, "wb") as f:
-            self.__ftp.retrbinary(f"RETR {remote_file}", f.write)
-        return local_file
+        # 判断文件是否存在
+        remote_file_name = remote_file.split("/")[-1]
+        remote_folder = remote_file.replace(f"/{remote_file_name}", "")
+        file_list = self.__ftp.nlst(remote_folder)
+        logger.debug(f"file list is {file_list}")
+        if remote_file in file_list:
+            logger.debug(f"{remote_file} is exist, it will download")
+            with open(local_file, "wb") as f:
+                self.__ftp.retrbinary(f"RETR {remote_file}", f.write)
+            return local_file
+        raise RuntimeError(f"{remote_file} is not exist, please check it")
 
     @check_status
     def upload_file(self, remote_folder: str, local_file: str):
@@ -143,10 +153,13 @@ class FtpUtils(object):
 
         :param local_file:  本地文件
         """
-        buffer_size = 1024
-        self.__ftp.cwd(remote_folder)
-        with open(local_file, "rb") as f:
-            self.__ftp.storbinary(f"STOR {os.path.basename(local_file)}", f, buffer_size)
+        if os.path.exists(local_file) and os.path.isfile(local_file):
+            buffer_size = 1024
+            self.__ftp.cwd(remote_folder)
+            with open(local_file, "rb") as f:
+                self.__ftp.storbinary(f"STOR {os.path.basename(local_file)}", f, buffer_size)
+        else:
+            raise RuntimeError(f"{local_file} is not exist or not file")
 
     @check_status
     def upload_files(self, remote_folder: str, local_files: list):
@@ -171,9 +184,12 @@ class FtpUtils(object):
 
         :param local_folder: 本地文件列表
         """
-        upload_files = list(map(lambda x: fr"{local_folder}\{x}", os.listdir(local_folder)))
-        if filter_type:
-            upload_files = list(filter(lambda x: x.endswith(filter_type), upload_files))
-        logger.debug(f"upload_files is {upload_files}")
-        for file in upload_files:
-            self.upload_file(remote_folder, file)
+        if os.path.exists(local_folder) and os.path.isdir(local_folder):
+            upload_files = list(map(lambda x: fr"{local_folder}\{x}", os.listdir(local_folder)))
+            if filter_type:
+                upload_files = list(filter(lambda x: x.endswith(filter_type), upload_files))
+            logger.debug(f"upload_files is {upload_files}")
+            for file in upload_files:
+                self.upload_file(remote_folder, file)
+        else:
+            raise RuntimeError(f"{local_folder} is not exist or not folder")

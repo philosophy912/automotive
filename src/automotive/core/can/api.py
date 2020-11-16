@@ -2,19 +2,10 @@
 # --------------------------------------------------------
 # Copyright (C), 2016-2020, China TSP, All rights reserved
 # --------------------------------------------------------
-# @Name:        api.py.py
-# @Purpose:     todo
+# @Name:        api.py
+# @Purpose:     can相关的操作
 # @Author:      lizhe
 # @Created:     2020/7/22 - 12:42
-# --------------------------------------------------------
-# -*- coding:utf-8 -*-
-# --------------------------------------------------------
-# Copyright (C), 2016-2020, China TSP, All rights reserved
-# --------------------------------------------------------
-# @Name:        can_bus
-# @Purpose:     adb相关的命令
-# @Author:      lizhe
-# @Created:     2019/8/21 9:47
 # --------------------------------------------------------
 from concurrent.futures import ThreadPoolExecutor, wait, ALL_COMPLETED
 from automotive.logger.logger import logger

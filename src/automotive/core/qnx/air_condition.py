@@ -14,6 +14,11 @@ from ..api import ScreenShot, Actions, Device
 
 
 class AirCondition(ScreenShot, Actions, Device):
+    """
+    空调屏的操作，基于红旗空调屏特有的inject_events操作，可以实现屏幕的滑动、点击、长按、双击等操作，该操作方式主要由串口实现，
+
+    若需要更改为telnet操作可以进行相关的组合即可。
+    """
 
     def __init__(self, save_path: str, port: str):
         self.__device = QnxDevice(port)

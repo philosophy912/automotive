@@ -178,7 +178,7 @@ class Camera(object):
         return wrapper
 
     @check_status
-    def __take_frame(self, name: str = 'test.png', gray=False):
+    def __take_frame(self, name: str, gray=False):
         """
         获取一帧图像并保存
 

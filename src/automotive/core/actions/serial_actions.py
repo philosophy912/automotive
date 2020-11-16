@@ -52,7 +52,7 @@ class SerialActions(BaseActions):
             True： 串口输出找到了匹配的内容
             False: 串口输出没有找到匹配的内容
         """
-        data = self.__serial.read_all(True)
+        data = self.__serial.read_all()
         result = True
         for content in contents:
             logger.debug(f"现在检查{content}是否在串口数据中存在")
@@ -67,6 +67,6 @@ class SerialActions(BaseActions):
 
     def check_can_available(self) -> bool:
         self.__serial.flush()
-        self.__serial.send("ls", type_=False)
+        self.__serial.send("ls")
         content = self.__serial.read_lines()
         return len(content) > 0

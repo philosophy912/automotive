@@ -18,7 +18,7 @@ from automotive.logger import logger
 
 class HypervisorScreenShot(ScreenShot):
     """
-    目前高通方案截图流程
+    目前高通方案截图流程，
 
     1、调用adb -s device shell htalk shell 'screenshot -file=/tsp/xxx.bmp' 方式截图并存放在qnx系统中
 
@@ -29,6 +29,10 @@ class HypervisorScreenShot(ScreenShot):
     3、调用adb -s device shell sync 写入到安卓空间
 
     4、调用adb -s device shell pull /tsp/xxx.bmp save_path > os.devnull  拉取到本地
+
+    若无htalk调用qnx的串口进行截图操作，则可以使用串口的方式进行截图，或者使用ssh/telnet的方式操作，若无法拉取到电脑，
+
+    则把全自动化测试变为半自动化测试
     """
 
     def __init__(self, save_path: str, device_id: str = None):

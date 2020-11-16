@@ -3,7 +3,7 @@
 # Copyright (C), 2016-2020, China TSP, All rights reserved
 # --------------------------------------------------------
 # @Name:        appium_library
-# @Purpose:     基于Appium官方的PythonClient开发的库
+# @Purpose:     基于Appium官方的PythonClient开发的库（已不再维护)
 # @Author:      lizhe
 # @Created:     2019/8/21 9:47
 # --------------------------------------------------------

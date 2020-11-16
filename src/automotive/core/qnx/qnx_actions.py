@@ -14,6 +14,9 @@ from automotive.logger import logger
 
 
 class QnxActions(Actions):
+    """
+    实现相关的操作，若操作方式变换则可以更新该处代码
+    """
 
     def __init__(self, device: QnxDevice):
         self.__device = device

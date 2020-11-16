@@ -3,7 +3,7 @@
 # Copyright (C), 2016-2020, China TSP, All rights reserved
 # --------------------------------------------------------
 # @Name:        appium_client.py
-# @Purpose:     todo
+# @Purpose:     BaseAndroid接口的appium实现类
 # @Author:      lizhe
 # @Created:     2020/07/27 21:36
 # --------------------------------------------------------

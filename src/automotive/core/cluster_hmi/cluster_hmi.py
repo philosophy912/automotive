@@ -19,6 +19,15 @@ _start_service_list = "safety", "clusterNormal_service", "GaugeMagServer", "mcu_
 
 
 class ClusterHmi(SocketDevice):
+    """
+    基于nobo 8155实现的代码，
+
+    由于该板子支持telnet进行电脑与板子之间的连接，并且通过FTP的方式进行文件的下载，后续若关闭telnet接口可该用serial的方式进行连接
+
+    若关闭了ftp则可以将该测试从全自动测试变成半自动测试，即与红旗空调屏测试方式一致。
+
+    控制命令的部分需要研发实现相关的操作，后续若完成fdbus的操作可改为自行发送protobuffer数据实现。
+    """
 
     def __init__(self, board_path: str, local_folder: str, test_binary: str = None, cluster: str = None,
                  whud: str = None, service_list: tuple = _start_service_list):

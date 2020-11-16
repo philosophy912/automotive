@@ -1,4 +1,14 @@
 ## 版本更新说明
+**V2.7**
+
+- 修复了utils中filter_images过滤文件错误的问题
+- 新增了serial_utils工具，简化了serialport操作，并增加了登陆操作以及检查文件是否存在，拷贝文件等等
+- 增加了FTP下载文件时候的文件检查
+- 新增了ssh以及telnet中检查文件是否存在以及拷贝文件的检查
+- 删除了原始的电子邮件的模块更改为email_utils模块
+- 增加了部分类的说明文件
+- 修改了qnx_device操作从原来的SerialPort更改为SerialUtils，并修改了copy_images_to_usb操作的逻辑
+
 **V2.6**
 
 - 修复了message中motorola算法的错误

@@ -2,8 +2,8 @@
 # --------------------------------------------------------
 # Copyright (C), 2016-2020, China TSP, All rights reserved
 # --------------------------------------------------------
-# @Name:        adb.py.py
-# @Purpose:     todo
+# @Name:        adb.py
+# @Purpose:     ADB相关操作
 # @Author:      lizhe
 # @Created:     2020/7/22 - 16:18
 # --------------------------------------------------------
@@ -15,6 +15,9 @@ from time import sleep
 
 
 class ADB(ScreenShot):
+    """
+    Android ADB相关的命令python化， 对于实际的测试活动中，更多的使用了click/screen_shot两个操作
+    """
 
     @staticmethod
     def __execute(command: str) -> list:
@@ -40,37 +43,37 @@ class ADB(ScreenShot):
         """
         列出当前ADB连接的设备
         """
-        return self.__execute(f"adb devices")
+        return self.__execute("adb devices")
 
     def disconnect(self):
         """
         断开所有的ADB连接
         """
-        self.__execute(f"adb disconnect")
+        self.__execute("adb disconnect")
 
     def start_server(self):
         """
         启动ADB服务
         """
-        self.__execute(f"adb start-server")
+        self.__execute("adb start-server")
 
     def kill_server(self):
         """
         杀掉ADB服务
         """
-        self.__execute(f"adb kill-server")
+        self.__execute("adb kill-server")
 
     def version(self) -> list:
         """
         查看ADB的版本号
         """
-        return self.__execute(f"adb version")
+        return self.__execute("adb version")
 
     def root(self):
         """
         ADB ROOT
         """
-        self.__execute(f"adb root")
+        self.__execute("adb root")
 
     def push(self, local: str, remote: str, device_id: str = None):
         """
@@ -186,6 +189,9 @@ class ADB(ScreenShot):
             sleep(0.1)
 
     def screen_shot_area(self, position: tuple, image_name: str, count: int, interval_time: float, display: int = None):
+        """
+        区域截图操作, 由于ADB不支持该操作，所以为空实现
+        """
         raise RuntimeError("not support this function")
 
     def is_keyboard_show(self, device_id: str = None) -> bool:
@@ -237,7 +243,7 @@ class ADB(ScreenShot):
         :param device_id: 设备编号
         """
         if not local_apk.endswith("apk"):
-            raise ValueError(f"local_apk not endswith apk")
+            raise ValueError(f"local_apk[{local_apk}] not endswith apk")
         cmd = f"install {local_apk}"
         return self.__adb_command(cmd, device_id)
 

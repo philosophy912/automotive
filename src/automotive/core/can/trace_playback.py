@@ -3,7 +3,7 @@
 # Copyright (C), 2016-2020, China TSP, All rights reserved
 # --------------------------------------------------------
 # @Name:        trace_service.py
-# @Purpose:     todo
+# @Purpose:     Can trace的回访类，未经过严格测试。
 # @Author:      lizhe
 # @Created:     2020/6/29 - 11:19
 # --------------------------------------------------------
@@ -88,9 +88,12 @@ class TracePlayback(object):
         :return: trace 列表
         """
         module_name, class_name = trace_type.value
+        # 动态导入模块
         module = importlib.import_module(f"automotive.core.can.trace_reader.{module_name}")
+        # 实例化模块的类名
         reader = getattr(module, class_name)()
         logger.info(f"read all messages in trace file[{file}]")
+        # 由于统一了接口，调用统一的方法就可以实现读取的功能
         traces = reader.read(file)
         logger.info(f"done read work, it will send {len(traces)} messages")
         return self.__handle_traces(traces)

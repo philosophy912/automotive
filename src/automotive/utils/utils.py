@@ -21,6 +21,21 @@ from automotive.logger import logger
 from automotive.core import Singleton
 
 
+class SystemTypeEnum(Enum):
+    """
+    系统类型
+    """
+    QNX = "qnx"
+    LINUX = "linux"
+
+    @staticmethod
+    def from_value(value: str):
+        for key, item in SystemTypeEnum.__members__.items():
+            if value.upper() == item.value.upper():
+                return item
+        raise ValueError(f"{value} can not be found in {SystemTypeEnum.__name__}")
+
+
 class PinyinEnum(Enum):
     """
     枚举类，仅仅列出了拼音的类型
@@ -350,7 +365,10 @@ class Utils(metaclass=Singleton):
         :return: 筛选出来的图片集合
         """
         # 在screen_shot_path路径中查找
-        images = list(map(lambda x: folder + "\\" + x, os.listdir(folder)))
-        filter_images = list(filter(lambda x: x.startswith(x.split(".")[0]) and x.endswith(x.split(".")[1]), images))
+        folder_files = os.listdir(folder)
+        if "__init__.py" in folder_files:
+            folder_files.remove("__init__.py")
+        images = list(filter(lambda x: x.split("__")[0] == image_name, folder_files))
+        filter_images = list(map(lambda x: "\\".join([folder, x]), images))
         logger.debug(f"{folder} contain {len(filter_images)} {image_name} files")
         return filter_images

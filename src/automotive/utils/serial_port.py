@@ -2,7 +2,7 @@
 # --------------------------------------------------------
 # Copyright (C), 2016-2020, China TSP, All rights reserved
 # --------------------------------------------------------
-# @Name:        CRT
+# @Name:        serial_port.py
 # @Purpose:     串口操作
 # @Author:      liluo
 # @Created:     2019-05-09
@@ -10,12 +10,13 @@
 import os
 from concurrent.futures.thread import ThreadPoolExecutor
 
+import chardet
 import serial
 import serial.tools.list_ports as list_ports
-import chardet
 from time import sleep
 from automotive.logger import logger
 from ..utils import Utils
+import copy
 
 
 class SerialPort(object):
@@ -31,6 +32,10 @@ class SerialPort(object):
         self._flag = False
         # 线程池句柄
         self._thread_pool = ThreadPoolExecutor(max_workers=1)
+        # 读取的数据来源标识符，当False的时候表示从缓存中读取，此时没有写入文件， True的时候则从contents中读取，表示写入了文件
+        self._read_flag = False
+        # 读到的数据
+        self._contents = []
 
     def check_status(func):
         """
@@ -59,7 +64,7 @@ class SerialPort(object):
         encoding = encode['encoding']
         return encoding if encoding else "utf-8"
 
-    def __get_line(self, line: bytes, type_: bool = None) -> str:
+    def __bytes_to_string(self, line: bytes, type_: bool = None) -> str:
         """
         获取一行数据
 
@@ -73,6 +78,24 @@ class SerialPort(object):
             return line if type_ else line.decode("utf-8")
         else:
             return line.decode(self.__detect_codec(line))
+
+    @check_status
+    def __read_line(self, type_: bool = None) -> str:
+        """
+        读取串口输出，按行读取，调用一次读取一行
+
+        :param type_:
+
+            True:不进行解码操作，直接返回
+
+            False:以utf-8的方式进行解码并返回
+
+            None: 自动检测编码格式，并自动解码后返回
+
+        :return: 读取到的串口输出string
+        """
+        line = self._serial.readline()
+        return self.__bytes_to_string(line, type_)
 
     def __write_log_file(self, log_folder: str):
         """
@@ -94,14 +117,17 @@ class SerialPort(object):
                 log_file = f"{self._port}_{Utils().get_time_as_string(fmt=file_fmt)}.log"
             else:
                 raise RuntimeError(f"{log_folder} is not exist, please check it")
+        self._read_flag = True
         with open(log_file, "a+", encoding="utf-8") as f:
             count = 1
             while self._flag:
                 current_time = Utils.get_time_as_string(fmt=content_fmt)
-                content = self.read_line()
+                content = self.__read_line()
                 if content != "":
                     content = content.replace("\r\n", "").replace("\r", "")
+                    self._contents.append(content)
                     line = f"[{current_time}] {content} \r"
+                    logger.debug(f"line = {line}")
                     f.write(line)
                 # 100行内容写入一次
                 if count % 100 == 0:
@@ -163,6 +189,9 @@ class SerialPort(object):
             self._serial.close()
             self._port = None
             self._serial = None
+            self._read_flag = False
+            # 清除数据
+            self._contents.clear()
 
     @staticmethod
     def check_port(port: str) -> bool:
@@ -250,8 +279,13 @@ class SerialPort(object):
 
         :return: 读取到的串口输出string
         """
-        line = self._serial.readline()
-        return self.__get_line(line, type_)
+        if self._read_flag:
+            if len(self._contents) > 0:
+                content = self._contents[0]
+                self._contents.pop(0)
+                return content
+        else:
+            return self.__read_line()
 
     @check_status
     def read_lines(self, type_: bool = None) -> list:
@@ -268,11 +302,16 @@ class SerialPort(object):
 
         :return: 读取到的串口输出list
         """
-        lines = self._serial.readlines()
-        result = []
-        for line in lines:
-            result.append(self.__get_line(line, type_))
-        return result
+        if self._read_flag:
+            contents = copy.deepcopy(self._contents)
+            self._contents.clear()
+            return contents
+        else:
+            lines = self._serial.readlines()
+            result = []
+            for line in lines:
+                result.append(self.__bytes_to_string(line, type_))
+            return result
 
     @check_status
     def read_all(self, type_: bool = None) -> str:
@@ -289,8 +328,16 @@ class SerialPort(object):
 
         :return: 读取到的串口输出string
         """
-        all_lines = self._serial.readall()
-        return self.__get_line(all_lines, type_)
+        if self._read_flag:
+            logger.debug(f"file mode, self._contents length = {len(self._contents)}")
+            contents = copy.deepcopy(self._contents)
+            logger.debug(f"contents length = {len(contents)}")
+            self._contents.clear()
+            return " ".join(contents)
+        else:
+            logger.info(f"serial mode")
+            all_lines = self._serial.read_all()
+            return self.__bytes_to_string(all_lines, type_)
 
     @check_status
     def in_waiting(self) -> int:
@@ -354,7 +401,7 @@ class SerialPort(object):
         self._serial.reset_output_buffer()
 
     @check_status
-    def set_buffer(self, rx_size: int = 4096, tx_size: int = 4096):
+    def set_buffer(self, rx_size: int = 16384, tx_size: int = 16384):
         """
         设置串口缓存大小，默认4096
 

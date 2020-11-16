@@ -3,7 +3,7 @@
 # Copyright (C), 2016-2020, China TSP, All rights reserved
 # --------------------------------------------------------
 # @Name:        keycode.py
-# @Purpose:     todo
+# @Purpose:     键盘类型
 # @Author:      lizhe
 # @Created:     2020/7/24 - 9:41
 # --------------------------------------------------------

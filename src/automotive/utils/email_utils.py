@@ -32,19 +32,30 @@ class EmailType(Enum):
 
 
 class EmailUtils(object):
+    """
+    电子邮件类，实现电子邮件的发送(已完成)与接收(未完成)功能
+    """
 
     def __init__(self, email_address: str, password: str, email_type: EmailType = EmailType.SMTP,
                  smtp_address: str = None, smtp_port: int = 25, pop3_address: str = None, pop3_port: str = 110,
                  is_tsl: bool = False):
         """
         初始化配置参数
+
         :param email_address: 邮箱地址
+
         :param password:  邮箱密码
+
         :param email_type:  邮箱类型，支持SMTP和
+
         :param smtp_address: SMTP的地址
+
         :param smtp_port: smtp端口
+
         :param pop3_address: pop3的地址
+
         :param pop3_port: pop3的端口
+
         :param is_tsl: 是否tsl加密
         """
         self.__type = email_type

@@ -3,7 +3,7 @@
 # Copyright (C), 2016-2020, China TSP, All rights reserved
 # --------------------------------------------------------
 # @Name:        performance.py
-# @Purpose:     todo
+# @Purpose:     KPI相关测试
 # @Author:      lizhe
 # @Created:     2020/7/1 - 15:48
 # --------------------------------------------------------

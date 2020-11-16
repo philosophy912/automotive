@@ -3,7 +3,7 @@
 # Copyright (C), 2016-2020, China TSP, All rights reserved
 # --------------------------------------------------------
 # @Name:        android_service.py
-# @Purpose:     todo
+# @Purpose:     Android 测试服务
 # @Author:      lizhe
 # @Created:     2020/8/5 - 14:45
 # --------------------------------------------------------
@@ -49,6 +49,37 @@ class ToolTypeEnum(Enum):
 
 
 class AndroidService(metaclass=Singleton):
+    """
+    Android 测试服务，实现主要的测试方式，同时兼容APPIUM和Uiautomator2两种框架，
+
+    前者当前最流行的开源框架https://github.com/appium/appium， 后者则为python的自动化测试框架https://github.com/openatx/uiautomator2
+
+    主要实现功能如:
+
+    1、获取元素及元素列表
+
+    2、获取子元素及子元素列表
+
+    3、获取元素的所有属性
+
+    4、获取元素的指定属性
+
+    5、滑动可滑动空间并查找指定的文本，并可以进行相关的操作
+
+    6、滑动空间滑动到头
+
+    7、获取控件的相关位置属性，如起始点、长宽信息
+
+    8、元素操作，如点击、双击、长按、拖动
+
+    9、获取元素的文本信息
+
+    10、文本框的输入和清除
+
+    11、指定元素是否存在
+
+    12、获取页面Activity的XML结构
+    """
     _DEFAULT_TIME_OUT = 3
 
     def __init__(self, tool_type: ToolTypeEnum):

@@ -307,7 +307,11 @@ def get_message(messages: (str, list), encoding: str = "utf-8") -> tuple:
 
 class Message(object):
     """
-        CAN上传输消息的基类。
+    CAN总线定义的Message，集合了CAN box发送的相关内容， 如msg_send_type/external_flag等
+
+    CAN 矩阵表/DBC定义的相关数据，如signals等
+
+    在设计signals的时候，由于signal的名字是唯一标识符，所以设计成了字典类型方便查找
     """
 
     def __init__(self):

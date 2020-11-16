@@ -50,7 +50,9 @@ def __get_can_box_device() -> CanBoxDevice:
 def get_can_bus(can_box_device: CanBoxDevice) -> tuple:
     """
     获取Can bus实例，并返回CAN设备的类型
-    :param can_box_device:
+
+    :param can_box_device: can box的设备类型
+
     :return: CAN设备的类型， Can bus实例
     """
     if not can_box_device:
@@ -59,6 +61,9 @@ def get_can_bus(can_box_device: CanBoxDevice) -> tuple:
 
 
 class BaseCan(metaclass=Singleton):
+    """
+    CAN设备操作的父类，实现CAN的最基本的操作， 如打开、关闭设备, 传输、接收CAN消息，停止传输CAN消息，查看CAN设备打开状态等
+    """
 
     def __init__(self, can_box_device: CanBoxDevice = None):
         self._can_box_device, self._can = get_can_bus(can_box_device)
@@ -128,11 +133,29 @@ class BaseCan(metaclass=Singleton):
 
 class CANService(BaseCan):
     """
-        CAN的服务类，主要用于CAN信号的发送，接收等操作。
+    CAN的服务类，主要用于CAN信号的发送，接收等操作。
 
-        参数can_box_device用于指定设备，默认为None，即会依次寻找PCan、Can分析仪以及UsbCan三个设备
+    参数can_box_device用于指定设备，默认为None，即会依次寻找PCan、Can分析仪以及UsbCan三个设备
 
-        也可以指定某个设备。
+    也可以指定某个设备。
+
+    该类可以传入相关的Message消息后，实现自动解析相关的信息计算出一个Message的8 byte的数据值，无需人工计算相关的值。
+
+    该类同时扩展了基础的CAN服务，实现了以下服务
+
+    1、发送message(周期/事件/周期事件)
+
+    2、发送设置好的8 byte数据， 或者根据设置的signal来发送数据
+
+    3、接收message数据，或者接收message的signal数据
+
+    4、判断message是否丢失、判断CAN总线是否丢失、判断signal是否有变化
+
+    5、获取/清除CAN总线上收到的数据、分析CAN消息上的数据
+
+    6、根据message(即矩阵表)随机发送can上消息
+
+    PS: message矩阵表为解析DBC文件生成（该工具为另外一个工具)
 
     """
 

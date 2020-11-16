@@ -7,7 +7,10 @@
 # @Author:      lizhe
 # @Created:     2020/10/22 - 22:19
 # --------------------------------------------------------
+import time
 from telnetlib import Telnet
+
+from .utils import SystemTypeEnum
 from automotive.logger.logger import logger
 from time import sleep
 
@@ -16,6 +19,7 @@ class TelnetUtils(object):
 
     def __init__(self):
         self.__tn = Telnet()
+        self.__ip_address = None
         self.__flag = False
 
     def check_status(func):
@@ -79,7 +83,62 @@ class TelnetUtils(object):
         """
         return self.__decode(self.__tn.read_very_eager())
 
-    def connect(self, ip_address: str, username: str, password: str = "", login_str: str = b"login: ",
+    @check_status
+    def file_exist(self, file: str, check_times: int = 3, interval: float = 0.5) -> bool:
+        """
+        检查文件是否存在
+        :param interval: 检查间隔时间
+        :param check_times: 检查次数
+        :param file: 远程服务器上的文件
+        :return: 是否存在
+        """
+        self.read()
+        for i in range(check_times):
+            self.write(f"ls -l {file}")
+            result = self.read()
+            logger.debug(f"read content is {result}")
+            if "No such file or directory" not in result:
+                logger.debug(f"{file} is exist")
+                return True
+            else:
+                sleep(interval)
+        logger.debug(f"{file} is not exist")
+        return False
+
+    @check_status
+    def copy_file(self, remote_folder: str, target_folder: str, system_type: SystemTypeEnum, timeout: float = 300):
+        """
+        拷贝远程文件夹下所有的文件到目标文件夹下, 由于ssh是阻塞式，所以无需等待
+
+        :param timeout:
+        :param system_type:
+        :param remote_folder: 远程文件夹
+
+        :param target_folder: 拷贝的文件夹
+        """
+        flag = True
+        # 清空之前的数据
+        result = self.read()
+        # 记录运行时间
+        start_time = time.time()
+        # 前台拷贝
+        copy_command = f"cp -rv {remote_folder}/* {target_folder}"
+        self.write(f"{copy_command} &")
+        command = f"ps -ef | grep cp" if system_type == SystemTypeEnum.LINUX else f"pidin | grep cp"
+        while flag:
+            self.write(command)
+            result = self.read()
+            logger.debug(f"result is {result}")
+            if "Done" in result and copy_command in result:
+                logger.info(f"copy is finished")
+                flag = False
+            current_time = time.time()
+            if current_time - start_time > timeout * 1000:
+                logger.info(f"copy is continue {timeout} second, but not finished")
+                flag = False
+            sleep(1)
+
+    def connect(self, ip_address: str, username: str, password: str, login_str: bytes = b"login: ",
                 timeout: int = 10, port: int = 23):
         """
         连接telnet客户端
