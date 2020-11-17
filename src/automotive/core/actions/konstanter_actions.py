@@ -94,20 +94,20 @@ class KonstanterActions(PowerActions):
 
     def change_voltage(self, start: float, end: float, step: float, interval: float = 0.5, current: float = 10):
         """
-            调节电压
+        调节电压
 
-            :param start: 开始电压
+        :param start: 开始电压
 
-            :param end: 结束电压
+        :param end: 结束电压
 
-            :param step: 调整的步长
+        :param step: 调整的步长
 
-            :param interval: 间隔时间，默认0.5秒
+        :param interval: 间隔时间，默认0.5秒
 
-            :param current: 电流值， 默认10A
+        :param current: 电流值， 默认10A
 
-            :return: 只针对konstanter实际有效
-            """
+        :return: 只针对konstanter实际有效
+        """
         if not (0 <= start <= 20 or 0 <= end <= 20):
             raise RuntimeError(f"电源只支持0-20V电压，当前要设置的起[{start}]始[{end}]电压为超过了范围")
         if start == end:

@@ -10,6 +10,7 @@
 # --------------------------------------------------------
 import time
 import random
+import copy
 from time import sleep
 from automotive.logger.logger import logger
 from .peakcan import PCanBus
@@ -164,6 +165,8 @@ class CANService(BaseCan):
         super().__init__(can_box_device)
         logger.debug(f"read message from file {messages}")
         self.__messages, self.__name_messages = get_message(messages, encoding=encoding)
+        # 备份message, 可以作为初始值发送
+        self.__backup_messages = copy.deepcopy(self.__messages)
         # 用于记录当前栈中msg的最后一个数据的时间点
         self.__last_msg_time_in_stack = dict()
 
@@ -514,3 +517,23 @@ class CANService(BaseCan):
             actual_value = self.receive_can_message_signal_value(msg_id, sig_name)
             logger.info(f"current value is {actual_value}, expect value is {expect_value}")
             return expect_value == actual_value
+
+    def send_messages(self, node_name: str):
+        """
+        发送除了node_name之外的所有信号，该方法用于发送出测试对象之外的所有信号
+
+        :param node_name: 测试对象节点名称
+        """
+        for msg_id, message in self.messages.items():
+            if message.sender != node_name:
+                self.send_can_message(message)
+
+    def send_default_messages(self, node_name: str):
+        """
+        发送除了node_name之外的所有信号的默认数据，该方法用于发送出测试对象之外的所有信号
+
+        :param node_name: 测试对象节点名称
+        """
+        for msg_id, message in self.__backup_messages.items():
+            if message.sender != node_name:
+                self.send_can_message(message)

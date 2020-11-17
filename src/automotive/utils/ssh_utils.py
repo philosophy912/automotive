@@ -60,12 +60,9 @@ class SshUtils(object):
             self._ssh.connect(hostname=ipaddress, port=port, username=username, password=password,
                               banner_timeout=timeout, auth_timeout=timeout)
             self._is_connect = True
-        except AuthenticationException as e:
-            logger.error(f"username[{username}] or password[******] wrong, please check it, error info is {e}")
+        except Exception as e:
             self._is_connect = False
-        except NoValidConnectionsError as e:
-            logger.error(f"port[{port}] or host[{ipaddress}] is wrong, please check it, error info is {e}")
-            self._is_connect = False
+            raise RuntimeError(f"telnet connect {ipaddress} with username[{username}] failed, error info is [{e}]")
 
     def disconnect(self):
         """

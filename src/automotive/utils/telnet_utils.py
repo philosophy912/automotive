@@ -70,7 +70,7 @@ class TelnetUtils(object):
 
         :param content: 内容
         """
-        logger.debug(f"send command {content}")
+        logger.debug(f"send command [{content}]")
         self.__tn.write(self.__codec(content))
         sleep(interval)
 
@@ -118,7 +118,7 @@ class TelnetUtils(object):
         """
         flag = True
         # 清空之前的数据
-        result = self.read()
+        self.read()
         # 记录运行时间
         start_time = time.time()
         # 前台拷贝
@@ -127,9 +127,9 @@ class TelnetUtils(object):
         command = f"ps -ef | grep cp" if system_type == SystemTypeEnum.LINUX else f"pidin | grep cp"
         while flag:
             self.write(command)
-            result = self.read()
-            logger.debug(f"result is {result}")
-            if "Done" in result and copy_command in result:
+            response = self.read()
+            logger.debug(f"response is {response}")
+            if "Done" in response and copy_command in response:
                 logger.info(f"copy is finished")
                 flag = False
             current_time = time.time()
@@ -162,8 +162,9 @@ class TelnetUtils(object):
                 self.__tn.read_until(login_str, timeout)
                 self.write(username)
                 self.write(password)
-            except ConnectionRefusedError:
+            except Exception as e:
                 self.__flag = False
+                raise RuntimeError(f"telnet connect {ip_address} with username[{username}] failed. error is [{e}]")
 
     def disconnect(self):
         """

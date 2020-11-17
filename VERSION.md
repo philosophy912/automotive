@@ -1,4 +1,10 @@
 ## 版本更新说明
+**V2.8**
+
+- 增加了CANService中的send_messages和send_default_messages方法
+- 增加了telnet和ssh连接不成功跑异常的功能
+- 根据PEP8的部分规范修改了代码注释
+
 **V2.7**
 
 - 修复了utils中filter_images过滤文件错误的问题

@@ -174,7 +174,7 @@ class SerialPort(object):
                                          stopbits=stop_bits, timeout=timeout, xonxoff=xon_xoff, rtscts=rts_cts,
                                          write_timeout=write_timeout, dsrdtr=dsr_dtr)
         else:
-            raise RuntimeError(f"connect failed")
+            raise RuntimeError(f"port[{port}] connect failed")
         sleep(1)
         self._port = port
         if log_folder:
