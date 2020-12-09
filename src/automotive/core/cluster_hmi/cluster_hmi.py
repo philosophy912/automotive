@@ -98,12 +98,7 @@ class ClusterHmi(SocketDevice):
                 self.__telnet.write(f"slay {service}")
             # 需要启动
             self.__telnet.write(f"./CmdLayerMcuSvr l a")
-        sleep(5)
         self.__telnet.write(f"cd {self.__board_path}")
-        self.__telnet.write(f"cd rm -r *.jpg")
-        sleep(5)
-        self.__telnet.write(f"cd rm -r *.bmp")
-        sleep(5)
 
     def disconnect(self):
         self.__ftp.disconnect()

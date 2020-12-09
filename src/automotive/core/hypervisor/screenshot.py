@@ -103,6 +103,7 @@ class HypervisorScreenShot(ScreenShot):
         同步qnx和android共享分区数据
         """
         commands = [f"shell \"echo 3 > /proc/sys/vm/drop_caches\"",
+                    f"shell htalk shell 'sync'",
                     f"shell sync"]
         for command in commands:
             self.__adb_command(command)

@@ -148,7 +148,7 @@ class UiAutomator2Client(BaseAndroid):
             if key.lower() == ElementAttributeEnum.TEXT.value:
                 attributes[item] = element.get_text()
             else:
-                logger.warning(f"due to no attribute in uiautomator2 so default value is True")
+                logger.debug(f"due to no attribute in uiautomator2 so default value is True")
                 attributes[item] = True
         return attributes
 

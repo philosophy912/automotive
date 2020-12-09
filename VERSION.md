@@ -1,4 +1,11 @@
 ## 版本更新说明
+
+**V2.9**
+
+- 修改uiautomator2_client的warning变为debug
+- 删掉了cluster_hmi中的删除图片的操作以提高执行效率
+- 增加了screenshot中hypervisor的qnx部分的sync动作
+
 **V2.8**
 
 - 增加了CANService中的send_messages和send_default_messages方法
