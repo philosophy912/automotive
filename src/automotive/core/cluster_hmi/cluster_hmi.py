@@ -13,6 +13,7 @@ from .cluster_hmi_screenshot import ClusterHmiScreenshot
 from automotive.utils.ftp_utils import FtpUtils
 from automotive.utils.telnet_utils import TelnetUtils
 from automotive.logger.logger import logger
+import time
 
 _start_service_list = "safety", "clusterNormal_service", "GaugeMagServer", "mcu_ipc_service", "layer-mgr", \
                       "can_service", "whud", "nobo_whud", "diagnose_eol_service"
@@ -117,8 +118,43 @@ class ClusterHmi(SocketDevice):
     def read(self) -> str:
         return self.__telnet.read()
 
+
     def screen_shot(self, image_name: str, count: int, interval_time: float, display: int = None) -> list:
-        return self.__screenshot.screen_shot(image_name, count, interval_time, display)
+        """
+        """
+        # 10张图片
+        images = self.__screenshot.screen_shot(image_name, count, interval_time, display)
+        start_time = time.time()
+        file_exist_flag = False
+        result = True
+
+        while result:
+            # 超时退出机制，避免死循环
+            current_time = time.time()
+            if current_time - start_time > 5 * 60:
+                result = False
+            if self.__check_screenshot_success(images):
+                result = False
+                file_exist_flag = True
+        if not file_exist_flag:
+            raise RuntimeError("screenshot failed, please check image in borad or telent command")
+        else:
+            return images
+
+    def __check_screenshot_success(self, images:str) -> bool:
+        """
+        只检查文件是否在板子上存在
+        """
+        count = 0
+        # 遍历images，并检查在板子上是否存在截图文件
+        for image in images:
+            # 板子上的完整路径
+            image = f"/{self.__screenshot.path}/{image}"
+            if self.__telnet.file_exist(file=image, check_times=10, interval=1):
+                # 找到了文件
+                count += 1
+        # 判断条件是文件截取数量大于0，文件截取都在板子上找到
+        return len(image) > 0 and len(images) == count
 
     def download_image(self, file_name: str) -> str:
         return self.__ftp.download_file(file_name, self.__local_folder)
