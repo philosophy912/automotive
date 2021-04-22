@@ -20,6 +20,9 @@ from functools import wraps
 如需要可以将该类变成私有类
 """
 
+# 位长度
+_bit_length = 8
+
 
 def __completion_byte(byte_value: str, size: int = 8) -> str:
     """
@@ -32,7 +35,7 @@ def __completion_byte(byte_value: str, size: int = 8) -> str:
     return byte_value
 
 
-def __get_position(start_bit: int) -> tuple:
+def __get_position(start_bit: int, byte_length: int = 8) -> tuple:
     """
     获取start_bit在整个8Byte中占据的位置以及在1 Byte中的位置
 
@@ -43,9 +46,10 @@ def __get_position(start_bit: int) -> tuple:
     # 根据start_bit以及bin_value_length计算占据的byte有几个
     # 计算start_bit是在第几个byte中，以及在byte中占据第几个bit
     # 获取开始点在整个8byte数据的位置
+    logger.trace(f"start_bit = [{start_bit}] && byte_length = [{byte_length}]")
     byte_index = -1
-    for i in range(8):
-        if 8 * i <= start_bit <= 8 * i + 7:
+    for i in range(byte_length):
+        if _bit_length * i <= start_bit <= _bit_length * i + 7:
             byte_index = i
             break
     # 获取在单独这个byte中所占据的位置
@@ -70,27 +74,27 @@ def __split_bytes(value: str, length: int, bit_index: int, byte_type: bool) -> l
             # 把剩下的拿出来
             value = value[:-bit_index - 1]
             logger.trace(f"rest value is [{value}]")
-            while len(value) > 8:
+            while len(value) > _bit_length:
                 # 当剩余数据长度大于8表示还有一个byte， 先把数据加入列表中
-                values.append(value[-8:])
+                values.append(value[-_bit_length:])
                 # 然后截取剩余的部分
-                value = value[:-8]
+                value = value[:-_bit_length]
             # 最后把剩余的部分加到列表中
             values.append(value)
         else:
             # 只有一个byte
             values.append(value)
     else:
-        if length > (8 - bit_index):
-            values.append(value[:8 - bit_index])
+        if length > (_bit_length - bit_index):
+            values.append(value[:_bit_length - bit_index])
             # 把剩下的拿出来
-            value = value[8 - bit_index:]
+            value = value[_bit_length - bit_index:]
             logger.trace(f"rest value is [{value}]")
-            while len(value) > 8:
+            while len(value) > _bit_length:
                 # 当剩余数据长度大于8表示还有一个byte， 先把数据加入列表中
-                values.append(value[:8])
+                values.append(value[:_bit_length])
                 # 然后截取剩余的部分
-                value = value[8:]
+                value = value[_bit_length:]
             # 最后把剩余的部分加到列表中
             values.append(value)
         else:
@@ -116,7 +120,7 @@ def check_value(value: (int, float), min_: (int, float), max_: (int, float)) -> 
     return min_ <= value <= max_
 
 
-def set_data(data: list, start_bit: int, byte_type: bool, value: int, bit_length: int):
+def set_data(data: list, start_bit: int, byte_type: bool, value: int, bit_length: int, byte_length: int = 8):
     """
     用于设置每个Signal后，计算出8Byte的值
 
@@ -131,10 +135,12 @@ def set_data(data: list, start_bit: int, byte_type: bool, value: int, bit_length
     :param start_bit: 起始位
 
     :param data: 总线8Byte数据
+
+    :param byte_length: 字段长度，默认值为8，CAN FD可调整
     """
     logger.trace(f"data = {list(map(lambda x: hex(x), data))}), start_bit = [{start_bit}], "
                  f"byte_type = [{byte_type}], value = [{value}], bit_length = [{bit_length}]")
-    byte_index, bit_index = __get_position(start_bit)
+    byte_index, bit_index = __get_position(start_bit, byte_length)
     # True表示Intel， False表示Motorola MSB模式, DBC解析出来只支持MSB模式, 不支持LSB模式，
     # 对于LSB来说，在变成DBC的时候就处理了start bit
     # 根据位数来算， 其中把value转换成了二进制的字符串
@@ -163,7 +169,7 @@ def set_data(data: list, start_bit: int, byte_type: bool, value: int, bit_length
         elif index == len(holder_bytes) - 1:
             if byte_type:
                 logger.trace(f"intel mode")
-                byte_value = byte_value[:8 - length] + byte
+                byte_value = byte_value[:_bit_length - length] + byte
             else:
                 logger.trace("motorola mode")
                 byte_value = byte + byte_value[length:]
@@ -178,7 +184,7 @@ def set_data(data: list, start_bit: int, byte_type: bool, value: int, bit_length
     logger.trace(f"parser data is = {list(map(lambda x: hex(x), data))}")
 
 
-def get_data(data: list, start_bit: int, byte_type: bool, bit_length: int) -> int:
+def get_data(data: list, start_bit: int, byte_type: bool, bit_length: int, byte_length: int = 8) -> int:
     """
     根据data计算出来每个signal的值
 
@@ -192,11 +198,13 @@ def get_data(data: list, start_bit: int, byte_type: bool, bit_length: int) -> in
 
     :param data: 8 byte数据
 
+    :param byte_length: 字段长度，默认值为8，CAN FD可调整
+
     :return 查询到的值
     """
     logger.trace(f"data = {list(map(lambda x: hex(x), data))}), start_bit = [{start_bit}], "
                  f"byte_type = [{byte_type}], bit_length = [{bit_length}]")
-    byte_index, bit_index = __get_position(start_bit)
+    byte_index, bit_index = __get_position(start_bit, byte_length)
     byte_value = __completion_byte(bin(data[byte_index])[2:])
     logger.trace(f"the [{byte_index}] value is [{byte_value}]")
     if byte_type:
@@ -206,13 +214,13 @@ def get_data(data: list, start_bit: int, byte_type: bool, bit_length: int) -> in
             logger.trace(f"intel first signal_value = {signal_value}")
             rest_length = bit_length - bit_index - 1
             logger.trace(f"intel rest length = {rest_length}")
-            while rest_length > 8:
+            while rest_length > _bit_length:
                 byte_index += 1
                 byte_value = __completion_byte(bin(data[byte_index])[2:])
                 logger.trace(f"the [{byte_index}] value is [{byte_value}]")
-                signal_value = byte_value[:8] + signal_value
+                signal_value = byte_value[:_bit_length] + signal_value
                 logger.trace(f"intel middle signal_value = {signal_value}")
-                rest_length = rest_length - 8
+                rest_length = rest_length - _bit_length
             # 最后一个value
             byte_index += 1
             byte_value = __completion_byte(bin(data[byte_index])[2:])
@@ -225,18 +233,18 @@ def get_data(data: list, start_bit: int, byte_type: bool, bit_length: int) -> in
             logger.trace(f"only one byte value = {signal_value}")
     else:
         logger.trace(f"motorola mode")
-        if bit_length > (8 - bit_index):
+        if bit_length > (_bit_length - bit_index):
             signal_value = byte_value[bit_index:]
             logger.trace(f"motorola first signal_value = {signal_value}")
-            rest_length = bit_length - (8 - bit_index)
+            rest_length = bit_length - (_bit_length - bit_index)
             logger.trace(f"rest length = {rest_length}")
-            while rest_length > 8:
+            while rest_length > _bit_length:
                 byte_index += 1
                 byte_value = __completion_byte(bin(data[byte_index])[2:])
                 logger.trace(f"the [{byte_index}] value is [{byte_value}]")
-                signal_value = signal_value + byte_value[:8]
+                signal_value = signal_value + byte_value[:_bit_length]
                 logger.trace(f"motorola middle signal_value = {signal_value}")
-                rest_length = rest_length - 8
+                rest_length = rest_length - _bit_length
             # 最后一个value
             byte_index += 1
             byte_value = __completion_byte(bin(data[byte_index])[2:])
@@ -320,9 +328,9 @@ class Message(object):
         # 信号发送的周期
         self.cycle_time = 0
         # 信号数据长度
-        self.data_length = 8
+        self.data_length = None
         # 信号数据
-        self.data = [0, 0, 0, 0, 0, 0, 0, 0]
+        self.data = []
         # 信号停止标志
         self.stop_flag = False
         # 信号的名字
@@ -353,10 +361,8 @@ class Message(object):
         self.diag_response = False
         # diag state
         self.diag_state = False
-        # can fd
-        self.is_can_fd = False
         # 是否标准can
-        self.is_standard_can = True
+        self.is_standard_can = None
         #################################################################################
         # USB MESSAGE独特的部分
         self.usb_can_send_type = 1
@@ -423,14 +429,15 @@ class Message(object):
             for name, signal in self.signals.items():
                 logger.trace(f"signal name = {signal.signal_name}")
                 # 根据原来的数据message_data，替换某一部分的内容
-                set_data(self.data, signal.start_bit, signal.byte_type, signal.value, signal.bit_length)
+                set_data(self.data, signal.start_bit, signal.byte_type, signal.value, signal.bit_length,
+                         self.data_length)
             logger.info(f"msg id {hex(self.msg_id)} and data is {list(map(lambda x: hex(x), self.data))}")
         # 收到数据
         else:
             logger.debug("receive message")
             for name, signal in self.signals.items():
                 logger.trace(f"signal name = {signal.signal_name}")
-                value = get_data(self.data, signal.start_bit, signal.byte_type, signal.bit_length)
+                value = get_data(self.data, signal.start_bit, signal.byte_type, signal.bit_length, self.data_length)
                 logger.trace(f"value is {value}")
                 signal.value = value
 
@@ -445,6 +452,9 @@ class Message(object):
         self.msg_id = message["id"]
         self.msg_name = message["name"]
         self.data_length = message["length"]
+        # 根据data的长度来设置data的值
+        for i in range(self.data_length):
+            self.data.append(0)
         self.sender = message["sender"]
         #  特殊处理，如果不是Cycle/Event就是CE
         send_type = message["msg_send_type"]
@@ -458,7 +468,6 @@ class Message(object):
         self.diag_request = message["diag_request"]
         self.diag_response = message["diag_response"]
         self.diag_state = message["diag_state"]
-        self.is_can_fd = message["is_can_fd"]
         self.is_standard_can = message["is_standard_can"]
         try:
             self.cycle_time = message["msg_cycle_time"]

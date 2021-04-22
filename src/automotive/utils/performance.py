@@ -7,6 +7,7 @@
 # @Author:      lizhe
 # @Created:     2020/7/1 - 15:48
 # --------------------------------------------------------
+import os
 import re
 import subprocess as sp
 import chardet
@@ -266,6 +267,14 @@ class Performance(object):
         percent_average = round(uses_average / total_average, 4)
         return cpu_average, percent_average, uses_average, total_average
 
+    @staticmethod
+    def __filter_files(folder: str, extend: str) -> list:
+        """
+        过滤文件
+        """
+        files = list(filter(lambda x: x.endswith(extend), os.listdir(folder)))
+        return list(map(lambda x: fr"{folder}/{x}", files))
+
     def get_qnx_performance(self, port: str, count: int, need_test_gpu: bool = True) -> tuple:
         """
         获取QNX的相关性能
@@ -296,6 +305,27 @@ class Performance(object):
         else:
             return f"CPU占用率{cpu_average}%", f"内存占用率{percent_average * 100}%", f"内存使用量{uses_average}M", \
                    f"内存总量{total_average}M"
+
+    def get_qnx_performance_by_file(self, folder: str, extend: str) -> tuple:
+        """
+        获取qnx的相关性能（通过文件）
+
+        :param extend: 扩展名
+        :param folder: 导出的文件夹
+
+        :return:  CPU占用率，内存占用率，内存使用量，内存总量
+        """
+        contents = []
+        qnx_files = self.__filter_files(folder, extend)
+        # 从每一个文件中读取内容
+        for qnx in qnx_files:
+            with open(qnx, "r") as f:
+                content = "".join(f.readlines())
+                contents.append(content)
+        cpu_average = self.__parse_cpu(contents)
+        total_average, uses_average, percent_average = self.__parse_memory(contents)
+        return f"CPU占用率{cpu_average}%", f"内存占用率{percent_average * 100}%", f"内存使用量{uses_average}M", \
+               f"内存总量{total_average}M"
 
     def get_android_performance(self, count: int) -> tuple:
         """

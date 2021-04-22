@@ -1,5 +1,11 @@
 ## 版本更新说明
 
+ **V3.0**
+
+- 容错了诺博项目的测试截图(clusterHMI)
+- 增加了python解析DBC的库
+- 增加了message的CANFD的解析
+
 **V2.9**
 
 - 修改uiautomator2_client的warning变为debug

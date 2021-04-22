@@ -1,6 +1,6 @@
 from .singleton import Singleton
 from .deprecated import deprecated
-from .can import CANService, TraceType, TracePlayback, CanBoxDevice, Message, Signal
+from .can import CANService, TraceType, TracePlayback, CanBoxDevice, Message, Signal, DbcParser
 from .actions import It6831Actions, KonstanterActions, RelayActions, SerialActions, CanActions, CameraActions, \
     KonstanterControl, IT6831, Curve
 from .hypervisor import HypervisorScreenShot
@@ -14,7 +14,7 @@ from .cluster_hmi import ClusterHmiScreenshot, ClusterHmi
 __all__ = [
     "Singleton",
     "deprecated",
-    "CANService", "TraceType", "TracePlayback", "CanBoxDevice", "Message", "Signal",
+    "CANService", "TraceType", "TracePlayback", "CanBoxDevice", "Message", "Signal", "DbcParser",
     "It6831Actions", "KonstanterActions", "RelayActions", "SerialActions", "CanActions", "CameraActions",
     "KonstanterControl", "IT6831", "Curve",
     "HypervisorScreenShot",

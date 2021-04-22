@@ -195,7 +195,8 @@ class BaseCanBus(metaclass=ABCMeta):
         data = message.data
         cycle_time = message.cycle_time_fast / 1000.0
         # 事件信号
-        for i in range(message.cycle_time_fast_times):
+        event_times = message.cycle_time_fast_times if message.cycle_time_fast_times > 0 else 1
+        for i in range(event_times):
             logger.debug(f"****** The {i} times send msg[{hex_msg_id}] and data [{list(map(lambda x: hex(x), data))}] "
                          f"and cycle time [{message.cycle_time_fast}]")
             can.transmit(message)
@@ -205,6 +206,9 @@ class BaseCanBus(metaclass=ABCMeta):
         """
         对CAN设备进行打开、初始化等操作，并同时开启设备的帧接收线程。
         """
+        # 线程池句柄
+        if self._thread_pool is None:
+            self._thread_pool = ThreadPoolExecutor(max_workers=self._max_workers)
         # 开启设备的接收线程
         self._need_receive = True
         # 开启设备的发送线程
@@ -222,6 +226,7 @@ class BaseCanBus(metaclass=ABCMeta):
             logger.info("shutdown thread pool")
             self._thread_pool.shutdown()
         self._send_messages.clear()
+        self._thread_pool = None
 
     @staticmethod
     def _transmit_one(can: BaseCanDevice, message: Message):

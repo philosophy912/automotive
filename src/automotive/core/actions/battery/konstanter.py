@@ -188,7 +188,9 @@ class Konstanter(BaseBattery):
         logger.debug(f">>> sending serial command to power supply: {cmd}")
         self.__serial.send(cmd, True, end='\n')
         if receive:
-            result = self.__serial.read_all(False)
+            contents = self.__serial.read_lines()
+            result = "".join(contents)
+            # result = self.__serial.read_all(False)
             logger.debug(f"<<< get power supply information from serial buffer: {result}")
             return result
         return ""
