@@ -1,14 +1,16 @@
 # -*- coding:utf-8 -*-
 # --------------------------------------------------------
-# Copyright (C), 2016-2020, China TSP, All rights reserved
+# Copyright (C), 2016-2020, lizhe, All rights reserved
 # --------------------------------------------------------
 # @Name:        android_service.py
-# @Purpose:     Android 测试服务
 # @Author:      lizhe
-# @Created:     2020/8/5 - 14:45
+# @Created:     2021/5/1 - 23:48
 # --------------------------------------------------------
+import os
 from enum import Enum, unique
 
+import appium
+import uiautomator2
 from appium.webdriver import WebElement
 from appium.webdriver.common.touch_action import TouchAction
 from appium.webdriver.webdriver import WebDriver

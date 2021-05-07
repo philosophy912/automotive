@@ -1,16 +1,13 @@
 # -*- coding:utf-8 -*-
 # --------------------------------------------------------
-# Copyright (C), 2016-2020, China TSP, All rights reserved
+# Copyright (C), 2016-2020, lizhe, All rights reserved
 # --------------------------------------------------------
-# @Name:        SSHUtils
-# @Purpose:     ssh相关操作
+# @Name:        ssh_utils.py
 # @Author:      lizhe
-# @Created:     2018-12-27
+# @Created:     2021/5/1 - 23:34
 # --------------------------------------------------------
-import paramiko
+import os
 import time
-from paramiko import AuthenticationException
-from paramiko.ssh_exception import NoValidConnectionsError
 from automotive.logger import logger
 from time import sleep
 from .utils import Utils
@@ -23,11 +20,17 @@ class SshUtils(object):
     """
 
     def __init__(self):
-        self._ssh = paramiko.SSHClient()
-        # 加载创建的白名单
-        self._ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        self._utils = Utils()
-        self._is_connect = False
+        try:
+            import paramiko
+        except ModuleNotFoundError:
+            os.system("pip install paramiko")
+        finally:
+            import paramiko
+            self._ssh = paramiko.SSHClient()
+            # 加载创建的白名单
+            self._ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+            self._utils = Utils()
+            self._is_connect = False
 
     def check_status(func):
         """

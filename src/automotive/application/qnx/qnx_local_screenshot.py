@@ -1,14 +1,13 @@
 # -*- coding:utf-8 -*-
 # --------------------------------------------------------
-# Copyright (C), 2016-2020, China TSP, All rights reserved
+# Copyright (C), 2016-2020, lizhe, All rights reserved
 # --------------------------------------------------------
-# @Name:        qnx_local.py
-# @Purpose:     todo
+# @Name:        screenshot.py
 # @Author:      lizhe
-# @Created:     2020/08/09 22:46
+# @Created:     2021/5/1 - 23:55
 # --------------------------------------------------------
 from time import sleep
-from ..api import ScreenShot
+from automotive.common.api import ScreenShot
 from .qnx_device import QnxDevice
 from automotive.logger.logger import logger
 

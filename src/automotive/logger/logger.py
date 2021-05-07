@@ -1,11 +1,10 @@
 # -*- coding:utf-8 -*-
 # --------------------------------------------------------
-# Copyright (C), 2016-2020, China TSP, All rights reserved
+# Copyright (C), 2016-2020, lizhe, All rights reserved
 # --------------------------------------------------------
 # @Name:        logger.py
-# @Purpose:     todo
 # @Author:      lizhe
-# @Created:     2020/7/22 - 11:00
+# @Created:     2021/5/1 - 23:23
 # --------------------------------------------------------
 import os
 import sys
@@ -19,9 +18,9 @@ from loguru import logger as _logger
 使用方法：
 
     1、 from automotive import logger
-    
+
     2、 在运行代码目录及父目录到根目录的任意目录放置config.yml文件，其中yml中包含level和log_folder用于定义log等级及log存放文件路径
-    
+
     3、 如果找不到配置文件，默认使用info级别输出log，并且不保存log内容到文件
 """
 
@@ -77,7 +76,9 @@ def get_files(folder: str) -> list:
 def get_config(config_file: str) -> tuple:
     """
     读取配置文件中的相关配置
+
     :param config_file:配置文件
+
     :return: level, log_folder
     """
     with open(config_file, "r", encoding="UTF-8") as fp:

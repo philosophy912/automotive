@@ -1,11 +1,10 @@
 # -*- coding:utf-8 -*-
 # --------------------------------------------------------
-# Copyright (C), 2016-2020, China TSP, All rights reserved
+# Copyright (C), 2016-2020, lizhe, All rights reserved
 # --------------------------------------------------------
-# @Name:        Camera
-# @Purpose:     摄像头相关操作
+# @Name:        camera.py
 # @Author:      lizhe
-# @Created:     2018/12/27 9:47
+# @Created:     2021/5/1 - 23:33
 # --------------------------------------------------------
 import os
 from concurrent.futures.thread import ThreadPoolExecutor
@@ -13,8 +12,6 @@ from concurrent.futures.thread import ThreadPoolExecutor
 import cv2
 import time
 import threading
-import sounddevice as sd
-from scipy.io import wavfile
 from automotive.logger.logger import logger
 from .utils import Utils
 
@@ -431,6 +428,15 @@ class MicroPhone(object):
         """
         record_file = self.__check_filename(filename)
         logger.debug(f"record_file is {record_file}")
+        try:
+            import sounddevice as sd
+            from scipy.io import wavfile
+        except ModuleNotFoundError:
+            os.system("pip install sounddevice")
+            os.system("pip install scipy")
+        finally:
+            import sounddevice as sd
+            from scipy.io import wavfile
         recoding = sd.rec(record_time * self.__sample_rate, samplerate=self.__sample_rate,
                           channels=self.__channels, blocking=True)
         logger.debug(f"writing record data to file[{record_file}]")

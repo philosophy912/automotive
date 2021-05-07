@@ -1,16 +1,15 @@
 # -*- coding:utf-8 -*-
 # --------------------------------------------------------
-# Copyright (C), 2016-2020, China TSP, All rights reserved
+# Copyright (C), 2016-2020, lizhe, All rights reserved
 # --------------------------------------------------------
 # @Name:        can_actions.py
-# @Purpose:     CAN设备操作
 # @Author:      lizhe
-# @Created:     2020/02/05 21:33
+# @Created:     2021/5/2 - 0:01
 # --------------------------------------------------------
 from time import sleep
 from automotive.logger.logger import logger
-from ..can.can_service import CANService
-from .api import BaseActions
+from automotive.core.can.can_service import CANService
+from automotive.common.api import BaseActions
 
 
 class CanActions(BaseActions):

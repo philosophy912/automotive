@@ -1,11 +1,10 @@
 # -*- coding:utf-8 -*-
 # --------------------------------------------------------
-# Copyright (C), 2016-2020, China TSP, All rights reserved
+# Copyright (C), 2016-2020, lizhe, All rights reserved
 # --------------------------------------------------------
 # @Name:        appium_client.py
-# @Purpose:     BaseAndroid接口的appium实现类
 # @Author:      lizhe
-# @Created:     2020/07/27 21:36
+# @Created:     2021/5/1 - 23:48
 # --------------------------------------------------------
 import time
 from appium import webdriver

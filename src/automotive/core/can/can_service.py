@@ -1,12 +1,10 @@
 # -*- coding:utf-8 -*-
 # --------------------------------------------------------
-# Copyright (C), 2016-2020, China TSP, All rights reserved
+# Copyright (C), 2016-2020, lizhe, All rights reserved
 # --------------------------------------------------------
-# @Name:        CANService
-# @Purpose:     调用CAN Box进行can信号的收发（单例模式）
-#               无需关心底层的CAN硬件设备。
+# @Name:        can_service.py
 # @Author:      lizhe
-# @Created:     2019/8/21 9:47
+# @Created:     2021/5/1 - 23:42
 # --------------------------------------------------------
 import time
 import random
@@ -30,6 +28,10 @@ def __get_can_bus(can_box_device: CanBoxDevice) -> BaseCanBus:
 
 
 def __get_can_box_device() -> CanBoxDevice:
+    """
+    获取can盒子的类型， 依次从PCan找到CANALYST然后到USBCAN
+    :return: can盒类型
+    """
     can = PCanBus()
     can.open_can()
     if can.is_open():
@@ -167,6 +169,7 @@ class CANService(BaseCan):
         self.__messages, self.__name_messages = get_message(messages, encoding=encoding)
         # 备份message, 可以作为初始值发送
         self.__backup_messages = copy.deepcopy(self.__messages)
+        self.__backup_name_messages = copy.deepcopy(self.__name_messages)
         # 用于记录当前栈中msg的最后一个数据的时间点
         self.__last_msg_time_in_stack = dict()
 
@@ -186,13 +189,22 @@ class CANService(BaseCan):
     def messages(self, messages):
         self.__messages = messages
 
-    def __send_random(self, filter_sender: str, interval: int):
+    def __restore_default_message(self):
+        """
+        恢复初始的message值
+        """
+        self.__messages = copy.deepcopy(self.__backup_messages)
+        self.__name_messages = copy.deepcopy(self.__backup_name_messages)
+
+    def __send_random(self, filter_sender: str, interval: int, default_message: dict = None):
         """
         随机发送CAN消息
 
         :param filter_sender:  过滤发送者，如HU。仅支持单个节点过滤
 
         :param interval: 每个信号值改变的间隔时间，默认是1秒
+
+        :param default_message {0x152: {"aaa": 0x1, "bbb": 0xc}, 0x119: {"ccc": 0x1, "ddd": 0x2}}
         """
         for msg_id, msg in self.messages.items():
             logger.trace(f"msg id = {msg_id}")
@@ -203,11 +215,22 @@ class CANService(BaseCan):
             logger.debug(f"filter_condition is {filter_condition}")
             if not (msg.nm_message or msg.diag_state or filter_condition):
                 logger.trace(f"will send msg [{hex(msg_id)}]")
-                for sig_name, sig in msg.signals.items():
-                    max_value = 2 ** sig.bit_length - 1
-                    value = random.randint(0, max_value)
-                    logger.trace(f"value is [{value}]")
-                    sig.value = value
+                # 保留发送的值
+                if default_message and msg_id in default_message:
+                    for sig_name, sig in msg.signals.items():
+                        if sig_name in default_message[msg_id]:
+                            sig.value = default_message[msg_id][sig_name]
+                        else:
+                            max_value = 2 ** sig.bit_length - 1
+                            value = random.randint(0, max_value)
+                            logger.trace(f"value is [{value}]")
+                            sig.value = value
+                else:
+                    for sig_name, sig in msg.signals.items():
+                        max_value = 2 ** sig.bit_length - 1
+                        value = random.randint(0, max_value)
+                        logger.trace(f"value is [{value}]")
+                        sig.value = value
                 # 避免错误发生后不再发送数据，容错处理
                 try:
                     self.send_can_message(msg)
@@ -454,7 +477,8 @@ class CANService(BaseCan):
         """
         return self._can.get_stack()
 
-    def send_random(self, filter_sender: str = None, cycle_time: int = None, interval: int = 0.1):
+    def send_random(self, filter_sender: str = None, cycle_time: int = None, interval: int = 0.1,
+                    default_message: dict = None):
         """
         随机发送信号
 
@@ -463,6 +487,8 @@ class CANService(BaseCan):
         2、信号的值随机设置
 
         3、需要过滤指定的发送者
+
+        :param default_message: 固定要发送的信号
 
         :param filter_sender: 过滤发送者，如HU。仅支持单个节点过滤
 
@@ -473,9 +499,9 @@ class CANService(BaseCan):
         if cycle_time:
             for i in range(cycle_time):
                 logger.info(f"The {i + 1} time set random value")
-                self.__send_random(filter_sender, interval)
+                self.__send_random(filter_sender, interval, default_message)
         else:
-            self.__send_random(filter_sender, interval)
+            self.__send_random(filter_sender, interval, default_message)
 
     def check_signal_value(self, stack: list, msg_id: int, sig_name: str, expect_value: int, count: int = None,
                            exact: bool = True):
@@ -525,7 +551,7 @@ class CANService(BaseCan):
         :param node_name: 测试对象节点名称
         """
         for msg_id, message in self.messages.items():
-            if message.sender != node_name:
+            if message.sender != node_name and not (message.nm_message or message.diag_state):
                 self.send_can_message(message)
 
     def send_default_messages(self, node_name: str):
@@ -534,6 +560,5 @@ class CANService(BaseCan):
 
         :param node_name: 测试对象节点名称
         """
-        for msg_id, message in self.__backup_messages.items():
-            if message.sender != node_name:
-                self.send_can_message(message)
+        self.__restore_default_message()
+        self.send_messages(node_name)

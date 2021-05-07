@@ -1,11 +1,10 @@
 # -*- coding:utf-8 -*-
 # --------------------------------------------------------
-# Copyright (C), 2016-2020, China TSP, All rights reserved
+# Copyright (C), 2016-2020, lizhe, All rights reserved
 # --------------------------------------------------------
 # @Name:        email_utils.py
-# @Purpose:     todo
 # @Author:      lizhe
-# @Created:     2020/11/6 - 16:11
+# @Created:     2021/5/1 - 23:33
 # --------------------------------------------------------
 import smtplib
 import poplib
@@ -15,7 +14,6 @@ from email.mime.application import MIMEApplication
 from email.header import Header
 from email.mime.text import MIMEText
 from enum import Enum, unique
-from exchangelib import DELEGATE, Account, Credentials, Message, Mailbox, HTMLBody, FileAttachment
 
 from automotive import logger
 
@@ -58,6 +56,7 @@ class EmailUtils(object):
 
         :param is_tsl: 是否tsl加密
         """
+
         self.__type = email_type
         self.__email_address = email_address
         if email_type == EmailType.SMTP:
@@ -78,10 +77,41 @@ class EmailUtils(object):
                 self.__pop3_server.user(email_address)
                 self.__pop3_server.pass_(password)
         else:
-            username = email_address.split("@")[0]
-            credentials = Credentials(username=username, password=password)
-            self.__account = Account(primary_smtp_address=email_address, credentials=credentials,
-                                     autodiscover=True, access_type=DELEGATE)
+            self.__account = self.__get_exchange_account(email_address, password)
+
+    @staticmethod
+    def __get_exchange_account(email_address: str, password: str):
+        try:
+            from exchangelib import DELEGATE, Account, Credentials, Message, Mailbox, HTMLBody, FileAttachment
+        except ModuleNotFoundError:
+            os.system("pip install exchangelib")
+        from exchangelib import DELEGATE, Account, Credentials
+        username = email_address.split("@")[0]
+        credentials = Credentials(username=username, password=password)
+        return Account(primary_smtp_address=email_address, credentials=credentials,
+                       autodiscover=True, access_type=DELEGATE)
+
+    def __send_exchange_email(self, email_to: list, subject: str, content: str, attachments=None, email_cc=None):
+        from exchangelib import Message, Mailbox, HTMLBody, FileAttachment
+        to_recipients = []
+        for to in email_to:
+            to_recipients.append(Mailbox(email_address=to))
+        cc_recipients = []
+        for cc in email_cc:
+            cc_recipients.append(Mailbox(email_address=cc))
+        message = Message(
+            account=self.__account,
+            subject=subject,
+            body=HTMLBody(content),
+            to_recipients=to_recipients,
+            cc_recipients=cc_recipients
+        )
+        for attachment in attachments:
+            with open(attachment, "rb") as f:
+                file_name = os.path.basename(attachment)
+                attachment_file = FileAttachment(name=file_name, content=f.read())
+                message.attach(attachment_file)
+        message.send()
 
     def send_email(self, email_to: list, subject: str, content: str, attachments=None, email_cc=None):
         """
@@ -119,25 +149,7 @@ class EmailUtils(object):
             self.__server.sendmail(self.__email_address, to_address, message.as_string())
             self.__server.quit()
         else:
-            to_recipients = []
-            for to in email_to:
-                to_recipients.append(Mailbox(email_address=to))
-            cc_recipients = []
-            for cc in email_cc:
-                cc_recipients.append(Mailbox(email_address=cc))
-            message = Message(
-                account=self.__account,
-                subject=subject,
-                body=HTMLBody(content),
-                to_recipients=to_recipients,
-                cc_recipients=cc_recipients
-            )
-            for attachment in attachments:
-                with open(attachment, "rb") as f:
-                    file_name = os.path.basename(attachment)
-                    attachment_file = FileAttachment(name=file_name, content=f.read())
-                    message.attach(attachment_file)
-            message.send()
+            self.__send_exchange_email(email_to, subject, content, attachments, email_cc)
 
     def receive_email(self, email_count: int = 10, folder: str = None) -> list:
         """

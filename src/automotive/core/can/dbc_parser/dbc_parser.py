@@ -1,10 +1,10 @@
 # -*- coding:utf-8 -*-
 # --------------------------------------------------------
-# Copyright (C), 2016-2020, philosophy, All rights reserved
+# Copyright (C), 2016-2020, lizhe, All rights reserved
 # --------------------------------------------------------
 # @Name:        dbc_parser.py
 # @Author:      lizhe
-# @Created:     2021/4/10 - 19:40
+# @Created:     2021/5/1 - 23:38
 # --------------------------------------------------------
 import json
 import re

@@ -1,11 +1,10 @@
 # -*- coding:utf-8 -*-
-# --------------------------------------------------------  
-# Copyright (C), 2016-2020, China TSP, All rights reserved
-# --------------------------------------------------------                 
-# @Name:        usbcan_bus  
-# @Purpose:     UsbCanBus
-# @Author:      lizhe  
-# @Created:     2019/12/2 12:57  
+# --------------------------------------------------------
+# Copyright (C), 2016-2020, lizhe, All rights reserved
+# --------------------------------------------------------
+# @Name:        usbcan_bus.py
+# @Author:      lizhe
+# @Created:     2021/5/1 - 23:44
 # --------------------------------------------------------
 from automotive.logger.logger import logger
 from .usb_can import UsbCan

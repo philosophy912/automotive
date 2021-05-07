@@ -1,11 +1,10 @@
 # -*- coding:utf-8 -*-
 # --------------------------------------------------------
-# Copyright (C), 2016-2020, China TSP, All rights reserved
+# Copyright (C), 2016-2020, lizhe, All rights reserved
 # --------------------------------------------------------
 # @Name:        keycode.py
-# @Purpose:     键盘类型
 # @Author:      lizhe
-# @Created:     2020/7/24 - 9:41
+# @Created:     2021/5/1 - 23:48
 # --------------------------------------------------------
 from enum import Enum
 

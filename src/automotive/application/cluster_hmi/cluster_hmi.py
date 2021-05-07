@@ -1,14 +1,13 @@
 # -*- coding:utf-8 -*-
 # --------------------------------------------------------
-# Copyright (C), 2016-2020, China TSP, All rights reserved
+# Copyright (C), 2016-2020, lizhe, All rights reserved
 # --------------------------------------------------------
 # @Name:        cluster_hmi.py
-# @Purpose:     todo
 # @Author:      lizhe
-# @Created:     2020/10/22 - 22:18
+# @Created:     2021/5/1 - 23:53
 # --------------------------------------------------------
 from time import sleep
-from ..api import SocketDevice
+from automotive.common.api import SocketDevice
 from .cluster_hmi_screenshot import ClusterHmiScreenshot
 from automotive.utils.ftp_utils import FtpUtils
 from automotive.utils.telnet_utils import TelnetUtils
@@ -118,7 +117,6 @@ class ClusterHmi(SocketDevice):
     def read(self) -> str:
         return self.__telnet.read()
 
-
     def screen_shot(self, image_name: str, count: int, interval_time: float, display: int = None) -> list:
         """
         """
@@ -141,7 +139,7 @@ class ClusterHmi(SocketDevice):
         else:
             return images
 
-    def __check_screenshot_success(self, images:str) -> bool:
+    def __check_screenshot_success(self, images: str) -> bool:
         """
         只检查文件是否在板子上存在
         """
@@ -154,7 +152,7 @@ class ClusterHmi(SocketDevice):
                 # 找到了文件
                 count += 1
         # 判断条件是文件截取数量大于0，文件截取都在板子上找到
-        return len(image) > 0 and len(images) == count
+        return len(images) > 0 and len(images) == count
 
     def download_image(self, file_name: str) -> str:
         return self.__ftp.download_file(file_name, self.__local_folder)

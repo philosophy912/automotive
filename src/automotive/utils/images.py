@@ -1,25 +1,20 @@
 # -*- coding:utf-8 -*-
 # --------------------------------------------------------
-# Copyright (C), 2016-2020, China TSP, All rights reserved
+# Copyright (C), 2016-2020, lizhe, All rights reserved
 # --------------------------------------------------------
-# @Name:        PictureCompare
-# @Purpose:     图像对比
-#               读取图片并实现图片对比功能，可以截取图片一部分
-#               进行对比，遮挡一部分对比剩余部分图片，对比
-#               图片1的左上角和图片2的右下角
-# @Author:      liluo
-# @Created:     2018-09-12
+# @Name:        images.py
+# @Author:      lizhe
+# @Created:     2021/5/1 - 23:33
 # --------------------------------------------------------
-import copy
+import os
 from enum import Enum
 
+import imagehash
 import cv2
 import numpy as np
 import imagehash
 from PIL import Image
 from automotive.logger import logger
-from automotive.core import deprecated
-
 # 2960*1440设备 内存耗费： kaze (2GB) >> sift > akaze >> surf > brisk > brief > orb > tpl
 # 单纯效果,推荐程度： tpl > surf ≈ sift > kaze > brisk > akaze> brief > orb
 # 有限内存,推荐程度： tpl > surf > sift > brisk > akaze > brief > orb >kaze
@@ -372,7 +367,7 @@ class Images(object):
 
         Simpler, faster version than the solutions above.
 
-        Source: http://stackoverflow.com/a/9459208/284318
+        Source: https://stackoverflow.com/a/9459208/284318
 
         Keyword Arguments:
         image -- PIL RGBA Image object
@@ -415,36 +410,6 @@ class Images(object):
             return start_x, start_y, end_x, end_y
         raise ValueError(f"only support both end_x and  end_y or width and height")
 
-    @deprecated
-    def is_image_contain(self, small_image: str, big_image: str, small_position: tuple = None,
-                         big_position: tuple = None, gray: bool = False, threshold: int = None) -> bool:
-        """
-        传入的small_image能否在big_image中找到
-
-        :param small_image: 小图片
-
-        :param big_image: 大图片
-
-        :param small_position: 包含start_x, start_y, end_x, end_y的small_image的位置（用于缩小查找范围)
-
-        :param big_position: 包含start_x, start_y, end_x, end_y的big_image的位置（用于缩小查找范围)
-
-        :param gray: 是否以灰度的方式进行对比
-
-        :param threshold: 是否将灰度进行二值化处理后再对比 二值化的阈值, [0, 255]
-
-        :return:
-            True: 包含
-
-            False： 不包含
-        """
-        small_image_matrix = self.__get_image_matrix(small_image, position=small_position, gray=gray)
-        big_image_matrix = self.__get_image_matrix(big_image, position=big_position, gray=gray)
-        find_x, find_y = self.get_position_in_image(small_image_matrix, big_image_matrix, gray=gray,
-                                                    threshold=threshold)
-        logger.debug(f"find_x [{find_x}] and find_y[{find_y}]")
-        return find_x != -1 or find_y != -1
-
     def cut_image_array(self, image: str, position: tuple) -> np.ndarray:
         """
         剪切区域图片返回数组
@@ -468,97 +433,6 @@ class Images(object):
         """
         cut_image = self.__get_image_matrix(image, position)
         cv2.imwrite(target_image, cut_image)
-
-    @deprecated
-    def get_position_in_image(self, image1: (str, np.ndarray), image2: (str, np.ndarray),
-                              gray: bool = False, threshold: int = None) -> tuple:
-        """
-        查找图片1在图片2中的位置，返回x, y在图片2中的位置，如果找不到则返回-1,-1
-
-        :param image1: 图片1/图片1矩阵
-
-        :param image2: 图片2/图片2矩阵
-
-        :param gray: 是否以灰度的方式进行对比
-
-        :param threshold: 是否将灰度进行二值化处理后再对比 二值化的阈值, [0, 255]
-
-        :return: 图片1在图片2中的位置（x,y)，如果找不到则返回(-1,-1)
-        """
-        if threshold:
-            self.__check_threshold(threshold)
-        matrix_image1 = cv2.imread(image1) if isinstance(image1, str) else image1
-        matrix_image2 = cv2.imread(image2) if isinstance(image2, str) else image2
-
-        # backup BGR picture for color compare
-        matrix_image1_bgr = copy.deepcopy(matrix_image1)
-        matrix_image2_bgr = copy.deepcopy(matrix_image2)
-        matrix_image1 = cv2.cvtColor(matrix_image1, cv2.COLOR_BGR2GRAY)
-        matrix_image2 = cv2.cvtColor(matrix_image2, cv2.COLOR_BGR2GRAY)
-
-        # check picture size
-        matrix_image1_shape = matrix_image1.shape
-        matrix_image2_shape = matrix_image2.shape
-        if matrix_image2_shape[0] < matrix_image1_shape[0] or matrix_image2_shape[1] < matrix_image1_shape[1]:
-            raise ValueError(f"please check image1 is smaller than image2")
-
-        # transmit gray picture to histgram list
-        matrix_image1_hist = cv2.calcHist([matrix_image1], [0], None, [256], [0, 256])
-        matrix_image2_hist = cv2.calcHist([matrix_image2], [0], None, [256], [0, 256])
-        matrix_image1_hist = [int(i[0]) for i in matrix_image1_hist]
-        matrix_image2_hist = [int(j[0]) for j in matrix_image2_hist]
-
-        # find the gray level which has smallest number of count in histgram list
-        gray_level = 0
-        min_gray_count = matrix_image2_shape[0] * matrix_image2_shape[1]
-        for i, value in enumerate(matrix_image2_hist):
-            if matrix_image1_hist[i] == 0 or matrix_image2_hist[i] == 0:
-                continue
-            if value < min_gray_count:
-                min_gray_count = value
-                gray_level = i
-
-        # get all points in bigger picture using found gray level
-        matrix_image1_points = np.where(matrix_image1 == gray_level)
-        matrix_image2_points = np.where(matrix_image2 == gray_level)
-
-        # compare small picture with big picture at every point found above
-        diff_count = matrix_image1.size
-        if not gray:
-            matrix_image2 = matrix_image2_bgr
-            matrix_image1 = matrix_image1_bgr
-        elif threshold:
-            matrix_image2 = self.__binarization(matrix_image2, threshold)
-            matrix_image1 = self.__binarization(matrix_image1, threshold)
-        find_x = -1
-        find_y = -1
-        for m, n in zip(matrix_image2_points[0], matrix_image2_points[1]):
-            start_y = m - matrix_image1_points[0][0]
-            end_y = m - matrix_image1_points[0][0] + matrix_image1_shape[0]
-            start_x = n - matrix_image1_points[1][0]
-            end_x = n - matrix_image1_points[1][0] + matrix_image1_shape[1]
-            if start_y < 0 or end_y > matrix_image2_shape[0]:
-                continue
-            if start_x < 0 or end_x > matrix_image2_shape[1]:
-                continue
-            tmp = matrix_image2[start_y:end_y, start_x:end_x]
-            if gray:
-                delta = tmp - matrix_image1
-            else:
-                b1, g1, r1 = cv2.split(tmp)
-                b2, g2, r2 = cv2.split(matrix_image1)
-                delta_b = b1 - b2
-                delta_g = g1 - g2
-                delta_r = r1 - r2
-                delta = np.abs(delta_b) + np.abs(delta_g) + np.abs(delta_r)
-            count = np.count_nonzero(delta)
-            if count < diff_count:
-                diff_count = count
-                find_x = start_x
-                find_y = start_y
-                if count == 0:
-                    break
-        return find_x, find_y
 
     def compare_by_hamming_distance(self, img1: str, img2: str) -> tuple:
         """

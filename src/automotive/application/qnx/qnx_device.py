@@ -1,13 +1,12 @@
 # -*- coding:utf-8 -*-
 # --------------------------------------------------------
-# Copyright (C), 2016-2020, China TSP, All rights reserved
+# Copyright (C), 2016-2020, lizhe, All rights reserved
 # --------------------------------------------------------
 # @Name:        qnx_device.py
-# @Purpose:     todo
 # @Author:      lizhe
-# @Created:     2020/8/10 - 13:01
+# @Created:     2021/5/1 - 23:55
 # --------------------------------------------------------
-from ..singleton import Singleton
+from automotive.core.singleton import Singleton
 from time import sleep
 from automotive.logger import logger
 from automotive.utils.serial_utils import SerialUtils

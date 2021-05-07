@@ -1,11 +1,10 @@
 # -*- coding:utf-8 -*-
 # --------------------------------------------------------
-# Copyright (C), 2016-2020, China TSP, All rights reserved
+# Copyright (C), 2016-2020, lizhe, All rights reserved
 # --------------------------------------------------------
 # @Name:        performance.py
-# @Purpose:     KPI相关测试
 # @Author:      lizhe
-# @Created:     2020/7/1 - 15:48
+# @Created:     2021/5/1 - 23:33
 # --------------------------------------------------------
 import os
 import re

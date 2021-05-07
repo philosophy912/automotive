@@ -1,27 +1,23 @@
-from .singleton import Singleton
-from .deprecated import deprecated
-from .can import CANService, TraceType, TracePlayback, CanBoxDevice, Message, Signal, DbcParser
-from .actions import It6831Actions, KonstanterActions, RelayActions, SerialActions, CanActions, CameraActions, \
-    KonstanterControl, IT6831, Curve
-from .hypervisor import HypervisorScreenShot
-from .qnx import QnxActions, QnxDevice, QnxLocalScreenShot, AirCondition
-from .api import Device, ScreenShot, Actions
+# -*- coding:utf-8 -*-
+# --------------------------------------------------------
+# Copyright (C), 2016-2020, lizhe, All rights reserved
+# --------------------------------------------------------
+# @Name:        __init__.py
+# @Author:      lizhe
+# @Created:     2021/5/1 - 23:18
+# --------------------------------------------------------
+from .battery import IT6831, KonstanterControl, Konstanter
+from .android import ADB, AndroidService, SwipeDirectorEnum, ElementAttributeEnum, DirectorEnum, \
+    KeyCode, AppiumClient, UiAutomator2Client, ToolTypeEnum
+from .can import CANService, Message, CanBoxDevice, TraceType, TracePlayback, Signal, DbcParser
 from .image_compare import ImageCompare, CompareProperty, CompareTypeEnum
-from .android import ADB, AndroidService, SwipeDirectorEnum, ElementAttributeEnum, DirectorEnum, KeyCode, \
-    AppiumPythonClient, AppiumClient, UiAutomator2Client, ToolTypeEnum
-from .cluster_hmi import ClusterHmiScreenshot, ClusterHmi
+from .singleton import Singleton
 
 __all__ = [
-    "Singleton",
-    "deprecated",
-    "CANService", "TraceType", "TracePlayback", "CanBoxDevice", "Message", "Signal", "DbcParser",
-    "It6831Actions", "KonstanterActions", "RelayActions", "SerialActions", "CanActions", "CameraActions",
-    "KonstanterControl", "IT6831", "Curve",
-    "HypervisorScreenShot",
-    "QnxActions", "QnxDevice", "QnxLocalScreenShot", "AirCondition",
-    "Device", "ScreenShot", "Actions",
+    "IT6831", "KonstanterControl", "Konstanter",
+    "ADB", "AndroidService", "SwipeDirectorEnum", "ElementAttributeEnum", "DirectorEnum",
+    "KeyCode", "AppiumClient", "UiAutomator2Client", "ToolTypeEnum",
+    "CANService", "Message", "CanBoxDevice", "TraceType", "TracePlayback", "Signal", "DbcParser",
     "ImageCompare", "CompareProperty", "CompareTypeEnum",
-    "ADB", "AndroidService", "SwipeDirectorEnum", "ElementAttributeEnum", "DirectorEnum", "KeyCode",
-    "AppiumPythonClient", "AppiumClient", "UiAutomator2Client", "ToolTypeEnum",
-    "ClusterHmiScreenshot", "ClusterHmi"
+    "Singleton"
 ]

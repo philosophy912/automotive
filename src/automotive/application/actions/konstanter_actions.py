@@ -1,15 +1,14 @@
 # -*- coding:utf-8 -*-
 # --------------------------------------------------------
-# Copyright (C), 2016-2020, China TSP, All rights reserved
+# Copyright (C), 2016-2020, lizhe, All rights reserved
 # --------------------------------------------------------
 # @Name:        konstanter_actions.py
-# @Purpose:     可编程电源操作
 # @Author:      lizhe
-# @Created:     2020/02/05 21:34
+# @Created:     2021/5/2 - 0:02
 # --------------------------------------------------------
 from automotive.logger.logger import logger
-from automotive.core.actions.battery.konstanter_control import KonstanterControl
-from .api import PowerActions
+from automotive.core.battery.konstanter_control import KonstanterControl
+from automotive.common.api import PowerActions
 
 
 class KonstanterActions(PowerActions):

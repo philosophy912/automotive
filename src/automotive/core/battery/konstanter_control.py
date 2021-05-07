@@ -1,16 +1,15 @@
 # -*- coding:utf-8 -*-
-# --------------------------------------------------------  
-# Copyright (C), 2016-2020, China TSP, All rights reserved
-# --------------------------------------------------------                 
-# @Name:        KonstanterUtils
-# @Purpose:     可编程电源工具类
-# @Author:      lizhe  
-# @Created:     2019/11/26 17:01  
+# --------------------------------------------------------
+# Copyright (C), 2016-2020, lizhe, All rights reserved
+# --------------------------------------------------------
+# @Name:        konstanter_control.py
+# @Author:      lizhe
+# @Created:     2021/5/1 - 23:59
 # --------------------------------------------------------
 import math
 import time
 from automotive.logger.logger import logger
-from automotive.core.actions.api import BaseBattery
+from automotive.common.api import BaseBattery
 from .konstanter import Konstanter
 
 

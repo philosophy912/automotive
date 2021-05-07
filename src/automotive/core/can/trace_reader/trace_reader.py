@@ -1,11 +1,10 @@
 # -*- coding:utf-8 -*-
 # --------------------------------------------------------
-# Copyright (C), 2016-2020, China TSP, All rights reserved
+# Copyright (C), 2016-2020, lizhe, All rights reserved
 # --------------------------------------------------------
 # @Name:        trace_reader.py
-# @Purpose:     todo
 # @Author:      lizhe
-# @Created:     2020/6/29 - 9:43
+# @Created:     2021/5/1 - 23:45
 # --------------------------------------------------------
 from abc import ABCMeta, abstractmethod
 

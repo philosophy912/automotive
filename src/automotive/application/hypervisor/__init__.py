@@ -4,10 +4,10 @@
 # --------------------------------------------------------
 # @Name:        __init__.py.py
 # @Author:      lizhe
-# @Created:     2021/5/1 - 23:38
+# @Created:     2021/5/1 - 23:55
 # --------------------------------------------------------
-from .dbc_parser import DbcParser
+from .hypervisor_screenshot import HypervisorScreenShot
 
 __all__ = [
-    "DbcParser"
+    "HypervisorScreenShot"
 ]

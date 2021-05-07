@@ -1,22 +1,28 @@
-#  这里需要写对外的包
-from .core import Singleton, deprecated, CANService, CanBoxDevice, Message, TraceType, TracePlayback, \
-    HypervisorScreenShot, \
-    QnxActions, QnxDevice, QnxLocalScreenShot, AirCondition, Device, ScreenShot, Actions, ImageCompare, \
-    CompareProperty, CompareTypeEnum, ADB, AndroidService, SwipeDirectorEnum, ElementAttributeEnum, DirectorEnum, \
-    KeyCode, AppiumPythonClient, AppiumClient, UiAutomator2Client, It6831Actions, KonstanterActions, RelayActions, \
-    SerialActions, CanActions, CameraActions, KonstanterControl, IT6831, ToolTypeEnum, Curve, ClusterHmi, DbcParser
-from .utils import Utils, Camera, CameraProperty, MicroPhone, Images, SerialPort, USBRelay, Player, Performance, \
-    SshUtils, FtpUtils, TelnetUtils, SystemTypeEnum, EmailUtils, EmailType
+# -*- coding:utf-8 -*-
+# --------------------------------------------------------
+# Copyright (C), 2016-2020, philosophy, All rights reserved
+# --------------------------------------------------------
+# @Name:        __init__.py.py
+# @Author:      philosophy
+# @Created:     2021/5/1 - 23:18
+# --------------------------------------------------------
+from .core import IT6831, KonstanterControl, Konstanter, ADB, AndroidService, SwipeDirectorEnum, ElementAttributeEnum, \
+    DirectorEnum, KeyCode, AppiumClient, UiAutomator2Client, ToolTypeEnum, CANService, Message, CanBoxDevice, \
+    TraceType, TracePlayback, Signal, DbcParser, ImageCompare, CompareProperty, CompareTypeEnum, Singleton
+from .application import CameraActions, CanActions, It6831Actions, KonstanterActions, RelayActions, SerialActions, \
+    Curve, ClusterHmi, ClusterHmiScreenshot, HypervisorScreenShot, AirCondition, QnxDevice, QnxActions, \
+    QnxLocalScreenShot
 from .logger import logger
+from .utils import Utils, SystemTypeEnum, Camera, CameraProperty, MicroPhone, FrameID, Mark, Images, SerialPort, \
+    USBRelay, Player, Performance, SshUtils, FtpUtils, TelnetUtils, EmailUtils, EmailType
 
 __all__ = [
-    "Singleton", "deprecated", "CANService", "CanBoxDevice", "Message", "TraceType", "TracePlayback",
-    "HypervisorScreenShot", "QnxActions", "QnxDevice", "QnxLocalScreenShot", "AirCondition", "Device", "ScreenShot",
-    "Actions", "ImageCompare", "CompareProperty", "CompareTypeEnum", "ADB", "AndroidService", "SwipeDirectorEnum",
-    "ElementAttributeEnum", "DirectorEnum", "KeyCode", "AppiumPythonClient", "AppiumClient", "UiAutomator2Client",
-    "It6831Actions", "KonstanterActions", "RelayActions", "SerialActions", "CanActions", "CameraActions",
-    "KonstanterControl", "IT6831", "ToolTypeEnum", "Curve", "ClusterHmi", "DbcParser",
-    "Utils", "Camera", "CameraProperty", "MicroPhone", "Images", "SerialPort", "USBRelay", "Player", "Performance",
-    "SshUtils", "FtpUtils", "TelnetUtils", "SystemTypeEnum", "EmailUtils", "EmailType",
-    "logger",
+    "IT6831", "KonstanterControl", "Konstanter", "ADB", "AndroidService", "SwipeDirectorEnum", "ElementAttributeEnum",
+    "DirectorEnum", "KeyCode", "AppiumClient", "UiAutomator2Client", "ToolTypeEnum", "CANService", "Message",
+    "CanBoxDevice", "TraceType", "TracePlayback", "Signal", "DbcParser", "ImageCompare", "CompareProperty",
+    "CompareTypeEnum", "Singleton", "CameraActions", "CanActions", "It6831Actions", "KonstanterActions", "RelayActions",
+    "SerialActions", "Curve", "ClusterHmi", "ClusterHmiScreenshot", "HypervisorScreenShot", "AirCondition", "QnxDevice",
+    "QnxActions", "QnxLocalScreenShot", "logger", "Utils", "SystemTypeEnum", "Camera", "CameraProperty", "MicroPhone",
+    "FrameID", "Mark", "Images", "SerialPort", "USBRelay", "Player", "Performance", "SshUtils", "FtpUtils",
+    "TelnetUtils", "EmailUtils", "EmailType"
 ]

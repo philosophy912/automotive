@@ -1,16 +1,15 @@
 # -*- coding:utf-8 -*-
 # --------------------------------------------------------
-# Copyright (C), 2016-2020, China TSP, All rights reserved
+# Copyright (C), 2016-2020, lizhe, All rights reserved
 # --------------------------------------------------------
-# @Name:        IT6831
-# @Purpose:     控制IT6831可编程电源
-# @Author:      liluo
-# @Created:     2019/8/21 9:47
+# @Name:        it6831.py
+# @Author:      lizhe
+# @Created:     2021/5/1 - 23:59
 # --------------------------------------------------------
 from time import sleep
 from automotive.logger.logger import logger
 from automotive.utils.serial_port import SerialPort
-from automotive.core.actions.api import BaseBattery
+from automotive.common.api import BaseBattery
 
 
 class Status(object):

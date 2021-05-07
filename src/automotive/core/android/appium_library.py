@@ -1,11 +1,10 @@
 # -*- coding:utf-8 -*-
 # --------------------------------------------------------
-# Copyright (C), 2016-2020, China TSP, All rights reserved
+# Copyright (C), 2016-2020, lizhe, All rights reserved
 # --------------------------------------------------------
-# @Name:        appium_library
-# @Purpose:     基于Appium官方的PythonClient开发的库（已不再维护)
+# @Name:        appium_library.py
 # @Author:      lizhe
-# @Created:     2019/8/21 9:47
+# @Created:     2021/5/1 - 23:49
 # --------------------------------------------------------
 import subprocess as sp
 import time
@@ -1228,10 +1227,10 @@ class AppiumPythonClient(object):
     def page_should_contain_element_by_resource(self, resource: dict, check_list: (list, tuple)):
         """
         页面是否包含resource中包含的多个元素
-        
+
         如：resource = {"a": "xxx.xxx.xxx", "b"："xxx.xxx.xxx", "c"："xxx.xxx.xxx"}
 
-        check_list = ["a","b"] 
+        check_list = ["a","b"]
 
         :param resource: 顶层的resource
 

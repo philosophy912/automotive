@@ -1,13 +1,12 @@
 # -*- coding:utf-8 -*-
 # --------------------------------------------------------
-# Copyright (C), 2016-2020, China TSP, All rights reserved
+# Copyright (C), 2016-2020, lizhe, All rights reserved
 # --------------------------------------------------------
-# @Name:        cluster_hmi_screenshot.py
-# @Purpose:     todo
+# @Name:        screenshot.py
 # @Author:      lizhe
-# @Created:     2020/10/22 - 23:15
+# @Created:     2021/5/1 - 23:53
 # --------------------------------------------------------
-from ..api import ScreenShot
+from automotive.common.api import ScreenShot
 from automotive.utils.telnet_utils import TelnetUtils
 from automotive.logger.logger import logger
 from time import sleep

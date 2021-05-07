@@ -1,11 +1,10 @@
 # -*- coding:utf-8 -*-
 # --------------------------------------------------------
-# Copyright (C), 2016-2020, China TSP, All rights reserved
+# Copyright (C), 2016-2020, lizhe, All rights reserved
 # --------------------------------------------------------
 # @Name:        version.py
-# @Purpose:     version info
 # @Author:      lizhe
-# @Created:     2020/02/12 22:43
+# @Created:     2021/5/1 - 23:19
 # --------------------------------------------------------
 
-VERSION = '3.0'
+VERSION = '4.0.0'

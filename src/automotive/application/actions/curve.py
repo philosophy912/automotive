@@ -1,14 +1,14 @@
 # -*- coding:utf-8 -*-
 # --------------------------------------------------------
-# Copyright (C), 2016-2020, China TSP, All rights reserved
+# Copyright (C), 2016-2020, lizhe, All rights reserved
 # --------------------------------------------------------
 # @Name:        curve.py
-# @Purpose:     解析电压曲线
 # @Author:      lizhe
-# @Created:     2019/10/30 16:35
+# @Created:     2021/5/2 - 0:02
 # --------------------------------------------------------
 import copy
-import pandas as pd
+import os
+
 from automotive.logger.logger import logger
 
 
@@ -79,27 +79,33 @@ class Curve(object):
 
         :return:  电压值列表
         """
-        contents = pd.read_csv(csv_file, names=["second", "voltage"])
-        contents = contents[self._filter_line:]
-        voltage_list = contents["voltage"].values.tolist()
-        logger.debug(f"voltage_list length = {len(voltage_list)}")
-        # 需要拷贝数组，因为获取点火点的时候有用到了pop方法
-        backup_voltage_list = copy.copy(voltage_list)
-        index = self.__get_crank_point(backup_voltage_list)
-        logger.debug(f"点火从{index}开始,值为{voltage_list[index]}")
-        logger.debug(f"voltage_list length {len(voltage_list)}")
-        before_crank = []
-        # 截取5个之前的数据
-        for i in range(self._cycle):
-            before_crank.append(voltage_list[index - (i + 1) * self._step])
-        logger.debug(f"之前的数据[{before_crank}]")
-        # crank开始之后的数据
-        after_crank_list = voltage_list[index::self._step]
-        normal_index = self.__get_voltage_normal_position(after_crank_list)
-        # 电压正常后仍然去了5个周期数据
-        crank_to_normal = after_crank_list[:normal_index + 1 + self._cycle]
-        logger.debug(f"crank点开始之后的数据{crank_to_normal}")
-        crank_list = before_crank + crank_to_normal
-        logger.debug(f"点火曲线是{crank_list}")
-        # 处理字符串变成float类型
-        return list(map(lambda x: float(x), crank_list))
+        try:
+            import pandas as pd
+        except ModuleNotFoundError:
+            os.system("pip install pandas")
+        finally:
+            import pandas as pd
+            contents = pd.read_csv(csv_file, names=["second", "voltage"])
+            contents = contents[self._filter_line:]
+            voltage_list = contents["voltage"].values.tolist()
+            logger.debug(f"voltage_list length = {len(voltage_list)}")
+            # 需要拷贝数组，因为获取点火点的时候有用到了pop方法
+            backup_voltage_list = copy.copy(voltage_list)
+            index = self.__get_crank_point(backup_voltage_list)
+            logger.debug(f"点火从{index}开始,值为{voltage_list[index]}")
+            logger.debug(f"voltage_list length {len(voltage_list)}")
+            before_crank = []
+            # 截取5个之前的数据
+            for i in range(self._cycle):
+                before_crank.append(voltage_list[index - (i + 1) * self._step])
+            logger.debug(f"之前的数据[{before_crank}]")
+            # crank开始之后的数据
+            after_crank_list = voltage_list[index::self._step]
+            normal_index = self.__get_voltage_normal_position(after_crank_list)
+            # 电压正常后仍然去了5个周期数据
+            crank_to_normal = after_crank_list[:normal_index + 1 + self._cycle]
+            logger.debug(f"crank点开始之后的数据{crank_to_normal}")
+            crank_list = before_crank + crank_to_normal
+            logger.debug(f"点火曲线是{crank_list}")
+            # 处理字符串变成float类型
+            return list(map(lambda x: float(x), crank_list))

@@ -1,11 +1,10 @@
 # -*- coding:utf-8 -*-
 # --------------------------------------------------------
-# Copyright (C), 2016-2020, China TSP, All rights reserved
+# Copyright (C), 2016-2020, lizhe, All rights reserved
 # --------------------------------------------------------
-# @Name:        trace_service.py
-# @Purpose:     Can trace的回访类，未经过严格测试。
+# @Name:        trace_playback.py
 # @Author:      lizhe
-# @Created:     2020/6/29 - 11:19
+# @Created:     2021/5/1 - 23:42
 # --------------------------------------------------------
 import importlib
 

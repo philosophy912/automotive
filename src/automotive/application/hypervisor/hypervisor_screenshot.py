@@ -1,19 +1,17 @@
 # -*- coding:utf-8 -*-
 # --------------------------------------------------------
-# Copyright (C), 2016-2020, China TSP, All rights reserved
+# Copyright (C), 2016-2020, lizhe, All rights reserved
 # --------------------------------------------------------
-# @Name:        hypervisor.py
-# @Purpose:     todo
+# @Name:        screenshot.py
 # @Author:      lizhe
-# @Created:     2020/08/09 21:46
+# @Created:     2021/5/1 - 23:55
 # --------------------------------------------------------
 import os
 import re
 from time import sleep
-
-from ..api import ScreenShot
-from ..android.adb import ADB
+from automotive.core.android.adb import ADB
 from automotive.logger import logger
+from automotive.common.api import ScreenShot
 
 
 class HypervisorScreenShot(ScreenShot):

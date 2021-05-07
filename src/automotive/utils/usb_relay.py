@@ -1,11 +1,10 @@
 # -*- coding:utf-8 -*-
 # --------------------------------------------------------
-# Copyright (C), 2016-2020, China TSP, All rights reserved
+# Copyright (C), 2016-2020, lizhe, All rights reserved
 # --------------------------------------------------------
-# @Name:        USBRelay
-# @Purpose:     继电器相关操作
-# @Author:      baiwanhong
-# @Created:     2018-12-29
+# @Name:        usb_relay.py
+# @Author:      lizhe
+# @Created:     2021/5/1 - 23:34
 # --------------------------------------------------------
 import sys
 import os

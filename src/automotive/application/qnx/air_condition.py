@@ -1,16 +1,15 @@
 # -*- coding:utf-8 -*-
 # --------------------------------------------------------
-# Copyright (C), 2016-2020, China TSP, All rights reserved
+# Copyright (C), 2016-2020, lizhe, All rights reserved
 # --------------------------------------------------------
 # @Name:        air_condition.py
-# @Purpose:     todo
 # @Author:      lizhe
-# @Created:     2020/8/10 - 15:17
+# @Created:     2021/5/1 - 23:55
 # --------------------------------------------------------
 from .qnx_device import QnxDevice
 from .qnx_actions import QnxActions
 from .qnx_local_screenshot import QnxLocalScreenShot
-from ..api import ScreenShot, Actions, Device
+from automotive.common.api import ScreenShot, Actions, Device
 
 
 class AirCondition(ScreenShot, Actions, Device):

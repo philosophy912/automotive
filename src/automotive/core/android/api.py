@@ -1,11 +1,10 @@
 # -*- coding:utf-8 -*-
 # --------------------------------------------------------
-# Copyright (C), 2016-2020, China TSP, All rights reserved
+# Copyright (C), 2016-2020, lizhe, All rights reserved
 # --------------------------------------------------------
 # @Name:        api.py
-# @Purpose:     android测试相关结构
 # @Author:      lizhe
-# @Created:     2020/7/24 - 16:53
+# @Created:     2021/5/1 - 23:48
 # --------------------------------------------------------
 import time
 from abc import ABCMeta, abstractmethod

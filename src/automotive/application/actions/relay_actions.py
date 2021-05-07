@@ -1,16 +1,15 @@
 # -*- coding:utf-8 -*-
 # --------------------------------------------------------
-# Copyright (C), 2016-2020, China TSP, All rights reserved
+# Copyright (C), 2016-2020, lizhe, All rights reserved
 # --------------------------------------------------------
-# @Name:        relay_actions.py.py
-# @Purpose:     继电器操作
+# @Name:        relay_actions.py
 # @Author:      lizhe
-# @Created:     2020/02/05 21:24
+# @Created:     2021/5/2 - 0:02
 # --------------------------------------------------------
 from time import sleep
 from automotive.logger.logger import logger
 from automotive.utils.usb_relay import USBRelay
-from .api import BaseActions
+from automotive.common.api import BaseActions
 
 
 class RelayActions(BaseActions):

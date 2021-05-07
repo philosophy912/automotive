@@ -1,11 +1,10 @@
 # -*- coding:utf-8 -*-
-# --------------------------------------------------------  
-# Copyright (C), 2016-2020, China TSP, All rights reserved
-# --------------------------------------------------------                 
-# @Name:        utils
-# @Purpose:     相关的通用类
-# @Author:      lizhe  
-# @Created:     2019/8/21 10:32
+# --------------------------------------------------------
+# Copyright (C), 2016-2020, lizhe, All rights reserved
+# --------------------------------------------------------
+# @Name:        utils.py
+# @Author:      lizhe
+# @Created:     2021/5/1 - 23:34
 # --------------------------------------------------------
 import json
 import time
@@ -13,12 +12,11 @@ import os
 import random
 import inspect
 import zipfile
+import yaml
 from enum import Enum
 
-import yaml
-from pinyin import pinyin
 from automotive.logger import logger
-from automotive.core import Singleton
+from automotive.core.singleton import Singleton
 
 
 class SystemTypeEnum(Enum):
@@ -140,6 +138,11 @@ class Utils(metaclass=Singleton):
 
         :return: 返回拼音的字符串
         """
+        try:
+            from pinyin import pinyin
+        except ModuleNotFoundError:
+            os.system("pip install pinyin")
+        from pinyin import pinyin
         if isinstance(text, bytes):
             text = text.decode("utf-8")
         return pinyin.get_initial(text, delimiter) if is_first else pinyin.get(text, delimiter, format_.value)

@@ -1,11 +1,10 @@
 # -*- coding:utf-8 -*-
 # --------------------------------------------------------
-# Copyright (C), 2016-2020, China TSP, All rights reserved
-# --------------------------------------------------------                 
+# Copyright (C), 2016-2020, lizhe, All rights reserved
+# --------------------------------------------------------
 # @Name:        pcan_bus.py
-# @Purpose:     PCanBus
 # @Author:      lizhe
-# @Created:     2019/11/30 22:35  
+# @Created:     2021/5/1 - 23:39
 # --------------------------------------------------------
 from automotive.logger.logger import logger
 from .pcan import PCan

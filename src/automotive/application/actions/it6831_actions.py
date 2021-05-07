@@ -1,16 +1,15 @@
 # -*- coding:utf-8 -*-
 # --------------------------------------------------------
-# Copyright (C), 2016-2020, China TSP, All rights reserved
+# Copyright (C), 2016-2020, lizhe, All rights reserved
 # --------------------------------------------------------
 # @Name:        it6831_actions.py
-# @Purpose:     IT6831操作
 # @Author:      lizhe
-# @Created:     2020/02/05 21:27
+# @Created:     2021/5/2 - 0:02
 # --------------------------------------------------------
 from time import sleep
 from automotive.logger.logger import logger
-from automotive.core.actions.battery.it6831 import IT6831
-from .api import PowerActions
+from automotive.core.battery.it6831 import IT6831
+from automotive.common.api import PowerActions
 
 
 class It6831Actions(PowerActions):

@@ -1,11 +1,10 @@
 # -*- coding:utf-8 -*-
 # --------------------------------------------------------
-# Copyright (C), 2016-2020, China TSP, All rights reserved
+# Copyright (C), 2016-2020, lizhe, All rights reserved
 # --------------------------------------------------------
 # @Name:        api.py
-# @Purpose:     can相关的操作
 # @Author:      lizhe
-# @Created:     2020/7/22 - 12:42
+# @Created:     2021/5/1 - 23:42
 # --------------------------------------------------------
 from concurrent.futures import ThreadPoolExecutor, wait, ALL_COMPLETED
 from automotive.logger.logger import logger

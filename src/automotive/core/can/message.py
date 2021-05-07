@@ -1,11 +1,10 @@
 # -*- coding:utf-8 -*-
-# --------------------------------------------------------  
-# Copyright (C), 2016-2020, China TSP, All rights reserved
-# --------------------------------------------------------                 
-# @Name:        message.py  
-# @Purpose:     Message
-# @Author:      lizhe  
-# @Created:     2019/12/1 10:34  
+# --------------------------------------------------------
+# Copyright (C), 2016-2020, lizhe, All rights reserved
+# --------------------------------------------------------
+# @Name:        message.py
+# @Author:      lizhe
+# @Created:     2021/5/1 - 23:42
 # --------------------------------------------------------
 import sys
 from automotive.logger import logger

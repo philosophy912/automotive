@@ -1,16 +1,15 @@
 # -*- coding:utf-8 -*-
 # --------------------------------------------------------
-# Copyright (C), 2016-2020, China TSP, All rights reserved
+# Copyright (C), 2016-2020, lizhe, All rights reserved
 # --------------------------------------------------------
-# @Name:        konstanter
-# @Purpose:     可编程电源konstanter ssp 240-20控制程序
-# @Author:      liluo
-# @Created:     2019-08-27
+# @Name:        konstanter.py
+# @Author:      lizhe
+# @Created:     2021/5/1 - 23:59
 # --------------------------------------------------------
 from time import sleep
 from automotive.logger.logger import logger
 from automotive.utils.serial_port import SerialPort
-from ..api import BaseBattery
+from automotive.common.api import BaseBattery
 
 
 class Konstanter(BaseBattery):

@@ -1,16 +1,15 @@
 # -*- coding:utf-8 -*-
 # --------------------------------------------------------
-# Copyright (C), 2016-2020, China TSP, All rights reserved
+# Copyright (C), 2016-2020, lizhe, All rights reserved
 # --------------------------------------------------------
 # @Name:        camera_actions.py
-# @Purpose:     摄像头操作
 # @Author:      lizhe
-# @Created:     2020/02/05 20:57
+# @Created:     2021/5/2 - 0:01
 # --------------------------------------------------------
 from time import sleep
 from automotive.logger.logger import logger
 from automotive.utils.camera import Camera
-from .api import BaseActions
+from automotive.common.api import BaseActions
 
 
 class CameraActions(BaseActions):

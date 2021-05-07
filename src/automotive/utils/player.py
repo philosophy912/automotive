@@ -1,14 +1,13 @@
 # -*- coding:utf-8 -*-
 # --------------------------------------------------------
-# Copyright (C), 2016-2020, China TSP, All rights reserved
+# Copyright (C), 2016-2020, lizhe, All rights reserved
 # --------------------------------------------------------
-# @Name:        Player
-# @Purpose:     播放音频文件，用于测试车机VR功能；将文本转成语音输出
-# @Author:      liluo
-# @Created:     2018-12-27
+# @Name:        player.py
+# @Author:      lizhe
+# @Created:     2021/5/1 - 23:34
 # --------------------------------------------------------
-import win32com.client
-import pyttsx3 as tts
+import os
+
 from time import sleep
 from automotive.logger import logger
 
@@ -20,11 +19,21 @@ class Player(object):
 
     def __init__(self):
         # 避免打印，导入包放到了init的时候再导入
-        import pygame
-        self.__pygame = pygame
-        self.__pygame.mixer.init()
-        self.speaker = win32com.client.Dispatch("SAPI.SpVoice")
-        self._tts_play = tts.init()
+        try:
+            import pygame
+            import pyttsx3 as tts
+            import win32com.client
+        except ModuleNotFoundError:
+            os.system("pip install pygame")
+            os.system("pip install pyttsx3")
+        finally:
+            import pygame
+            import pyttsx3 as tts
+            import win32com.client
+            self.__pygame = pygame
+            self.__pygame.mixer.init()
+            self.speaker = win32com.client.Dispatch("SAPI.SpVoice")
+            self._tts_play = tts.init()
 
     def text_to_tts(self, text: (str, bytes), rate: int = 150, volume: float = 1):
         """

@@ -1,14 +1,13 @@
 # -*- coding:utf-8 -*-
 # --------------------------------------------------------
-# Copyright (C), 2016-2020, China TSP, All rights reserved
+# Copyright (C), 2016-2020, lizhe, All rights reserved
 # --------------------------------------------------------
 # @Name:        adb.py
-# @Purpose:     ADB相关操作
 # @Author:      lizhe
-# @Created:     2020/7/22 - 16:18
+# @Created:     2021/5/1 - 23:47
 # --------------------------------------------------------
 import subprocess as sp
-from ..api import ScreenShot
+from automotive.common.api import ScreenShot
 from automotive.logger import logger
 from .keycode import KeyCode
 from time import sleep

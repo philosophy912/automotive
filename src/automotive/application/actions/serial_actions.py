@@ -1,15 +1,14 @@
 # -*- coding:utf-8 -*-
 # --------------------------------------------------------
-# Copyright (C), 2016-2020, China TSP, All rights reserved
+# Copyright (C), 2016-2020, lizhe, All rights reserved
 # --------------------------------------------------------
 # @Name:        serial_actions.py
-# @Purpose:     串口操作
 # @Author:      lizhe
-# @Created:     2020/02/05 21:33
+# @Created:     2021/5/2 - 0:02
 # --------------------------------------------------------
 from automotive.utils.serial_port import SerialPort
 from automotive.logger.logger import logger
-from .api import BaseActions
+from automotive.common.api import BaseActions
 
 
 class SerialActions(BaseActions):

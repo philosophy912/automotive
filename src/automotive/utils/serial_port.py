@@ -1,11 +1,10 @@
 # -*- coding:utf-8 -*-
 # --------------------------------------------------------
-# Copyright (C), 2016-2020, China TSP, All rights reserved
+# Copyright (C), 2016-2020, lizhe, All rights reserved
 # --------------------------------------------------------
 # @Name:        serial_port.py
-# @Purpose:     串口操作
-# @Author:      liluo
-# @Created:     2019-05-09
+# @Author:      lizhe
+# @Created:     2021/5/1 - 23:34
 # --------------------------------------------------------
 import os
 from concurrent.futures.thread import ThreadPoolExecutor

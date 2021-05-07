@@ -1,11 +1,10 @@
 # -*- coding:utf-8 -*-
 # --------------------------------------------------------
-# Copyright (C), 2016-2020, China TSP, All rights reserved
+# Copyright (C), 2016-2020, lizhe, All rights reserved
 # --------------------------------------------------------
-# @Name:        Singleton
-# @Purpose:     单例类
+# @Name:        singleton.py
 # @Author:      lizhe
-# @Created:     2018-09-12
+# @Created:     2021/5/1 - 23:57
 # --------------------------------------------------------
 
 

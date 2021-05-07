@@ -1,11 +1,10 @@
 # -*- coding:utf-8 -*-
 # --------------------------------------------------------
-# Copyright (C), 2016-2020, China TSP, All rights reserved
+# Copyright (C), 2016-2020, lizhe, All rights reserved
 # --------------------------------------------------------
 # @Name:        telnet_utils.py
-# @Purpose:     todo
 # @Author:      lizhe
-# @Created:     2020/10/22 - 22:19
+# @Created:     2021/5/1 - 23:34
 # --------------------------------------------------------
 import time
 from telnetlib import Telnet

@@ -1,6 +1,15 @@
 ## 版本更新说明
 
- **V3.0**
+ **V4.0.0**
+
+- 调整了api的结构到common下面
+- 增加了application包与core进行分开
+- 调整了setup依赖的包，避免安装的时候时间过长，需要用到该包的时候在代码中进行pip安装（需要提前配置好pip）
+- 增加了发送默认值的时候恢复初始的message
+
+
+
+**V3.0**
 
 - 容错了诺博项目的测试截图(clusterHMI)
 - 增加了python解析DBC的库
@@ -78,9 +87,9 @@
 - 新增了hypervisor和qnx两个模块，主要实现功能
 
   - 相应的QNX系统中的截图（Hypervisor是通过ADB htalk方式截图, qnx则通过串口截图)
-  
+
   - 相应的QNX系统的点击操作（仅空调屏)
-  
+
 - 修复了文档错误
 
 - 废弃了AppiumPythonClient模块（但仍然可以使用）
@@ -129,6 +138,7 @@
 - 修复了继电器on/off反接需要调整接口的问题，增加了reverse用于翻转操作
 
 ##### V1.1.0
+
 - 修复了CAN消息stop之后无法resume的问题
 - 修改了konstanter的start函数返回值为None，并添加自动判断
 - 联动修复了onoff的actions实现类
@@ -145,15 +155,17 @@
 - 修复了CAN消息发送default默认值不成功的问题
 
 ##### V1.0.7
+
 - 修复了CAN消息发送和接收错误  
-当CAN消息发送的时候，如果发送的值低于1位的长度就会出错  
-当CAN消息接收消息的时候，解析会出现的错误
+  当CAN消息发送的时候，如果发送的值低于1位的长度就会出错  
+  当CAN消息接收消息的时候，解析会出现的错误
 - 增加了CAN盒未连接的时候发送消息会报错的提示
 - 根据airtest增加了image的对比方式find_best_result/find_best_result_by_position, 应用于存在背景图片的图像对比
 - 增加了Battery相关的连接和断开接口，同时调整了onoff中对应的修改
 
 
 ##### V1.0.6
+
 - 修复了CAN 消息解析错误的问题
 - 修复了PCAN接收消息的错误
 - 修改了resume_transmit接口，当不传入msgid的时候恢复所有已发送的消息
@@ -164,17 +176,20 @@
 - 增加了串口的disconnect方法
 
 #### V1.0.5
+
 - 修改了CAN层的log打印等级
 - 增加了adb tap的方式点击屏幕坐标
 
 #### V1.0.4
+
 - 修复了CAN工具计算值的错误, 涉及src/automotive/can/interfaces/message以及src/automotive/can/interfaces/tools文件
 - 增加了单元测试
 
 #### V1.0.3
+
 - 增加了新的CAN分析仪的dll文件
 - 修复了ADB截屏的错误  
-    针对高通820需要先执行adb remount操作，否则会导致截屏不成功
+  针对高通820需要先执行adb remount操作，否则会导致截屏不成功
 
 #### V1.0.2
 
@@ -201,7 +216,6 @@
 
 
 ​    
-
 
 
 

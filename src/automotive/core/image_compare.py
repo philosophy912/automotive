@@ -1,11 +1,10 @@
 # -*- coding:utf-8 -*-
 # --------------------------------------------------------
-# Copyright (C), 2016-2020, China TSP, All rights reserved
+# Copyright (C), 2016-2020, lizhe, All rights reserved
 # --------------------------------------------------------
 # @Name:        image_compare.py
-# @Purpose:     todo
 # @Author:      lizhe
-# @Created:     2020/08/09 16:41
+# @Created:     2021/5/1 - 23:57
 # --------------------------------------------------------
 import shutil
 from enum import Enum, unique
