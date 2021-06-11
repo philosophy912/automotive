@@ -6,6 +6,7 @@
 # @Author:      lizhe
 # @Created:     2021/5/1 - 23:42
 # --------------------------------------------------------
+import time
 from concurrent.futures import ThreadPoolExecutor, wait, ALL_COMPLETED
 from automotive.logger.logger import logger
 from time import sleep
@@ -104,11 +105,13 @@ class BaseCanDevice(metaclass=ABCMeta):
 class BaseCanBus(metaclass=ABCMeta):
     def __init__(self):
         # 最大线程数
-        self._max_workers = 100
+        self._max_workers = 300
         # 保存接受数据帧的字典，用于接收
         self._receive_messages = dict()
         # 保存发送数据帧的字典，用于发送
         self._send_messages = dict()
+        # 保存发送的事件信号的字典，用于发送
+        self._event_send_messages = dict()
         # 用于存放接收到的数据
         self._stack = []
         # 周期性信号
@@ -127,6 +130,8 @@ class BaseCanBus(metaclass=ABCMeta):
         self._transmit_thread = []
         # 接收线程
         self._receive_thread = []
+        # 事件信号线程
+        self._event_thread = dict()
 
     def __transmit(self, can: BaseCanDevice, message: Message, cycle_time: float):
         """
@@ -182,24 +187,44 @@ class BaseCanBus(metaclass=ABCMeta):
                 # 已经在里面了，所以修改data值而已
                 self._send_messages[msg_id].data = message.data
 
-    @staticmethod
-    def __event(can: BaseCanDevice, message: Message):
+    def __event_transmit(self, can: BaseCanDevice, msg_id: int, cycle_time: float):
+        """
+        事件信号发送线程
+        :return:
+        """
+        # 需要发送数据以及当前还有数据可以发送
+        while self._need_transmit and msg_id in self._event_send_messages and len(
+                self._event_send_messages[msg_id]) > 0:
+            message = self._event_send_messages[msg_id].pop(0)
+            logger.debug(f"****** Send msg[{hex(msg_id)}] and data [{list(map(lambda x: hex(x), message.data))}] "
+                         f"and cycle time [{message.cycle_time_fast}]")
+            can.transmit(message)
+            sleep(cycle_time)
+
+    def __event(self, can: BaseCanDevice, message: Message):
         """
         发送事件信号
         :param can can设备实例化
         :param message: message的集合对象
         """
         msg_id = message.msg_id
-        hex_msg_id = hex(msg_id)
-        data = message.data
         cycle_time = message.cycle_time_fast / 1000.0
         # 事件信号
         event_times = message.cycle_time_fast_times if message.cycle_time_fast_times > 0 else 1
+        # 构建消息列表
+        messages = []
         for i in range(event_times):
-            logger.debug(f"****** The {i} times send msg[{hex_msg_id}] and data [{list(map(lambda x: hex(x), data))}] "
-                         f"and cycle time [{message.cycle_time_fast}]")
-            can.transmit(message)
-            sleep(cycle_time)
+            messages.append(message)
+        # 第一次发送
+        if msg_id not in self._event_send_messages:
+            self._event_send_messages[msg_id] = messages
+            # 第一次发送，所以需要新开线程
+            self._event_thread[msg_id] = self._thread_pool.submit(self.__event_transmit, can, msg_id, cycle_time)
+        else:
+            self._event_send_messages[msg_id] += messages
+            # 判断消息是否发送完成，若发送完成则需要新开线程，否则继续使用老的线程发送
+            if self._event_thread[msg_id].done():
+                self._event_thread[msg_id] = self._thread_pool.submit(self.__event_transmit, can, msg_id, cycle_time)
 
     def _open_can(self):
         """
@@ -221,6 +246,7 @@ class BaseCanBus(metaclass=ABCMeta):
         wait(self._transmit_thread, return_when=ALL_COMPLETED)
         self._need_receive = False
         wait(self._receive_thread, return_when=ALL_COMPLETED)
+        wait(self._event_thread.values(), return_when=ALL_COMPLETED)
         if self._thread_pool:
             logger.info("shutdown thread pool")
             self._thread_pool.shutdown()
@@ -280,7 +306,7 @@ class BaseCanBus(metaclass=ABCMeta):
             if message_id in self._send_messages:
                 logger.info(f"Message <{hex(message_id)}> is stop to send.")
                 self._send_messages[message_id].stop_flag = True
-                self._send_messages[message_id].pause_flag = True
+                # self._send_messages[message_id].pause_flag = True
             else:
                 logger.error(f"Please check message id, Message <{hex(message_id)}> is not contain.")
         else:
@@ -288,7 +314,7 @@ class BaseCanBus(metaclass=ABCMeta):
             for key, item in self._send_messages.items():
                 logger.info(f"Message <{hex(key)}> is stop to send.")
                 item.stop_flag = True
-                item.pause_flag = True
+                # item.pause_flag = True
 
     def _resume_transmit(self, can: BaseCanDevice, message_id: int):
         """

@@ -33,21 +33,30 @@ def __get_can_box_device() -> CanBoxDevice:
     :return: can盒类型
     """
     can = PCanBus()
-    can.open_can()
-    if can.is_open():
-        can.close_can()
-        return CanBoxDevice.PEAKCAN
+    try:
+        can.open_can()
+        if can.is_open():
+            can.close_can()
+            return CanBoxDevice.PEAKCAN
+    except RuntimeError:
+        logger.debug("open PEAKCAN failed")
     can = UsbCanBus(can_box_device=CanBoxDevice.CANALYST)
-    can.open_can()
-    if can.is_open():
-        can.close_can()
-        return CanBoxDevice.CANALYST
+    try:
+        can.open_can()
+        if can.is_open():
+            can.close_can()
+            return CanBoxDevice.CANALYST
+    except RuntimeError:
+        logger.debug("open CANALYST failed")
     can = UsbCanBus(can_box_device=CanBoxDevice.USBCAN)
-    can.open_can()
-    if can.is_open():
-        can.close_can()
-        return CanBoxDevice.USBCAN
-    raise RuntimeError("no device found")
+    try:
+        can.open_can()
+        if can.is_open():
+            can.close_can()
+            return CanBoxDevice.USBCAN
+    except RuntimeError:
+        logger.debug("open USBCAN failed")
+    raise RuntimeError("No device found, is can box connected")
 
 
 def get_can_bus(can_box_device: CanBoxDevice) -> tuple:
@@ -177,17 +186,9 @@ class CANService(BaseCan):
     def name_messages(self) -> dict:
         return self.__name_messages
 
-    @name_messages.setter
-    def name_messages(self, name_messages):
-        self.__name_messages = name_messages
-
     @property
     def messages(self) -> dict:
         return self.__messages
-
-    @messages.setter
-    def messages(self, messages):
-        self.__messages = messages
 
     def __restore_default_message(self):
         """
@@ -195,48 +196,6 @@ class CANService(BaseCan):
         """
         self.__messages = copy.deepcopy(self.__backup_messages)
         self.__name_messages = copy.deepcopy(self.__backup_name_messages)
-
-    def __send_random(self, filter_sender: str, interval: int, default_message: dict = None):
-        """
-        随机发送CAN消息
-
-        :param filter_sender:  过滤发送者，如HU。仅支持单个节点过滤
-
-        :param interval: 每个信号值改变的间隔时间，默认是1秒
-
-        :param default_message {0x152: {"aaa": 0x1, "bbb": 0xc}, 0x119: {"ccc": 0x1, "ddd": 0x2}}
-        """
-        for msg_id, msg in self.messages.items():
-            logger.trace(f"msg id = {msg_id}")
-            if filter_sender:
-                filter_condition = filter_sender.lower() == msg.sender.lower() if filter_sender else True
-            else:
-                filter_condition = False
-            logger.debug(f"filter_condition is {filter_condition}")
-            if not (msg.nm_message or msg.diag_state or filter_condition):
-                logger.trace(f"will send msg [{hex(msg_id)}]")
-                # 保留发送的值
-                if default_message and msg_id in default_message:
-                    for sig_name, sig in msg.signals.items():
-                        if sig_name in default_message[msg_id]:
-                            sig.value = default_message[msg_id][sig_name]
-                        else:
-                            max_value = 2 ** sig.bit_length - 1
-                            value = random.randint(0, max_value)
-                            logger.trace(f"value is [{value}]")
-                            sig.value = value
-                else:
-                    for sig_name, sig in msg.signals.items():
-                        max_value = 2 ** sig.bit_length - 1
-                        value = random.randint(0, max_value)
-                        logger.trace(f"value is [{value}]")
-                        sig.value = value
-                # 避免错误发生后不再发送数据，容错处理
-                try:
-                    self.send_can_message(msg)
-                except RuntimeError:
-                    logger.error(f"transmit message {hex(msg_id)} failed")
-                sleep(interval)
 
     def __set_message(self, msg_id: int, data: list) -> Message:
         """
@@ -250,6 +209,76 @@ class CANService(BaseCan):
         msg.data = data
         msg.update(False)
         return msg
+
+    @staticmethod
+    def __is_message_in_node(message: Message, filter_sender: (str, tuple)) -> bool:
+        sender = message.sender.lower()
+        if isinstance(filter_sender, str):
+            return sender == filter_sender.lower()
+        elif isinstance(filter_sender, tuple):
+            for item in filter_sender:
+                if sender == item.lower():
+                    return True
+            return False
+
+    def __filter_messages(self, filter_sender: (str, tuple) = None, filter_nm: bool = True,
+                          filter_diag: bool = True) -> list:
+        """
+        根据条件过滤相应的消息帧
+        :param filter_sender: 根据节点名称过滤
+        :param filter_nm: 是否过滤网络管理帧
+        :param filter_diag: 是否过滤诊断帧
+        :return: 过滤后的消息
+        """
+        messages = []
+        for msg_id, message in self.messages.items():
+            if filter_sender:
+                is_filter_sender = self.__is_message_in_node(message, filter_sender)
+            else:
+                is_filter_sender = False
+            is_diag_message = filter_nm and (message.diag_request or message.diag_response or message.diag_state)
+            is_nm_message = filter_diag and message.nm_message
+            if not (is_filter_sender or is_diag_message or is_nm_message):
+                messages.append(message)
+        return messages
+
+    def __send_message(self, message: Message, default_message: dict = None, is_default_value: bool = False):
+        """
+        计算值并发送消息
+        :param message: 消息
+        :param default_message: 默认发送的消息
+        """
+        msg_id = message.msg_id
+        # 默认值优先，所以需要当不发默认值的时候才启用该函数
+        if not is_default_value and default_message and msg_id in default_message:
+            for sig_name, sig in message.signals.items():
+                if sig_name in default_message[msg_id]:
+                    sig.value = default_message[msg_id][sig_name]
+                else:
+                    max_value = 2 ** sig.bit_length - 1
+                    value = random.randint(0, max_value)
+                    logger.trace(f"value is [{value}]")
+                    sig.value = value
+        else:
+            # 当不需要发送默认值的时候，就发随机值
+            if not is_default_value:
+                for sig_name, sig in message.signals.items():
+                    max_value = 2 ** sig.bit_length - 1
+                    value = random.randint(0, max_value)
+                    logger.trace(f"value is [{value}]")
+                    sig.value = value
+        # 避免错误发生后不再发送数据，容错处理
+        try:
+            logger.trace(f"sender is {message.sender}")
+            self.send_can_message(message)
+        except RuntimeError as e:
+            logger.error(f"transmit message {hex(msg_id)} failed, error is {e}")
+
+    def __send_messages(self, messages: list, interval: float = 0, default_message: dict = None):
+        for message in messages:
+            self.__send_message(message, default_message)
+        if interval > 0:
+            sleep(interval)
 
     def send_can_message_by_id_or_name(self, msg: (int, str)):
         """
@@ -477,32 +506,6 @@ class CANService(BaseCan):
         """
         return self._can.get_stack()
 
-    def send_random(self, filter_sender: str = None, cycle_time: int = None, interval: int = 0.1,
-                    default_message: dict = None):
-        """
-        随机发送信号
-
-        1、不发送诊断帧和网络管理帧
-
-        2、信号的值随机设置
-
-        3、需要过滤指定的发送者
-
-        :param default_message: 固定要发送的信号
-
-        :param filter_sender: 过滤发送者，如HU。仅支持单个节点过滤
-
-        :param cycle_time: 循环次数，当没有传入的时候无线循环
-
-        :param interval: 每个信号值改变的间隔时间，默认是0.1秒
-        """
-        if cycle_time:
-            for i in range(cycle_time):
-                logger.info(f"The {i + 1} time set random value")
-                self.__send_random(filter_sender, interval, default_message)
-        else:
-            self.__send_random(filter_sender, interval, default_message)
-
     def check_signal_value(self, stack: list, msg_id: int, sig_name: str, expect_value: int, count: int = None,
                            exact: bool = True):
         """
@@ -544,17 +547,48 @@ class CANService(BaseCan):
             logger.info(f"current value is {actual_value}, expect value is {expect_value}")
             return expect_value == actual_value
 
-    def send_messages(self, node_name: str):
+    def send_random(self, filter_sender: (str, tuple) = None, cycle_time: int = None, interval: float = 0.1,
+                    default_message: dict = None, filter_nm: bool = True, filter_diag: bool = True):
         """
-        发送除了node_name之外的所有信号，该方法用于发送出测试对象之外的所有信号
+        随机发送信号
 
-        :param node_name: 测试对象节点名称
+        1、不发送诊断帧和网络管理帧
+
+        2、信号的值随机设置
+
+        3、需要过滤指定的发送者
+
+        :param default_message: 固定要发送的信号 {0x152: {"aaa": 0x1, "bbb": 0xc}, 0x119: {"ccc": 0x1, "ddd": 0x2}}
+
+        :param filter_sender: 过滤发送者，如HU。支持单个或者多个节点
+
+        :param cycle_time: 循环次数，默认1000万次
+
+        :param interval: 每轮信号值改变的间隔时间，默认是0.1秒
+
+        :param filter_nm: 是否过滤网络管理报文
+
+        :param filter_diag: 是否过滤诊断报文
         """
-        for msg_id, message in self.messages.items():
-            if message.sender != node_name and not (message.nm_message or message.diag_state):
-                self.send_can_message(message)
+        messages = self.__filter_messages(filter_sender, filter_nm, filter_diag)
+        if cycle_time:
+            for i in range(cycle_time):
+                logger.info(f"The {i + 1} time set random value")
+                self.__send_messages(messages, interval, default_message)
+        else:
+            while True:
+                self.__send_messages(messages, interval, default_message)
 
-    def send_default_messages(self, node_name: str):
+    def send_messages(self, filter_sender: (str, tuple) = None):
+        """
+        发送除了filter_sender之外的所有信号，该方法用于发送出测试对象之外的所有信号
+
+        :param filter_sender: 过滤发送者，如HU。支持单个或者多个节点
+        """
+        messages = self.__filter_messages(filter_sender)
+        self.__send_messages(messages)
+
+    def send_default_messages(self, node_name: (str, tuple) = None):
         """
         发送除了node_name之外的所有信号的默认数据，该方法用于发送出测试对象之外的所有信号
 

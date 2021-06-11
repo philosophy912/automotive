@@ -93,9 +93,8 @@ class PCan(BaseCanDevice):
                 self.is_open = True
                 logger.debug(f"pcan is open success")
             else:
-                logger.error(f"Method <{stack()[0][3]}> Init PEAK CAN channel_{hex(channel.value)} Failed.")
                 self.is_open = False
-                logger.debug(f"pcan is open failed")
+                raise RuntimeError(f"Method <{stack()[0][3]}> Init PEAK CAN channel_{hex(channel.value)} Failed.")
 
     @staticmethod
     def __data_package(frame_length: int, message_id: int, send_type: int, data_length: int, data: list):

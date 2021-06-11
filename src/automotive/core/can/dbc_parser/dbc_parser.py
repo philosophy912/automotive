@@ -361,51 +361,51 @@ class DbcParser(object):
         ba_def_def = self.__get_content(content, self.BA_DEF_DEF)
         logger.trace(f"ba_def_def  = {ba_def_def}")
         split = ba_def_def.split(self.BLANK)
-        name = split[0].replace(self.QUOTATION, self.NULL)
-        value = split[1].replace(self.QUOTATION, self.NULL)
-        logger.trace(f"name = [{name}] and value = [{value}]")
-        if name == self.GEN_MSG_CYCLE_TIME_FAST:
-            for message in messages:
-                message["msg_cycle_time_fast"] = int(value)
-        elif name.upper() == self.V_FRAME_FORMAT.upper():
-            for message in messages:
-                message["is_standard_can"] = True if self.STANDARD_CAN == value else False
-        elif name == self.GEN_MSG_NR_OF_REPETITION:
-            for message in messages:
-                message["gen_msg_nr_of_repetition"] = int(value)
-        elif name == self.GEN_MSG_CYCLE_TIME:
-            for message in messages:
-                message["msg_cycle_time"] = int(value)
-        elif name == self.GEN_MSG_DELAY_TIME:
-            for message in messages:
-                message["msg_delay_time"] = int(value)
-        elif name == self.GEN_MSG_SEND_TYPE:
-            for message in messages:
-                message["msg_send_type"] = value
-        elif name == self.NM_MESSAGE:
-            for message in messages:
-                message["nm_message"] = True if self.YES == value else False
-        elif name == self.DIAG_STATE:
-            for message in messages:
-                message["diag_state"] = True if self.YES == value else False
-        elif name == self.DIAG_REQUEST:
-            for message in messages:
-                message["diag_request"] = True if self.YES == value else False
-        elif name == self.DIAG_RESPONSE:
-            for message in messages:
-                message["diag_response"] = True if self.YES == value else False
-
-        elif name == self.STANDARD_CAN_FD:
-            for message in messages:
-                message["is_standard_can"] = False if self.STANDARD_CAN == value else True
-        elif name == self.GEN_SIG_START_VALUE:
-            for message in messages:
-                signals = message["signals"]
-                if len(signals) != 0:
-                    for signal in signals:
-                        signal["start_value"] = int(value)
-        else:
-            logger.debug(f"ba default type is [{name}], so nothing to do")
+        if len(split) == 2:
+            name = split[0].replace(self.QUOTATION, self.NULL)
+            value = split[1].replace(self.QUOTATION, self.NULL)
+            logger.trace(f"name = [{name}] and value = [{value}]")
+            if name == self.GEN_MSG_CYCLE_TIME_FAST:
+                for message in messages:
+                    message["msg_cycle_time_fast"] = int(value)
+            elif name.upper() == self.V_FRAME_FORMAT.upper():
+                for message in messages:
+                    message["is_standard_can"] = True if self.STANDARD_CAN == value else False
+            elif name == self.GEN_MSG_NR_OF_REPETITION:
+                for message in messages:
+                    message["gen_msg_nr_of_repetition"] = int(value)
+            elif name == self.GEN_MSG_CYCLE_TIME:
+                for message in messages:
+                    message["msg_cycle_time"] = int(value)
+            elif name == self.GEN_MSG_DELAY_TIME:
+                for message in messages:
+                    message["msg_delay_time"] = int(value)
+            elif name == self.GEN_MSG_SEND_TYPE:
+                for message in messages:
+                    message["msg_send_type"] = value
+            elif name == self.NM_MESSAGE:
+                for message in messages:
+                    message["nm_message"] = True if self.YES == value else False
+            elif name == self.DIAG_STATE:
+                for message in messages:
+                    message["diag_state"] = True if self.YES == value else False
+            elif name == self.DIAG_REQUEST:
+                for message in messages:
+                    message["diag_request"] = True if self.YES == value else False
+            elif name == self.DIAG_RESPONSE:
+                for message in messages:
+                    message["diag_response"] = True if self.YES == value else False
+            elif name == self.STANDARD_CAN_FD:
+                for message in messages:
+                    message["is_standard_can"] = False if self.STANDARD_CAN == value else True
+            elif name == self.GEN_SIG_START_VALUE:
+                for message in messages:
+                    signals = message["signals"]
+                    if len(signals) != 0:
+                        for signal in signals:
+                            signal["start_value"] = int(value)
+            else:
+                logger.debug(f"ba default type is [{name}], so nothing to do")
 
     def __set_message_attribute(self, attr_dict: dict, content: str):
         """

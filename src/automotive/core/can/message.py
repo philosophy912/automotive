@@ -7,6 +7,8 @@
 # @Created:     2021/5/1 - 23:42
 # --------------------------------------------------------
 import sys
+import time
+
 from automotive.logger import logger
 from automotive.utils import Utils
 from functools import wraps
@@ -424,7 +426,7 @@ class Message(object):
         """
         # 发送数据
         if type_:
-            logger.debug("send message")
+            logger.trace("send message")
             for name, signal in self.signals.items():
                 logger.trace(f"signal name = {signal.signal_name}")
                 # 根据原来的数据message_data，替换某一部分的内容
@@ -433,7 +435,7 @@ class Message(object):
             logger.info(f"msg id {hex(self.msg_id)} and data is {list(map(lambda x: hex(x), self.data))}")
         # 收到数据
         else:
-            logger.debug("receive message")
+            logger.trace("receive message")
             for name, signal in self.signals.items():
                 logger.trace(f"signal name = {signal.signal_name}")
                 value = get_data(self.data, signal.start_bit, signal.byte_type, signal.bit_length, self.data_length)

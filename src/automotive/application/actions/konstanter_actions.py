@@ -16,7 +16,7 @@ class KonstanterActions(PowerActions):
     konstanter电源操作类
     """
 
-    def __init__(self, port: str, baud_rate: int):
+    def __init__(self, port: str, baud_rate: int = 19200):
         super().__init__()
         self.__konstanter = None
         self.__port = port.upper()
@@ -111,13 +111,16 @@ class KonstanterActions(PowerActions):
             raise RuntimeError(f"电源只支持0-20V电压，当前要设置的起[{start}]始[{end}]电压为超过了范围")
         if start == end:
             raise RuntimeError(f"开始值{start}不能和结束值{end}相同")
+        # 计算总共耗时
+        total_time = (int(abs((end - start)) // step) + 1) * interval
+        logger.debug(f"total_time = {total_time}")
         logger.debug(f"设置电压初始值为{start}")
         self.__konstanter.set_voltage_current(start, current=current)
         logger.info("正在设置电压到可编程电源")
         start, middle, end = self.__konstanter.set_raise_down(start, end, step, interval, current=current)
         logger.debug(f"from {start} and middle {middle} and end{end}")
         logger.info("开始执行电压变动")
-        self.__konstanter.start(start, middle)
+        self.__konstanter.start(start, middle, total_time=total_time)
 
     def adjust_voltage_by_curve(self, curve: list, current: int = 5, interval: float = 0.01):
         """

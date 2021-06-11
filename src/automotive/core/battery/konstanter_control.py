@@ -142,7 +142,7 @@ class KonstanterControl(BaseBattery):
         self.__kon.get_store()
         return result
 
-    def start(self, begin: int, end: int, check_time: float = 0.01):
+    def start(self, begin: int, end: int, check_time: float = 0.01, total_time: float = None):
         """
         执行设置好的电源参数，即依次调用寄存器， begin以及end可以通过set_user_voltages以及set_voltage_current的返回值得到
 
@@ -152,16 +152,28 @@ class KonstanterControl(BaseBattery):
 
         :param check_time: 每一次检测的间隔时间，默认时间10ms
 
+        :param total_time: 总计超时时间
+
         """
         self.__kon.start_stop(begin, end)
         self.__kon.sequence('GO')
         flag = True
+        logger.info(f"total time = {total_time}")
+        start_time = time.time()
         while flag:
-            status = self.__kon.get('SEQ')
-            tmp = status.split()[-1]
-            if tmp.split(',')[0] == 'RDY' and tmp.split(',')[1] == '000':
-                flag = False
-            time.sleep(check_time)
+            try:
+                status = self.__kon.get('SEQ')
+                tmp = status.split()[-1]
+                if tmp.split(',')[0] == 'RDY' and tmp.split(',')[1] == '000':
+                    flag = False
+                time.sleep(check_time)
+            except IndexError:
+                logger.warning("konstanter response found some error")
+            pass_time = time.time() - start_time
+            logger.info(f"pass time is {pass_time}")
+            if total_time and pass_time > total_time:
+                flag = True
+
         logger.info(f"voltage operator finished")
 
     def set_user_voltages(self, voltages: (list, tuple), times: int = 0.01, current: float = 5,

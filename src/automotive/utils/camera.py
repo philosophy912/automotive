@@ -330,15 +330,17 @@ class Camera(object):
             self.__utils.sleep(total_time * 60)
             self.stop_record()
 
-    def camera_test(self, wait: float = 2, frame_id: FrameID = FrameID()):
+    def camera_test(self, wait: float = 2, camera_id: int = 0, frame_id: FrameID = FrameID()):
         """
         测试摄像头摄像，可用于调节摄像头距离，查看录像效果时，一般作为调试使用
 
         :param wait:等待时间，单位分钟，默认为2分钟
 
+        :param camera_id: 摄像头ID
+
         :param frame_id: 摄像头参数
         """
-        self.open_camera(frame_id=frame_id)
+        self.open_camera(camera_id=camera_id, frame_id=frame_id)
         start_time = time.time()
         while self.__capture.isOpened():
             ret, frame = self.__capture.read()
@@ -350,6 +352,7 @@ class Camera(object):
             if int(check_time - start_time) >= (wait * 60):
                 break
         self.close_camera()
+        logger.warning("如果要再次使用摄像头，请再次调用open_camera方法")
 
     @check_status
     def set_property(self, frame_id: FrameID = FrameID()):
