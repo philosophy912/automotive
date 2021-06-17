@@ -169,11 +169,10 @@ class KonstanterControl(BaseBattery):
                 time.sleep(check_time)
             except IndexError:
                 logger.warning("konstanter response found some error")
-            pass_time = time.time() - start_time
-            logger.info(f"pass time is {pass_time}")
-            if total_time and pass_time > total_time:
-                flag = True
-
+                pass_time = time.time() - start_time
+                logger.info(f"pass time is {pass_time}")
+                if total_time and pass_time > total_time:
+                    flag = True
         logger.info(f"voltage operator finished")
 
     def set_user_voltages(self, voltages: (list, tuple), times: int = 0.01, current: float = 5,
