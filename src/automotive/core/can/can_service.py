@@ -242,26 +242,24 @@ class CANService(BaseCan):
                 messages.append(message)
         return messages
 
-    def __send_message(self, message: Message, default_message: dict = None, is_default_value: bool = False):
+    def __send_message(self, message: Message, default_message: dict = None, is_random_value: bool = False):
         """
         计算值并发送消息
         :param message: 消息
         :param default_message: 默认发送的消息
         """
         msg_id = message.msg_id
-        # 默认值优先，所以需要当不发默认值的时候才启用该函数
-        if not is_default_value and default_message and msg_id in default_message:
-            for sig_name, sig in message.signals.items():
-                if sig_name in default_message[msg_id]:
-                    sig.value = default_message[msg_id][sig_name]
-                else:
-                    max_value = 2 ** sig.bit_length - 1
-                    value = random.randint(0, max_value)
-                    logger.trace(f"value is [{value}]")
-                    sig.value = value
-        else:
-            # 当不需要发送默认值的时候，就发随机值
-            if not is_default_value:
+        if is_random_value:
+            if default_message and msg_id in default_message:
+                for sig_name, sig in message.signals.items():
+                    if sig_name in default_message[msg_id]:
+                        sig.value = default_message[msg_id][sig_name]
+                    else:
+                        max_value = 2 ** sig.bit_length - 1
+                        value = random.randint(0, max_value)
+                        logger.trace(f"value is [{value}]")
+                        sig.value = value
+            else:
                 for sig_name, sig in message.signals.items():
                     max_value = 2 ** sig.bit_length - 1
                     value = random.randint(0, max_value)
@@ -274,9 +272,9 @@ class CANService(BaseCan):
         except RuntimeError as e:
             logger.error(f"transmit message {hex(msg_id)} failed, error is {e}")
 
-    def __send_messages(self, messages: list, interval: float = 0, default_message: dict = None):
+    def __send_messages(self, messages: list, interval: float = 0, default_message: dict = None,  is_random_value: bool = False):
         for message in messages:
-            self.__send_message(message, default_message)
+            self.__send_message(message, default_message, is_random_value)
         if interval > 0:
             sleep(interval)
 
