@@ -71,29 +71,43 @@ class SerialUtils(object):
         """
         return self.__serial_port.read_lines()
 
-    def file_exist(self, file: str, check_times: int = 3, interval: float = 0.5) -> bool:
-        """
-        检查文件是否存在
-
-        :param interval: 检查间隔时间
-
-        :param check_times: 检查次数
-
-        :param file: 远程服务器上的文件
-        :return: 是否存在
-        """
-        self.__serial_port.flush()
-        for i in range(check_times):
-            self.__serial_port.send(f"ls -l {file}")
-            result = self.__serial_port.read_all()
-            logger.debug(f"read content is {result}")
-            if "No such file or directory" not in result:
-                logger.debug(f"{file} is exist")
-                return True
-            else:
-                sleep(interval)
-        logger.debug(f"{file} is not exist")
-        return False
+    def file_exist(self, file: str, check_times: int = None, interval: float = 0.5, timeout: int = 10,
+                   fflag: bool = True) -> bool:
+        # 没有check_time 即 check_time = None
+        if not check_times:
+            logger.info(f"check_time is {check_times}, 进入超时处理")
+            start = time.time()
+            while fflag:
+                self.__serial_port.send(f"ls -l {file}")
+                result = str(self.__serial_port.read_all())
+                logger.info(f"read content is {result}")
+                # 能找到此文件
+                if "No such file or directory" not in result:
+                    logger.info(f"{file} is exist")
+                    fflag = False
+                    return not fflag
+                # 无法找到此文件
+                else:
+                    # logger.info(f'无法找到此文件')
+                    end = time.time()
+                    sleep(interval)
+                    if end - start >= timeout:
+                        logger.debug(f"time difference is {str(end - start)},大于规定的 {str(timeout)}， 无法找到{file}")
+                        fflag = False
+                        return fflag
+        # check_time非None
+        else:
+            for i in range(check_times):
+                self.__serial_port.send(f"ls -l {file}")
+                result = self.__serial_port.read_all()
+                logger.debug(f"read content is {result}")
+                if "No such file or directory" not in result:
+                    logger.debug(f"{file} is exist")
+                    return True
+                else:
+                    sleep(interval)
+            logger.debug(f"{file} is not exist")
+            return False
 
     def copy_file(self, remote_folder: str, target_folder: str, system_type: SystemTypeEnum, timeout: float = 300):
         """
