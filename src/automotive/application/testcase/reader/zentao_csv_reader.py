@@ -1,0 +1,143 @@
+# -*- coding:utf-8 -*-
+# --------------------------------------------------------
+# Copyright (C), 2016-2021, lizhe, All rights reserved
+# --------------------------------------------------------
+# @Name:        zentao_csv_reader.py
+# @Author:      lizhe
+# @Created:     2021/7/3 - 22:31
+# --------------------------------------------------------
+import csv
+from typing import Dict, List
+
+from ..api import Reader, Testcase, standard_header, parse_id, split_char, point
+from automotive.logger.logger import logger
+
+
+class ZentaoCsvReader(Reader):
+
+    def __init__(self):
+        self.__module = None
+
+    def read_from_file(self, file: str) -> Dict[str, List[Testcase]]:
+        """
+        从csv中读取成测试用例
+        :param file: csv文件
+        :return: 测试用例集合
+        """
+        testcases = []
+        with open(file, "r", encoding="gbk", newline="") as f:
+            f_csv = csv.reader(f)
+            header = next(f_csv)
+            self.__convert_headers(header)
+            logger.debug(f"header = {header}")
+            for row in f_csv:
+                testcase = self.__parse_line(row)
+                testcases.append(testcase)
+        return {self.__module: testcases}
+
+    @staticmethod
+    def __convert_headers(headers: List[str]):
+        """
+        转换header为标准headers方便灵活读取
+        :param headers:  表头
+        """
+        for header_name, column_id in standard_header.items():
+            for index, header in enumerate(headers):
+                if header_name == header:
+                    standard_header[header_name] = index
+
+    def __parse_line(self, row: List[str]) -> Testcase:
+        """
+        每一行解析
+        :param row:
+        :return:
+        """
+        module = row[standard_header["所属模块"]]
+        # U盘音乐-USB音乐进入方式
+        name = row[standard_header["用例标题"]]
+        steps = row[standard_header["步骤"]]
+        exception = row[standard_header["预期"]]
+        keywords = row[standard_header["关键词"]]
+        test_case_type = row[standard_header["用例类型"]]
+        priority = row[standard_header["优先级"]]
+        status = row[standard_header["用例状态"]]
+        phase = row[standard_header["适用阶段"]]
+        pre_condition = row[standard_header["前置条件"]]
+        requirement_id = row[standard_header["相关需求"]]
+        testcase = Testcase()
+        module, module_id = parse_id(module, ("(", ")"))
+        self.__module = module
+        # 此处的模块是需要name去做拆分的
+        name_list = name.split(split_char)
+        testcase.module = split_char.join(name_list[:-1])
+        testcase.module_id = module_id
+        # U盘音乐-USB音乐进入方式
+        testcase.name = name_list[-1]
+        testcase.pre_condition = pre_condition.split("\n")
+        testcase.pre_condition = list(map(lambda x: x[2:], testcase.pre_condition))
+        testcase.priority = priority
+        testcase.test_case_type = test_case_type
+        testcase.status = status
+        testcase.phase = phase
+        testcase.requirement_id = requirement_id
+        testcase.keywords = keywords
+        testcase.steps = self.__parse_steps(steps, exception)
+        return testcase
+
+    def __parse_steps(self, steps: str, exception: str) -> Dict[str, List[str]]:
+        """
+        解析执行步骤
+        :param steps:
+        :param exception:
+        :return:
+        """
+        contents = dict()
+        if steps and exception:
+            steps_list = list(filter(lambda x: self.__filter_automotive(x) and x != "", steps.split("\n")))
+            steps_list = list(map(lambda x: x.replace("、", "."), steps_list))
+            exceptions = list(filter(lambda x: self.__filter_automotive(x) and x != "", exception.split("\n")))
+            exceptions = list(map(lambda x: x.replace("、", "."), exceptions))
+            for step in steps_list:
+                # 去掉前后的空格
+                step = step.strip()
+                logger.debug(f"step = [{step}]")
+                # 容错，去掉空行
+                if step != "":
+                    # 找寻序号 固定方式，即第一个字符就是序号， 如： 1.电源ON
+                    step_index = step[0]
+                    content = step[1:]
+                    # 去掉点
+                    if content[0] == point:
+                        content = content[1:]
+                    # 去掉空格，因为格式有可能是 1 电源ON
+                    content = content.strip()
+                    exception_list = []
+                    for exc in exceptions:
+                        logger.debug(f"exc = [{exc}]")
+                        # 找寻序号，固定方式，即第一个字符就是序号
+                        e_index = exc[0]
+                        e_content = exc[1:]
+                        # 去掉点
+                        if e_content[0] == point:
+                            e_content = e_content[1:]
+                        # 表示一个步骤有多个期望结果 如 2.1 动态轨迹线不偏移，与静态轨迹线平行
+                        # 解析后就变成了e_content = 1 动态轨迹线不偏移，与静态轨迹线平行
+                        try:
+                            sub_e_index = int(e_content[0])
+                            logger.debug(f"sub exception index is {sub_e_index}")
+                            e_content = e_content[1:]
+                        except ValueError:
+                            # 没有子节点
+                            logger.debug(f" sub_exception not exist")
+                        finally:
+                            e_content = e_content.strip()
+                        if step_index == e_index:
+                            # 配成一堆
+                            exception_list.append(e_content)
+                    contents[content] = exception_list
+        logger.debug(f"steps  = {contents}")
+        return contents
+
+    @staticmethod
+    def __filter_automotive(content: str) -> bool:
+        return not (content.startswith("0x") or content.startswith("0X"))
