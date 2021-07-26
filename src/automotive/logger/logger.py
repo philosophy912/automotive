@@ -8,6 +8,8 @@
 # --------------------------------------------------------
 import os
 import sys
+from typing import List, Tuple, Any
+
 import yaml
 
 from loguru import logger as _logger
@@ -98,7 +100,7 @@ def get_config(config_file: str) -> tuple:
         return level, log_folder
 
 
-def find_config_file(folder: str, config_yml_file: str) -> tuple:
+def find_config_file(folder: str, config_yml_file: str, flag: bool = True, parent_path: str = None) -> Tuple[str, Any]:
     """
     查找指定的配置文件
 
@@ -112,23 +114,28 @@ def find_config_file(folder: str, config_yml_file: str) -> tuple:
 
     :return:level, log_folder
     """
-    if config_yml_file in get_files(folder):
-        config_file = os.path.join(folder, config_file_name)
-        return get_config(config_file)
-    spilt_char = "\\" if os.name == "nt" else "/"
-    while len(folder.split(spilt_char)) != 1:
-        paths = folder.split(spilt_char)
-        paths.pop(-1)
-        if len(paths) == 1:
-            # todo 是否适用于linux需要测试
-            folder = f"{paths[0]}{spilt_char}"
-        else:
-            folder = spilt_char.join(paths)
+    while flag:
+        # 当前目录有config文件
         if config_yml_file in get_files(folder):
+            _logger.info(f"{folder}目录下有config文件")
             config_file = os.path.join(folder, config_file_name)
             return get_config(config_file)
-        if len(paths) == 1:
-            break
+        # 当前目录没有config文件
+        else:
+            # 当前目录没有'\'和‘/’，则跳出循环，停止遍历文件目录，提示“找不到yml文件”
+            if folder.find('\\') == -1 and folder.find('/') == -1:
+                _logger.info(f'{folder}目录下没有config文件，即将停止查找文件')
+                flag = False
+            # 当前目录还有父级目录，继续查找
+            else:
+                # 获取父级目录
+                parent_path = os.path.dirname(folder)
+                if len(parent_path.split('\\')) == 2 or len(parent_path.split('/')) == 2:
+                    _logger.info(f"找不到yml文件")
+                    flag = False
+                else:
+                    _logger.info(f"{folder}的父级目录是{parent_path}")
+                    folder = parent_path
     return "info", None
 
 
