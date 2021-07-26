@@ -8,6 +8,7 @@
 # --------------------------------------------------------
 import os
 from concurrent.futures.thread import ThreadPoolExecutor
+from typing import Union
 
 import chardet
 import serial
@@ -335,8 +336,15 @@ class SerialPort(object):
             return " ".join(contents)
         else:
             logger.info(f"serial mode")
+            sleep(1)
             all_lines = self._serial.read_all()
-            return self.__bytes_to_string(all_lines, type_)
+            sleep(2)
+            new_all_lines = self.__bytes_to_string(all_lines, type_)
+            sleep(2)
+            # 删除掉回车
+            if '\r\r\n' in new_all_lines:
+                new_all_lines = new_all_lines.replace('\r\n', '')
+            return new_all_lines
 
     @check_status
     def in_waiting(self) -> int:
