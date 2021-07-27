@@ -6,10 +6,9 @@
 # @Author:      lizhe
 # @Created:     2021/5/1 - 23:33
 # --------------------------------------------------------
-import os
 from enum import Enum
+from typing import Tuple, Union, List, Dict, Any
 
-import imagehash
 import cv2
 import numpy as np
 import imagehash
@@ -45,6 +44,17 @@ class FindType(Enum):
     BRIEF = "brief"
     # 很快,效果垃圾
     ORB = "orb"
+
+
+class CompareType(Enum):
+    # 一种汉明距小于阈值
+    ONE = "one"
+    # 两种汉明距小于阈值
+    TWO = "two"
+    # 三种汉明距都小于阈值
+    THREE = "three"
+    # 三种汉明距平均值小于阈值
+    AVERAGE = "average"
 
 
 class Images(object):
@@ -85,7 +95,7 @@ class Images(object):
         return binary
 
     @staticmethod
-    def __get_image_nd_array(image: (str, np.ndarray), gray: bool = False) -> np.ndarray:
+    def __get_image_nd_array(image: Union[str, np.ndarray], gray: bool = False) -> np.ndarray:
         """
         获取图片的nd array矩阵
 
@@ -137,7 +147,7 @@ class Images(object):
             raise ValueError(f"start_y[{start_y}] >= end_y[{end_y}]")
 
     @staticmethod
-    def __check_area_same(position1: tuple, position2: tuple):
+    def __check_area_same(position1: Tuple[int, int, int, int], position2: Tuple[int, int, int, int]):
         x1, y1, x2, y2 = position1
         x3, y3, x4, y4 = position2
         width1 = x2 - x1
@@ -169,7 +179,8 @@ class Images(object):
         if image1.shape != image2.shape:
             raise ValueError("image1 is not same size with image2")
 
-    def __get_image_matrix(self, image: str, position: tuple = None, gray: bool = False) -> np.ndarray:
+    def __get_image_matrix(self, image: str, position: Tuple[int, int, int, int] = None,
+                           gray: bool = False) -> np.ndarray:
         """
         获取图片的矩阵
 
@@ -192,7 +203,8 @@ class Images(object):
         else:
             return matrix_image
 
-    def __set_area_to_white(self, image: (str, np.ndarray), position: tuple, rgb: tuple, gray: bool) -> np.ndarray:
+    def __set_area_to_white(self, image: Union[str, np.ndarray], position: Tuple[int, int, int, int],
+                            rgb: Tuple[int, int, int], gray: bool) -> np.ndarray:
         """
         设置一个图片的区域为白色
 
@@ -215,8 +227,8 @@ class Images(object):
             image[start_y:end_y, start_x:end_x] = (blue, green, red)
         return image
 
-    def __compare_by_matrix(self, image1: (str, np.ndarray), image2: (str, np.ndarray),
-                            gray: bool = False, threshold: int = None) -> tuple:
+    def __compare_by_matrix(self, image1: Union[str, np.ndarray], image2: Union[str, np.ndarray],
+                            gray: bool = False, threshold: int = None) -> Tuple[int, int]:
         """
         对比两张图片， 返回差异点像素和总共像素的数量
 
@@ -259,7 +271,8 @@ class Images(object):
         logger.debug(f"different_count[{different_count}] and total_pixel[{total_pixel}]")
         return different_count, total_pixel
 
-    def __compare_by_matrix_exclude(self, image1: str, image2: str, position: tuple, rgb: tuple = (0, 0, 0),
+    def __compare_by_matrix_exclude(self, image1: str, image2: str, position: Tuple[int, int, int, int],
+                                    rgb: Tuple[int, int, int] = (0, 0, 0),
                                     gray: bool = False, threshold=None) -> tuple:
         """
         对比image1和image2中position之外的部分
@@ -285,8 +298,9 @@ class Images(object):
         image2 = self.__set_area_to_white(image=image2, position=position, rgb=rgb, gray=gray)
         return self.__compare_by_matrix(image1, image2, gray, threshold)
 
-    def __compare_by_matrix_in_same_area(self, image1: str, image2: str, position1: tuple, position2: tuple,
-                                         gray: bool = False, threshold: int = None) -> tuple:
+    def __compare_by_matrix_in_same_area(self, image1: str, image2: str, position1: Tuple[int, int, int, int],
+                                         position2: Tuple[int, int, int, int],
+                                         gray: bool = False, threshold: int = None) -> Tuple[int, int]:
         """
         比较image1和image2图片中指定区域， 其中指定区域必须相同
 
@@ -314,7 +328,7 @@ class Images(object):
         return self.__compare_by_matrix(image1, image2, gray, threshold)
 
     @staticmethod
-    def __calc_compare_result(different_count: int, total_pixel: int, percent: int = 2) -> tuple:
+    def __calc_compare_result(different_count: int, total_pixel: int, percent: int = 2) -> Tuple[float, float]:
         """
         计算比较的结果，返回比例
 
@@ -334,7 +348,7 @@ class Images(object):
         return round(same_percent, percent), round(different_percent, percent)
 
     @staticmethod
-    def __find_by_template(small_image: (str, np.array), big_image: (str, np.array), threshold: float = 0.7,
+    def __find_by_template(small_image: Union[str, np.array], big_image: Union[str, np.array], threshold: float = 0.7,
                            rgb: bool = True, find_type: FindType = FindType.TEMPLATE):
         if find_type == FindType.TEMPLATE:
             # Template matching.
@@ -362,7 +376,31 @@ class Images(object):
             return BRIEFMatching(small_image, big_image, threshold=threshold, rgb=rgb).find_best_result()
 
     @staticmethod
-    def convert_png_to_jpg(origin: str, target: str, color: tuple = (255, 255, 255), quality: int = 100):
+    def __average_hash(img: np.ndarray, hash_size: int = 8):
+        pixels = cv2.resize(img, (hash_size, hash_size), interpolation=cv2.INTER_CUBIC)
+        avg = np.mean(pixels)
+        diff = pixels > avg
+        return imagehash.ImageHash(diff)
+
+    @staticmethod
+    def __phash(img: np.ndarray, hash_size: int = 8, highfreq_factor: int = 4):
+        import scipy.fftpack
+        img_size = hash_size * highfreq_factor
+        pixels = cv2.resize(img, (img_size, img_size), interpolation=cv2.INTER_CUBIC)
+        dct = scipy.fftpack.dct(scipy.fftpack.dct(pixels, axis=0), axis=1)
+        dctlowfreq = dct[:hash_size, :hash_size]
+        med = np.median(dctlowfreq)
+        diff = dctlowfreq > med
+        return imagehash.ImageHash(diff)
+
+    @staticmethod
+    def __dhash(img: np.ndarray, hash_size: int = 8):
+        pixels = cv2.resize(img, (hash_size, hash_size), interpolation=cv2.INTER_CUBIC)
+        diff = pixels[:, 1:] > pixels[:, :-1]
+        return imagehash.ImageHash(diff)
+
+    @staticmethod
+    def convert_png_to_jpg(origin: str, target: str, color: Tuple[int, int, int] = (255, 255, 255), quality: int = 100):
         """Alpha composite an RGBA Image with a specified color.
 
         Simpler, faster version than the solutions above.
@@ -382,7 +420,7 @@ class Images(object):
 
     @staticmethod
     def convert_position(start_x: int, start_y: int, end_x: int = None, end_y: int = None, width: int = None,
-                         height: int = None) -> tuple:
+                         height: int = None) -> Tuple[int, int, int, int]:
         """
         位置转换器，可以讲x, y, width, height转换成start_x, start_y, end_x, end_y
 
@@ -410,7 +448,7 @@ class Images(object):
             return start_x, start_y, end_x, end_y
         raise ValueError(f"only support both end_x and  end_y or width and height")
 
-    def cut_image_array(self, image: str, position: tuple) -> np.ndarray:
+    def cut_image_array(self, image: str, position: Tuple[int, int, int, int]) -> np.ndarray:
         """
         剪切区域图片返回数组
         :param image:  原始图片
@@ -421,7 +459,7 @@ class Images(object):
         """
         return self.__get_image_matrix(image, position)
 
-    def cut_image(self, image: str, target_image: str, position: tuple):
+    def cut_image(self, image: str, target_image: str, position: Tuple[int, int, int, int]):
         """
         剪切图片并保存到文件中
 
@@ -434,9 +472,15 @@ class Images(object):
         cut_image = self.__get_image_matrix(image, position)
         cv2.imwrite(target_image, cut_image)
 
-    def compare_by_hamming_distance(self, img1: str, img2: str) -> tuple:
+    def compare_by_hamming_distance(self, img1: Union[str, np.ndarray], img2: Union[str, np.ndarray],
+                                    compare_type: CompareType = CompareType.AVERAGE,
+                                    threshold: int = None) -> Union[Tuple[int, int, int], bool]:
         """
         比较两张图标(汉明距比较），并返回phash（感知哈希算法）， ahash（平均哈希算法），dhash（差异值哈希算法）
+
+        :param compare_type: 比较类型， 一种/两种/三种比较算法都小于阈值  平均值小于阈值
+
+        :param threshold: 阈值, 当阈值不为空的时候，会返回比较的结果
 
         :param img1: 图片1
 
@@ -445,22 +489,33 @@ class Images(object):
         :return: a_hash p_hash d_hash
         """
         logger.debug(f"img1 = {img1} and img2 = {img2}")
-        image1 = Image.open(img1)
-        image2 = Image.open(img2)
-        a_hash1 = str(imagehash.average_hash(image1))
-        a_hash2 = str(imagehash.average_hash(image2))
-        p_hash1 = str(imagehash.phash(image1))
-        p_hash2 = str(imagehash.phash(image2))
-        d_hash1 = str(imagehash.dhash(image1))
-        d_hash2 = str(imagehash.dhash(image2))
+        image1 = self.__get_image_nd_array(img1)
+        image2 = self.__get_image_nd_array(img2)
+        a_hash1 = str(self.__average_hash(image1))
+        a_hash2 = str(self.__average_hash(image2))
+        p_hash1 = str(self.__phash(image1))
+        p_hash2 = str(self.__phash(image2))
+        d_hash1 = str(self.__dhash(image1))
+        d_hash2 = str(self.__dhash(image2))
         a_distance = self.__hamming_distance(a_hash1, a_hash2)
         p_distance = self.__hamming_distance(p_hash1, p_hash2)
         d_distance = self.__hamming_distance(d_hash1, d_hash2)
         logger.debug(f"a_distance = {a_distance} and p_distance = {p_distance} and d_distance = {d_distance}")
-        return a_distance, p_distance, d_distance
+        if threshold:
+            if compare_type == CompareType.AVERAGE:
+                return (a_distance + p_distance + d_distance) < threshold * 3
+            elif compare_type == CompareType.ONE:
+                return a_distance < threshold or p_distance < threshold and d_distance < threshold
+            elif compare_type == CompareType.TWO:
+                condition1 = a_distance < threshold and p_distance < threshold
+                condition2 = p_distance < threshold and d_distance < threshold
+                condition3 = a_distance < threshold and d_distance < threshold
+                return condition1 or condition2 or condition3
+            elif compare_type == CompareType.THREE:
+                return a_distance < threshold and p_distance < threshold and d_distance < threshold
 
-    def compare_by_matrix(self, image1: (str, np.ndarray), image2: (str, np.ndarray),
-                          gray: bool = False, threshold: int = None) -> tuple:
+    def compare_by_matrix(self, image1: Union[str, np.ndarray], image2: Union[str, np.ndarray],
+                          gray: bool = False, threshold: int = None) -> Tuple[float, float]:
         """
         通过像素矩阵对比两张图片
 
@@ -479,8 +534,9 @@ class Images(object):
         diff, total = self.__compare_by_matrix(image1, image2, gray, threshold)
         return self.__calc_compare_result(diff, total)
 
-    def compare_by_matrix_exclude(self, image1: str, image2: str, position: tuple, rgb: tuple = (0, 0, 0),
-                                  gray: bool = False, threshold=None) -> tuple:
+    def compare_by_matrix_exclude(self, image1: str, image2: str, position: Tuple[int, int, int, int],
+                                  rgb: Tuple[int, int, int] = (0, 0, 0),
+                                  gray: bool = False, threshold=None) -> Tuple[float, float]:
         """
         对比image1和image2中position之外的部分
 
@@ -504,8 +560,9 @@ class Images(object):
         diff, total = self.__compare_by_matrix_exclude(image1, image2, position, rgb, gray, threshold)
         return self.__calc_compare_result(diff, total)
 
-    def compare_by_matrix_in_same_area(self, image1: str, image2: str, position1: tuple, position2: tuple,
-                                       gray: bool = False, threshold: int = None) -> tuple:
+    def compare_by_matrix_in_same_area(self, image1: str, image2: str, position1: Tuple[int, int, int, int],
+                                       position2: Tuple[int, int, int, int],
+                                       gray: bool = False, threshold: int = None) -> Tuple[float, float]:
         """
         比较image1和image2图片中指定区域， 其中指定区域必须相同
 
@@ -530,7 +587,8 @@ class Images(object):
         diff, total = self.__compare_by_matrix_in_same_area(image1, image2, position1, position2, gray, threshold)
         return self.__calc_compare_result(diff, total)
 
-    def rectangle_image_matrix(self, image: str, positions: list, color: tuple) -> np.ndarray:
+    def rectangle_image_matrix(self, image: str, positions: List[Tuple[int, int, int, int]],
+                               color: tuple) -> np.ndarray:
         """
         在现有的图片上添加指定位置的方形的框
 
@@ -550,7 +608,8 @@ class Images(object):
             cv2.rectangle(image_array, (start_x, start_y), (end_x, end_y), color, 1)
         return image_array
 
-    def rectangle_image(self, image: str, positions: list, color: tuple, target_image: str = None):
+    def rectangle_image(self, image: str, positions: List[Tuple[int, int, int, int]], color: Tuple[int, int, int],
+                        target_image: str = None):
         """
         在现有的图片上添加指定位置的方形的框
 
@@ -568,8 +627,9 @@ class Images(object):
         else:
             cv2.imwrite(image, image_array)
 
-    def find_best_result(self, small_image: (str, np.array), big_image: (str, np.array), threshold: float = 0.7,
-                         rgb: bool = True, find_type: FindType = FindType.TEMPLATE) -> dict:
+    def find_best_result(self, small_image: Union[str, np.array], big_image: Union[str, np.array],
+                         threshold: float = 0.7, rgb: bool = True,
+                         find_type: FindType = FindType.TEMPLATE) -> Dict[str, Any]:
         """
         查找小图是否在大图中匹配, 当小图在大图中无法找到，则返回None
 
@@ -609,8 +669,8 @@ class Images(object):
         big_image = self.__get_image_nd_array(big_image)
         return self.__find_by_template(small_image, big_image, threshold=threshold, rgb=rgb, find_type=find_type)
 
-    def find_best_result_in_templates(self, small_image: (str, np.array), big_image: (str, np.array),
-                                      threshold: float = 0.7, rgb: bool = True) -> dict:
+    def find_best_result_in_templates(self, small_image: Union[str, np.array], big_image: Union[str, np.array],
+                                      threshold: float = 0.7, rgb: bool = True) -> Dict[str, Any]:
         """
         查找小图是否在大图中匹配, 当小图在大图中无法找到，尝试所有FindType的所有比较方式
 
@@ -660,9 +720,9 @@ class Images(object):
                 logger.debug(f"skip")
         return compare_result
 
-    def find_best_result_by_position(self, image1: (str, np.array), image2: (str, np.array),
-                                     position1: tuple, position2: tuple = None, threshold: float = 0.7,
-                                     rgb: bool = True) -> dict:
+    def find_best_result_by_position(self, image1: Union[str, np.array], image2: Union[str, np.array],
+                                     position1: Tuple[int, int, int, int], position2: Tuple[int, int, int, int] = None,
+                                     threshold: float = 0.7, rgb: bool = True) -> Dict[str, Any]:
         """
         在两张图片中的相同区域进行图片对比，如果两个区域的位置相同，则position2可以不填
         :param image1: 图1
@@ -682,7 +742,7 @@ class Images(object):
             image2 = self.cut_image_array(image2, position1)
         return self.find_best_result(image1, image2, threshold, rgb, FindType.TEMPLATE)
 
-    def show_images(self, image1: (str, np.array), image2: (str, np.array), time: float = 0.5):
+    def show_images(self, image1: Union[str, np.array], image2: Union[str, np.array], time: float = 0.5):
         """
         拼接两张图片进行显示
         :param image1: 图片1

@@ -7,6 +7,8 @@
 # @Created:     2021/5/2 - 0:01
 # --------------------------------------------------------
 from time import sleep
+from typing import Any, Dict, Tuple
+
 from automotive.logger.logger import logger
 from automotive.core.can.can_service import CANService
 from automotive.common.api import BaseActions
@@ -17,7 +19,7 @@ class CanActions(BaseActions):
     CAN盒操作类
     """
 
-    def __init__(self, messages: dict):
+    def __init__(self, messages: Dict[str, Any]):
         super().__init__()
         self.__can = None
         self.__messages = messages
@@ -38,7 +40,7 @@ class CanActions(BaseActions):
         logger.info("关闭CAN盒子")
         self.__can.close_can()
 
-    def reverse_on(self, signal: list):
+    def reverse_on(self, signal: Tuple[int, str, int]):
         """
         发送倒档信号
 
@@ -51,7 +53,7 @@ class CanActions(BaseActions):
         logger.info(f"发送msg为[{msg}],signal名字为[{signal_name}]，值为[{signal_value}]到CAN总线")
         self.__can.send_can_signal_message(msg, {signal_name, signal_value})
 
-    def reverse_off(self, signal: list):
+    def reverse_off(self, signal: Tuple[int, str, int]):
         """
         发送空挡信号
 
@@ -77,7 +79,7 @@ class CanActions(BaseActions):
         """
         return self.__can.is_can_bus_lost(continue_time)
 
-    def bus_sleep(self, event: list):
+    def bus_sleep(self, event: Tuple[int, str, int, int]):
         """
         整车休眠
 
@@ -90,5 +92,3 @@ class CanActions(BaseActions):
         sleep(event[3])
         logger.debug("避免出现倒档信号发送了没有停止，这个地方停止所有信号发送")
         self.__can.stop_all_messages()
-
-

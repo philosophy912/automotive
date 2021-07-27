@@ -9,6 +9,8 @@
 import os
 from time import sleep
 from ftplib import FTP
+from typing import List
+
 from automotive.logger.logger import logger
 
 
@@ -85,12 +87,14 @@ class FtpUtils(object):
         :return: 下载到的本地文件路径
         """
         local_files = []
+        # FTP要进入到这个路径下面
         self.__ftp.cwd(remote_folder)
         file_list = self.__ftp.nlst()
         for name in file_list:
             logger.debug(f"remote name is {name}")
             local_file = f"{local_folder}\\{name}"
             with open(local_file, "wb") as f:
+                # 只下载某些后缀名的文件
                 if filter_type:
                     if name.endswith(filter_type):
                         self.__ftp.retrbinary(f"RETR {name}", f.write)
@@ -101,7 +105,7 @@ class FtpUtils(object):
         return local_files
 
     @check_status
-    def download_files(self, remote_files: list, local_folder: str) -> list:
+    def download_files(self, remote_files: List[str], local_folder: str) -> List[str]:
         """
         下载文件列表到本地
 
@@ -134,6 +138,7 @@ class FtpUtils(object):
         # 判断文件是否存在
         remote_file_name = remote_file.split("/")[-1]
         remote_folder = remote_file.replace(f"/{remote_file_name}", "")
+        # 列举远程FTP服务器该目录下所有文件
         file_list = self.__ftp.nlst(remote_folder)
         logger.debug(f"file list is {file_list}")
         if remote_file in file_list:
@@ -161,7 +166,7 @@ class FtpUtils(object):
             raise RuntimeError(f"{local_file} is not exist or not file")
 
     @check_status
-    def upload_files(self, remote_folder: str, local_files: list):
+    def upload_files(self, remote_folder: str, local_files: List[str]):
         """
         上传本地文件列表到ftp服务器位置
 

@@ -9,6 +9,8 @@
 import time
 from abc import ABCMeta, abstractmethod
 from enum import Enum, unique
+from typing import Union, Dict, List, Tuple
+
 from appium.webdriver import WebElement
 from appium.webdriver.common.touch_action import TouchAction
 from appium.webdriver.webdriver import WebDriver
@@ -209,8 +211,8 @@ class BaseAndroid(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def get_element(self, locator: (str, dict, WebElement, UiObject), timeout: float = _DEFAULT_TIME_OUT) -> (
-            WebElement, UiObject):
+    def get_element(self, locator: Union[str, Dict[str, str], WebElement, UiObject],
+                    timeout: float = _DEFAULT_TIME_OUT) -> Union[WebElement, UiObject]:
         """
         根据定位符获取元素，如果查询到了多个元素，返回查询到的第一个元素
 
@@ -238,7 +240,8 @@ class BaseAndroid(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def get_elements(self, locator: (str, dict), timeout: float = _DEFAULT_TIME_OUT) -> list:
+    def get_elements(self, locator: Union[str, Dict[str, str]],
+                     timeout: float = _DEFAULT_TIME_OUT) -> List[Union[WebElement, UiObject]]:
         """
         根据定位符获取元素列表
 
@@ -266,8 +269,9 @@ class BaseAndroid(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def get_child_element(self, parent: (dict, WebElement, UiObject), locator: (str, dict),
-                          timeout: float = _DEFAULT_TIME_OUT) -> (WebElement, UiObject):
+    def get_child_element(self, parent: Union[Dict[str, str], WebElement, UiObject],
+                          locator: Union[str, Dict[str, str]],
+                          timeout: float = _DEFAULT_TIME_OUT) -> Union[WebElement, UiObject]:
         """
         在父元素中查找子元素, 如果查询到了多个元素，返回查询到的第一个元素
 
@@ -289,8 +293,9 @@ class BaseAndroid(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def get_child_elements(self, parent: (dict, WebElement, UiObject), locator: (str, dict),
-                           timeout: float = _DEFAULT_TIME_OUT) -> list:
+    def get_child_elements(self, parent: Union[Dict[str, str], WebElement, UiObject],
+                           locator: Union[str, Dict[str, str]],
+                           timeout: float = _DEFAULT_TIME_OUT) -> List[Union[WebElement, UiObject]]:
         """
         在父元素中查找子元素列表
 
@@ -312,8 +317,8 @@ class BaseAndroid(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def get_element_attribute(self, locator: (str, dict, WebElement, UiObject),
-                              timeout: float = _DEFAULT_TIME_OUT) -> dict:
+    def get_element_attribute(self, locator: Union[str, Dict[str, str], WebElement, UiObject],
+                              timeout: float = _DEFAULT_TIME_OUT) -> Dict[ElementAttributeEnum, bool]:
         """
         获取元素的属性，以列表方式返回
 
@@ -343,10 +348,11 @@ class BaseAndroid(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def scroll_get_element(self, element: (dict, WebElement, UiObject), locator: dict, text: str,
+    def scroll_get_element(self, element: Union[Dict[str, str], WebElement, UiObject], locator: dict, text: str,
                            exact_match: bool = True, duration: float = None,
                            direct: SwipeDirectorEnum = SwipeDirectorEnum.UP, swipe_time: int = None,
-                           swipe_percent: float = 0.8, timeout: float = _DEFAULT_TIME_OUT) -> (WebElement, UiObject):
+                           swipe_percent: float = 0.8,
+                           timeout: float = _DEFAULT_TIME_OUT) -> Union[WebElement, UiObject]:
         """
         在可滑动的空间中，查找文字所在的控件
 
@@ -418,7 +424,8 @@ class BaseAndroid(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def get_location(self, locator: (str, dict, WebElement, UiObject), timeout: float = _DEFAULT_TIME_OUT) -> tuple:
+    def get_location(self, locator: Union[str, Dict[str, str], WebElement, UiObject],
+                     timeout: float = _DEFAULT_TIME_OUT) -> Tuple[int, int, int, int]:
         """
         获取元素的位置， 返回了该控件的左上角的坐标点(x, y), 以及控件的宽度和高度
 
@@ -447,7 +454,8 @@ class BaseAndroid(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def click(self, locator: (tuple, str, dict, WebElement, UiObject), timeout: float = _DEFAULT_TIME_OUT):
+    def click(self, locator: Union[Tuple[int, int], str, Dict[str, str], WebElement, UiObject],
+              timeout: float = _DEFAULT_TIME_OUT):
         """
         点击元素的某个位置
 
@@ -474,7 +482,7 @@ class BaseAndroid(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def double_click(self, locator: (tuple, str, dict, WebElement, UiObject),
+    def double_click(self, locator: Union[Tuple[int, int], str, Dict[str, str], WebElement, UiObject],
                      timeout: float = _DEFAULT_TIME_OUT, duration: float = 0.1):
         """
         点击元素的某个位置
@@ -504,7 +512,7 @@ class BaseAndroid(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def press(self, locator: (tuple, str, dict, WebElement, UiObject), duration: float,
+    def press(self, locator: Union[Tuple[int, int], str, Dict[str, str], WebElement, UiObject], duration: float,
               timeout: float = _DEFAULT_TIME_OUT):
         """
         点击元素的某个位置
@@ -555,8 +563,8 @@ class BaseAndroid(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def drag_element_to(self, locator1: (str, dict, WebElement, UiObject),
-                        locator2: (str, dict, WebElement, UiObject),
+    def drag_element_to(self, locator1: Union[str, Dict[str, str], WebElement, UiObject],
+                        locator2: Union[str, Dict[str, str], WebElement, UiObject],
                         timeout: float = _DEFAULT_TIME_OUT):
         """
         从某点拖动到某点
@@ -578,7 +586,7 @@ class BaseAndroid(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def drag_to(self, locator: (str, dict, WebElement, UiObject),
+    def drag_to(self, locator: Union[str, Dict[str, str], WebElement, UiObject],
                 x: int, y: int, timeout: float = _DEFAULT_TIME_OUT):
         """
         从某个元素拖动到某点
@@ -602,8 +610,8 @@ class BaseAndroid(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def swipe_element(self, from_element: (str, dict, WebElement, UiObject),
-                      to_element: (str, dict, WebElement, UiObject), duration: float = None,
+    def swipe_element(self, from_element: Union[str, Dict[str, str], WebElement, UiObject],
+                      to_element: Union[str, Dict[str, str], WebElement, UiObject], duration: float = None,
                       timeout: float = _DEFAULT_TIME_OUT):
         """
         滑动元素从from到to
@@ -626,7 +634,7 @@ class BaseAndroid(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def swipe(self, swipe_element: (dict, WebElement, UiObject), locator: dict, duration: float = None,
+    def swipe(self, swipe_element: Union[Dict[str, str], WebElement, UiObject], locator: dict, duration: float = None,
               direction: SwipeDirectorEnum = SwipeDirectorEnum.UP, swipe_time: int = None,
               wait_time: float = None, timeout: float = _DEFAULT_TIME_OUT, swipe_percent: float = 0.8):
         """
@@ -669,7 +677,8 @@ class BaseAndroid(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def get_text(self, locator: (str, dict, WebElement, UiObject), timeout: float = _DEFAULT_TIME_OUT) -> str:
+    def get_text(self, locator: Union[str, Dict[str, str], WebElement, UiObject],
+                 timeout: float = _DEFAULT_TIME_OUT) -> str:
         """
         获取元素的文本
 
@@ -690,7 +699,8 @@ class BaseAndroid(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def input_text(self, locator: (str, dict, WebElement, UiObject), text: str, timeout: float = _DEFAULT_TIME_OUT):
+    def input_text(self, locator: Union[str, Dict[str, str], WebElement, UiObject], text: str,
+                   timeout: float = _DEFAULT_TIME_OUT):
         """
         对指定控件输入文本信息
 
@@ -711,7 +721,7 @@ class BaseAndroid(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def clear_text(self, locator: (str, dict, WebElement, UiObject), timeout: float = _DEFAULT_TIME_OUT):
+    def clear_text(self, locator: Union[str, Dict[str, str], WebElement, UiObject], timeout: float = _DEFAULT_TIME_OUT):
         """
         清空编辑框中的文字
 
@@ -798,7 +808,7 @@ class BaseAndroid(metaclass=ABCMeta):
             y = start_y + height // 2
         return int(x), int(y)
 
-    def __get_last_element_text(self, elements: list, direct: SwipeDirectorEnum,
+    def __get_last_element_text(self, elements: List[Union[UiObject, WebElement]], direct: SwipeDirectorEnum,
                                 timeout: float) -> str:
         """
         获取当前页面中的text
@@ -816,7 +826,8 @@ class BaseAndroid(metaclass=ABCMeta):
             return last_text
 
     @staticmethod
-    def _get_edge_element(elements: list, direct: SwipeDirectorEnum, second: bool = False) -> (WebElement, UiObject):
+    def _get_edge_element(elements: List[Union[UiObject, WebElement]], direct: SwipeDirectorEnum,
+                          second: bool = False) -> Union[UiObject, WebElement]:
         """
         根据方向获取边缘的element
 
@@ -895,8 +906,8 @@ class BaseAndroid(metaclass=ABCMeta):
         start_x, start_y, width, height = self.get_location(element)
         return self.get_point(start_x, start_y, width, height, position)
 
-    def _get_element_location(self, locator: (tuple, str, dict, UiObject, WebElement), director: DirectorEnum,
-                              timeout: float):
+    def _get_element_location(self, locator: Union[Tuple[str, str], str, Dict[str, str], UiObject, WebElement],
+                              director: DirectorEnum, timeout: float):
         """
         获取控件的location的值
 
@@ -920,7 +931,7 @@ class BaseAndroid(metaclass=ABCMeta):
             x, y = self._get_click_point(element, director)
         return x, y
 
-    def _get_element_text(self, element: (WebElement, UiObject), timeout: float) -> str:
+    def _get_element_text(self, element: Union[WebElement, UiObject], timeout: float) -> str:
         """
         获取当前element元素下面的文本内容
 
@@ -951,7 +962,8 @@ class BaseAndroid(metaclass=ABCMeta):
         else:
             return element_text
 
-    def _find_text_in_elements(self, elements: list, text: str, exact_match: bool, timeout: float) -> WebElement:
+    def _find_text_in_elements(self, elements: List[Union[WebElement, UiObject]], text: str, exact_match: bool,
+                               timeout: float) -> WebElement:
         """
         用于滑动查找文字（若有多个匹配，则返回第一个)
 
@@ -974,9 +986,9 @@ class BaseAndroid(metaclass=ABCMeta):
         raise NoSuchElementException(f"can not found [{text}] when swipe scroll element")
 
     def _scroll_element(self, start_x: int, start_y: int, end_x: int, end_y: int, duration: float,
-                        direct: SwipeDirectorEnum, swipe_element: (WebElement, UiObject), locator: dict,
+                        direct: SwipeDirectorEnum, swipe_element: Union[WebElement, UiObject], locator: dict,
                         text: str = None, exact_match: bool = False, timeout: float = None, swipe_time: int = None,
-                        wait_time: float = None) -> (WebElement, UiObject):
+                        wait_time: float = None) -> Union[WebElement, UiObject]:
         """
         滑动查找控件: 主要用于文本内容的查找
 
@@ -1085,7 +1097,7 @@ class BaseAndroid(metaclass=ABCMeta):
         if text:
             raise NoSuchElementException(f"can not found [{text}] when swipe scroll element")
 
-    def _get_swipe_param(self, element: (str, dict, UiObject, WebElement), direct: SwipeDirectorEnum,
+    def _get_swipe_param(self, element: Union[str, Dict[str, str], UiObject, WebElement], direct: SwipeDirectorEnum,
                          duration: float = None,
                          swipe_percent: float = 0.8, check_scrollable: bool = False) -> tuple:
         """
@@ -1127,7 +1139,7 @@ class BaseAndroid(metaclass=ABCMeta):
         if not isinstance(variable, types):
             raise TypeError(f"only support {types} but now is {type(variable)}")
 
-    def _convert_locator(self, locator: (str, dict)) -> dict:
+    def _convert_locator(self, locator: Union[str, Dict[str, str]]) -> dict:
         """
         将字符串转换成字典类型，并且将字典的key转换成支持的格式
 

@@ -10,6 +10,8 @@ import time
 import random
 import copy
 from time import sleep
+from typing import Tuple, Union, List, Any, Dict
+
 from automotive.logger.logger import logger
 from .peakcan import PCanBus
 from .usbcan import UsbCanBus
@@ -59,7 +61,7 @@ def __get_can_box_device() -> CanBoxDevice:
     raise RuntimeError("No device found, is can box connected")
 
 
-def get_can_bus(can_box_device: CanBoxDevice) -> tuple:
+def get_can_bus(can_box_device: CanBoxDevice) -> Tuple[CanBoxDevice, BaseCanBus]:
     """
     获取Can bus实例，并返回CAN设备的类型
 
@@ -171,7 +173,7 @@ class CANService(BaseCan):
 
     """
 
-    def __init__(self, messages: (str, list), encoding: str = "utf-8",
+    def __init__(self, messages: Union[str, Dict[str, Any]], encoding: str = "utf-8",
                  can_box_device: CanBoxDevice = None):
         super().__init__(can_box_device)
         logger.debug(f"read message from file {messages}")
@@ -183,11 +185,11 @@ class CANService(BaseCan):
         self.__last_msg_time_in_stack = dict()
 
     @property
-    def name_messages(self) -> dict:
+    def name_messages(self) -> Dict[str, Any]:
         return self.__name_messages
 
     @property
-    def messages(self) -> dict:
+    def messages(self) -> Dict[int, Any]:
         return self.__messages
 
     def __restore_default_message(self):
@@ -211,7 +213,7 @@ class CANService(BaseCan):
         return msg
 
     @staticmethod
-    def __is_message_in_node(message: Message, filter_sender: (str, tuple)) -> bool:
+    def __is_message_in_node(message: Message, filter_sender: Union[str, Tuple[str]]) -> bool:
         sender = message.sender.lower()
         if isinstance(filter_sender, str):
             return sender == filter_sender.lower()
@@ -221,8 +223,8 @@ class CANService(BaseCan):
                     return True
             return False
 
-    def __filter_messages(self, filter_sender: (str, tuple) = None, filter_nm: bool = True,
-                          filter_diag: bool = True) -> list:
+    def __filter_messages(self, filter_sender: Union[str, List[str]] = None, filter_nm: bool = True,
+                          filter_diag: bool = True) -> List[Message]:
         """
         根据条件过滤相应的消息帧
         :param filter_sender: 根据节点名称过滤
@@ -242,7 +244,8 @@ class CANService(BaseCan):
                 messages.append(message)
         return messages
 
-    def __send_message(self, message: Message, default_message: dict = None, is_random_value: bool = False):
+    def __send_message(self, message: Message, default_message: Dict[str, str] = None,
+                       is_random_value: bool = False):
         """
         计算值并发送消息
         :param message: 消息
@@ -272,13 +275,14 @@ class CANService(BaseCan):
         except RuntimeError as e:
             logger.error(f"transmit message {hex(msg_id)} failed, error is {e}")
 
-    def __send_messages(self, messages: list, interval: float = 0, default_message: dict = None,  is_random_value: bool = False):
+    def __send_messages(self, messages: List[Message], interval: float = 0, default_message: Dict[str, str] = None,
+                        is_random_value: bool = False):
         for message in messages:
             self.__send_message(message, default_message, is_random_value)
         if interval > 0:
             sleep(interval)
 
-    def send_can_message_by_id_or_name(self, msg: (int, str)):
+    def send_can_message_by_id_or_name(self, msg: Union[int, str]):
         """
         据矩阵表中定义的Messages，通过msg ID或者name来发送message到网络中
 
@@ -294,7 +298,7 @@ class CANService(BaseCan):
             raise RuntimeError(f"msg only support str or int, but now is {msg}")
         self.send_can_message(send_msg, False)
 
-    def send_can_signal_message(self, msg: (int, str), signal: dict):
+    def send_can_signal_message(self, msg: Union[int, str], signal: Dict[str, int]):
         """
         根据矩阵表中定义的Messages，来设置并发送message。
 
@@ -504,7 +508,7 @@ class CANService(BaseCan):
         """
         return self._can.get_stack()
 
-    def check_signal_value(self, stack: list, msg_id: int, sig_name: str, expect_value: int, count: int = None,
+    def check_signal_value(self, stack: List[Message], msg_id: int, sig_name: str, expect_value: int, count: int = None,
                            exact: bool = True):
         """
         检查signal的值是否符合要求
@@ -545,8 +549,8 @@ class CANService(BaseCan):
             logger.info(f"current value is {actual_value}, expect value is {expect_value}")
             return expect_value == actual_value
 
-    def send_random(self, filter_sender: (str, tuple) = None, cycle_time: int = None, interval: float = 0.1,
-                    default_message: dict = None, filter_nm: bool = True, filter_diag: bool = True):
+    def send_random(self, filter_sender: Union[str, List[str]] = None, cycle_time: int = None, interval: float = 0.1,
+                    default_message: Dict[str, str] = None, filter_nm: bool = True, filter_diag: bool = True):
         """
         随机发送信号
 
@@ -572,12 +576,12 @@ class CANService(BaseCan):
         if cycle_time:
             for i in range(cycle_time):
                 logger.info(f"The {i + 1} time set random value")
-                self.__send_messages(messages, interval, default_message)
+                self.__send_messages(messages, interval, default_message, True)
         else:
             while True:
-                self.__send_messages(messages, interval, default_message)
+                self.__send_messages(messages, interval, default_message, True)
 
-    def send_messages(self, filter_sender: (str, tuple) = None):
+    def send_messages(self, filter_sender: Union[str, List[str]] = None):
         """
         发送除了filter_sender之外的所有信号，该方法用于发送出测试对象之外的所有信号
 
@@ -586,7 +590,7 @@ class CANService(BaseCan):
         messages = self.__filter_messages(filter_sender)
         self.__send_messages(messages)
 
-    def send_default_messages(self, node_name: (str, tuple) = None):
+    def send_default_messages(self, node_name: Union[str, List[str]] = None):
         """
         发送除了node_name之外的所有信号的默认数据，该方法用于发送出测试对象之外的所有信号
 

@@ -9,6 +9,8 @@
 import os
 import re
 from time import sleep
+from typing import Tuple, List
+
 from automotive.core.android.adb import ADB
 from automotive.logger import logger
 from automotive.common.api import ScreenShot
@@ -33,7 +35,7 @@ class HypervisorScreenShot(ScreenShot):
     则把全自动化测试变为半自动化测试
     """
 
-    def __init__(self, save_path: str, device_id: str = None):
+    def __init__(self, save_path: str, root_path: str = "/log", device_id: str = None):
         # 图片保存位置
         self.__path = save_path
         self.adb = ADB()
@@ -42,6 +44,7 @@ class HypervisorScreenShot(ScreenShot):
             self.__device_id = device_id
         else:
             self.__connect()
+        self.__root_path = root_path
 
     def __connect(self):
         """
@@ -77,12 +80,12 @@ class HypervisorScreenShot(ScreenShot):
 
         :param display 屏幕序号
         """
-        command = f"shell htalk shell 'screenshot -file=/tsp/{image_name}'"
+        command = f"shell htalk shell 'screenshot -file=/{self.__root_path}/{image_name}'"
         if display:
             command = f"{command} -display={display}"
         self.__adb_command(command)
 
-    def __screen_shot_area(self, image_name: str, position: tuple, display: int = None):
+    def __screen_shot_area(self, image_name: str, position: Tuple[int, int, int, int], display: int = None):
         """
         执行截图命令
 
@@ -91,7 +94,8 @@ class HypervisorScreenShot(ScreenShot):
         :param display 屏幕序号
         """
         x, y, width, height = position
-        command = f"shell htalk shell 'screen_capture -file=/tsp/{image_name} -pos={x},{y} -size={width}x{height}'"
+        command = f"shell htalk shell 'screen_capture -file=/{self.__root_path}/{image_name} -pos={x},{y} " \
+                  f"-size={width}x{height}'"
         if display:
             command = f"{command} -display={display}"
         self.__adb_command(command)
@@ -106,8 +110,9 @@ class HypervisorScreenShot(ScreenShot):
         for command in commands:
             self.__adb_command(command)
 
-    def __screen_shot_image(self, image_name: str, count: int, interval_time: float, position: tuple = None,
-                            display: int = None) -> list:
+    def __screen_shot_image(self, image_name: str, count: int, interval_time: float,
+                            position: Tuple[int, int, int, int] = None,
+                            display: int = None) -> List[str]:
         """
         截图操作，当position为None的时候为全屏截图
 
@@ -136,9 +141,9 @@ class HypervisorScreenShot(ScreenShot):
         self.__sync_space()
         return image_files
 
-    def screen_shot(self, image_name: str, count: int, interval_time: float, display: int = None) -> list:
+    def screen_shot(self, image_name: str, count: int, interval_time: float, display: int = None) -> List[str]:
         return self.__screen_shot_image(image_name, count, interval_time)
 
-    def screen_shot_area(self, position: tuple, image_name: str, count: int, interval_time: float,
-                         display: int = None) -> list:
+    def screen_shot_area(self, position: Tuple[int, int, int, int], image_name: str, count: int, interval_time: float,
+                         display: int = None) -> List[str]:
         return self.__screen_shot_image(image_name, count, interval_time, position)

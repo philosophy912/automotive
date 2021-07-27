@@ -14,6 +14,7 @@ from email.mime.application import MIMEApplication
 from email.header import Header
 from email.mime.text import MIMEText
 from enum import Enum, unique
+from typing import List, Any
 
 from automotive import logger
 
@@ -91,7 +92,7 @@ class EmailUtils(object):
         return Account(primary_smtp_address=email_address, credentials=credentials,
                        autodiscover=True, access_type=DELEGATE)
 
-    def __send_exchange_email(self, email_to: list, subject: str, content: str, attachments=None, email_cc=None):
+    def __send_exchange_email(self, email_to: List[str], subject: str, content: str, attachments=None, email_cc=None):
         from exchangelib import Message, Mailbox, HTMLBody, FileAttachment
         to_recipients = []
         for to in email_to:
@@ -113,7 +114,7 @@ class EmailUtils(object):
                 message.attach(attachment_file)
         message.send()
 
-    def send_email(self, email_to: list, subject: str, content: str, attachments=None, email_cc=None):
+    def send_email(self, email_to: List[str], subject: str, content: str, attachments=None, email_cc=None):
         """
         发送邮件
         :param email_to:  邮件要发到哪里去
@@ -151,7 +152,7 @@ class EmailUtils(object):
         else:
             self.__send_exchange_email(email_to, subject, content, attachments, email_cc)
 
-    def receive_email(self, email_count: int = 10, folder: str = None) -> list:
+    def receive_email(self, email_count: int = 10, folder: str = None) -> List[Any]:
         """
         TODO 暂时未完成测试
         接收邮件

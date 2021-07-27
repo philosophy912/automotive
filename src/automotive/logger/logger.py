@@ -62,7 +62,7 @@ def set_logger(level: str = "debug", folder: str = None):
         _logger.add(os.path.join(file_path, "log_{time}.log"), level=level.upper(), format=formats, rotation=rotation)
 
 
-def get_files(folder: str) -> list:
+def get_files(folder: str) -> List[str]:
     """
     获取当前文件夹下面的所有文件
 
@@ -75,7 +75,7 @@ def get_files(folder: str) -> list:
     return files
 
 
-def get_config(config_file: str) -> tuple:
+def get_config(config_file: str) -> Tuple[str, str]:
     """
     读取配置文件中的相关配置
 
@@ -117,24 +117,24 @@ def find_config_file(folder: str, config_yml_file: str, flag: bool = True, paren
     while flag:
         # 当前目录有config文件
         if config_yml_file in get_files(folder):
-            _logger.info(f"{folder}目录下有config文件")
+            # _logger.info(f"{folder}目录下有config文件")
             config_file = os.path.join(folder, config_file_name)
             return get_config(config_file)
         # 当前目录没有config文件
         else:
             # 当前目录没有'\'和‘/’，则跳出循环，停止遍历文件目录，提示“找不到yml文件”
             if folder.find('\\') == -1 and folder.find('/') == -1:
-                _logger.info(f'{folder}目录下没有config文件，即将停止查找文件')
+                # _logger.info(f'{folder}目录下没有config文件，即将停止查找文件')
                 flag = False
             # 当前目录还有父级目录，继续查找
             else:
                 # 获取父级目录
                 parent_path = os.path.dirname(folder)
                 if len(parent_path.split('\\')) == 2 or len(parent_path.split('/')) == 2:
-                    _logger.info(f"找不到yml文件")
+                    # _logger.info(f"找不到yml文件")
                     flag = False
                 else:
-                    _logger.info(f"{folder}的父级目录是{parent_path}")
+                    # _logger.info(f"{folder}的父级目录是{parent_path}")
                     folder = parent_path
     return "info", None
 

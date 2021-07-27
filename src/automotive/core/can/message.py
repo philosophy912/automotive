@@ -7,7 +7,7 @@
 # @Created:     2021/5/1 - 23:42
 # --------------------------------------------------------
 import sys
-import time
+from typing import Union, List, Tuple, Any, Dict
 
 from automotive.logger import logger
 from automotive.utils import Utils
@@ -36,7 +36,7 @@ def __completion_byte(byte_value: str, size: int = 8) -> str:
     return byte_value
 
 
-def __get_position(start_bit: int, byte_length: int = 8) -> tuple:
+def __get_position(start_bit: int, byte_length: int = 8) -> Tuple[int, int]:
     """
     获取start_bit在整个8Byte中占据的位置以及在1 Byte中的位置
 
@@ -59,7 +59,7 @@ def __get_position(start_bit: int, byte_length: int = 8) -> tuple:
     return byte_index, bit_index
 
 
-def __split_bytes(value: str, length: int, bit_index: int, byte_type: bool) -> list:
+def __split_bytes(value: str, length: int, bit_index: int, byte_type: bool) -> List[str]:
     """
     根据bit_index和length来算value拆分成几个byte
     :param value:  要设置的值
@@ -104,7 +104,7 @@ def __split_bytes(value: str, length: int, bit_index: int, byte_type: bool) -> l
     return values
 
 
-def check_value(value: (int, float), min_: (int, float), max_: (int, float)) -> bool:
+def check_value(value: Union[int, float], min_: Union[int, float], max_: Union[int, float]) -> bool:
     """
     校验value是否处于min和max之间[min, max]
 
@@ -121,7 +121,7 @@ def check_value(value: (int, float), min_: (int, float), max_: (int, float)) -> 
     return min_ <= value <= max_
 
 
-def set_data(data: list, start_bit: int, byte_type: bool, value: int, bit_length: int, byte_length: int = 8):
+def set_data(data: List[Any], start_bit: int, byte_type: bool, value: int, bit_length: int, byte_length: int = 8):
     """
     用于设置每个Signal后，计算出8Byte的值
 
@@ -185,7 +185,7 @@ def set_data(data: list, start_bit: int, byte_type: bool, value: int, bit_length
     logger.trace(f"parser data is = {list(map(lambda x: hex(x), data))}")
 
 
-def get_data(data: list, start_bit: int, byte_type: bool, bit_length: int, byte_length: int = 8) -> int:
+def get_data(data: List[Any], start_bit: int, byte_type: bool, bit_length: int, byte_length: int = 8) -> int:
     """
     根据data计算出来每个signal的值
 
@@ -286,7 +286,7 @@ def control_decorator(func):
     return wrapper
 
 
-def get_message(messages: (str, list), encoding: str = "utf-8") -> tuple:
+def get_message(messages: Union[str, List[Any]], encoding: str = "utf-8") -> tuple:
     """
     从Json或者python文件中获取id和name的message字典
 
@@ -428,7 +428,7 @@ class Message(object):
         if type_:
             logger.trace("send message")
             for name, signal in self.signals.items():
-                logger.trace(f"signal name = {signal.signal_name}")
+                logger.debug(f"signal name = {signal.signal_name} and signal value = {signal.value}")
                 # 根据原来的数据message_data，替换某一部分的内容
                 set_data(self.data, signal.start_bit, signal.byte_type, signal.value, signal.bit_length,
                          self.data_length)
@@ -437,12 +437,12 @@ class Message(object):
         else:
             logger.trace("receive message")
             for name, signal in self.signals.items():
-                logger.trace(f"signal name = {signal.signal_name}")
+                logger.info(f"signal name = {signal.signal_name} and signal value = {signal.value}")
                 value = get_data(self.data, signal.start_bit, signal.byte_type, signal.bit_length, self.data_length)
                 logger.trace(f"value is {value}")
                 signal.value = value
 
-    def set_value(self, message: dict):
+    def set_value(self, message: Dict[str, Any]):
         """
         设置message对象
 
@@ -529,7 +529,7 @@ class Signal(object):
         # 物理值
         self.__physical_value = None
 
-    def set_value(self, signal: dict):
+    def set_value(self, signal: Dict[str, str]):
         """
         设置signal的值
 
@@ -608,7 +608,7 @@ class Signal(object):
         return self.__physical_value
 
     @physical_value.setter
-    def physical_value(self, physical_value):
+    def physical_value(self, physical_value: Union[int, float, str]):
         self.__physical_value = physical_value
         self.__value = int((float(physical_value) - float(self.offset)) / float(self.factor))
         logger.trace(f"physical value is {self.__physical_value} and value is {self.__value}")

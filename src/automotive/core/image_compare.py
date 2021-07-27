@@ -8,6 +8,7 @@
 # --------------------------------------------------------
 import shutil
 from enum import Enum, unique
+from typing import List, Tuple
 
 from automotive.logger import logger
 from automotive.utils.utils import Utils
@@ -68,7 +69,7 @@ class CompareProperty(object):
         self.gray_threshold = 240
 
     def set_value(self, name: str, compare_type: str, screen_shot_images_path: str, light_template: str,
-                  dark_template: str, positions: list, similarity: float, gray: bool = None,
+                  dark_template: str, positions: List[Tuple[int, int, int, int]], similarity: float, gray: bool = None,
                   gray_threshold: int = None):
         self.name = name
         self.type = CompareTypeEnum.from_value(compare_type)
@@ -96,8 +97,8 @@ class ImageCompare(object):
         self.__images = Images()
         self.__utils = Utils()
 
-    def __compare_image_area(self, template_image: str, target_image: str, position: tuple, gray: bool,
-                             threshold: int, similarity: float, is_area) -> bool:
+    def __compare_image_area(self, template_image: str, target_image: str, position: Tuple[int, int, int, int],
+                             gray: bool, threshold: int, similarity: float, is_area) -> bool:
         """
         对比单张图片单个区域
 
@@ -137,8 +138,8 @@ class ImageCompare(object):
         else:
             return True
 
-    def __compare_image(self, template_image: str, target_image: str, positions: list, gray: bool,
-                        threshold: int, similarity: float, is_area) -> bool:
+    def __compare_image(self, template_image: str, target_image: str, positions: List[Tuple[int, int, int, int]],
+                        gray: bool, threshold: int, similarity: float, is_area) -> bool:
         """
         对比图片的多个区域
 
@@ -169,7 +170,8 @@ class ImageCompare(object):
                 count += 1
         return count == len(positions)
 
-    def __compare_images(self, template_image: str, target_images: list, positions: list, gray: bool,
+    def __compare_images(self, template_image: str, target_images: List[str],
+                         positions: List[Tuple[int, int, int, int]], gray: bool,
                          threshold: int, similarity: float, is_break: bool = False, is_area: bool = False):
         """
         对比多张图片的单个区域或者多个区域
@@ -281,7 +283,7 @@ class ImageCompare(object):
             return self.__compare_normal(compare_property)
 
     def handle_images(self, compare_property: CompareProperty, temp_folder: str,
-                      color: tuple = (255, 255, 255)) -> list:
+                      color: tuple = (255, 255, 255)) -> List[str]:
         """
         处理图片： 把截图图片(screen_shot_images)拷贝到temp_folder中，并依次在截图区域上画框
 

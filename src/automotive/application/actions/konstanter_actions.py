@@ -6,6 +6,8 @@
 # @Author:      lizhe
 # @Created:     2021/5/2 - 0:02
 # --------------------------------------------------------
+from typing import List
+
 from automotive.logger.logger import logger
 from automotive.core.battery.konstanter_control import KonstanterControl
 from automotive.common.api import PowerActions
@@ -41,8 +43,9 @@ class KonstanterActions(PowerActions):
         """
         关闭konstanter
         """
-        logger.info("关闭konstanter")
-        self.__konstanter.close()
+        if self.__konstanter:
+            logger.info("关闭konstanter")
+            self.__konstanter.close()
 
     def on(self):
         """
@@ -122,7 +125,7 @@ class KonstanterActions(PowerActions):
         logger.info("开始执行电压变动")
         self.__konstanter.start(start, middle, total_time=total_time)
 
-    def adjust_voltage_by_curve(self, curve: list, current: int = 5, interval: float = 0.01):
+    def adjust_voltage_by_curve(self, curve: List[float], current: int = 5, interval: float = 0.01):
         """
         按照电压曲线来设置电压
 

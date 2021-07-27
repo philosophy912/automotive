@@ -8,7 +8,7 @@
 # --------------------------------------------------------
 from .utils import Utils, SystemTypeEnum
 from .camera import Camera, CameraProperty, MicroPhone, FrameID, Mark
-from .images import Images
+from .images import Images, CompareType, FindType
 from .serial_port import SerialPort
 from .usbrelay import USBRelay
 from .player import Player
@@ -21,7 +21,7 @@ from .email_utils import EmailUtils, EmailType
 __all__ = [
     "Utils", "SystemTypeEnum",
     "Camera", "CameraProperty", "MicroPhone", "FrameID", "Mark",
-    "Images",
+    "Images", "CompareType", "FindType",
     "SerialPort",
     "USBRelay",
     "Player",

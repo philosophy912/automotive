@@ -6,7 +6,10 @@
 # @Author:      lizhe
 # @Created:     2021/5/1 - 23:47
 # --------------------------------------------------------
+import platform
 import subprocess as sp
+from typing import List, Tuple
+
 from automotive.common.api import ScreenShot
 from automotive.logger import logger
 from .keycode import KeyCode
@@ -19,13 +22,13 @@ class ADB(ScreenShot):
     """
 
     @staticmethod
-    def __execute(command: str) -> list:
+    def __execute(command: str) -> List[str]:
         logger.debug(f"execute command {command}")
         pi = sp.Popen(command, stdout=sp.PIPE, stderr=sp.PIPE)
         pi.wait()
         return list(map(lambda x: x.decode("utf-8"), pi.stdout.readlines()))
 
-    def __adb_command(self, command: str, device_id: str = None) -> list:
+    def __adb_command(self, command: str, device_id: str = None) -> List[str]:
         """
         执行ADB命令，可以传入如 adb shell dumpsys window，如果传入了device_id则会加上-s参数
         :param command: adb命令
@@ -38,7 +41,7 @@ class ADB(ScreenShot):
         else:
             return self.__execute(f"adb {command}")
 
-    def devices(self) -> list:
+    def devices(self) -> List[str]:
         """
         列出当前ADB连接的设备
         """
@@ -62,7 +65,7 @@ class ADB(ScreenShot):
         """
         self.__execute("adb kill-server")
 
-    def version(self) -> list:
+    def version(self) -> List[str]:
         """
         查看ADB的版本号
         """
@@ -98,7 +101,7 @@ class ADB(ScreenShot):
         """
         self.__adb_command(f"pull {remote} {local}", device_id)
 
-    def pull_files(self, files: list, local: str, device_id: str = None):
+    def pull_files(self, files: List[str], local: str, device_id: str = None):
         """
         拉取所有文件到本地电脑
 
@@ -108,6 +111,9 @@ class ADB(ScreenShot):
 
         :param device_id: 设备编号
         """
+        sys = platform.system()
+        if sys == "Windows":
+            local = f"\"{local}\""
         for file in files:
             self.pull(file, local, device_id)
             sleep(1)
@@ -187,7 +193,8 @@ class ADB(ScreenShot):
                 self.__adb_command(f"shell screencap -p {image_name}", device_id)
             sleep(0.1)
 
-    def screen_shot_area(self, position: tuple, image_name: str, count: int, interval_time: float, display: int = None):
+    def screen_shot_area(self, position: Tuple[int, int], image_name: str, count: int, interval_time: float,
+                         display: int = None):
         """
         区域截图操作, 由于ADB不支持该操作，所以为空实现
         """

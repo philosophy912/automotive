@@ -8,6 +8,8 @@
 # --------------------------------------------------------
 import json
 import re
+from typing import List, Dict, Union, Any
+
 from automotive.logger.logger import logger
 
 
@@ -74,7 +76,7 @@ class DbcParser(object):
     RIGHT_BRACKETS = ")"
     RIGHT_CENTER_BRACKETS = "]"
 
-    def parse(self, dbc_file: str, encoding: str = "gbk") -> list:
+    def parse(self, dbc_file: str, encoding: str = "gbk") -> List[Dict[str, Any]]:
         """
         解析DBC文件为列表类型
         :param encoding: 编码格式
@@ -133,7 +135,8 @@ class DbcParser(object):
             .strip()
 
     @staticmethod
-    def __get_message_by_id(messages: list, message_id: int) -> dict:
+    def __get_message_by_id(messages: List[Dict[str, List[Any]]],
+                            message_id: int) -> Dict[str, List[Any]]:
         """
         根据id获取message字典
         """
@@ -143,7 +146,7 @@ class DbcParser(object):
         raise RuntimeError(f"no message id[{message_id}] found in messages")
 
     @staticmethod
-    def __get_signal_by_name(signals: list, name: str) -> dict:
+    def __get_signal_by_name(signals: List[Dict[str, Any]], name: str) -> Dict[str, Any]:
         """
         根据名字获取signal
         """
@@ -152,7 +155,7 @@ class DbcParser(object):
                 return signal
         raise RuntimeError(f"no signal name[{name}] found in signal")
 
-    def __read_content(self, dbc_file: str, encoding: str) -> list:
+    def __read_content(self, dbc_file: str, encoding: str) -> List[str]:
         """
         从DBC文件中读取数据并且处理多行的情况
         :param dbc_file: dbc文件
@@ -183,7 +186,7 @@ class DbcParser(object):
         return after_handle_contents
 
     @staticmethod
-    def __set_message_default_value(message: dict):
+    def __set_message_default_value(message: Dict[str, Union[bool, int]]):
         """
         设置message默认的值
         """
@@ -197,7 +200,7 @@ class DbcParser(object):
         message["msg_delay_time"] = 0
         message["nm_message"] = False
 
-    def __parse_message(self, contents: list) -> list:
+    def __parse_message(self, contents: List[str]) -> List[Dict[str, Any]]:
         attr_dict = dict()
         messages = []
         message = dict()
@@ -244,7 +247,7 @@ class DbcParser(object):
         logger.debug(f"messages = {messages}")
         return messages
 
-    def __set_val_values(self, messages: list, content: str):
+    def __set_val_values(self, messages: List[Dict[str, Any]], content: str):
         """
         /*
          *  处理VAL模块，返回键值对
@@ -277,7 +280,8 @@ class DbcParser(object):
         signal = self.__get_signal_by_name(message["signals"], signal_name)
         signal["values"] = values
 
-    def __set_ba_values(self, messages: list, attr_dict: dict, content: str):
+    def __set_ba_values(self, messages: List[Dict[str, List[Dict[str, Union[str, int, float]]]]],
+                        attr_dict: Dict[str, str], content: str):
         """
         /*
          * 处理BA_ "GenMsgDelayTime" BO_ 1069 0;
@@ -312,7 +316,7 @@ class DbcParser(object):
         else:
             logger.debug(f"not standard ba")
 
-    def __handle_bo(self, message: dict, name: str, value: str, attr_dict: dict):
+    def __handle_bo(self, message: Dict[str, Any], name: str, value: str, attr_dict: Dict[str, str]):
         logger.trace(f"attr_dict = {attr_dict}")
         logger.trace(f"type = [{name}] and value = [{value}]")
         if name == self.GEN_MSG_CYCLE_TIME_FAST:
@@ -343,7 +347,7 @@ class DbcParser(object):
         else:
             logger.debug(f"type is {name}, so nothing to do")
 
-    def __handle_sg(self, message: dict, name: str, signal_name: str, value: str):
+    def __handle_sg(self, message: Dict[str, Any], name: str, signal_name: str, value: str):
         signal = self.__get_signal_by_name(message["signals"], signal_name)
         if name.upper() == self.GEN_SIG_START_VALUE.upper():
             logger.debug(f"value is {value}")
@@ -352,7 +356,7 @@ class DbcParser(object):
             else:
                 signal["start_value"] = int(value)
 
-    def __set_default_value(self, messages: list, content: str):
+    def __set_default_value(self, messages: List[Dict[str, Any]], content: str):
         """
         /*
          *  BA_DEF_DEF_  "GatewayedSignals" "No";
@@ -407,7 +411,7 @@ class DbcParser(object):
             else:
                 logger.debug(f"ba default type is [{name}], so nothing to do")
 
-    def __set_message_attribute(self, attr_dict: dict, content: str):
+    def __set_message_attribute(self, attr_dict: Dict[str, Any], content: str):
         """
         /*
          *  解析BA_DEF_ SG_  "GenSigInactiveValue" INT 0 10000;
@@ -450,7 +454,7 @@ class DbcParser(object):
                     attr_dict[name] = other.split(self.COMMA)
                     logger.trace(f"ENUM attr_dict[{name}] = {other}")
 
-    def __set_comments(self, messages: list, content: str):
+    def __set_comments(self, messages: List[Dict[str, Any]], content: str):
         """
         /*
          *  处理CM模块的，返回键值对
@@ -487,7 +491,7 @@ class DbcParser(object):
             signal = self.__get_signal_by_name(message["signals"], signal_name)
             signal["comment"] = re.sub(self.TRIM_BLANK, self.BLANK, comment).strip()
 
-    def __set_message(self, message: dict, content: str):
+    def __set_message(self, message: Dict[str, Any], content: str):
         """
         /*
          * 处理BO模块的，返回键值对
@@ -519,7 +523,7 @@ class DbcParser(object):
         message["sender"] = sender
         logger.trace(f"message = {message}")
 
-    def __get_signal(self, content: str) -> dict:
+    def __get_signal(self, content: str) -> Dict[str, Any]:
         """
         /*
          *  处理SG模块，返回键值对

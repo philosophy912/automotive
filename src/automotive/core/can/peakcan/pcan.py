@@ -9,6 +9,7 @@
 # 导入所需模块
 from inspect import stack
 from ctypes import memmove, c_uint
+from typing import List, Any, Tuple
 
 from automotive.logger.logger import logger
 from . import pcanbasic
@@ -97,7 +98,7 @@ class PCan(BaseCanDevice):
                 raise RuntimeError(f"Method <{stack()[0][3]}> Init PEAK CAN channel_{hex(channel.value)} Failed.")
 
     @staticmethod
-    def __data_package(frame_length: int, message_id: int, send_type: int, data_length: int, data: list):
+    def __data_package(frame_length: int, message_id: int, send_type: int, data_length: int, data: List[Any]):
         """
         组包CAN发送数据，供VCI_Transmit函数使用。
 
@@ -135,7 +136,7 @@ class PCan(BaseCanDevice):
         return send_data
 
     @staticmethod
-    def __data_package_fd(frame_length: int, message_id: int, send_type: int, data_length: int, data: list):
+    def __data_package_fd(frame_length: int, message_id: int, send_type: int, data_length: int, data: List[Any]):
         """
         组包CAN发送数据，供VCI_Transmit函数使用。 (预留，目前的PeakCAN不支持CANFD)
 
@@ -319,7 +320,7 @@ class PCan(BaseCanDevice):
             raise RuntimeError('PEAK CAN transmit failed.')
 
     @check_status
-    def receive(self, channel: int = None) -> tuple:
+    def receive(self, channel: int = None) -> Tuple[Any, Any]:
         """
         Reads a CAN message from the receive queue of a PEAK CAN Channel
 
@@ -339,7 +340,7 @@ class PCan(BaseCanDevice):
             raise RuntimeError('PEAK CAN receive failed.')
 
     @check_status
-    def receive_fd(self, channel: int = None) -> tuple:
+    def receive_fd(self, channel: int = None) -> Tuple[Any, Any]:
         """
         Reads a CAN message from the receive queue of a PEAK CAN Channel
         (预留，目前的PeakCAN不支持CANFD)
@@ -353,7 +354,7 @@ class PCan(BaseCanDevice):
             ret, message, timestamp = self.__can_basic.read_fd(channel)
             if ret == pcanbasic.PCAN_ERROR_OK:
                 logger.trace(f"PEAK CAN channel_{hex(channel.value)} Receive Success.")
-                return ret, [message, timestamp]
+                return message, timestamp
             else:
                 raise RuntimeError(f"Method <{stack()[0][3]}> PEAK CAN Receive Failed.")
         except Exception:

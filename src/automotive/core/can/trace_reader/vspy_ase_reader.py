@@ -7,6 +7,7 @@
 # @Created:     2021/5/1 - 23:45
 # --------------------------------------------------------
 import re
+from typing import List, Tuple
 
 from ..message import Message
 from .trace_reader import TraceReader
@@ -15,7 +16,7 @@ from automotive.logger.logger import logger
 
 class VspyAseReader(TraceReader):
 
-    def read(self, file: str) -> list:
+    def read(self, file: str) -> List[Tuple[float, Message]]:
         contents = self.__filter_content(file)
         logger.debug(f"trace size = {len(contents)}")
         return self.__convert(contents)
@@ -27,7 +28,7 @@ class VspyAseReader(TraceReader):
             return list(filter(lambda x: len(x.split(" ")) >= 28, lines))
 
     @staticmethod
-    def __convert(contents: list) -> list:
+    def __convert(contents: list) -> List[Tuple[float, Message]]:
         """
         解析content，并生成message对象
         0.000000 0 25C             Tx   d 8 00 00 00 00 00 00 00 00

@@ -7,6 +7,8 @@
 # @Created:     2021/5/1 - 23:53
 # --------------------------------------------------------
 from time import sleep
+from typing import List
+
 from automotive.common.api import SocketDevice
 from .cluster_hmi_screenshot import ClusterHmiScreenshot
 from automotive.utils.ftp_utils import FtpUtils
@@ -30,7 +32,7 @@ class ClusterHmi(SocketDevice):
     """
 
     def __init__(self, board_path: str, local_folder: str, test_binary: str = None, cluster: str = None,
-                 whud: str = None, service_list: tuple = _start_service_list):
+                 whud: str = None, service_list: List[str] = _start_service_list):
         """
         初始化
 
@@ -117,7 +119,7 @@ class ClusterHmi(SocketDevice):
     def read(self) -> str:
         return self.__telnet.read()
 
-    def screen_shot(self, image_name: str, count: int, interval_time: float, display: int = None) -> list:
+    def screen_shot(self, image_name: str, count: int, interval_time: float, display: int = None) -> List[str]:
         """
         """
         # 10张图片
@@ -139,7 +141,7 @@ class ClusterHmi(SocketDevice):
         else:
             return images
 
-    def __check_screenshot_success(self, images: str) -> bool:
+    def __check_screenshot_success(self, images: List[str]) -> bool:
         """
         只检查文件是否在板子上存在
         """

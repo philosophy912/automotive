@@ -9,6 +9,8 @@
 import os
 import re
 import subprocess as sp
+from typing import List, Union, Tuple, Any
+
 import chardet
 from time import sleep
 from automotive.logger import logger
@@ -44,13 +46,13 @@ class Performance(object):
         return re.search(regex, content).group(0)
 
     @staticmethod
-    def __get_regex_matched(content: str, regexes: list) -> str:
+    def __get_regex_matched(content: str, regexes: List[str]) -> str:
         for regex in regexes:
             content = re.search(regex, content).group(0)
         return content
 
     @staticmethod
-    def __get_average(numbers: (int, float)) -> (int, float):
+    def __get_average(numbers: List[Union[int, float]]) -> Union[int, float]:
         total = 0
         for num in numbers:
             total += num
@@ -130,7 +132,7 @@ class Performance(object):
         logger.debug(f"contents = {contents}")
         return contents
 
-    def __parse_android_cpu(self, contents: list) -> float:
+    def __parse_android_cpu(self, contents: List[str]) -> float:
         """
         安卓CPU占用率
 
@@ -152,7 +154,7 @@ class Performance(object):
         logger.debug(f"cpu average is [{cpu_average}]")
         return cpu_average
 
-    def __parse_android_memory(self, contents: list) -> tuple:
+    def __parse_android_memory(self, contents: List[str]) -> Tuple[float, float, float]:
         """
         安卓内存占用率
 
@@ -185,7 +187,7 @@ class Performance(object):
         logger.debug(f"total[{total_average}]M, used[{uses_average}]M, percent[{percent_average * 100}]%")
         return total_average, uses_average, percent_average
 
-    def __parse_cpu(self, contents: list) -> float:
+    def __parse_cpu(self, contents: List[str]) -> float:
         """
         cpu 占用率
 
@@ -206,7 +208,7 @@ class Performance(object):
         logger.debug(f"cpu average is [{cpu_average}]")
         return cpu_average
 
-    def __parse_memory(self, contents: list) -> tuple:
+    def __parse_memory(self, contents: List[str]) -> Tuple[float, float, float]:
         """
         获取内存占用率
 
@@ -246,7 +248,7 @@ class Performance(object):
         results = list(map(lambda x: float(x[:-1]), results))
         return round(self.__get_average(results), 2)
 
-    def __parse_linux(self, contents: list):
+    def __parse_linux(self, contents: List[str]):
         totals = []
         uses = []
         cpus = []
@@ -267,14 +269,14 @@ class Performance(object):
         return cpu_average, percent_average, uses_average, total_average
 
     @staticmethod
-    def __filter_files(folder: str, extend: str) -> list:
+    def __filter_files(folder: str, extend: str) -> List[str]:
         """
         过滤文件
         """
         files = list(filter(lambda x: x.endswith(extend), os.listdir(folder)))
         return list(map(lambda x: fr"{folder}/{x}", files))
 
-    def get_qnx_performance(self, port: str, count: int, need_test_gpu: bool = True) -> tuple:
+    def get_qnx_performance(self, port: str, count: int, need_test_gpu: bool = True) -> Tuple[str, str, str, str, str]:
         """
         获取QNX的相关性能
 
@@ -303,9 +305,9 @@ class Performance(object):
                    f"内存总量{total_average}M", f"GPU占用率{gpu_average}G"
         else:
             return f"CPU占用率{cpu_average}%", f"内存占用率{percent_average * 100}%", f"内存使用量{uses_average}M", \
-                   f"内存总量{total_average}M"
+                   f"内存总量{total_average}M", ""
 
-    def get_qnx_performance_by_file(self, folder: str, extend: str) -> tuple:
+    def get_qnx_performance_by_file(self, folder: str, extend: str) -> Tuple[str, str, str, str]:
         """
         获取qnx的相关性能（通过文件）
 
@@ -326,7 +328,7 @@ class Performance(object):
         return f"CPU占用率{cpu_average}%", f"内存占用率{percent_average * 100}%", f"内存使用量{uses_average}M", \
                f"内存总量{total_average}M"
 
-    def get_android_performance(self, count: int) -> tuple:
+    def get_android_performance(self, count: int) -> Tuple[str, str, str, str]:
         """
         后取安卓的相关性能
 
@@ -343,7 +345,7 @@ class Performance(object):
         return f"CPU占用率{cpu_average}%", f"内存占用率{round(percent_average * 100, 2)}%", f"内存使用量{uses_average}M", \
                f"内存总量{total_average}M"
 
-    def get_linux_performance(self, port: str, count: int) -> tuple:
+    def get_linux_performance(self, port: str, count: int) -> Tuple[str, str, str, str]:
         """
         获取Linux的相关性能
         :param port:  串口串口好

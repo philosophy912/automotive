@@ -6,11 +6,9 @@
 # @Author:      lizhe
 # @Created:     2021/5/1 - 23:48
 # --------------------------------------------------------
-import os
 from enum import Enum, unique
+from typing import Union, Dict, List, Tuple
 
-import appium
-import uiautomator2
 from appium.webdriver import WebElement
 from appium.webdriver.common.touch_action import TouchAction
 from appium.webdriver.webdriver import WebDriver
@@ -101,10 +99,10 @@ class AndroidService(metaclass=Singleton):
         return self.__client.actions
 
     @property
-    def driver(self) -> (WebDriver, Device):
+    def driver(self) -> Union[WebDriver, Device]:
         return self.__client.driver
 
-    def connect(self, device_id: str, capability: dict = None, url: str = "http://localhost:4723/wd/hub"):
+    def connect(self, device_id: str, capability: Dict[str, str] = None, url: str = "http://localhost:4723/wd/hub"):
         """
         连接Android设备
 
@@ -150,8 +148,8 @@ class AndroidService(metaclass=Singleton):
         """
         self.__client.close_app(package)
 
-    def get_element(self, locator: (dict, WebElement, UiObject), timeout: float = _DEFAULT_TIME_OUT) -> (
-            WebElement, UiObject):
+    def get_element(self, locator: Union[Dict[str, str], WebElement, UiObject],
+                    timeout: float = _DEFAULT_TIME_OUT) -> Union[WebElement, UiObject]:
         """
         根据定位符获取元素
 
@@ -167,7 +165,8 @@ class AndroidService(metaclass=Singleton):
         """
         return self.__client.get_element(locator, timeout)
 
-    def get_elements(self, locator: dict, timeout: float = _DEFAULT_TIME_OUT) -> list:
+    def get_elements(self, locator: Dict[str, str],
+                     timeout: float = _DEFAULT_TIME_OUT) -> List[Union[WebElement, UiObject]]:
         """
         根据定位符获取元素列表
 
@@ -183,8 +182,8 @@ class AndroidService(metaclass=Singleton):
         """
         return self.__client.get_elements(locator, timeout)
 
-    def get_child_element(self, parent: (dict, WebElement, UiObject), locator: dict,
-                          timeout: float = _DEFAULT_TIME_OUT) -> (WebElement, UiObject):
+    def get_child_element(self, parent: Union[Dict[str, str], WebElement, UiObject], locator: Dict[str, str],
+                          timeout: float = _DEFAULT_TIME_OUT) -> Union[WebElement, UiObject]:
         """
         在父元素中查找子元素
 
@@ -202,8 +201,8 @@ class AndroidService(metaclass=Singleton):
         """
         return self.__client.get_child_element(parent, locator, timeout)
 
-    def get_child_elements(self, parent: (dict, WebElement, UiObject), locator: dict,
-                           timeout: float = _DEFAULT_TIME_OUT) -> list:
+    def get_child_elements(self, parent: Union[Dict[str, str], WebElement, UiObject], locator: Dict[str, str],
+                           timeout: float = _DEFAULT_TIME_OUT) -> List[Union[WebElement, UiObject]]:
         """
         在父元素中查找子元素列表
 
@@ -221,7 +220,8 @@ class AndroidService(metaclass=Singleton):
         """
         return self.__client.get_child_elements(parent, locator, timeout)
 
-    def get_element_attribute(self, locator: (dict, WebElement, UiObject), timeout: float = _DEFAULT_TIME_OUT) -> dict:
+    def get_element_attribute(self, locator: Union[Dict[str, str], WebElement, UiObject],
+                              timeout: float = _DEFAULT_TIME_OUT) -> Dict[ElementAttributeEnum, bool]:
         """
         获取元素的属性，以列表方式返回
 
@@ -237,7 +237,8 @@ class AndroidService(metaclass=Singleton):
         """
         return self.__client.get_element_attribute(locator, timeout)
 
-    def is_checkable(self, locator: (dict, WebElement, UiObject), timeout: float = _DEFAULT_TIME_OUT) -> bool:
+    def is_checkable(self, locator: Union[Dict[str, str], WebElement, UiObject],
+                     timeout: float = _DEFAULT_TIME_OUT) -> bool:
         """
         元素是否可选择
 
@@ -249,7 +250,8 @@ class AndroidService(metaclass=Singleton):
         """
         return self.__client.get_element_attribute(locator, timeout)[ElementAttributeEnum.CHECKABLE]
 
-    def is_checked(self, locator: (dict, WebElement, UiObject), timeout: float = _DEFAULT_TIME_OUT) -> bool:
+    def is_checked(self, locator: Union[Dict[str, str], WebElement, UiObject],
+                   timeout: float = _DEFAULT_TIME_OUT) -> bool:
         """
         元素是否可选中
 
@@ -261,7 +263,8 @@ class AndroidService(metaclass=Singleton):
         """
         return self.__client.get_element_attribute(locator, timeout)[ElementAttributeEnum.CHECKED]
 
-    def is_clickable(self, locator: (dict, WebElement, UiObject), timeout: float = _DEFAULT_TIME_OUT) -> bool:
+    def is_clickable(self, locator: Union[Dict[str, str], WebElement, UiObject],
+                     timeout: float = _DEFAULT_TIME_OUT) -> bool:
         """
         元素是否可点击
 
@@ -273,7 +276,8 @@ class AndroidService(metaclass=Singleton):
         """
         return self.__client.get_element_attribute(locator, timeout)[ElementAttributeEnum.CLICKABLE]
 
-    def is_enable(self, locator: (dict, WebElement, UiObject), timeout: float = _DEFAULT_TIME_OUT) -> bool:
+    def is_enable(self, locator: Union[Dict[str, str], WebElement, UiObject],
+                  timeout: float = _DEFAULT_TIME_OUT) -> bool:
         """
         元素是否可用
 
@@ -285,7 +289,8 @@ class AndroidService(metaclass=Singleton):
         """
         return self.__client.get_element_attribute(locator, timeout)[ElementAttributeEnum.ENABLED]
 
-    def is_focusable(self, locator: (dict, WebElement, UiObject), timeout: float = _DEFAULT_TIME_OUT) -> bool:
+    def is_focusable(self, locator: Union[Dict[str, str], WebElement, UiObject],
+                     timeout: float = _DEFAULT_TIME_OUT) -> bool:
         """
         元素是否可以存在焦点
 
@@ -297,7 +302,8 @@ class AndroidService(metaclass=Singleton):
         """
         return self.__client.get_element_attribute(locator, timeout)[ElementAttributeEnum.FOCUSABLE]
 
-    def is_focused(self, locator: (dict, WebElement, UiObject), timeout: float = _DEFAULT_TIME_OUT) -> bool:
+    def is_focused(self, locator: Union[Dict[str, str], WebElement, UiObject],
+                   timeout: float = _DEFAULT_TIME_OUT) -> bool:
         """
         元素是否焦点中
 
@@ -309,7 +315,8 @@ class AndroidService(metaclass=Singleton):
         """
         return self.__client.get_element_attribute(locator, timeout)[ElementAttributeEnum.FOCUSED]
 
-    def is_scrollable(self, locator: (dict, WebElement, UiObject), timeout: float = _DEFAULT_TIME_OUT) -> bool:
+    def is_scrollable(self, locator: Union[Dict[str, str], WebElement, UiObject],
+                      timeout: float = _DEFAULT_TIME_OUT) -> bool:
         """
         元素是否可滑动
 
@@ -321,7 +328,8 @@ class AndroidService(metaclass=Singleton):
         """
         return self.__client.get_element_attribute(locator, timeout)[ElementAttributeEnum.SCROLLABLE]
 
-    def is_long_clickable(self, locator: (dict, WebElement, UiObject), timeout: float = _DEFAULT_TIME_OUT) -> bool:
+    def is_long_clickable(self, locator: Union[Dict[str, str], WebElement, UiObject],
+                          timeout: float = _DEFAULT_TIME_OUT) -> bool:
         """
         元素是否可长按
 
@@ -333,7 +341,8 @@ class AndroidService(metaclass=Singleton):
         """
         return self.__client.get_element_attribute(locator, timeout)[ElementAttributeEnum.LONG_CLICKABLE]
 
-    def is_display(self, locator: (dict, WebElement, UiObject), timeout: float = _DEFAULT_TIME_OUT) -> bool:
+    def is_display(self, locator: Union[Dict[str, str], WebElement, UiObject],
+                   timeout: float = _DEFAULT_TIME_OUT) -> bool:
         """
         元素是否可显示，对于uiautomator2来说，默认可显示，即不准
 
@@ -345,7 +354,8 @@ class AndroidService(metaclass=Singleton):
         """
         return self.__client.get_element_attribute(locator, timeout)[ElementAttributeEnum.CHECKABLE]
 
-    def is_selected(self, locator: (dict, WebElement, UiObject), timeout: float = _DEFAULT_TIME_OUT) -> bool:
+    def is_selected(self, locator: Union[Dict[str, str], WebElement, UiObject],
+                    timeout: float = _DEFAULT_TIME_OUT) -> bool:
         """
         元素是否可选择
 
@@ -357,10 +367,11 @@ class AndroidService(metaclass=Singleton):
         """
         return self.__client.get_element_attribute(locator, timeout)[ElementAttributeEnum.SELECTED]
 
-    def scroll_get_element(self, element: (dict, WebElement, UiObject), locator: dict, text: str,
-                           exact_match: bool = False, duration: float = None,
+    def scroll_get_element(self, element: Union[Dict[str, str], WebElement, UiObject], locator: Dict[str, str],
+                           text: str, exact_match: bool = False, duration: float = None,
                            direct: SwipeDirectorEnum = SwipeDirectorEnum.UP, swipe_time: int = None,
-                           swipe_percent: float = 0.8, timeout: float = _DEFAULT_TIME_OUT) -> (WebElement, UiObject):
+                           swipe_percent: float = 0.8,
+                           timeout: float = _DEFAULT_TIME_OUT) -> Union[WebElement, UiObject]:
         """
         在可滑动的空间中，查找文字所在的控件
 
@@ -391,10 +402,11 @@ class AndroidService(metaclass=Singleton):
         return self.__client.scroll_get_element(element, locator, text, exact_match, duration, direct, swipe_time,
                                                 swipe_percent, timeout)
 
-    def scroll_get_element_and_click(self, element: (dict, WebElement, UiObject), locator: dict, text: str,
-                                     exact_match: bool = False, duration: float = None,
-                                     direct: SwipeDirectorEnum = SwipeDirectorEnum.UP, swipe_time: int = None,
-                                     swipe_percent: float = 0.8, timeout: float = _DEFAULT_TIME_OUT):
+    def scroll_get_element_and_click(self, element: Union[Dict[str, str], WebElement, UiObject],
+                                     locator: Dict[str, str], text: str, exact_match: bool = False,
+                                     duration: float = None, direct: SwipeDirectorEnum = SwipeDirectorEnum.UP,
+                                     swipe_time: int = None, swipe_percent: float = 0.8,
+                                     timeout: float = _DEFAULT_TIME_OUT):
         """
         在可滑动的空间中，查找文字所在的控件
 
@@ -421,10 +433,10 @@ class AndroidService(metaclass=Singleton):
                                     swipe_percent=swipe_percent, timeout=timeout)
         self.__client.click(e)
 
-    def scroll_up_get_element(self, element: (dict, WebElement, UiObject), locator: dict, text: str,
-                              exact_match: bool = False, duration: float = None, swipe_time: int = None,
-                              swipe_percent: float = 0.8, timeout: float = _DEFAULT_TIME_OUT) -> (
-            WebElement, UiObject):
+    def scroll_up_get_element(self, element: Union[Dict[str, str], WebElement, UiObject], locator: Dict[str, str],
+                              text: str, exact_match: bool = False, duration: float = None, swipe_time: int = None,
+                              swipe_percent: float = 0.8,
+                              timeout: float = _DEFAULT_TIME_OUT) -> Union[WebElement, UiObject]:
         """
          在可滑动的空间中，向上滑动并查找文字所在的控件
 
@@ -449,8 +461,9 @@ class AndroidService(metaclass=Singleton):
         return self.__client.scroll_get_element(element, locator, text, exact_match, duration, SwipeDirectorEnum.UP,
                                                 swipe_time, swipe_percent, timeout)
 
-    def scroll_up_get_element_and_click(self, element: (dict, WebElement, UiObject), locator: dict, text: str,
-                                        exact_match: bool = False, duration: float = None, swipe_time: int = None,
+    def scroll_up_get_element_and_click(self, element: Union[Dict[str, str], WebElement, UiObject],
+                                        locator: Dict[str, str], text: str, exact_match: bool = False,
+                                        duration: float = None, swipe_time: int = None,
                                         swipe_percent: float = 0.8, timeout: float = _DEFAULT_TIME_OUT):
         """
          在可滑动的空间中，向上滑动并查找文字所在的控件, 并点击
@@ -475,10 +488,10 @@ class AndroidService(metaclass=Singleton):
                                        timeout)
         self.__client.click(e)
 
-    def scroll_down_get_element(self, element: (dict, WebElement, UiObject), locator: dict, text: str,
-                                exact_match: bool = False, duration: float = None, swipe_time: int = None,
-                                swipe_percent: float = 0.8, timeout: float = _DEFAULT_TIME_OUT) -> (
-            WebElement, UiObject):
+    def scroll_down_get_element(self, element: Union[Dict[str, str], WebElement, UiObject], locator: Dict[str, str],
+                                text: str, exact_match: bool = False, duration: float = None, swipe_time: int = None,
+                                swipe_percent: float = 0.8,
+                                timeout: float = _DEFAULT_TIME_OUT) -> Union[WebElement, UiObject]:
         """
          在可滑动的空间中，向下滑动并查找文字所在的控件
 
@@ -503,8 +516,9 @@ class AndroidService(metaclass=Singleton):
         return self.__client.scroll_get_element(element, locator, text, exact_match, duration, SwipeDirectorEnum.DOWN,
                                                 swipe_time, swipe_percent, timeout)
 
-    def scroll_down_get_element_and_click(self, element: (dict, WebElement, UiObject), locator: dict, text: str,
-                                          exact_match: bool = False, duration: float = None, swipe_time: int = None,
+    def scroll_down_get_element_and_click(self, element: Union[Dict[str, str], WebElement, UiObject],
+                                          locator: Dict[str, str], text: str, exact_match: bool = False,
+                                          duration: float = None, swipe_time: int = None,
                                           swipe_percent: float = 0.8, timeout: float = _DEFAULT_TIME_OUT):
         """
          在可滑动的空间中，向下滑动并查找文字所在的控件，并点击
@@ -529,10 +543,10 @@ class AndroidService(metaclass=Singleton):
                                          timeout)
         self.__client.click(e)
 
-    def scroll_left_get_element(self, element: (dict, WebElement, UiObject), locator: dict, text: str,
-                                exact_match: bool = False, duration: float = None, swipe_time: int = None,
-                                swipe_percent: float = 0.8, timeout: float = _DEFAULT_TIME_OUT) -> (
-            WebElement, UiObject):
+    def scroll_left_get_element(self, element: Union[Dict[str, str], WebElement, UiObject], locator: Dict[str, str],
+                                text: str, exact_match: bool = False, duration: float = None, swipe_time: int = None,
+                                swipe_percent: float = 0.8,
+                                timeout: float = _DEFAULT_TIME_OUT) -> Union[WebElement, UiObject]:
         """
          在可滑动的空间中，向左滑动并查找文字所在的控件
 
@@ -557,7 +571,8 @@ class AndroidService(metaclass=Singleton):
         return self.__client.scroll_get_element(element, locator, text, exact_match, duration, SwipeDirectorEnum.UP,
                                                 swipe_time, swipe_percent, timeout)
 
-    def scroll_left_get_element_and_click(self, element: (dict, WebElement, UiObject), locator: dict, text: str,
+    def scroll_left_get_element_and_click(self, element: Union[Dict[str, str], WebElement, UiObject],
+                                          locator: Dict[str, str], text: str,
                                           exact_match: bool = False, duration: float = None, swipe_time: int = None,
                                           swipe_percent: float = 0.8, timeout: float = _DEFAULT_TIME_OUT):
         """
@@ -585,10 +600,10 @@ class AndroidService(metaclass=Singleton):
                                          timeout)
         self.__client.click(e)
 
-    def scroll_right_get_element(self, element: (dict, WebElement, UiObject), locator: dict, text: str,
-                                 exact_match: bool = False, duration: float = None, swipe_time: int = None,
-                                 swipe_percent: float = 0.8, timeout: float = _DEFAULT_TIME_OUT) -> (
-            WebElement, UiObject):
+    def scroll_right_get_element(self, element: Union[Dict[str, str], WebElement, UiObject], locator: Dict[str, str],
+                                 text: str, exact_match: bool = False, duration: float = None, swipe_time: int = None,
+                                 swipe_percent: float = 0.8,
+                                 timeout: float = _DEFAULT_TIME_OUT) -> Union[WebElement, UiObject]:
         """
          在可滑动的空间中，向右滑动并查找文字所在的控件
 
@@ -613,8 +628,9 @@ class AndroidService(metaclass=Singleton):
         return self.__client.scroll_get_element(element, locator, text, exact_match, duration, SwipeDirectorEnum.UP,
                                                 swipe_time, swipe_percent, timeout)
 
-    def scroll_right_get_element_and_click(self, element: (dict, WebElement, UiObject), locator: dict, text: str,
-                                           exact_match: bool = False, duration: float = None, swipe_time: int = None,
+    def scroll_right_get_element_and_click(self, element: Union[Dict[str, str], WebElement, UiObject],
+                                           locator: Dict[str, str], text: str, exact_match: bool = False,
+                                           duration: float = None, swipe_time: int = None,
                                            swipe_percent: float = 0.8, timeout: float = _DEFAULT_TIME_OUT):
         """
          在可滑动的空间中，向右滑动并查找文字所在的控件
@@ -641,7 +657,8 @@ class AndroidService(metaclass=Singleton):
                                           timeout)
         self.__client.click(e)
 
-    def get_location(self, locator: (dict, WebElement, UiObject), timeout: float = _DEFAULT_TIME_OUT) -> tuple:
+    def get_location(self, locator: Union[Dict[str, str], WebElement, UiObject],
+                     timeout: float = _DEFAULT_TIME_OUT) -> Tuple[int, int, int, int]:
         """
         获取元素的位置
 
@@ -663,7 +680,8 @@ class AndroidService(metaclass=Singleton):
         """
         return self.__client.get_device_id()
 
-    def click(self, locator: (tuple, str, dict, WebElement, UiObject), timeout: float = _DEFAULT_TIME_OUT):
+    def click(self, locator: Union[Tuple[int, int], str, Dict[str, str], WebElement, UiObject],
+              timeout: float = _DEFAULT_TIME_OUT):
         """
         点击元素的某个位置
 
@@ -682,7 +700,7 @@ class AndroidService(metaclass=Singleton):
         logger.debug(f"locator is {locator}")
         self.__client.click(locator, timeout)
 
-    def double_click(self, locator: (tuple, str, dict, WebElement, UiObject),
+    def double_click(self, locator: Union[Tuple[int, int], str, Dict[str, str], WebElement, UiObject],
                      timeout: float = _DEFAULT_TIME_OUT, duration: float = 0.1):
         """
         点击元素的某个位置
@@ -702,7 +720,7 @@ class AndroidService(metaclass=Singleton):
         """
         self.__client.double_click(locator, timeout, duration)
 
-    def press(self, locator: (tuple, str, dict, WebElement, UiObject), duration: float,
+    def press(self, locator: Union[Tuple[int, int], str, Dict[str, str], WebElement, UiObject], duration: float,
               timeout: float = _DEFAULT_TIME_OUT):
         """
         点击元素的某个位置
@@ -723,7 +741,7 @@ class AndroidService(metaclass=Singleton):
         """
         self.press(locator, duration, timeout)
 
-    def drag(self, start_x, start_y, end_x, end_y):
+    def drag(self, start_x: int, start_y: int, end_x: int, end_y: int):
         """
         从某点拖动到某点
 
@@ -737,8 +755,8 @@ class AndroidService(metaclass=Singleton):
         """
         self.__client.drag(start_x, start_y, end_x, end_y)
 
-    def drag_element_to(self, locator1: (tuple, str, dict, WebElement, UiObject),
-                        locator2: (tuple, str, dict, WebElement, UiObject),
+    def drag_element_to(self, locator1: Union[Tuple[int, int], str, Dict[str, str], WebElement, UiObject],
+                        locator2: Union[Tuple[int, int], str, Dict[str, str], WebElement, UiObject],
                         timeout: float = _DEFAULT_TIME_OUT):
         """
         从某点拖动到某点
@@ -752,7 +770,7 @@ class AndroidService(metaclass=Singleton):
         """
         self.__client.drag_element_to(locator1, locator2, timeout)
 
-    def drag_to(self, locator1: (tuple, str, dict, WebElement, UiObject),
+    def drag_to(self, locator1: Union[Tuple[int, int], str, Dict[str, str], WebElement, UiObject],
                 x: int, y: int, timeout: float = _DEFAULT_TIME_OUT):
         """
         从某点拖动到某点
@@ -767,9 +785,9 @@ class AndroidService(metaclass=Singleton):
         """
         self.__client.drag_to(locator1, x, y, timeout)
 
-    def swipe_element(self, from_element: (tuple, str, dict, WebElement, UiObject),
-                      to_element: (tuple, str, dict, WebElement, UiObject), duration: float = None,
-                      timeout: float = _DEFAULT_TIME_OUT):
+    def swipe_element(self, from_element: Union[Tuple[int, int], str, Dict[str, str], WebElement, UiObject],
+                      to_element: Union[Tuple[int, int], str, Dict[str, str], WebElement, UiObject],
+                      duration: float = None, timeout: float = _DEFAULT_TIME_OUT):
         """
         滑动元素从from到to
 
@@ -783,7 +801,8 @@ class AndroidService(metaclass=Singleton):
         """
         self.__client.swipe_element(from_element, to_element, duration, timeout)
 
-    def swipe(self, swipe_element: (str, dict, WebElement, UiObject), locator: (str, dict, WebElement, UiObject),
+    def swipe(self, swipe_element: Union[str, Dict[str, str], WebElement, UiObject],
+              locator: Union[str, Dict[str, str], WebElement, UiObject],
               duration: float = None, direction: SwipeDirectorEnum = SwipeDirectorEnum.UP, swipe_time: int = None,
               wait_time: float = None, timeout: float = _DEFAULT_TIME_OUT, swipe_percent: float = 0.8):
         """
@@ -814,7 +833,8 @@ class AndroidService(metaclass=Singleton):
         """
         self.__client.swipe(swipe_element, locator, duration, direction, swipe_time, wait_time, timeout, swipe_percent)
 
-    def swipe_up(self, swipe_element: (str, dict, WebElement, UiObject), locator: (str, dict, WebElement, UiObject),
+    def swipe_up(self, swipe_element: Union[str, Dict[str, str], WebElement, UiObject],
+                 locator: Union[str, Dict[str, str], WebElement, UiObject],
                  duration: float = None, swipe_time: int = None, wait_time: float = None,
                  timeout: float = _DEFAULT_TIME_OUT, swipe_percent: float = 0.8):
         """
@@ -844,7 +864,8 @@ class AndroidService(metaclass=Singleton):
         self.__client.swipe(swipe_element, locator, duration, SwipeDirectorEnum.UP, swipe_time, wait_time, timeout,
                             swipe_percent)
 
-    def swipe_down(self, swipe_element: (str, dict, WebElement, UiObject), locator: (str, dict, WebElement, UiObject),
+    def swipe_down(self, swipe_element: Union[str, Dict[str, str], WebElement, UiObject],
+                   locator: Union[str, Dict[str, str], WebElement, UiObject],
                    duration: float = None, swipe_time: int = None, wait_time: float = None,
                    timeout: float = _DEFAULT_TIME_OUT, swipe_percent: float = 0.8):
         """
@@ -874,7 +895,8 @@ class AndroidService(metaclass=Singleton):
         self.__client.swipe(swipe_element, locator, duration, SwipeDirectorEnum.DOWN, swipe_time, wait_time, timeout,
                             swipe_percent)
 
-    def swipe_left(self, swipe_element: (str, dict, WebElement, UiObject), locator: (str, dict, WebElement, UiObject),
+    def swipe_left(self, swipe_element: Union[str, Dict[str, str], WebElement, UiObject],
+                   locator: Union[str, Dict[str, str], WebElement, UiObject],
                    duration: float = None, swipe_time: int = None, wait_time: float = None,
                    timeout: float = _DEFAULT_TIME_OUT, swipe_percent: float = 0.8):
         """
@@ -904,7 +926,8 @@ class AndroidService(metaclass=Singleton):
         self.__client.swipe(swipe_element, locator, duration, SwipeDirectorEnum.LEFT, swipe_time, wait_time, timeout,
                             swipe_percent)
 
-    def swipe_right(self, swipe_element: (str, dict, WebElement, UiObject), locator: (str, dict, WebElement, UiObject),
+    def swipe_right(self, swipe_element: Union[str, Dict[str, str], WebElement, UiObject],
+                    locator: Union[str, Dict[str, str], WebElement, UiObject],
                     duration: float = None, swipe_time: int = None, wait_time: float = None,
                     timeout: float = _DEFAULT_TIME_OUT, swipe_percent: float = 0.8):
         """
@@ -934,7 +957,7 @@ class AndroidService(metaclass=Singleton):
         self.__client.swipe(swipe_element, locator, duration, SwipeDirectorEnum.RIGHT, swipe_time, wait_time, timeout,
                             swipe_percent)
 
-    def get_text(self, locator: (dict, WebElement, UiObject), timeout: float = _DEFAULT_TIME_OUT) -> str:
+    def get_text(self, locator: Union[Dict[str, str], WebElement, UiObject], timeout: float = _DEFAULT_TIME_OUT) -> str:
         """
         获取元素的文本
 
@@ -946,7 +969,8 @@ class AndroidService(metaclass=Singleton):
         """
         return self.__client.get_text(locator, timeout)
 
-    def input_text(self, locator: (str, dict, WebElement, UiObject), text: str, timeout: float = _DEFAULT_TIME_OUT):
+    def input_text(self, locator: Union[str, Dict[str, str], WebElement, UiObject], text: str,
+                   timeout: float = _DEFAULT_TIME_OUT):
         """
         对指定控件输入文本信息
 
@@ -958,7 +982,7 @@ class AndroidService(metaclass=Singleton):
         """
         self.__client.input_text(locator, text, timeout)
 
-    def clear_text(self, locator: (str, dict, WebElement, UiObject), timeout: float = _DEFAULT_TIME_OUT):
+    def clear_text(self, locator: Union[str, Dict[str, str], WebElement, UiObject], timeout: float = _DEFAULT_TIME_OUT):
         """
         清空编辑框中的文字
 
@@ -985,7 +1009,7 @@ class AndroidService(metaclass=Singleton):
         """
         return self.__client.get_xml_struct()
 
-    def exist(self, locator: (str, dict, WebElement, UiObject), timeout: float = _DEFAULT_TIME_OUT) -> bool:
+    def exist(self, locator: Union[str, Dict[str, str], WebElement, UiObject], timeout: float = _DEFAULT_TIME_OUT) -> bool:
         """
         元素是否存在
         :return: 存在/不存在

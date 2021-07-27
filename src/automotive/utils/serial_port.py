@@ -173,6 +173,8 @@ class SerialPort(object):
             self._serial = serial.Serial(port=port, baudrate=baud_rate, bytesize=byte_size, parity=parity,
                                          stopbits=stop_bits, timeout=timeout, xonxoff=xon_xoff, rtscts=rts_cts,
                                          write_timeout=write_timeout, dsrdtr=dsr_dtr)
+            # self._serial.open()
+            # self.set_buffer()
         else:
             raise RuntimeError(f"port[{port}] connect failed")
         sleep(1)
@@ -186,10 +188,10 @@ class SerialPort(object):
         """
         if self._serial:
             self._flag = False
-            self._serial.close()
             self._port = None
-            self._serial = None
             self._read_flag = False
+            self._serial.close()
+            self._serial = None
             # 清除数据
             self._contents.clear()
 
@@ -214,7 +216,7 @@ class SerialPort(object):
         return False
 
     @check_status
-    def send(self, cmd: (bytes, str), type_: bool = True, end: str = '\r'):
+    def send(self, cmd: Union[bytes, str], type_: bool = True, end: str = '\r'):
         """
         发送命令到串口
 
@@ -265,17 +267,10 @@ class SerialPort(object):
             return byte_.decode('utf-8') if type_ else byte_
 
     @check_status
-    def read_line(self, type_: bool = None) -> str:
+    def read_line(self) -> str:
         """
         读取串口输出，按行读取，调用一次读取一行
 
-        :param type_:
-
-            True:不进行解码操作，直接返回
-
-            False:以utf-8的方式进行解码并返回
-
-            None: 自动检测编码格式，并自动解码后返回
 
         :return: 读取到的串口输出string
         """
@@ -336,15 +331,9 @@ class SerialPort(object):
             return " ".join(contents)
         else:
             logger.info(f"serial mode")
-            sleep(1)
             all_lines = self._serial.read_all()
             sleep(2)
-            new_all_lines = self.__bytes_to_string(all_lines, type_)
-            sleep(2)
-            # 删除掉回车
-            if '\r\r\n' in new_all_lines:
-                new_all_lines = new_all_lines.replace('\r\n', '')
-            return new_all_lines
+            return self.__bytes_to_string(all_lines, type_)
 
     @check_status
     def in_waiting(self) -> int:

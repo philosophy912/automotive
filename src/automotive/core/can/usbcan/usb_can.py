@@ -13,6 +13,8 @@ from ctypes import c_ubyte, c_ushort, c_char, c_uint, Structure, windll, c_int, 
 from time import time
 from platform import architecture
 from inspect import stack
+from typing import Tuple, Any, List
+
 from automotive.logger.logger import logger
 from ..api import CanBoxDevice, BaseCanDevice, BaudRate
 from ..message import Message, control_decorator
@@ -309,7 +311,7 @@ class UsbCan(BaseCanDevice):
         return self.__lib_can.VCI_InitCAN(self.__device_type, self.__device_index, self.__can_index, byref(init_config))
 
     def __data_package(self, frame_length: int, message_id: int, time_flag: int, send_type: int, remote_flag: int,
-                       external_flag: int, data_length: int, data: list, reserve: list):
+                       external_flag: int, data_length: int, data: list, reserve: List[Any]):
         """
         组包CAN发送数据，供VCI_Transmit函数使用。
 
@@ -580,7 +582,7 @@ class UsbCan(BaseCanDevice):
             raise RuntimeError(error[1])
 
     @check_status
-    def receive(self, frame_length: int = 2500, wait_time: int = 100) -> tuple:
+    def receive(self, frame_length: int = 2500, wait_time: int = 100) -> Tuple[int, Any]:
         """
         接收函数。此函数从指定的设备CAN通道的接收缓冲区中读取数据。
 

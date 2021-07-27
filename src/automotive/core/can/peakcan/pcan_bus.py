@@ -6,6 +6,8 @@
 # @Author:      lizhe
 # @Created:     2021/5/1 - 23:39
 # --------------------------------------------------------
+from typing import List
+
 from automotive.logger.logger import logger
 from .pcan import PCan
 from ..api import BaseCanBus
@@ -168,7 +170,7 @@ class PCanBus(BaseCanBus):
         return self.__pcan.is_open
 
     @check_status
-    def get_stack(self) -> list:
+    def get_stack(self) -> List[Message]:
         """
         获取CAN的stack
         """

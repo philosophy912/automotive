@@ -6,6 +6,8 @@
 # @Author:      lizhe
 # @Created:     2021/5/1 - 23:55
 # --------------------------------------------------------
+from typing import Tuple
+
 from .qnx_device import QnxDevice
 from .qnx_actions import QnxActions
 from .qnx_local_screenshot import QnxLocalScreenShot
@@ -37,7 +39,7 @@ class AirCondition(ScreenShot, Actions, Device):
     def screen_shot(self, image_name: str, count: int, interval_time: float, display: int = None) -> list:
         return self.__screen_shot.screen_shot(image_name, count, interval_time, display)
 
-    def screen_shot_area(self, position: tuple, image_name: str, count: int, interval_time: float,
+    def screen_shot_area(self, position: Tuple[int, int, int, int], image_name: str, count: int, interval_time: float,
                          display: int = None) -> list:
         return self.__screen_shot.screen_shot_area(position, image_name, count, interval_time, display)
 

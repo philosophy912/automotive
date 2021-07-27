@@ -9,6 +9,8 @@
 import os
 
 from time import sleep
+from typing import Union
+
 from automotive.logger import logger
 
 
@@ -35,7 +37,7 @@ class Player(object):
             self.speaker = win32com.client.Dispatch("SAPI.SpVoice")
             self._tts_play = tts.init()
 
-    def text_to_tts(self, text: (str, bytes), rate: int = 150, volume: float = 1):
+    def text_to_tts(self, text: Union[str, bytes], rate: int = 150, volume: float = 1):
         """
         将字符串转语音并通过电脑播放，使用tts方式
 
@@ -57,7 +59,7 @@ class Player(object):
         self._tts_play.say(text)
         self._tts_play.runAndWait()
 
-    def text_to_voice(self, text: (str, bytes)):
+    def text_to_voice(self, text: Union[str, bytes]):
         """
         将字符串转语音并通过电脑播放
 
@@ -90,6 +92,7 @@ class Player(object):
         else:
             for i in range(timeout):
                 sleep(1)
+                # 判断是否已经播放完成
                 busy = self.__pygame.mixer.music.get_busy()
                 if not busy:
                     break

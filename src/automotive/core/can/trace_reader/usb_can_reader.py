@@ -7,6 +7,8 @@
 # @Created:     2021/5/1 - 23:45
 # --------------------------------------------------------
 import re
+from typing import List, Tuple
+
 from ..message import Message
 from .trace_reader import TraceReader
 from automotive.logger.logger import logger
@@ -14,7 +16,7 @@ from automotive.logger.logger import logger
 
 class UsbCanReader(TraceReader):
 
-    def read(self, file: str) -> list:
+    def read(self, file: str) -> List[Tuple[float, Message]]:
         contents = self.__filter_content(file)
         logger.debug(f"trace size = {len(contents)}")
         return self.__convert(contents)
@@ -26,7 +28,7 @@ class UsbCanReader(TraceReader):
             lines.pop(0)
             return lines
 
-    def __convert(self, contents: list) -> list:
+    def __convert(self, contents: list) -> List[Tuple[float, Message]]:
         """
         解析content，并生成message对象
         00345,="09:35:34.992",0x376549,ch1,接收,0x0406,数据帧,标准帧,0x08,x| 06 01 00 00 00 00 00 00

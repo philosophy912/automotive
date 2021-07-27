@@ -158,7 +158,7 @@ class KonstanterControl(BaseBattery):
         self.__kon.start_stop(begin, end)
         self.__kon.sequence('GO')
         flag = True
-        logger.info(f"total time = {total_time}")
+        logger.debug(f"total time = {total_time}")
         start_time = time.time()
         while flag:
             try:
@@ -170,10 +170,10 @@ class KonstanterControl(BaseBattery):
             except IndexError:
                 logger.warning("konstanter response found some error")
                 pass_time = time.time() - start_time
-                logger.info(f"pass time is {pass_time}")
+                logger.debug(f"pass time is {pass_time}")
                 if total_time and pass_time > total_time:
                     flag = True
-        logger.info(f"voltage operator finished")
+        logger.debug(f"voltage operator finished")
 
     def set_user_voltages(self, voltages: (list, tuple), times: int = 0.01, current: float = 5,
                           repeat: int = 1) -> tuple:

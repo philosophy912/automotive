@@ -17,7 +17,7 @@ class It6831Actions(PowerActions):
     IT6831电源操作类
     """
 
-    def __init__(self, port: str, baud_rate: int):
+    def __init__(self, port: str, baud_rate: int = 9600):
         super().__init__()
         self.__it6831 = None
         self.__port = port.upper()
@@ -71,8 +71,6 @@ class It6831Actions(PowerActions):
         设置电源电压电流
 
         :param voltage: 电压
-
-        :param current: 电流， 默认10A
         """
         if not 0 <= voltage <= 20:
             raise RuntimeError(f"电源只支持0-20V电压，当前要设置的电压为{voltage}")

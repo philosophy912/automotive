@@ -7,6 +7,8 @@
 # @Created:     2021/5/2 - 21:11
 # --------------------------------------------------------
 from abc import ABCMeta, abstractmethod
+from typing import Tuple, List
+
 from automotive.utils.utils import Utils
 
 
@@ -76,7 +78,7 @@ class SocketDevice(metaclass=ABCMeta):
 class ScreenShot(metaclass=ABCMeta):
 
     @abstractmethod
-    def screen_shot(self, image_name: str, count: int, interval_time: float, display: int = None) -> list:
+    def screen_shot(self, image_name: str, count: int, interval_time: float, display: int = None) -> List[str]:
         """
         截图操作, 当截图有多张的时候，以__下划线分割并加编号
 
@@ -91,8 +93,8 @@ class ScreenShot(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def screen_shot_area(self, position: tuple, image_name: str, count: int, interval_time: float,
-                         display: int = None) -> list:
+    def screen_shot_area(self, position: Tuple[int, int], image_name: str, count: int, interval_time: float,
+                         display: int = None) -> List[str]:
         """
         区域截图, 当截图有多张的时候，以__下划线分割并加编号
 

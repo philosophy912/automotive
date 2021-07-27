@@ -50,9 +50,9 @@ class RelayActions(BaseActions):
                 self.__relay.one_relay_channel_on(channel)
             else:
                 self.__relay.one_relay_channel_off(channel)
-            sleep(interval)
         else:
-            raise RuntimeError(f"channel[{channel}] is not support")
+            self.__relay.all_relay_channel_on()
+        sleep(interval)
 
     def channel_off(self, channel: int = None, interval: float = 1, reverse: bool = False):
         """
@@ -70,9 +70,9 @@ class RelayActions(BaseActions):
                 self.__relay.one_relay_channel_off(channel)
             else:
                 self.__relay.one_relay_channel_on(channel)
-            sleep(interval)
         else:
-            raise RuntimeError(f"channel[{channel}] is not support")
+            self.__relay.all_relay_channel_off()
+        sleep(interval)
 
     def fast_on_off(self, duration: int, interval: float, channel: int, stop_status: bool = True):
         """

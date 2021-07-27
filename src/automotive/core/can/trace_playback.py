@@ -7,12 +7,14 @@
 # @Created:     2021/5/1 - 23:42
 # --------------------------------------------------------
 import importlib
+from typing import List, Any, Tuple
 
 from automotive.logger.logger import logger
 from time import sleep
 from enum import Enum
 from .api import CanBoxDevice
 from .can_service import get_can_bus
+from .message import Message
 
 
 class TraceType(Enum):
@@ -47,7 +49,7 @@ class TracePlayback(object):
         self._can_box_device, self.__can = get_can_bus(can_box_device)
 
     @staticmethod
-    def __handle_traces(traces: list) -> list:
+    def __handle_traces(traces: List[Tuple[float, Message]]) -> List[Tuple[float, Any]]:
         """
         把需要间隔的时间提前计算出来
         :param traces:
@@ -76,7 +78,7 @@ class TracePlayback(object):
         """
         self.__can.close_can()
 
-    def read_trace(self, file: str, trace_type: TraceType) -> list:
+    def read_trace(self, file: str, trace_type: TraceType) -> List[Tuple[float, Message]]:
         """
         从文件中读取并生成可以发送的trace列表
 
@@ -97,7 +99,7 @@ class TracePlayback(object):
         logger.info(f"done read work, it will send {len(traces)} messages")
         return self.__handle_traces(traces)
 
-    def send_trace(self, traces):
+    def send_trace(self, traces: List[Tuple[float, Message]]):
         """
         回放trace
 

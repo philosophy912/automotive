@@ -12,6 +12,8 @@ import os
 import random
 import inspect
 import zipfile
+from typing import Union, List, Any, Dict
+
 import yaml
 from enum import Enum
 
@@ -88,7 +90,7 @@ class Utils(metaclass=Singleton):
         return time.strftime(fmt, time.localtime(time.time()))
 
     @staticmethod
-    def random_decimal(min_: (float, int), max_: (float, int)) -> (float, int):
+    def random_decimal(min_: Union[float, int], max_: Union[float, int]) -> Union[float, int]:
         """
         随机返回一个最小数和最大数之间的小数
 
@@ -101,7 +103,7 @@ class Utils(metaclass=Singleton):
         return random.uniform(min_, max_)
 
     @staticmethod
-    def random_int(min_: (float, int), max_: (float, int)) -> (float, int):
+    def random_int(min_: Union[float, int], max_: Union[float, int]) -> Union[float, int]:
         """
         随机返回一个最小数和最大数之间的整数
 
@@ -114,7 +116,7 @@ class Utils(metaclass=Singleton):
         return random.randint(min_, max_)
 
     @staticmethod
-    def get_pin_yin(text: (str, bytes), delimiter: str = '', is_first: bool = False,
+    def get_pin_yin(text: Union[str, bytes], delimiter: str = '', is_first: bool = False,
                     format_: PinyinEnum = PinyinEnum.STRIP) -> str:
         """
         获取中文的拼音写法，其中text必须是unicode编码格式
@@ -148,7 +150,7 @@ class Utils(metaclass=Singleton):
         return pinyin.get_initial(text, delimiter) if is_first else pinyin.get(text, delimiter, format_.value)
 
     @staticmethod
-    def is_type_correct(actual_: object, except_: (object, tuple)) -> bool:
+    def is_type_correct(actual_: object, except_: Union[object, tuple]) -> bool:
         """
         判断类型是否属于期望类型
 
@@ -173,7 +175,7 @@ class Utils(metaclass=Singleton):
         return inspect.stack()[1][3]
 
     @staticmethod
-    def is_sub_list(list1: list, list2: list) -> bool:
+    def is_sub_list(list1: List[Any], list2: List[Any]) -> bool:
         """
         列表list1中所有的是否包含在list2中
 
@@ -191,7 +193,7 @@ class Utils(metaclass=Singleton):
         return list1.issubset(list2)
 
     @staticmethod
-    def sleep(sleep_time, text=None):
+    def sleep(sleep_time: float, text: str = None):
         """
         带文字版的sleep，其中logger为loguru输出，级别为info
 
@@ -214,7 +216,7 @@ class Utils(metaclass=Singleton):
             time.sleep(sleep_time)
         time.sleep(decimal)
 
-    def random_sleep(self, start: (int, float), end: (int, float)):
+    def random_sleep(self, start: Union[int, float], end: Union[int, float]):
         """
         随机sleep
 
@@ -234,7 +236,7 @@ class Utils(metaclass=Singleton):
             time.sleep(sleep_time)
 
     @staticmethod
-    def text(content: str, level=None):
+    def text(content: str, level: str = None):
         """
         输出文字，方便调用
 
@@ -289,7 +291,7 @@ class Utils(metaclass=Singleton):
             zip_file.close()
 
     @staticmethod
-    def get_json_obj(file: str, encoding: str = "utf-8") -> dict:
+    def get_json_obj(file: str, encoding: str = "utf-8") -> Dict[Any, Any]:
         """
         获取json文件中object对象
 
@@ -306,7 +308,7 @@ class Utils(metaclass=Singleton):
             return content
 
     @staticmethod
-    def read_yml_full(file: str, encoding: str = "UTF-8") -> dict:
+    def read_yml_full(file: str, encoding: str = "UTF-8") -> Dict[str, str]:
         """
         读取yml文件中的内容(full_load方法)
 
@@ -323,7 +325,7 @@ class Utils(metaclass=Singleton):
             return content
 
     @staticmethod
-    def read_yml_safe(file: str, encoding: str = "UTF-8") -> dict:
+    def read_yml_safe(file: str, encoding: str = "UTF-8") -> Dict[str, str]:
         """
         读取yml文件中的内容（safe_load方法)
 
@@ -340,7 +342,7 @@ class Utils(metaclass=Singleton):
             return content
 
     @staticmethod
-    def read_yml_un_safe(file: str, encoding: str = "UTF-8") -> dict:
+    def read_yml_un_safe(file: str, encoding: str = "UTF-8") -> Dict[str, str]:
         """
         读取yml文件中的内容(unsafe_load方法)
 
@@ -357,7 +359,7 @@ class Utils(metaclass=Singleton):
             return content
 
     @staticmethod
-    def filter_images(folder: str, image_name: str) -> list:
+    def filter_images(folder: str, image_name: str) -> List[str]:
         """
         遍历文件夹取出名字是测试用例名字的图片
 

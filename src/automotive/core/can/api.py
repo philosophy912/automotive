@@ -8,6 +8,8 @@
 # --------------------------------------------------------
 import time
 from concurrent.futures import ThreadPoolExecutor, wait, ALL_COMPLETED
+from typing import Tuple, Any, List
+
 from automotive.logger.logger import logger
 from time import sleep
 from abc import ABCMeta, abstractmethod
@@ -86,7 +88,7 @@ class BaseCanDevice(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def receive(self) -> tuple:
+    def receive(self) -> Tuple[int, Any]:
         """
         接收CAN消息
         :return: message CAN消息
@@ -428,7 +430,7 @@ class BaseCanBus(metaclass=ABCMeta):
         """
         pass
 
-    def get_stack(self) -> list:
+    def get_stack(self) -> List[Message]:
         """
         获取CAN的stack
         """

@@ -6,6 +6,8 @@
 # @Author:      lizhe
 # @Created:     2021/5/1 - 23:44
 # --------------------------------------------------------
+from typing import List
+
 from automotive.logger.logger import logger
 from .usb_can import UsbCan
 from ..api import CanBoxDevice, BaseCanBus
@@ -188,7 +190,7 @@ class UsbCanBus(BaseCanBus):
         return self.__usbcan.is_open
 
     @check_status
-    def get_stack(self) -> list:
+    def get_stack(self) -> List[Message]:
         """
         获取CAN的stack
         """

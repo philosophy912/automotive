@@ -6,6 +6,8 @@
 # @Author:      lizhe
 # @Created:     2021/5/1 - 23:49
 # --------------------------------------------------------
+from typing import Union, Dict, List, Tuple
+
 import uiautomator2 as u2
 import time
 import cv2
@@ -27,7 +29,7 @@ class UiAutomator2Client(BaseAndroid):
     """
     DEFAULT_TIME_OUT = 3
 
-    def __wait_until(self, element: (Device, UiObject), locator: dict, timeout: float) -> UiObject:
+    def __wait_until(self, element: Union[Device, UiObject], locator: Dict[str, str], timeout: float) -> UiObject:
         """
         等待元素出现
 
@@ -87,7 +89,7 @@ class UiAutomator2Client(BaseAndroid):
         start_x, start_y, width, height = self.get_location(element)
         return self.get_point(start_x, start_y, width, height, position)
 
-    def connect(self, device_id: str, capability: dict = None, url: str = "http://localhost:4723/wd/hub"):
+    def connect(self, device_id: str, capability: Dict[str, str] = None, url: str = "http://localhost:4723/wd/hub"):
         self._driver = u2.connect(device_id)
 
     def open_app(self, package: str, activity: str):
@@ -99,7 +101,7 @@ class UiAutomator2Client(BaseAndroid):
         else:
             self._driver.app_stop_all()
 
-    def get_element(self, locator: (str, dict, UiObject), timeout: float = DEFAULT_TIME_OUT) -> UiObject:
+    def get_element(self, locator: Union[str, Dict[str, str], UiObject], timeout: float = DEFAULT_TIME_OUT) -> UiObject:
         self._check_instance(locator, (str, dict, UiObject))
         if isinstance(locator, UiObject):
             return locator
@@ -108,7 +110,7 @@ class UiAutomator2Client(BaseAndroid):
                 locator = self._convert_locator(locator)
             return self.__wait_until(self._driver, locator, timeout)
 
-    def get_elements(self, locator: (str, dict), timeout: float = DEFAULT_TIME_OUT) -> list:
+    def get_elements(self, locator: Union[str, Dict[str, str]], timeout: float = DEFAULT_TIME_OUT) -> List[UiObject]:
         self._check_instance(locator, (str, dict))
         elements = []
         element = self.get_element(locator, timeout)
@@ -116,7 +118,7 @@ class UiAutomator2Client(BaseAndroid):
             elements.append(element[i])
         return elements
 
-    def get_child_element(self, parent: (dict, UiObject), locator: (str, dict),
+    def get_child_element(self, parent: Union[Dict[str, str], UiObject], locator: Union[str, Dict[str, str]],
                           timeout: float = DEFAULT_TIME_OUT) -> UiObject:
         self._check_instance(parent, (dict, UiObject))
         self._check_instance(locator, (str, dict))
@@ -125,8 +127,8 @@ class UiAutomator2Client(BaseAndroid):
             locator = self._convert_locator(locator)
         return self.__wait_until(parent, locator, timeout)
 
-    def get_child_elements(self, parent: (dict, UiObject), locator: (str, dict),
-                           timeout: float = DEFAULT_TIME_OUT) -> list:
+    def get_child_elements(self, parent: Union[Dict[str, str], UiObject], locator: Union[str, Dict[str, str]],
+                           timeout: float = DEFAULT_TIME_OUT) -> List[UiObject]:
         self._check_instance(parent, (dict, UiObject))
         self._check_instance(locator, (str, dict))
         elements = []
@@ -135,7 +137,8 @@ class UiAutomator2Client(BaseAndroid):
             elements.append(element[i])
         return elements
 
-    def get_element_attribute(self, locator: (str, dict, UiObject), timeout: float = DEFAULT_TIME_OUT) -> dict:
+    def get_element_attribute(self, locator: Union[str, Dict[str, str], UiObject],
+                              timeout: float = DEFAULT_TIME_OUT) -> Dict[ElementAttributeEnum, bool]:
         self._check_instance(locator, (str, dict, UiObject))
         attributes = dict()
         element = self.get_element(locator, timeout)
@@ -151,17 +154,18 @@ class UiAutomator2Client(BaseAndroid):
                 attributes[item] = True
         return attributes
 
-    def scroll_get_element(self, element: (dict, UiObject), locator: dict, text: str, exact_match: bool = True,
-                           duration: float = None, direct: SwipeDirectorEnum = SwipeDirectorEnum.UP,
-                           swipe_time: int = None, swipe_percent: float = 0.8,
-                           timeout: float = DEFAULT_TIME_OUT) -> UiObject:
+    def scroll_get_element(self, element: Union[Dict[str, str], UiObject], locator: Dict[str, str], text: str,
+                           exact_match: bool = True, duration: float = None,
+                           direct: SwipeDirectorEnum = SwipeDirectorEnum.UP, swipe_time: int = None,
+                           swipe_percent: float = 0.8, timeout: float = DEFAULT_TIME_OUT) -> UiObject:
         self._check_instance(locator, (dict, UiObject))
         self._check_instance(locator, dict)
         start_x, start_y, end_x, end_y, duration = self._get_swipe_param(element, direct, duration, swipe_percent)
         return self._scroll_element(start_x, start_y, end_x, end_y, duration, direct, element, locator, text,
                                     exact_match, timeout, swipe_time)
 
-    def get_location(self, locator: (str, dict, UiObject), timeout: float = DEFAULT_TIME_OUT) -> tuple:
+    def get_location(self, locator: Union[str, Dict[str, str], UiObject],
+                     timeout: float = DEFAULT_TIME_OUT) -> Tuple[int, int, int, int]:
         self._check_instance(locator, (str, dict, UiObject))
         info = self.get_element(locator, timeout).info
         bounds = info["bounds"]
@@ -171,18 +175,20 @@ class UiAutomator2Client(BaseAndroid):
     def get_device_id(self) -> str:
         return self._driver.serial
 
-    def click(self, locator: (tuple, str, dict, UiObject), timeout: float = DEFAULT_TIME_OUT):
+    def click(self, locator: Union[Tuple[int, int], str, Dict[str, str], UiObject], timeout: float = DEFAULT_TIME_OUT):
         self._check_instance(locator, (tuple, str, dict, UiObject))
         x, y = self._get_element_location(locator, DirectorEnum.CENTER, timeout)
         self._driver.click(x, y)
 
-    def double_click(self, locator: (tuple, str, dict, UiObject), timeout: float = DEFAULT_TIME_OUT,
+    def double_click(self, locator: Union[Tuple[int, int], str, Dict[str, str], UiObject],
+                     timeout: float = DEFAULT_TIME_OUT,
                      duration: float = 0.1):
         self._check_instance(locator, (tuple, str, dict, UiObject))
         x, y = self._get_element_location(locator, DirectorEnum.CENTER, timeout)
         self._driver.double_click(x, y, duration)
 
-    def press(self, locator: (tuple, str, dict, UiObject), duration: float, timeout: float = DEFAULT_TIME_OUT):
+    def press(self, locator: Union[Tuple[int, int], str, Dict[str, str], UiObject], duration: float,
+              timeout: float = DEFAULT_TIME_OUT):
         self._check_instance(locator, (tuple, str, dict, UiObject))
         self._check_instance(duration, float)
         x, y = self._get_element_location(locator, DirectorEnum.CENTER, timeout)
@@ -191,21 +197,23 @@ class UiAutomator2Client(BaseAndroid):
     def drag(self, start_x: int, start_y: int, end_x: int, end_y: int):
         raise RuntimeError(f"uiautomator2 not support drag point")
 
-    def drag_element_to(self, locator1: (str, dict, UiObject), locator2: (str, dict, UiObject),
+    def drag_element_to(self, locator1: Union[str, Dict[str, str], UiObject],
+                        locator2: Union[str, Dict[str, str], UiObject],
                         timeout: float = DEFAULT_TIME_OUT):
         self._check_instance(locator1, (str, dict, UiObject))
         self._check_instance(locator2, (str, dict, UiObject))
         x, y = self._get_element_location(locator2, DirectorEnum.CENTER, timeout)
         self.drag_to(locator1, x, y, timeout)
 
-    def drag_to(self, locator: (str, dict, UiObject), x: int, y: int, timeout: float = DEFAULT_TIME_OUT):
+    def drag_to(self, locator: Union[str, Dict[str, str], UiObject], x: int, y: int, timeout: float = DEFAULT_TIME_OUT):
         self._check_instance(locator, (str, dict, UiObject))
         self._check_instance(x, int)
         self._check_instance(y, int)
         element = self.get_element(locator, timeout)
         element.drag_to(x=x, y=y)
 
-    def swipe_element(self, from_element: (str, dict, UiObject), to_element: (str, dict, UiObject),
+    def swipe_element(self, from_element: Union[str, Dict[str, str], UiObject],
+                      to_element: Union[str, Dict[str, str], UiObject],
                       duration: float = None, timeout: float = DEFAULT_TIME_OUT):
         self._check_instance(from_element, (str, dict, UiObject))
         self._check_instance(to_element, (str, dict, UiObject))
@@ -213,7 +221,7 @@ class UiAutomator2Client(BaseAndroid):
         x2, y2 = self.__get_click_point(self.get_element(to_element))
         self._driver.swipe(x1, y2, x2, y2, duration)
 
-    def swipe(self, swipe_element: (dict, UiObject), locator: dict, duration: float = None,
+    def swipe(self, swipe_element: Union[Dict[str, str], UiObject], locator: dict, duration: float = None,
               direction: SwipeDirectorEnum = SwipeDirectorEnum.UP, swipe_time: int = None, wait_time: float = None,
               timeout: float = DEFAULT_TIME_OUT, swipe_percent: float = 0.8):
         self._check_instance(swipe_element, (dict, UiObject))
@@ -231,16 +239,16 @@ class UiAutomator2Client(BaseAndroid):
         self._scroll_element(start_x, start_y, end_x, end_y, duration, direction, swipe_element, locator,
                              timeout=timeout, swipe_time=swipe_time, wait_time=wait_time)
 
-    def get_text(self, locator: (str, dict, UiObject), timeout: float = DEFAULT_TIME_OUT) -> str:
+    def get_text(self, locator: Union[str, Dict[str, str], UiObject], timeout: float = DEFAULT_TIME_OUT) -> str:
         self._check_instance(locator, (str, dict, UiObject))
         return self.get_element(locator, timeout).get_text()
 
-    def input_text(self, locator: (str, dict, UiObject), text: str, timeout: float = DEFAULT_TIME_OUT):
+    def input_text(self, locator: Union[str, Dict[str, str], UiObject], text: str, timeout: float = DEFAULT_TIME_OUT):
         self._check_instance(locator, (str, dict, UiObject))
         self._check_instance(text, str)
         self.get_element(locator, timeout).set_text(text)
 
-    def clear_text(self, locator: (str, dict, UiObject), timeout: float = DEFAULT_TIME_OUT):
+    def clear_text(self, locator: Union[str, Dict[str, str], UiObject], timeout: float = DEFAULT_TIME_OUT):
         self._check_instance(locator, (str, dict, UiObject))
         self.get_element(locator, timeout).clear_text()
 

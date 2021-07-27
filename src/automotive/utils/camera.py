@@ -8,6 +8,7 @@
 # --------------------------------------------------------
 import os
 from concurrent.futures.thread import ThreadPoolExecutor
+from typing import Union, Dict, Any
 
 import cv2
 import time
@@ -227,9 +228,13 @@ class Camera(object):
         out.release()
         logger.debug("done record thread")
 
-    def open_camera(self, camera_id: int = 0, frame_id: FrameID = FrameID()):
+    def open_camera(self, camera_id: int = 0, frame_id: FrameID = FrameID(), width: int = 1920, height: int = 1080):
         """
         打开摄像头
+
+        :param height: 高
+
+        :param width: 宽
 
         :param frame_id: 配置参数, 默认参数参考FrameID类
 
@@ -238,8 +243,10 @@ class Camera(object):
         if self.__capture is not None:
             self.close_camera()
         self.__capture = cv2.VideoCapture(camera_id)
-        self.__width = int(self.__capture.get(cv2.CAP_PROP_FRAME_WIDTH))
-        self.__height = int(self.__capture.get(cv2.CAP_PROP_FRAME_HEIGHT))
+        frame_width = int(self.__capture.get(cv2.CAP_PROP_FRAME_WIDTH))
+        frame_height = int(self.__capture.get(cv2.CAP_PROP_FRAME_HEIGHT))
+        self.__width = width if frame_width < width else frame_width
+        self.__height = height if frame_height < height else frame_height
         if not self.__capture.isOpened():
             logger.debug(f"camera is not opened, open it now")
             result = self.__capture.open(camera_id)
@@ -374,7 +381,7 @@ class Camera(object):
             self.__capture.set(key, item)
 
     @check_status
-    def get_property(self, property_name: str = '') -> (str, dict):
+    def get_property(self, property_name: str = '') -> Union[str, Dict[str, Any]]:
         """
         获取摄像头当前参数设置
 
