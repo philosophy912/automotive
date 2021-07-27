@@ -437,7 +437,7 @@ class Message(object):
         else:
             logger.trace("receive message")
             for name, signal in self.signals.items():
-                logger.info(f"signal name = {signal.signal_name} and signal value = {signal.value}")
+                logger.debug(f"signal name = {signal.signal_name} and signal value = {signal.value}")
                 value = get_data(self.data, signal.start_bit, signal.byte_type, signal.bit_length, self.data_length)
                 logger.trace(f"value is {value}")
                 signal.value = value
