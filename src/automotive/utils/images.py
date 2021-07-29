@@ -474,7 +474,7 @@ class Images(object):
 
     def compare_by_hamming_distance(self, img1: Union[str, np.ndarray], img2: Union[str, np.ndarray],
                                     compare_type: CompareType = CompareType.AVERAGE,
-                                    threshold: int = None) -> Union[Tuple[int, int, int], bool]:
+                                    threshold: int = 7) -> Union[Tuple[int, int, int], bool]:
         """
         比较两张图标(汉明距比较），并返回phash（感知哈希算法）， ahash（平均哈希算法），dhash（差异值哈希算法）
 
@@ -505,7 +505,7 @@ class Images(object):
             if compare_type == CompareType.AVERAGE:
                 return (a_distance + p_distance + d_distance) < threshold * 3
             elif compare_type == CompareType.ONE:
-                return a_distance < threshold or p_distance < threshold and d_distance < threshold
+                return a_distance < threshold or p_distance < threshold or d_distance < threshold
             elif compare_type == CompareType.TWO:
                 condition1 = a_distance < threshold and p_distance < threshold
                 condition2 = p_distance < threshold and d_distance < threshold

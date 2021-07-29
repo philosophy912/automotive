@@ -35,7 +35,7 @@ class HypervisorScreenShot(ScreenShot):
     则把全自动化测试变为半自动化测试
     """
 
-    def __init__(self, save_path: str, root_path: str = "/log", device_id: str = None):
+    def __init__(self, save_path: str, device_id: str = None):
         # 图片保存位置
         self.__path = save_path
         self.adb = ADB()
@@ -44,7 +44,6 @@ class HypervisorScreenShot(ScreenShot):
             self.__device_id = device_id
         else:
             self.__connect()
-        self.__root_path = root_path
 
     def __connect(self):
         """
@@ -80,7 +79,7 @@ class HypervisorScreenShot(ScreenShot):
 
         :param display 屏幕序号
         """
-        command = f"shell htalk shell 'screenshot -file=/{self.__root_path}/{image_name}'"
+        command = f"shell htalk shell 'screenshot -file={self.__path}/{image_name}'"
         if display:
             command = f"{command} -display={display}"
         self.__adb_command(command)
@@ -94,7 +93,7 @@ class HypervisorScreenShot(ScreenShot):
         :param display 屏幕序号
         """
         x, y, width, height = position
-        command = f"shell htalk shell 'screen_capture -file=/{self.__root_path}/{image_name} -pos={x},{y} " \
+        command = f"shell htalk shell 'screen_capture -file={self.__path}/{image_name} -pos={x},{y} " \
                   f"-size={width}x{height}'"
         if display:
             command = f"{command} -display={display}"

@@ -230,7 +230,8 @@ class SerialPort(object):
 
         :param end:是否增加结束符，默认为为\r
         """
-        cmd = cmd + end if end else cmd
+        if isinstance(cmd, str):
+            cmd = cmd + end if end else cmd
         if type_:
             if not isinstance(cmd, bytes):
                 cmd = cmd.encode("utf-8")
