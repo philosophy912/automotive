@@ -9,6 +9,7 @@
 import os
 from concurrent.futures.thread import ThreadPoolExecutor
 from typing import Union, Dict, Any
+import numpy as np
 
 import cv2
 import time
@@ -175,6 +176,11 @@ class Camera(object):
 
         return wrapper
 
+    @staticmethod
+    def __handle_frame( frame:np.ndarray, gray:bool = False):
+        return cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY) if gray else frame
+
+
     @check_status
     def __take_frame(self, name: str, gray=False):
         """
@@ -186,8 +192,9 @@ class Camera(object):
         """
         ret, frame = self.__capture.read()
         if ret:
-            if gray:
-                frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+            frame = self.__handle_frame(frame, gray)
+            # if gray:
+            #     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
             cv2.imwrite(name, frame)
         else:
             raise RuntimeError("Camera read frame error.")
@@ -228,7 +235,7 @@ class Camera(object):
         out.release()
         logger.debug("done record thread")
 
-    def open_camera(self, camera_id: int = 0, frame_id: FrameID = FrameID(), width: int = 1920, height: int = 1080):
+    def open_camera(self, camera_id: int = 0, frame_id: FrameID = FrameID(), width: int = None, height: int = None):
         """
         打开摄像头
 
@@ -245,7 +252,12 @@ class Camera(object):
         self.__capture = cv2.VideoCapture(camera_id)
         frame_width = int(self.__capture.get(cv2.CAP_PROP_FRAME_WIDTH))
         frame_height = int(self.__capture.get(cv2.CAP_PROP_FRAME_HEIGHT))
-        self.__width = width if frame_width < width else frame_width
+        if width is None:
+            self.__width = frame_width
+        else:
+            self.__width = width if frame_width < width else frame_width
+        if height is None:
+            self.__height = frame_height
         self.__height = height if frame_height < height else frame_height
         if not self.__capture.isOpened():
             logger.debug(f"camera is not opened, open it now")
@@ -262,6 +274,7 @@ class Camera(object):
         if self.__capture is not None:
             self.__capture.release()
             cv2.destroyAllWindows()
+            self.__capture = None
 
     @check_status
     def stop_record(self):
@@ -272,13 +285,14 @@ class Camera(object):
         time.sleep(1)
 
     @check_status
-    def get_picture_from_record(self, path: str):
+    def get_picture_from_record(self, path: str, gray: bool = False):
         """
         在录像过程中获取照片,与record_video配合使用
 
         :param path: 截图图片的绝对路径
         """
-        cv2.imwrite(path, self.__frame)
+        frame = self.__handle_frame(self.__frame, gray)
+        cv2.imwrite(path, frame)
 
     @check_status
     def take_picture(self, path: str, gray: bool = False):
