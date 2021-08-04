@@ -8,13 +8,13 @@
 # --------------------------------------------------------
 from typing import List, Tuple
 
-from automotive.common.api import ScreenShot
+from automotive.common.api import BaseScreenShot
 from automotive.utils.telnet_utils import TelnetUtils
 from automotive.logger.logger import logger
 from time import sleep
 
 
-class ClusterHmiScreenshot(ScreenShot):
+class ClusterHmiScreenshot(BaseScreenShot):
     """
     nobo的HMI项目截图操作， 目前由telnet的方式实现，后续若关闭telnet可以改为串口方式实现, 使用serial_utils工具已实现登陆
 

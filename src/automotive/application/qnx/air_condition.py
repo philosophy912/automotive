@@ -11,10 +11,10 @@ from typing import Tuple
 from .qnx_device import QnxDevice
 from .qnx_actions import QnxActions
 from .qnx_local_screenshot import QnxLocalScreenShot
-from automotive.common.api import ScreenShot, Actions, Device
+from automotive.common.api import BaseScreenShot, BaseActions, BaseSocketDevice
 
 
-class AirCondition(ScreenShot, Actions, Device):
+class AirCondition(BaseScreenShot, BaseActions, BaseSocketDevice):
     """
     空调屏的操作，基于红旗空调屏特有的inject_events操作，可以实现屏幕的滑动、点击、长按、双击等操作，该操作方式主要由串口实现，
 
@@ -27,13 +27,14 @@ class AirCondition(ScreenShot, Actions, Device):
         self.__screen_shot = QnxLocalScreenShot(save_path, self.__device)
         self.__path = save_path
 
-    def connect(self, username: str = None, password: str = None):
+    def connect(self, username: str = None, password: str = None, ipaddress: str = None):
         self.__device.connect(username, password)
         self.__device.init_actions_service()
         self.__device.init_screenshot_folder(self.__path)
 
     def disconnect(self):
-        self.__device.copy_images_to_usb(self.__path)
+        # 由于拷贝存在问题，暂时注释，需要手动拷贝文件
+        # self.__device.copy_images_to_usb(self.__path)
         self.__device.disconnect()
 
     def screen_shot(self, image_name: str, count: int, interval_time: float, display: int = None) -> list:

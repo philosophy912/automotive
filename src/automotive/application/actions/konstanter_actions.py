@@ -10,10 +10,10 @@ from typing import List
 
 from automotive.logger.logger import logger
 from automotive.core.battery.konstanter_control import KonstanterControl
-from automotive.common.api import PowerActions
+from automotive.common.api import BaseDevice
 
 
-class KonstanterActions(PowerActions):
+class KonstanterActions(BaseDevice):
     """
     konstanter电源操作类
     """
@@ -23,6 +23,10 @@ class KonstanterActions(PowerActions):
         self.__konstanter = None
         self.__port = port.upper()
         self.__baud_rate = baud_rate
+
+    @property
+    def konstanter(self):
+        return self.__konstanter
 
     def open(self):
         """

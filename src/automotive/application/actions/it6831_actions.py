@@ -9,10 +9,11 @@
 from time import sleep
 from automotive.logger.logger import logger
 from automotive.core.battery.it6831 import IT6831
-from automotive.common.api import PowerActions
+from automotive.common.api import BaseDevice
+from automotive.utils.utils import Utils
 
 
-class It6831Actions(PowerActions):
+class It6831Actions(BaseDevice):
     """
     IT6831电源操作类
     """
@@ -44,6 +45,10 @@ class It6831Actions(PowerActions):
         logger.info("设置电源电压为12V")
         self.__it6831.set_voltage_value(self.__default_voltage)
         sleep(1)
+
+    @property
+    def it6831(self):
+        return self.__it6831
 
     def close(self):
         """
@@ -128,7 +133,7 @@ class It6831Actions(PowerActions):
             # 开始值+步长对于结束值，直接设置开始和结束
             if start + step > end:
                 self.__it6831.set_voltage_value(start)
-                self._utils.sleep(interval)
+                Utils.sleep(interval)
                 self.__it6831.set_voltage_value(end)
             else:
                 current_voltage = start
@@ -138,14 +143,14 @@ class It6831Actions(PowerActions):
                     logger.info(f"设置电压为{current_voltage}伏")
                     self.__it6831.set_voltage_value(current_voltage)
                     current_voltage += step
-                    self._utils.sleep(interval)
+                    Utils.sleep(interval)
                 logger.info(f"设置电压为{end}伏")
                 self.__it6831.set_voltage_value(end)
         # 降压过程 如9-7
         else:
             if start - step < end:
                 self.__it6831.set_voltage_value(start)
-                self._utils.sleep(interval)
+                Utils.sleep(interval)
                 self.__it6831.set_voltage_value(end)
             else:
                 current_voltage = start
@@ -155,6 +160,6 @@ class It6831Actions(PowerActions):
                     logger.info(f"设置电压为{current_voltage}伏")
                     self.__it6831.set_voltage_value(current_voltage)
                     current_voltage -= step
-                    self._utils.sleep(interval)
+                    Utils.sleep(interval)
                 logger.info(f"设置电压为{end}伏")
                 self.__it6831.set_voltage_value(end)

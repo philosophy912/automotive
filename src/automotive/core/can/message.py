@@ -286,7 +286,7 @@ def control_decorator(func):
     return wrapper
 
 
-def get_message(messages: Union[str, List[Any]], encoding: str = "utf-8") -> tuple:
+def get_message(messages: Union[str, List[Any]], encoding: str = "utf-8") -> Tuple[Any, Any]:
     """
     从Json或者python文件中获取id和name的message字典
 

@@ -9,12 +9,12 @@
 from time import sleep
 from typing import Tuple, List
 
-from automotive.common.api import ScreenShot
+from automotive.common.api import BaseScreenShot
 from .qnx_device import QnxDevice
 from automotive.logger.logger import logger
 
 
-class QnxLocalScreenShot(ScreenShot):
+class QnxLocalScreenShot(BaseScreenShot):
     """
     1、调用qnx中的screenshot命令进行截图操作，图片存放于板子中
     """
@@ -53,7 +53,6 @@ class QnxLocalScreenShot(ScreenShot):
         if display:
             command = f"{command} -display={display}"
         logger.error(f"area screenshot command is {command}")
-        # self.__device.send_command(command)
         raise RuntimeError("not support area screenshot")
 
     def __screen_shot_image(self, image_name: str, count: int, interval_time: float,

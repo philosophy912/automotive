@@ -6,14 +6,14 @@
 # @Author:      lizhe
 # @Created:     2021/5/1 - 23:55
 # --------------------------------------------------------
-from automotive.core.singleton import Singleton
+from automotive.common.api import BaseSocketDevice
 from time import sleep
 from automotive.logger import logger
 from automotive.utils.serial_utils import SerialUtils
 from automotive.utils.utils import Utils, SystemTypeEnum
 
 
-class QnxDevice(metaclass=Singleton):
+class QnxDevice(BaseSocketDevice):
     """
     主要实现红旗空调屏相关的一些操作， 如启动InjectEvents服务，删除相关路径下的文件，测试完成后拷贝相关的文件等
     """
@@ -90,7 +90,7 @@ class QnxDevice(metaclass=Singleton):
         else:
             logger.error(f"usb device is not exist, please copy file {path} manually")
 
-    def connect(self, username: str = None, password: str = None):
+    def connect(self, username: str = None, password: str = None, ipaddress: str = None):
         try:
             self.serial.connect(self.__port, baud_rate=115200)
         except RuntimeError:

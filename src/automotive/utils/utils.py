@@ -304,7 +304,7 @@ class Utils(metaclass=Singleton):
         logger.debug(f"file is {file}")
         with open(file, "r", encoding=encoding) as fp:
             content = json.load(fp)
-            logger.debug(f"content is {content}")
+            logger.trace(f"content is {content}")
             return content
 
     @staticmethod

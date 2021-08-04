@@ -6,21 +6,25 @@
 # @Author:      lizhe
 # @Created:     2021/5/2 - 0:02
 # --------------------------------------------------------
-from automotive.utils.serial_port import SerialPort
+from automotive.utils.serial_utils import SerialUtils
 from automotive.logger.logger import logger
-from automotive.common.api import BaseActions
+from automotive.common.api import BaseDevice
 
 
-class SerialActions(BaseActions):
+class SerialActions(BaseDevice):
     """
     串口操作类
     """
 
     def __init__(self, port: str, baud_rate: int):
         super().__init__()
-        self.__serial = SerialPort()
+        self.__serial = SerialUtils()
         self.__port = port.upper()
         self.__baud_rate = baud_rate
+
+    @property
+    def serial_utils(self):
+        return self.__serial
 
     def open(self):
         """
@@ -31,7 +35,7 @@ class SerialActions(BaseActions):
         buffer = 32768
         self.__serial.connect(port=self.__port, baud_rate=self.__baud_rate)
         logger.info(f"*************串口初始化成功*************")
-        self.__serial.set_buffer(buffer, buffer)
+        self.__serial.serial_port.set_buffer(buffer, buffer)
         logger.info(f"串口缓存为[{buffer}]")
 
     def close(self):
@@ -41,31 +45,24 @@ class SerialActions(BaseActions):
         logger.info("关闭串口")
         self.__serial.disconnect()
 
-    def judge_text_in_serial(self, contents: list) -> bool:
+    def clear_buffer(self):
         """
-        判断串口是否有指定的内容
+        清空串口缓存数据
+        """
+        self.__serial.serial_port.read_all()
 
-        :param contents: 内容
-
+    def check_reset_text(self, contents: str) -> bool:
+        """
+        检查是否重启
+        :param contents: 重启的标识内容
         :return:
             True： 串口输出找到了匹配的内容
             False: 串口输出没有找到匹配的内容
         """
-        data = self.__serial.read_all()
+        logger.warning("使用前请调用clear_buffer方法清除缓存")
+        data = self.__serial.serial_port.read_all()
         result = True
         for content in contents:
             logger.debug(f"现在检查{content}是否在串口数据中存在")
-            result = result and content.encode("utf-8") in data
+            result = result and content in data
         return result
-
-    def clean_serial_data(self):
-        """
-        清空串口缓存数据
-        """
-        self.__serial.read_all()
-
-    def check_can_available(self) -> bool:
-        self.__serial.flush()
-        self.__serial.send("ls")
-        content = self.__serial.read_lines()
-        return len(content) > 0

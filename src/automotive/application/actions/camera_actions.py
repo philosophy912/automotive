@@ -6,41 +6,68 @@
 # @Author:      lizhe
 # @Created:     2021/5/2 - 0:01
 # --------------------------------------------------------
+import os
 from time import sleep
+
+from automotive import Utils
 from automotive.logger.logger import logger
 from automotive.utils.camera import Camera
-from automotive.common.api import BaseActions
+from automotive.common.api import BaseDevice
 
 
-class CameraActions(BaseActions):
+class CameraActions(BaseDevice):
     """
     摄像头操作类
     """
 
-    def __init__(self):
+    def __init__(self, template_folder: str = None):
         super().__init__()
         self.__camera = Camera()
         # 拍摄的图片临时存放的位置
-        self._temp_image = None
+        self.__template_image = None
+        folder_name = Utils.get_time_as_string()
+        # 定义文件夹，后续拍照的时候才进行判断
+        if template_folder and os.path.exists(template_folder) and os.path.isdir(template_folder):
+            self.__save_folder = fr"{template_folder}\{folder_name}"
+        else:
+            self.__save_folder = fr"{os.getcwd()}\{folder_name}"
+        self.__folder_flag = False
 
-    def init_template_image(self, pic_name: str):
+    def __create_image_folder(self):
         """
-        根据传入的pic_name拍摄基准图片
+        创建文件夹
+        """
+        if not os.path.exists(self.__save_folder):
+            os.mkdir(self.__save_folder)
 
-        :param pic_name: 基准图片名字
+    @staticmethod
+    def __remove_extends(image_name: str) -> str:
         """
-        logger.info("即将拍摄基准照片")
-        logger.debug("如果摄像头没有打开则打开摄像头")
-        self.__camera.close_camera()
-        sleep(1)
-        logger.debug("打开摄像头")
-        self.__camera.open_camera()
-        sleep(1)
-        logger.debug("代码有问题，需要拍两张照片")
-        logger.info(f"拍摄照片[{pic_name}]")
-        for i in range(2):
-            self.__camera.take_picture(pic_name)
-            sleep(1)
+        去掉后缀名
+        :param image_name:
+        """
+        if "." in image_name:
+            extends = image_name.split(".")[-1]
+            image_name = image_name.replace(f".{extends}", "")
+        return image_name
+
+    def create_folder(func):
+        """
+        检查folder是否被创建
+        :param func: 装饰器函数
+        """
+
+        def wrapper(self, *args, **kwargs):
+            if not self.__folder_flag:
+                self.__create_image_folder()
+                self.__folder_flag = True
+            return func(self, *args, **kwargs)
+
+        return wrapper
+
+    @property
+    def camera(self):
+        return self.__camera
 
     def open(self):
         """
@@ -57,6 +84,21 @@ class CameraActions(BaseActions):
         logger.info("关闭摄像头")
         self.__camera.close_camera()
 
+    @create_folder
+    def take_picture(self, image_name: str = None) -> str:
+        """
+        拍照片， 只拍摄jpg照片
+        针对image_name做处理， 去掉后缀名
+        :param image_name:  拍照的名字
+        :return:  生成照片的绝对路径
+        """
+        if image_name:
+            image_file = fr"{self.__save_folder}\{self.__remove_extends(image_name)}"
+        else:
+            image_file = fr"{self.__save_folder}\{Utils.get_time_as_string()}.jpg"
+        self.__camera.take_picture(image_file)
+        return image_file
+
     def camera_test(self, time: int = 2):
         """
         调整摄像头，进行camera测试，默认时长2分钟，可以通过输入q退出调整
@@ -68,18 +110,23 @@ class CameraActions(BaseActions):
         logger.debug(f"你有{time}分钟时间调整摄像头位置")
         self.__camera.camera_test(time)
 
-    def take_a_pic(self, image_save_path: str, pic_type: str = "light"):
+    @create_folder
+    def take_template_image(self, template_image_name: str):
         """
-        拍照片
+        根据传入的pic_name拍摄基准图片
 
-        :param pic_type: 亮图还是暗图，标识符
-        :param image_save_path: 图片存放的位置
+        :param template_image_name: 基准图片名字
         """
-        self._temp_image = f"{image_save_path}\\{pic_type}_{self._utils.get_time_as_string()}.png"
-        self.__camera.take_picture(self._temp_image)
-
-    def get_temp_pic(self):
-        """
-        获取当前拍照的图片
-        """
-        return self._temp_image
+        logger.info("即将拍摄基准照片")
+        logger.debug("如果摄像头没有打开则打开摄像头")
+        self.__camera.close_camera()
+        sleep(1)
+        logger.debug("打开摄像头")
+        self.__camera.open_camera()
+        sleep(1)
+        logger.debug("代码有问题，需要拍两张照片")
+        self.__template_image = fr"{self.__save_folder}\{self.__remove_extends(template_image_name)}"
+        logger.info(f"拍摄照片[{self.__template_image}]")
+        for i in range(2):
+            self.__camera.take_picture(self.__template_image)
+            sleep(1)

@@ -227,9 +227,13 @@ class CANService(BaseCan):
                           filter_diag: bool = True) -> List[Message]:
         """
         根据条件过滤相应的消息帧
+
         :param filter_sender: 根据节点名称过滤
+
         :param filter_nm: 是否过滤网络管理帧
+
         :param filter_diag: 是否过滤诊断帧
+
         :return: 过滤后的消息
         """
         messages = []
@@ -564,7 +568,7 @@ class CANService(BaseCan):
 
         :param filter_sender: 过滤发送者，如HU。支持单个或者多个节点
 
-        :param cycle_time: 循环次数，默认1000万次
+        :param cycle_time: 循环次数
 
         :param interval: 每轮信号值改变的间隔时间，默认是0.1秒
 

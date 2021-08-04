@@ -9,7 +9,7 @@
 from time import sleep
 from typing import List
 
-from automotive.common.api import SocketDevice
+from automotive.common.api import BaseSocketDevice
 from .cluster_hmi_screenshot import ClusterHmiScreenshot
 from automotive.utils.ftp_utils import FtpUtils
 from automotive.utils.telnet_utils import TelnetUtils
@@ -20,7 +20,7 @@ _start_service_list = "safety", "clusterNormal_service", "GaugeMagServer", "mcu_
                       "can_service", "whud", "nobo_whud", "diagnose_eol_service"
 
 
-class ClusterHmi(SocketDevice):
+class ClusterHmi(BaseSocketDevice):
     """
     基于nobo 8155实现的代码，
 
@@ -106,7 +106,7 @@ class ClusterHmi(SocketDevice):
         self.__ftp.disconnect()
         self.__telnet.disconnect()
 
-    def connect(self, ipaddress: str, username: str, password: str):
+    def connect(self, username: str = None, password: str = None, ipaddress: str = None):
         self.__ftp.connect(ipaddress, username, password)
         self.__telnet.connect(ipaddress, username, password)
         self.__prepare()

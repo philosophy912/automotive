@@ -9,14 +9,18 @@
 from time import sleep
 from automotive.logger.logger import logger
 from automotive.utils.usb_relay import USBRelay
-from automotive.common.api import BaseActions
+from automotive.common.api import BaseDevice
 
 
-class RelayActions(BaseActions):
+class RelayActions(BaseDevice):
 
     def __init__(self):
         super().__init__()
         self.__relay = None
+
+    @property
+    def relay(self):
+        return self.__relay
 
     def open(self):
         """

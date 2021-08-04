@@ -7,9 +7,10 @@
 # @Created:     2021/5/1 - 23:44
 # --------------------------------------------------------
 # 导入所需模块
+import platform
 import sys
 import os
-from ctypes import c_ubyte, c_ushort, c_char, c_uint, Structure, windll, c_int, byref, POINTER, memmove, c_long
+from ctypes import c_ubyte, c_ushort, c_char, c_uint, Structure, c_int, byref, POINTER, memmove, c_long
 from time import time
 from platform import architecture
 from inspect import stack
@@ -161,7 +162,11 @@ class UsbCan(BaseCanDevice):
         """
         self.__dll_path = self.__get_dll_path(can_box_device)
         logger.debug(f"use dll path is {self.__dll_path}")
-        self.__lib_can = windll.LoadLibrary(self.__dll_path)
+        if platform.system() == "Windows":
+            from ctypes import windll
+            self.__lib_can = windll.LoadLibrary(self.__dll_path)
+        else:
+            raise RuntimeError("can not support linux")
         self.__start_time = 0
         self.__device_type = device_type
         self.__device_index = device_index

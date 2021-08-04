@@ -1,18 +1,16 @@
 # -*- coding:utf-8 -*-
 # --------------------------------------------------------
-# Copyright (C), 2016-2020, lizhe, All rights reserved
+# Copyright (C), 2016-2021, lizhe, All rights reserved
 # --------------------------------------------------------
-# @Name:        api.py
+# @Name:        api1.py.py
 # @Author:      lizhe
-# @Created:     2021/5/2 - 21:11
+# @Created:     2021/8/3 - 22:02
 # --------------------------------------------------------
 from abc import ABCMeta, abstractmethod
 from typing import Tuple, List
 
-from automotive.utils.utils import Utils
 
-
-class BaseBattery(metaclass=ABCMeta):
+class BaseDevice(metaclass=ABCMeta):
 
     @abstractmethod
     def open(self):
@@ -25,16 +23,19 @@ class BaseBattery(metaclass=ABCMeta):
     def close(self):
         """
         关闭设备
+        :return:
         """
         pass
 
 
-class Device(metaclass=ABCMeta):
+class BaseSocketDevice(metaclass=ABCMeta):
 
     @abstractmethod
-    def connect(self, username: str = None, password: str = None):
+    def connect(self, username: str = None, password: str = None, ipaddress: str = None):
         """
         连接并登陆系统
+
+        :param ipaddress: IP地址
 
         :param username: 用户名
 
@@ -51,31 +52,7 @@ class Device(metaclass=ABCMeta):
         pass
 
 
-class SocketDevice(metaclass=ABCMeta):
-
-    @abstractmethod
-    def connect(self, ipaddress: str, username: str, password: str):
-        """
-        连接并登陆系统
-
-        :param ipaddress: ip地址
-
-        :param username: 用户名
-
-        :param password: 密码
-
-        """
-        pass
-
-    @abstractmethod
-    def disconnect(self):
-        """
-        断开
-        """
-        pass
-
-
-class ScreenShot(metaclass=ABCMeta):
+class BaseScreenShot(metaclass=ABCMeta):
 
     @abstractmethod
     def screen_shot(self, image_name: str, count: int, interval_time: float, display: int = None) -> List[str]:
@@ -111,7 +88,7 @@ class ScreenShot(metaclass=ABCMeta):
         pass
 
 
-class Actions(metaclass=ABCMeta):
+class BaseActions(metaclass=ABCMeta):
 
     @abstractmethod
     def click(self, display: int, x: int, y: int, interval: float = 0.2):
@@ -178,30 +155,7 @@ class Actions(metaclass=ABCMeta):
         pass
 
 
-class BaseActions(metaclass=ABCMeta):
-    """
-    操作类的基类，用于统一操作方法
-    """
-
-    def __init__(self):
-        # 工具类
-        self._utils = Utils()
-
-    @abstractmethod
-    def open(self):
-        """
-        打开设备
-        """
-        pass
-
-    @abstractmethod
-    def close(self):
-        """
-        关闭设备
-        """
-
-
-class PowerActions(BaseActions):
+class BasePowerActions(BaseDevice):
     """
     电源相关的操作类，用于统一接口
     """

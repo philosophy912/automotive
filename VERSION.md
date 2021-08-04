@@ -1,5 +1,10 @@
 ## 版本更新说明
 
+**V4.2.2**
+- 重构了actions的代码
+- 重构了actions的api，在抽象类上面都增加了Base
+- 修改了Utils的get_json_object中的log等级
+
 **V4.2.1**
 - 修复了Hyupervisor截图的路径依赖错误
 - 修复了Image的汉明距对比ONE的错误

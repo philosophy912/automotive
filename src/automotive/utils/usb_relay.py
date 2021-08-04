@@ -9,7 +9,7 @@
 import sys
 import os
 import platform
-from ctypes import c_char_p, c_int, byref, c_uint64, Structure, POINTER, windll
+from ctypes import c_char_p, c_int, byref, c_uint64, Structure, POINTER
 from automotive.logger.logger import logger
 
 # C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\amd64> cl /LD needforspeed.c /o nfs.dll
@@ -152,17 +152,21 @@ class USBRelay(object):
 
 class _LibUsbRelay(object):
     def __init__(self):
-        bit = platform.architecture()[0]
-        if bit == '32bit':
-            dll_path = os.sep.join(["usbrelay", "x86", "usb_relay_device.dll"])
-            logger.info('Load usb_relay_device x86 DLL Library.')
+        if platform.system() == "Windows":
+            bit = platform.architecture()[0]
+            if bit == '32bit':
+                dll_path = os.sep.join(["usbrelay", "x86", "usb_relay_device.dll"])
+                logger.info('Load usb_relay_device x86 DLL Library.')
+            else:
+                dll_path = os.sep.join(["usbrelay", "x64", "usb_relay_device.dll"])
+                logger.info('Load Default usb_relay_device x64 DLL Library.')
+            current_path = os.path.split(os.path.realpath(__file__))[0]
+            file_path = os.sep.join([current_path, dll_path])
+            logger.debug(f"use dll [{file_path}]")
         else:
-            dll_path = os.sep.join(["usbrelay", "x64", "usb_relay_device.dll"])
-            logger.info('Load Default usb_relay_device x64 DLL Library.')
-        current_path = os.path.split(os.path.realpath(__file__))[0]
-        file_path = os.sep.join([current_path, dll_path])
-        logger.debug(f"use dll [{file_path}]")
+            raise RuntimeError("only support windows and not support linux")
         try:
+            from ctypes import windll
             self.usbRelayDll = windll.LoadLibrary(file_path)
         except Exception:
             raise RuntimeError(f"dll file[{file_path}] load failed ")
