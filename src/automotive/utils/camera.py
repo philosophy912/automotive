@@ -258,7 +258,8 @@ class Camera(object):
             self.__width = width if frame_width < width else frame_width
         if height is None:
             self.__height = frame_height
-        self.__height = height if frame_height < height else frame_height
+        else:
+            self.__height = height if frame_height < height else frame_height
         if not self.__capture.isOpened():
             logger.debug(f"camera is not opened, open it now")
             result = self.__capture.open(camera_id)

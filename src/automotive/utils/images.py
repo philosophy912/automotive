@@ -55,6 +55,8 @@ class CompareType(Enum):
     THREE = "three"
     # 三种汉明距平均值小于阈值
     AVERAGE = "average"
+    # 感知哈希对比
+    DEFAULT = "default"
 
 
 class Images(object):
@@ -473,8 +475,8 @@ class Images(object):
         cv2.imwrite(target_image, cut_image)
 
     def compare_by_hamming_distance(self, img1: Union[str, np.ndarray], img2: Union[str, np.ndarray],
-                                    compare_type: CompareType = CompareType.AVERAGE,
-                                    threshold: int = 7) -> Union[Tuple[int, int, int], bool]:
+                                    compare_type: CompareType = CompareType.DEFAULT,
+                                    threshold: int = 10) -> Union[Tuple[int, int, int], bool]:
         """
         比较两张图标(汉明距比较），并返回phash（感知哈希算法）， ahash（平均哈希算法），dhash（差异值哈希算法）
 
@@ -502,7 +504,9 @@ class Images(object):
         d_distance = self.__hamming_distance(d_hash1, d_hash2)
         logger.debug(f"a_distance = {a_distance} and p_distance = {p_distance} and d_distance = {d_distance}")
         if threshold:
-            if compare_type == CompareType.AVERAGE:
+            if compare_type == CompareType.DEFAULT:
+                return a_distance < threshold
+            elif compare_type == CompareType.AVERAGE:
                 return (a_distance + p_distance + d_distance) < threshold * 3
             elif compare_type == CompareType.ONE:
                 return a_distance < threshold or p_distance < threshold or d_distance < threshold
