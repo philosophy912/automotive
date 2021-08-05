@@ -24,9 +24,9 @@ class ADB(ScreenShot):
     @staticmethod
     def __execute(command: str) -> List[str]:
         logger.debug(f"execute command {command}")
-        pi = sp.Popen(command, stdout=sp.PIPE, stderr=sp.PIPE)
-        pi.wait()
-        return list(map(lambda x: x.decode("utf-8"), pi.stdout.readlines()))
+        pi = sp.Popen(command, shell=True, stdout=sp.PIPE, stderr=sp.PIPE)
+        stdout, stderr = pi.communicate()
+        return stdout.decode("utf-8").split("\r\n")
 
     def __adb_command(self, command: str, device_id: str = None) -> List[str]:
         """
@@ -91,7 +91,7 @@ class ADB(ScreenShot):
 
     def pull(self, remote: str, local: str, device_id: str = None):
         """
-        拉取文件到本地电脑
+        拉取文件到本地电脑, 并删除远程文件
 
         :param remote: 远程文件地址
 
@@ -99,7 +99,17 @@ class ADB(ScreenShot):
 
         :param device_id: 设备编号
         """
+        sys = platform.system()
+        if sys == "Windows":
+            local = f"\"{local}\""
         self.__adb_command(f"pull {remote} {local}", device_id)
+
+    def remove(self, remote: str, device_id: str = None):
+        """
+        删除源文件
+        ：param remote:远程文件地址
+        """
+        self.__adb_command(f"shell rm {remote}", device_id)
 
     def pull_files(self, files: List[str], local: str, device_id: str = None):
         """
@@ -111,11 +121,14 @@ class ADB(ScreenShot):
 
         :param device_id: 设备编号
         """
-        sys = platform.system()
-        if sys == "Windows":
-            local = f"\"{local}\""
         for file in files:
             self.pull(file, local, device_id)
+            sleep(1)
+        sleep(1)
+
+    def remove_files(self, files: List[str], device_id: str = None):
+        for file in files:
+            self.remove(file, device_id)
             sleep(1)
         sleep(1)
 

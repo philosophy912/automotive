@@ -16,8 +16,11 @@ from automotive.utils.telnet_utils import TelnetUtils
 from automotive.logger.logger import logger
 import time
 
-_start_service_list = "safety", "clusterNormal_service", "GaugeMagServer", "mcu_ipc_service", "layer-mgr", \
-                      "can_service", "whud", "nobo_whud", "diagnose_eol_service"
+# _start_service_list = "safety", "clusterNormal_service", "GaugeMagServer", "mcu_ipc_service", "layer-mgr", \
+#                       "can_service", "whud", "nobo_whud", "diagnose_eol_service"
+
+_start_service_list = "clusterNormal_service", "safety", "GaugeMagServer, slay cluster_iviinterface",\
+                      "slay cluster_iviinterface"
 
 
 class ClusterHmi(BaseSocketDevice):
@@ -94,12 +97,13 @@ class ClusterHmi(BaseSocketDevice):
             self.__ftp.upload_folder(self.__board_path, self.__test_binary)
             sleep(1)
             self.__telnet.write(f"chmod -R 777 {self.__board_path}")
+            # 新增两条命令
+            self.__telnet.write(f"mount -uw /")
+            self.__telnet.write(f"hamctrl -stop")
             sleep(5)
         if self.__service_list:
             for service in self.__service_list:
                 self.__telnet.write(f"slay {service}")
-            # 需要启动
-            self.__telnet.write(f"./CmdLayerMcuSvr l a")
         self.__telnet.write(f"cd {self.__board_path}")
 
     def disconnect(self):
