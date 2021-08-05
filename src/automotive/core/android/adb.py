@@ -10,13 +10,12 @@ import platform
 import subprocess as sp
 from typing import List, Tuple
 
-from automotive.common.api import ScreenShot
 from automotive.logger import logger
 from .keycode import KeyCode
 from time import sleep
 
 
-class ADB(ScreenShot):
+class ADB(object):
     """
     Android ADB相关的命令python化， 对于实际的测试活动中，更多的使用了click/screen_shot两个操作
     """

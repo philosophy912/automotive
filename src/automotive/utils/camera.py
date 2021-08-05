@@ -191,6 +191,9 @@ class Camera(object):
         :param gray: [False:拍摄彩色照片, True:拍摄灰度照片]
         """
         ret, frame = self.__capture.read()
+        logger.debug(f"ret is {ret}")
+        logger.debug(f"__take_frame name is {name}")
+
         if ret:
             frame = self.__handle_frame(frame, gray)
             # if gray:

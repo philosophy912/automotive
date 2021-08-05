@@ -9,11 +9,10 @@
 import math
 import time
 from automotive.logger.logger import logger
-from automotive.common.api import BaseBattery
 from .konstanter import Konstanter
 
 
-class KonstanterControl(BaseBattery):
+class KonstanterControl(object):
     """
     Konstanter简化操作类
 

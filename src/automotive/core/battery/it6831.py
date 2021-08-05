@@ -9,7 +9,6 @@
 from time import sleep
 from automotive.logger.logger import logger
 from automotive.utils.serial_port import SerialPort
-from automotive.common.api import BaseBattery
 
 
 class Status(object):
@@ -28,7 +27,7 @@ class Status(object):
         self.available_flag = False
 
 
-class IT6831(BaseBattery):
+class IT6831(object):
     """
     用于通过串口控制IT6831可编程电源，需要接上串口转TTL。
 

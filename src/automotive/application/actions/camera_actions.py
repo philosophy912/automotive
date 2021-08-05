@@ -9,7 +9,7 @@
 import os
 from time import sleep
 
-from automotive import Utils
+from automotive.utils.utils import Utils
 from automotive.logger.logger import logger
 from automotive.utils.camera import Camera
 from automotive.common.api import BaseDevice
@@ -49,6 +49,7 @@ class CameraActions(BaseDevice):
         if "." in image_name:
             extends = image_name.split(".")[-1]
             image_name = image_name.replace(f".{extends}", "")
+            image_name = f"{image_name}.jpg"
         return image_name
 
     def create_folder(func):
@@ -94,8 +95,10 @@ class CameraActions(BaseDevice):
         """
         if image_name:
             image_file = fr"{self.__save_folder}\{self.__remove_extends(image_name)}"
+            logger.debug(f"have name image_file is {image_file}")
         else:
             image_file = fr"{self.__save_folder}\{Utils.get_time_as_string()}.jpg"
+            logger.debug(f" no have name image_file is {image_file}")
         self.__camera.take_picture(image_file)
         return image_file
 

@@ -9,10 +9,9 @@
 from time import sleep
 from automotive.logger.logger import logger
 from automotive.utils.serial_port import SerialPort
-from automotive.common.api import BaseBattery
 
 
-class Konstanter(BaseBattery):
+class Konstanter(object):
     """
         KONSTANTER SSP 240-20可编程电源：
 
