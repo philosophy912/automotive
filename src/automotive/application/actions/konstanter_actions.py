@@ -6,14 +6,14 @@
 # @Author:      lizhe
 # @Created:     2021/5/2 - 0:02
 # --------------------------------------------------------
-from typing import List
+from typing import List, Tuple
 
 from automotive.logger.logger import logger
 from automotive.core.battery.konstanter_control import KonstanterControl
-from automotive.common.api import BaseDevice
+from automotive.common.api import BasePowerAdjustActions
 
 
-class KonstanterActions(BaseDevice):
+class KonstanterActions(BasePowerAdjustActions):
     """
     konstanter电源操作类
     """
@@ -128,6 +128,16 @@ class KonstanterActions(BaseDevice):
         logger.debug(f"from {start} and middle {middle} and end{end}")
         logger.info("开始执行电压变动")
         self.__konstanter.start(start, middle, total_time=total_time)
+
+    def get_current_voltage(self) -> Tuple[float, float]:
+        """
+        获取当前电流电压值
+
+        :return 当前电压和电流值
+        """
+        current = self.__konstanter.get("IOUT").split(" ")[-1].replace("+","")
+        voltage = self.__konstanter.get("UOUT").split(" ")[-1].replace("+","")
+        return float(voltage), float(current)
 
     def adjust_voltage_by_curve(self, curve: List[float], current: int = 5, interval: float = 0.01):
         """

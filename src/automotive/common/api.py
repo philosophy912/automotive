@@ -177,6 +177,12 @@ class BasePowerActions(BaseDevice):
         """
         pass
 
+
+class BasePowerAdjustActions(BasePowerActions):
+    """
+    电源相关的操作类，用于统一接口
+    """
+
     @abstractmethod
     def set_voltage(self, voltage: float):
         """
@@ -222,5 +228,14 @@ class BasePowerActions(BaseDevice):
         :param current: 电流值， 默认10A
 
         :return: 只针对konstanter实际有效，对IT6831电源则永远返回True
+        """
+        pass
+
+    @abstractmethod
+    def get_current_voltage(self) -> Tuple[float, float]:
+        """
+        获取当前电流电压值
+
+        :return 当前电压和电流值
         """
         pass

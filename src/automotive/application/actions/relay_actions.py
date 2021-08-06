@@ -9,10 +9,10 @@
 from time import sleep
 from automotive.logger.logger import logger
 from automotive.utils.usb_relay import USBRelay
-from automotive.common.api import BaseDevice
+from automotive.common.api import BasePowerActions
 
 
-class RelayActions(BaseDevice):
+class RelayActions(BasePowerActions):
 
     def __init__(self):
         super().__init__()
@@ -105,3 +105,9 @@ class RelayActions(BaseDevice):
             self.channel_off(channel, interval)
         sleep(1)
         logger.info(f"随机{duration}开关继电器通道{channel}结束")
+
+    def on(self):
+        self.channel_on()
+
+    def off(self):
+        self.channel_off()

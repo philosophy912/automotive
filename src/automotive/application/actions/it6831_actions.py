@@ -7,13 +7,15 @@
 # @Created:     2021/5/2 - 0:02
 # --------------------------------------------------------
 from time import sleep
+from typing import Tuple
+
 from automotive.logger.logger import logger
 from automotive.core.battery.it6831 import IT6831
-from automotive.common.api import BaseDevice
+from automotive.common.api import BasePowerAdjustActions
 from automotive.utils.utils import Utils
 
 
-class It6831Actions(BaseDevice):
+class It6831Actions(BasePowerAdjustActions):
     """
     IT6831电源操作类
     """
@@ -163,3 +165,12 @@ class It6831Actions(BaseDevice):
                     Utils.sleep(interval)
                 logger.info(f"设置电压为{end}伏")
                 self.__it6831.set_voltage_value(end)
+
+    def get_current_voltage(self) -> Tuple[float, float]:
+        """
+        获取当前电流电压值
+
+        :return 当前电压和电流值
+        """
+        status = self.__it6831.get_all_status()
+        return status.voltage, status.current

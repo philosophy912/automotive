@@ -502,7 +502,7 @@ class Images(object):
         a_distance = self.__hamming_distance(a_hash1, a_hash2)
         p_distance = self.__hamming_distance(p_hash1, p_hash2)
         d_distance = self.__hamming_distance(d_hash1, d_hash2)
-        logger.debug(f"a_distance = {a_distance} and p_distance = {p_distance} and d_distance = {d_distance}")
+        logger.info(f"a_distance = {a_distance} and p_distance = {p_distance} and d_distance = {d_distance}")
         if threshold:
             if compare_type == CompareType.DEFAULT:
                 return a_distance < threshold
