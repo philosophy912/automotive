@@ -38,6 +38,9 @@ class FtpUtils(object):
 
         return wrapper
 
+    def get_filename(self, remote: str):
+        return self.__ftp.nlst(remote)
+
     def connect(self, ipaddress: str, username: str, password: str, port: int = 21, timeout: int = 10):
         """
         连接FTP服务器
@@ -93,13 +96,16 @@ class FtpUtils(object):
         for name in file_list:
             logger.debug(f"remote name is {name}")
             local_file = f"{local_folder}\\{name}"
+            logger.debug(f"local name is {local_folder}")
             with open(local_file, "wb") as f:
                 # 只下载某些后缀名的文件
+                logger.debug(f"start downloading")
                 if filter_type:
                     if name.endswith(filter_type):
                         self.__ftp.retrbinary(f"RETR {name}", f.write)
                         local_files.append(local_file)
                 else:
+                    logger.debug(f"all file and directory")
                     self.__ftp.retrbinary(f"RETR {name}", f.write)
                     local_files.append(local_file)
         return local_files
@@ -197,3 +203,42 @@ class FtpUtils(object):
                 self.upload_file(remote_folder, file)
         else:
             raise RuntimeError(f"{local_folder} is not exist or not folder")
+
+    @check_status
+    def downloadfile(self, localFile, remoteFile):  # 下载单个文件
+        file_handler = open(localFile, 'wb')
+        # print(file_handler)
+        # self.ftp.retrbinary("RETR %s" % (remoteFile), file_handler.write)#接收服务器上文件并写入本地文件
+        self.__ftp.retrbinary('RETR ' + remoteFile, file_handler.write)
+        file_handler.close()
+        return True
+
+    @check_status
+    def download_file_tree(self, localdir: str, remotedir:str, filter_type: str = None):  # 下载整个目录下的文件
+        logger.debug(f"远程文件夹remotedir: {remotedir}")
+        if not os.path.exists(localdir):
+            os.makedirs(localdir)
+        self.__ftp.cwd(remotedir)
+        remotenames = self.__ftp.nlst()
+        logger.debug(f"远程文件目录： {remotenames}")
+        for file in remotenames:
+            Local = os.path.join(localdir, file)
+            logger.debug(f"正在下载： {self.__ftp.nlst(file)}")
+            if filter_type:
+                if file.endswith(filter_type):
+                    if file.find(".") == -1:
+                        if not os.path.exists(Local):
+                            os.makedirs(Local)
+                        self.download_file_tree(Local, file)
+                    else:
+                        self.downloadfile(Local, file)
+            else:
+                logger.debug(f"all type file is ok")
+                if file.find(".") == -1:
+                    if not os.path.exists(Local):
+                        os.makedirs(Local)
+                    self.download_file_tree(Local, file)
+                else:
+                    self.downloadfile(Local, file)
+        self.__ftp.cwd("..")
+        return

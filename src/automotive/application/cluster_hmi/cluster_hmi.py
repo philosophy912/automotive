@@ -19,8 +19,7 @@ import time
 # _start_service_list = "safety", "clusterNormal_service", "GaugeMagServer", "mcu_ipc_service", "layer-mgr", \
 #                       "can_service", "whud", "nobo_whud", "diagnose_eol_service"
 
-_start_service_list = "clusterNormal_service", "safety", "GaugeMagServer, slay cluster_iviinterface",\
-                      "slay cluster_iviinterface"
+_start_service_list = "clusterNormal_service", "safety", "GaugeMagServer", "cluster_iviinterface"
 
 
 class ClusterHmi(BaseSocketDevice):
@@ -123,7 +122,7 @@ class ClusterHmi(BaseSocketDevice):
     def read(self) -> str:
         return self.__telnet.read()
 
-    def screen_shot(self, image_name: str, count: int, interval_time: float, display: int = None) -> List[str]:
+    def screen_shot(self, image_name: str, count: int, timeout: int, interval_time: float, display: int = None) -> List[str]:
         """
         """
         # 10张图片
@@ -135,7 +134,7 @@ class ClusterHmi(BaseSocketDevice):
         while result:
             # 超时退出机制，避免死循环
             current_time = time.time()
-            if current_time - start_time > 5 * 60:
+            if current_time - start_time > timeout:
                 result = False
             if self.__check_screenshot_success(images):
                 result = False
