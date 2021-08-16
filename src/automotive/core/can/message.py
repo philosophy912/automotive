@@ -469,7 +469,10 @@ class Message(object):
         self.diag_request = message["diag_request"]
         self.diag_response = message["diag_response"]
         self.diag_state = message["diag_state"]
-        self.is_standard_can = message["is_standard_can"]
+        try:
+            self.is_standard_can = message["is_standard_can"]
+        except KeyError:
+            self.is_standard_can = True
         try:
             self.cycle_time = message["msg_cycle_time"]
             # 必须加上msg_cycle_time大于0才可以判断当前信号为周期信号

@@ -217,7 +217,7 @@ class CANService(BaseCan):
         sender = message.sender.lower()
         if isinstance(filter_sender, str):
             return sender == filter_sender.lower()
-        elif isinstance(filter_sender, tuple):
+        elif isinstance(filter_sender, (tuple, list)):
             for item in filter_sender:
                 if sender == item.lower():
                     return True

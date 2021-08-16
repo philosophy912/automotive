@@ -133,11 +133,19 @@ class KonstanterActions(BasePowerAdjustActions):
         """
         获取当前电流电压值
 
-        :return 当前电压和电流值
+        :return 当前电压和电流值 当返回-1的时候表示出错了
         """
-        current = self.__konstanter.get("IOUT").split(" ")[-1].replace("+","")
-        voltage = self.__konstanter.get("UOUT").split(" ")[-1].replace("+","")
-        return float(voltage), float(current)
+        iout = self.__konstanter.get("IOUT")
+        if "IOUT" in iout:
+            current = float(iout.split(" ")[-1].replace("+", ""))
+        else:
+            current = -1
+        uout = self.__konstanter.get("UOUT")
+        if "UOUT" in uout:
+            voltage = float(uout.split(" ")[-1].replace("+", ""))
+        else:
+            voltage = -1
+        return voltage, current
 
     def adjust_voltage_by_curve(self, curve: List[float], current: int = 5, interval: float = 0.01):
         """

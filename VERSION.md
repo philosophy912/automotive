@@ -1,5 +1,19 @@
 ## 版本更新说明
 
+**V4.2.3**
+- 修改下载文件夹时，文件夹中包含文件夹无法下载的情况，调用download_file_tree方法
+- 修改cluster_hmi，一些slay的内容
+- 修改了message中is_standard_can不存在的时候默认为标准can
+- 修正了CANService中 __is_message_in_node关于filter的类型判断错误
+- 修改了api中的BaseActions中，拆分出来了BasePowerActions方便on off（适配UsbRelay)
+- 增加了camera拍照名字的后缀名
+- 修改默认对比方式为感知哈希算法
+- 修复了Camera的错误
+- 更改了sync命令的顺序
+- adb.py增加删除文件的方法
+- 增加了IT6831和konstanter获取电流电压的方法get_current_voltage
+- 增加了RelayAction的on off方法
+
 **V4.2.2**
 - 重构了actions的代码
 - 重构了actions的api，在抽象类上面都增加了Base
