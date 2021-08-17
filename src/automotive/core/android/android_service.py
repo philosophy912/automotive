@@ -371,7 +371,7 @@ class AndroidService(metaclass=Singleton):
                            text: str, exact_match: bool = False, duration: float = None,
                            direct: SwipeDirectorEnum = SwipeDirectorEnum.UP, swipe_time: int = None,
                            swipe_percent: float = 0.8,
-                           timeout: float = _DEFAULT_TIME_OUT) -> Union[WebElement, UiObject]:
+                           timeout: float = _DEFAULT_TIME_OUT, wait_time: float = None) -> Union[WebElement, UiObject]:
         """
         在可滑动的空间中，查找文字所在的控件
 
@@ -393,6 +393,8 @@ class AndroidService(metaclass=Singleton):
 
         :param swipe_percent: 滑动的比例
 
+        :param wait_time: 每次滑动等待时间
+
         :return:
 
             appium: 获取的是WebElement对象列表
@@ -400,7 +402,7 @@ class AndroidService(metaclass=Singleton):
             u2: 获取的是UiObject对象列表
         """
         return self.__client.scroll_get_element(element, locator, text, exact_match, duration, direct, swipe_time,
-                                                swipe_percent, timeout)
+                                                swipe_percent, timeout,  wait_time)
 
     def scroll_get_element_and_click(self, element: Union[Dict[str, str], WebElement, UiObject],
                                      locator: Dict[str, str], text: str, exact_match: bool = False,
@@ -1009,7 +1011,8 @@ class AndroidService(metaclass=Singleton):
         """
         return self.__client.get_xml_struct()
 
-    def exist(self, locator: Union[str, Dict[str, str], WebElement, UiObject], timeout: float = _DEFAULT_TIME_OUT) -> bool:
+    def exist(self, locator: Union[str, Dict[str, str], WebElement, UiObject],
+              timeout: float = _DEFAULT_TIME_OUT) -> bool:
         """
         元素是否存在
         :return: 存在/不存在

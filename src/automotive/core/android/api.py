@@ -352,7 +352,7 @@ class BaseAndroid(metaclass=ABCMeta):
                            exact_match: bool = True, duration: float = None,
                            direct: SwipeDirectorEnum = SwipeDirectorEnum.UP, swipe_time: int = None,
                            swipe_percent: float = 0.8,
-                           timeout: float = _DEFAULT_TIME_OUT) -> Union[WebElement, UiObject]:
+                           timeout: float = _DEFAULT_TIME_OUT,  wait_time: int = None) -> Union[WebElement, UiObject]:
         """
         在可滑动的空间中，查找文字所在的控件
 
@@ -414,6 +414,8 @@ class BaseAndroid(metaclass=ABCMeta):
         :param direct: 滑动方向（默认是向上滑动)
 
         :param swipe_percent: 滑动的比例
+
+        :param wait_time: 每次滑动等等时间
 
         :return:
 

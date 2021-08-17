@@ -362,12 +362,13 @@ class AppiumClient(BaseAndroid):
     def scroll_get_element(self, element: Union[str, Dict[str, str], WebElement], locator: Dict[str, str], text: str,
                            exact_match: bool = True, duration: float = None,
                            direct: SwipeDirectorEnum = SwipeDirectorEnum.UP, swipe_time: int = None,
-                           swipe_percent: float = 0.8, timeout: float = DEFAULT_TIME_OUT) -> WebElement:
+                           swipe_percent: float = 0.8, timeout: float = DEFAULT_TIME_OUT,
+                           wait_time: float = None) -> WebElement:
         self._check_instance(locator, (str, dict, WebElement))
         self._check_instance(locator, dict)
         start_x, start_y, end_x, end_y, duration = self._get_swipe_param(element, direct, duration, swipe_percent)
         return self._scroll_element(start_x, start_y, end_x, end_y, duration, direct, element, locator, text,
-                                    exact_match, timeout, swipe_time)
+                                    exact_match, timeout, swipe_time, wait_time)
 
     def get_device_id(self) -> str:
         return self._driver.capabilities["deviceName"]

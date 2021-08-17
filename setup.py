@@ -29,7 +29,7 @@ setuptools.setup(
     package_dir={"": "src"},
     # 依赖的相关文件
     package_data={
-        "": ["*.dll", "*.ini", "*.xls*"]
+        "": ["*.dll", "*.ini", "*.xls*", "*.lib"]
     },
     python_requires=">=3.6.*",
     # 安装依赖的包

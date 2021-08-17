@@ -143,26 +143,28 @@ class UiAutomator2Client(BaseAndroid):
         attributes = dict()
         element = self.get_element(locator, timeout)
         info = element.info
+        logger.debug(f"info is {info}")
         for key, item in ElementAttributeEnum.__members__.items():
             # display不支持，所以暂时要抛弃这个，貌似appium支持
-            if key.lower() != ElementAttributeEnum.DISPLAYED.value:
-                attributes[item] = info[item.value]
-            if key.lower() == ElementAttributeEnum.TEXT.value:
+            if key.lower() == ElementAttributeEnum.DISPLAYED.value:
+                attributes[item] = True
+            elif key.lower() == ElementAttributeEnum.TEXT.value:
                 attributes[item] = element.get_text()
             else:
-                logger.debug(f"due to no attribute in uiautomator2 so default value is True")
-                attributes[item] = True
+                logger.debug(f"key is {key} and item is {item} and value is {info[item.value]}")
+                attributes[item] = info[item.value]
         return attributes
 
     def scroll_get_element(self, element: Union[Dict[str, str], UiObject], locator: Dict[str, str], text: str,
                            exact_match: bool = True, duration: float = None,
                            direct: SwipeDirectorEnum = SwipeDirectorEnum.UP, swipe_time: int = None,
-                           swipe_percent: float = 0.8, timeout: float = DEFAULT_TIME_OUT) -> UiObject:
+                           swipe_percent: float = 0.8, timeout: float = DEFAULT_TIME_OUT,
+                           wait_time: float = None) -> UiObject:
         self._check_instance(locator, (dict, UiObject))
         self._check_instance(locator, dict)
         start_x, start_y, end_x, end_y, duration = self._get_swipe_param(element, direct, duration, swipe_percent)
         return self._scroll_element(start_x, start_y, end_x, end_y, duration, direct, element, locator, text,
-                                    exact_match, timeout, swipe_time)
+                                    exact_match, timeout, swipe_time, wait_time)
 
     def get_location(self, locator: Union[str, Dict[str, str], UiObject],
                      timeout: float = DEFAULT_TIME_OUT) -> Tuple[int, int, int, int]:

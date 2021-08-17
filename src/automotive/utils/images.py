@@ -249,8 +249,8 @@ class Images(object):
         """
         if threshold:
             self.__check_threshold(threshold)
-        matrix_image1 = cv2.imread(image1) if isinstance(image1, str) else image1
-        matrix_image2 = cv2.imread(image2) if isinstance(image2, str) else image2
+        matrix_image1 = self.__get_image_nd_array(image1)
+        matrix_image2 = self.__get_image_nd_array(image2)
         if gray and threshold:
             matrix_image1 = self.__binarization(matrix_image1, threshold)
             matrix_image2 = self.__binarization(matrix_image2, threshold)

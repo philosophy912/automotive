@@ -1,5 +1,10 @@
 ## 版本更新说明
 
+**V4.2.4**
+- 修改了android service中
+- 打包增加了*.lib的库
+- 修改了Images中的获取文件的numpy值的方式
+
 **V4.2.3**
 - 修改下载文件夹时，文件夹中包含文件夹无法下载的情况，调用download_file_tree方法
 - 修改cluster_hmi，一些slay的内容
