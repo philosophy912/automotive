@@ -56,8 +56,8 @@ class QnxActions(BaseActions):
         # 持续时间如果大于0.1秒则按照此公式计算，如果小于0.1秒则按照实际的时间来计算
         if continue_time > 0.1:
             time = int(continue_time / 0.1)
+            # 纵向滑动
             if x1 == x2:
-                # 纵向滑动
                 # 计算滑动的距离
                 height = abs(y2 - y1)
                 interval_height = int(height / time)
@@ -73,8 +73,8 @@ class QnxActions(BaseActions):
                         else:
                             command = f"echo \"{display} 2 {x1} {y1 - i * interval_height}\" > /dev/inject_events"
                     commands.append(command)
+            # 横向滑动
             elif y1 == y2:
-                # 横向滑动
                 width = abs(x2 - x1)
                 interval_width = int(width / time)
                 for i in range(time):

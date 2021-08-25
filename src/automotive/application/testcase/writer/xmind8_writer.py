@@ -102,11 +102,12 @@ class Xmind8Writer(Writer):
                                 need_write_testcase: bool = True):
         """
         创建测试用例子节点
+
         :param testcase_topic: 测试用例节点
+
         :param workbook: xmind文件
         """
-        # 添加了测试用例节点
-        # 判断了是否关联了需求ID
+        # 添加了测试用例节点, 判断了是否关联了需求ID
         if testcase.requirement_id != "":
             tc_topic = self.__create_topic(f"TC{testcase.name}[{testcase.requirement_id}]", workbook)
         else:

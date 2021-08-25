@@ -1,5 +1,8 @@
 ## 版本更新说明
 
+**V4.2.5**
+- 修改了android service， 使得可以根据属性值判断是否点击
+
 **V4.2.4**
 - 修改了android service中
 - 打包增加了*.lib的库
@@ -41,21 +44,62 @@
 - 修改了ADB截图的时候放到本地路径可能失败的问题
 - 修复了CanService中发送默认信号变成随机信号的问题
 
-**V4.1.1**
-- 修复了可编程电源断开执行异常的问题
 
-**V4.1.0**
+**V4.1.7**-
+- 解决了xmind转换器中excel的writer和reader之间数据缺失的问题
+- 修改了hypervisor截图中默认地址，可以通过传递参数的方式实现
+- 修改了ADB截图的时候放到本地路径可能失败的问题
+
+**V4.1.6**
+
+- 更新了relay_actions的channel_on传递参数的问题
+- 优化了konstanter_actions关闭close的调用问题
+- 优化了摄像头打开的分辨率，默认1920*1080
+- image中图片对比（汉明距）增加了阈值部分，传入阈值后会返回对比的结果
+
+**V4.1.5**
+
+- 修改了image的图片汉明距对比的代码，读取视频的时候不用写入文件，只需要从内存里面读取每一帧
+- 修改了类型提示，符合python规则
+
+**V4.1.1**
+
+- 完成了xmind转换成excel的工作
+
+**V4.0.8**
 
 - 解决了konstanter收不到SEQ消息的时候进行一个超时判断
+- 完成了xmind解析成excel的工作
+
+**V4.0.7**
+
 - 事件信号发送从主线程中移除到了子线程中，加快了消息发送的速度
 - 优化了随机信号发送的代码
+
+**V4.0.6**
+
 - camera_test增加了摄像头序号的选择
+
+**V4.0.5**
+
 - CanService的线程增加到了300个
+
+**V4.0.4**
+
 - 修复了默认信号诊断信号发出来的错误
 - 增加了CAN设备没有连接的错误
+
+**V4.0.3**
+
 - 增加了发送默认信号的容错问题，避免CAN盒消息发不出去导致的阻塞
+
+**V4.0.2**
+
 - 增加了Camera中的camera_test方法提示需要打开摄像头
 - 更改了CanService的log等级
+
+**V4.0.1**
+
 - 增加了CanService过滤多个节点的方法
 
 **V4.0.0**
@@ -64,8 +108,6 @@
 - 增加了application包与core进行分开
 - 调整了setup依赖的包，避免安装的时候时间过长，需要用到该包的时候在代码中进行pip安装（需要提前配置好pip）
 - 增加了发送默认值的时候恢复初始的message
-
-
 
 **V3.0**
 
@@ -108,14 +150,13 @@
 
 **V2.5**
 
- - 增加了FTP工具类FtpUtils
- - 增加了Telnet工具类TelnetUtils
- - 增加了诺创项目使用的clusterHmi类
- - 修复了空调屏截屏和仪表屏截屏的错误，并统一了截屏的接口
- - 修复了AndroidService调用的错误
- - 修复了Camera的中录制视频的错误
- - 增加了SerialPort中关于日志保存到文件的方法
-
+- 增加了FTP工具类FtpUtils
+- 增加了Telnet工具类TelnetUtils
+- 增加了诺创项目使用的clusterHmi类
+- 修复了空调屏截屏和仪表屏截屏的错误，并统一了截屏的接口
+- 修复了AndroidService调用的错误
+- 修复了Camera的中录制视频的错误
+- 增加了SerialPort中关于日志保存到文件的方法
 
 **V2.4**
 
@@ -124,7 +165,7 @@
 - TracePlayback中修复了回放的错误（待验证）
 - 开放了Action的操作，如CameraAction、It6831Action等方便操作
 
-##### V2.3
+**V2.3**
 
 - 增加默认的logger， 参考配置说明
 
@@ -140,13 +181,13 @@
 """
 ```
 
-- 调整了代码结构（若上层代码非使用全路径方式，不影响上层代码使用) 
+- 调整了代码结构（若上层代码非使用全路径方式，不影响上层代码使用)
 
 - 新增了hypervisor和qnx两个模块，主要实现功能
 
-  - 相应的QNX系统中的截图（Hypervisor是通过ADB htalk方式截图, qnx则通过串口截图)
+    - 相应的QNX系统中的截图（Hypervisor是通过ADB htalk方式截图, qnx则通过串口截图)
 
-  - 相应的QNX系统的点击操作（仅空调屏)
+    - 相应的QNX系统的点击操作（仅空调屏)
 
 - 修复了文档错误
 
@@ -154,16 +195,15 @@
 
 - 新增了AndroidService，用于统一uiautomator2(python)以及appium的接口，便于切换
 
-
-##### V2.2
+**V2.2**
 
 - CANService中增加了设备获取的接口 -> 通过调用self.can_box_device获取当前设备的类型
 
 - 修复了adb工具的错误
 
-- 增加了Linux的performance的测试 
+- 增加了Linux的performance的测试
 
-##### V2.1
+**V2.1**
 
 - 增加了电源自动化测试的模板代码
 
@@ -180,39 +220,38 @@
   service.close_can()
   ```
 
-
-##### V2.0
+**V2.0**
 
 - 完善了周期事件信号的发送
 - 优化了CAN消息的解析（***不兼容之前的版本***)
 - 取消了stack的大小
 - 移除了无用的device_can_bus模块
 
-##### V1.1.1
+**V1.1.1**
 
 - 修复了it6831电源操作在get_all_status的时候检测了电源是否处于打开状态的问题
 - 修复了konstanter无法断开串口连接的问题
 - 修复了更新opencv之后，camera无法打开的问题,修改了camera_test的窗口名
 - 修复了继电器on/off反接需要调整接口的问题，增加了reverse用于翻转操作
 
-##### V1.1.0
+**V1.1.0**
 
 - 修复了CAN消息stop之后无法resume的问题
 - 修改了konstanter的start函数返回值为None，并添加自动判断
 - 联动修复了onoff的actions实现类
 
-##### V1.0.9
+**V1.0.9**
 
 - 修复了CAN消息关闭的时候没有结束线程的问题
 - 修复了CAN解析消息的错误
 - 增加了自动安装的脚本install.bat
 
-##### V1.0.8
+**V1.0.8**
 
 - 修复了串口无法disconnect的问题
 - 修复了CAN消息发送default默认值不成功的问题
 
-##### V1.0.7
+**V1.0.7**
 
 - 修复了CAN消息发送和接收错误  
   当CAN消息发送的时候，如果发送的值低于1位的长度就会出错  
@@ -221,8 +260,7 @@
 - 根据airtest增加了image的对比方式find_best_result/find_best_result_by_position, 应用于存在背景图片的图像对比
 - 增加了Battery相关的连接和断开接口，同时调整了onoff中对应的修改
 
-
-##### V1.0.6
+**V1.0.6**
 
 - 修复了CAN 消息解析错误的问题
 - 修复了PCAN接收消息的错误
@@ -233,30 +271,30 @@
 - 移出了代码生成所需要的image_compare以及screenshot等文件，改由代码直接生成
 - 增加了串口的disconnect方法
 
-#### V1.0.5
+**V1.0.5**
 
 - 修改了CAN层的log打印等级
 - 增加了adb tap的方式点击屏幕坐标
 
-#### V1.0.4
+**V1.0.4**
 
 - 修复了CAN工具计算值的错误, 涉及src/automotive/can/interfaces/message以及src/automotive/can/interfaces/tools文件
 - 增加了单元测试
 
-#### V1.0.3
+**V1.0.3**
 
 - 增加了新的CAN分析仪的dll文件
 - 修复了ADB截屏的错误  
   针对高通820需要先执行adb remount操作，否则会导致截屏不成功
 
-#### V1.0.2
+**V1.0.2**
 
 - 修复了CANBOX的发送错误
 - 修复了CAN Message计算的错误
 - 统一了CANDevice的接口
 - 增加了CAN 随机发送消息的接口
 
-#### V1.0.1
+**V1.0.1**
 
 - base_image_compare.py
 
@@ -270,10 +308,6 @@
 
   修改了**get_folder_path**方法， 添加了current_path，方便在不同位置查找文件夹，修正了之前在模块中引用的路径错误。
 
-
-
-
-​    
 
 
 

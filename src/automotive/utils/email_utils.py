@@ -152,14 +152,17 @@ class EmailUtils(object):
         else:
             self.__send_exchange_email(email_to, subject, content, attachments, email_cc)
 
-    def receive_email(self, email_count: int = 10, folder: str = None) -> List[Any]:
+    def receive_email(self, email_size: int = 10, folder: str = None) -> List[Any]:
         """
         TODO 暂时未完成测试
         接收邮件
-        :param email_count: 要收取的邮件数量
+        :param email_size: 要收取的邮件数量
+
         :param folder: 要收取的文件夹，默认为收件箱
+
         :return: (author, datetime_received, subject, content, attachments)
         """
+        logger.info(f"email size is not used, size is {email_size}")
         if self.__type == EmailType.SMTP:
             # 返回邮件总数目和占用服务器的空间大小（字节数）， 通过stat()方法即可
             email_count, email_size = self.__pop3_server.stat()

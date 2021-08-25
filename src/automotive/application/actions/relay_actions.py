@@ -96,7 +96,7 @@ class RelayActions(BasePowerActions):
         """
         total_time = int(duration / interval)
         logger.debug(f"继电器{channel}，通断持续时间{duration}, 间隔时间{interval}")
-        for i in range(total_time):
+        for _ in range(total_time):
             self.channel_on(channel, interval)
             self.channel_off(channel, interval)
         if stop_status:

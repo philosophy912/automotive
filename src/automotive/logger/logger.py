@@ -100,7 +100,7 @@ def get_config(config_file: str) -> Tuple[str, str]:
         return level, log_folder
 
 
-def find_config_file(folder: str, config_yml_file: str, flag: bool = True, parent_path: str = None) -> Tuple[str, Any]:
+def find_config_file(folder: str, config_yml_file: str) -> Tuple[str, Any]:
     """
     查找指定的配置文件
 
@@ -114,6 +114,7 @@ def find_config_file(folder: str, config_yml_file: str, flag: bool = True, paren
 
     :return:level, log_folder
     """
+    flag = True
     while flag:
         # 当前目录有config文件
         if config_yml_file in get_files(folder):

@@ -172,7 +172,7 @@ class BaseCanBus(metaclass=ABCMeta):
             cycle_time = message.cycle_time / 1000.0
             message.stop_flag = False
             # 周期性发送
-            logger.info(f"****** Transmit msg id {hex_msg_id} data is {list(map(lambda x: hex(x), data))} "
+            logger.info(f"****** Transmit [Cycle] {hex_msg_id} : {list(map(lambda x: hex(x), data))}"
                         f"Circle time is {message.cycle_time}ms ******")
             task = self._thread_pool.submit(self.__transmit, can, message, cycle_time)
             self._transmit_thread.append(task)
@@ -198,8 +198,8 @@ class BaseCanBus(metaclass=ABCMeta):
         while self._need_transmit and msg_id in self._event_send_messages and len(
                 self._event_send_messages[msg_id]) > 0:
             message = self._event_send_messages[msg_id].pop(0)
-            logger.debug(f"****** Send msg[{hex(msg_id)}] and data [{list(map(lambda x: hex(x), message.data))}] "
-                         f"and cycle time [{message.cycle_time_fast}]")
+            logger.info(f"****** Transmit [Event] {msg_id} : {list(map(lambda x: hex(x), message.data))}"
+                        f"Event Cycle time [{message.cycle_time_fast}]")
             can.transmit(message)
             sleep(cycle_time)
 

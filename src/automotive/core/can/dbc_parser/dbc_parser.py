@@ -244,7 +244,7 @@ class DbcParser(object):
             # 处理VAL行
             if content.startswith(self.VAL):
                 self.__set_val_values(messages, content)
-        logger.debug(f"messages = {messages}")
+        logger.trace(f"messages = {messages}")
         return messages
 
     def __set_val_values(self, messages: List[Dict[str, Any]], content: str):
@@ -350,7 +350,7 @@ class DbcParser(object):
     def __handle_sg(self, message: Dict[str, Any], name: str, signal_name: str, value: str):
         signal = self.__get_signal_by_name(message["signals"], signal_name)
         if name.upper() == self.GEN_SIG_START_VALUE.upper():
-            logger.debug(f"value is {value}")
+            logger.trace(f"value is {value}")
             if self.POINT in value:
                 signal["start_value"] = float(value)
             else:
@@ -409,7 +409,7 @@ class DbcParser(object):
                         for signal in signals:
                             signal["start_value"] = int(value)
             else:
-                logger.debug(f"ba default type is [{name}], so nothing to do")
+                logger.trace(f"ba default type is [{name}], so nothing to do")
 
     def __set_message_attribute(self, attr_dict: Dict[str, Any], content: str):
         """
@@ -423,7 +423,7 @@ class DbcParser(object):
         if not self.__judge_content(ba_def, self.BU, self.BO, self.EV, self.SG):
             logger.trace(f"no {self.BU}，{self.BO}，{self.EV}，{self.SG} found in content[{content}]")
             # "Manufactor" STRING ;
-            logger.debug("暂时不处理这类数据")
+            logger.trace("暂时不处理这类数据")
         else:
             blank_index = ba_def.index(self.BLANK)
             node_type = ba_def[:blank_index]

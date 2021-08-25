@@ -131,7 +131,7 @@ class BaseAndroid(metaclass=ABCMeta):
         u2: 连接Android设备，如果传入了package和activity，则需要打开app，否则不打开app
 
         eg:
-            capability参考url: http://appium.io/docs/en/writing-running-appium/caps/
+            capability参考url: https://appium.io/docs/en/writing-running-appium/caps/
 
             capability = {
 
@@ -352,7 +352,7 @@ class BaseAndroid(metaclass=ABCMeta):
                            exact_match: bool = True, duration: float = None,
                            direct: SwipeDirectorEnum = SwipeDirectorEnum.UP, swipe_time: int = None,
                            swipe_percent: float = 0.8,
-                           timeout: float = _DEFAULT_TIME_OUT,  wait_time: int = None) -> Union[WebElement, UiObject]:
+                           timeout: float = _DEFAULT_TIME_OUT, wait_time: int = 1) -> Union[WebElement, UiObject]:
         """
         在可滑动的空间中，查找文字所在的控件
 
@@ -452,6 +452,23 @@ class BaseAndroid(metaclass=ABCMeta):
         获取device id
 
         :return: device_id
+        """
+        pass
+
+    @abstractmethod
+    def click_if_attribute(self, locator: Union[Tuple[int, int], str, Dict[str, str], WebElement, UiObject],
+                           element_attribute: ElementAttributeEnum, status: bool,
+                           timeout: float = _DEFAULT_TIME_OUT):
+        """
+        当被点击的元素状态满足需求的时候则进行点击动作
+
+        :param locator:  元素定位符
+
+        :param element_attribute:  元素属性
+
+        :param status:  要满足的元素属性状态
+
+        :param timeout:  超时时间
         """
         pass
 

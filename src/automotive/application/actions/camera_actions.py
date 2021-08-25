@@ -130,6 +130,6 @@ class CameraActions(BaseDevice):
         logger.debug("代码有问题，需要拍两张照片")
         self.__template_image = fr"{self.__save_folder}\{self.__remove_extends(template_image_name)}"
         logger.info(f"拍摄照片[{self.__template_image}]")
-        for i in range(2):
+        for _ in range(2):
             self.__camera.take_picture(self.__template_image)
             sleep(1)

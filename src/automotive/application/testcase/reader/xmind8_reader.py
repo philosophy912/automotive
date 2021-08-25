@@ -145,29 +145,6 @@ class Xmind8Reader(Reader):
                 else:
                     modules.pop(-1)
 
-    def __convert_testcases(self, testcases: List[Testcase]) -> List[Tuple[int, str, str, str, str, str, str]]:
-        """
-        根据模板文件生成相关的内容
-        :param testcases: 测试用例列表
-        :return: 多维数组  (序号	用例名称	子模块名	前置条件	执行步骤	预期结果	优先级)
-        """
-        # 序号	用例名称	子模块名	前置条件	执行步骤	预期结果	优先级
-        result = []
-        for i, testcase in enumerate(testcases):
-            index = i + 1
-            logger.debug(f"The {index} test case is {testcase.name}")
-            test_case_name = testcase.name
-
-            sub_module = testcase.module
-            pre_condition = self.__convert_pre_condition(testcase.pre_condition)
-            steps, exception = self.__convert_steps_condition(testcase.steps)
-
-            priority = testcase.priority if testcase.priority else 3
-            line = (index, test_case_name, sub_module, pre_condition, steps, exception, priority)
-            logger.debug(f"{index} line value is {line}")
-            result.append(line)
-        return result
-
     @staticmethod
     def __convert_pre_condition(pre_conditions: List[str]) -> str:
         """
@@ -209,7 +186,6 @@ class Xmind8Reader(Reader):
                 index += 1
         steps_str = "\n".join(steps_contents)
         exception_str = "\n".join(exception_contents)
-        # return f"\"{steps_str}\"", f"\"{exception_str}\""
         return steps_str, exception_str
 
     def __convert_testcase(self, test_cases: List[TopicElement]) -> List[Testcase]:

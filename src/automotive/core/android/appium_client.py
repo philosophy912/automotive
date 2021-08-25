@@ -384,6 +384,12 @@ class AppiumClient(BaseAndroid):
         logger.debug(f"x = [{x}], y = [{y}], width = {width}, height = {height}")
         return x, y, width, height
 
+    def click_if_attribute(self, locator: Union[Tuple[int, int], str, Dict[str, str], WebElement],
+                        element_attribute: ElementAttributeEnum, status: bool, timeout: float = DEFAULT_TIME_OUT):
+        current_status = self.get_element_attribute(locator, timeout)[element_attribute]
+        if current_status == status:
+            self.click(locator, timeout)
+
     def click(self, locator: Union[Tuple[int, int], str, Dict[str, str], WebElement],
               timeout: float = DEFAULT_TIME_OUT):
         self._check_instance(locator, (tuple, str, dict, WebElement))

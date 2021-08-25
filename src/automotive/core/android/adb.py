@@ -157,12 +157,13 @@ class ADB(object):
         if display_id and 1 <= display_id <= 3:
             # 利用传入的显示屏来生成用到的屏幕设备
             device = f"/dev/input/event{display_id - 1}"
-            commands = ["sendevent " + device + " 3 53 " + str(x),
-                        "sendevent " + device + " 3 54 " + str(y),
-                        "sendevent " + device + " 1 330 1",
-                        "sendevent " + device + " 0 0 0",
-                        "sendevent " + device + " 1 330 0 ",
-                        "sendevent " + device + " 0 0 0"]
+            sendevent = "sendevent"
+            commands = [f"{sendevent} {device} 3 53 {x}",
+                        f"{sendevent} {device} 3 54 {y}",
+                        f"{sendevent} {device} 1 330 1",
+                        f"{sendevent} {device} 0 0 0",
+                        f"{sendevent} {device} 1 330 0",
+                        f"{sendevent} {device} 0 0 0"]
             for cmd in commands:
                 self.__adb_command(cmd, device_id)
         else:
@@ -180,7 +181,7 @@ class ADB(object):
         self.__adb_command(f"shell input keyevent {key_code.value}", device_id)
         sleep(0.1)
 
-    def screen_shot(self, image_name: str, count: int, interval_time: float, display: int = None,
+    def screen_shot(self, image_name: str, count: int, interval_time: float = 0.1, display: int = None,
                     device_id: str = None):
         """
         截图操作, 当截图有多张的时候，以__下划线分割并加编号
@@ -203,7 +204,7 @@ class ADB(object):
                 self.__adb_command(f"shell screencap -p -d {display} {image_name}", device_id)
             else:
                 self.__adb_command(f"shell screencap -p {image_name}", device_id)
-            sleep(0.1)
+            sleep(interval_time)
 
     def screen_shot_area(self, position: Tuple[int, int], image_name: str, count: int, interval_time: float,
                          display: int = None):

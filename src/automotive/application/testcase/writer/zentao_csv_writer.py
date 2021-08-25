@@ -58,7 +58,7 @@ class ZentaoCsvWriter(Writer):
             if n.startswith('.') or n.startswith('_') or n.startswith('-') \
                     or n.startswith(' '):
                 testcase.name = n.replace(n[0], "", 1)
-            if sub_module is '':
+            if sub_module == '':
                 test_case_name = f"{testcase.name}"
             else:
                 test_case_name = f"{sub_module}-{testcase.name}"

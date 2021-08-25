@@ -16,9 +16,6 @@ from automotive.utils.telnet_utils import TelnetUtils
 from automotive.logger.logger import logger
 import time
 
-# _start_service_list = "safety", "clusterNormal_service", "GaugeMagServer", "mcu_ipc_service", "layer-mgr", \
-#                       "can_service", "whud", "nobo_whud", "diagnose_eol_service"
-
 _start_service_list = "clusterNormal_service", "safety", "GaugeMagServer", "cluster_iviinterface"
 
 

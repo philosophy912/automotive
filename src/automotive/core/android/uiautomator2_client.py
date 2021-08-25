@@ -177,6 +177,12 @@ class UiAutomator2Client(BaseAndroid):
     def get_device_id(self) -> str:
         return self._driver.serial
 
+    def click_if_attribute(self, locator: Union[Tuple[int, int], str, Dict[str, str], UiObject],
+                        element_attribute: ElementAttributeEnum, status: bool, timeout: float = DEFAULT_TIME_OUT):
+        current_status = self.get_element_attribute(locator, timeout)[element_attribute]
+        if current_status == status:
+            self.click(locator, timeout)
+
     def click(self, locator: Union[Tuple[int, int], str, Dict[str, str], UiObject], timeout: float = DEFAULT_TIME_OUT):
         self._check_instance(locator, (tuple, str, dict, UiObject))
         x, y = self._get_element_location(locator, DirectorEnum.CENTER, timeout)

@@ -12,6 +12,7 @@ from typing import Union, List, Tuple, Any, Dict
 from automotive.logger import logger
 from automotive.utils import Utils
 from functools import wraps
+from .dbc_parser import DbcParser
 
 """
 工具类，单独给CAN Service中的Parser使用，基本上不对外使用
@@ -304,7 +305,11 @@ def get_message(messages: Union[str, List[Any]], encoding: str = "utf-8") -> Tup
     id_messages = dict()
     name_messages = dict()
     if isinstance(messages, str):
-        messages = Utils().get_json_obj(messages, encoding=encoding)
+        if messages.endswith(".json"):
+            messages = Utils().get_json_obj(messages, encoding=encoding)
+        elif messages.endswith(".dbc"):
+            dbc_parser = DbcParser()
+            messages = dbc_parser.parse(messages, encoding="gbk")
     for msg in messages:
         message = Message()
         message.set_value(msg)
@@ -428,16 +433,16 @@ class Message(object):
         if type_:
             logger.trace("send message")
             for name, signal in self.signals.items():
-                logger.debug(f"signal name = {signal.signal_name} and signal value = {signal.value}")
+                logger.trace(f"signal name = {signal.signal_name} and signal value = {signal.value}")
                 # 根据原来的数据message_data，替换某一部分的内容
                 set_data(self.data, signal.start_bit, signal.byte_type, signal.value, signal.bit_length,
                          self.data_length)
-            logger.info(f"msg id {hex(self.msg_id)} and data is {list(map(lambda x: hex(x), self.data))}")
+            logger.debug(f"msg id {hex(self.msg_id)} and data is {list(map(lambda x: hex(x), self.data))}")
         # 收到数据
         else:
             logger.trace("receive message")
             for name, signal in self.signals.items():
-                logger.debug(f"signal name = {signal.signal_name} and signal value = {signal.value}")
+                logger.trace(f"signal name = {signal.signal_name} and signal value = {signal.value}")
                 value = get_data(self.data, signal.start_bit, signal.byte_type, signal.bit_length, self.data_length)
                 logger.trace(f"value is {value}")
                 signal.value = value
