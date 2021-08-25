@@ -102,16 +102,17 @@ class CameraActions(BaseDevice):
         self.__camera.take_picture(image_file)
         return image_file
 
-    def camera_test(self, time: int = 2):
+    def camera_test(self, time: int = 2, camera_id: int = None):
         """
         调整摄像头，进行camera测试，默认时长2分钟，可以通过输入q退出调整
 
         :param time: 测试时间， 默认2分钟
+        :param camera_id: 摄像头ID号，默认0，  1是笔记本
         """
         logger.debug("如果摄像头打开，则需要关闭摄像头")
         self.__camera.close_camera()
         logger.debug(f"你有{time}分钟时间调整摄像头位置")
-        self.__camera.camera_test(time)
+        self.__camera.camera_test(time, camera_id)
 
     @create_folder
     def take_template_image(self, template_image_name: str):
