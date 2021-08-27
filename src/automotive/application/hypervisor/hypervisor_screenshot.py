@@ -147,3 +147,28 @@ class HypervisorScreenShot(BaseScreenShot):
     def screen_shot_area(self, position: Tuple[int, int, int, int], image_name: str, count: int, interval_time: float,
                          display: int = None) -> List[str]:
         return self.__screen_shot_image(image_name, count, interval_time, position)
+
+    def remove_file(self, remote: str):
+        """
+        htalk命令，删除单个文件
+        :param remote: 远程文件地址
+        :return:
+        """
+        self.__adb_command(f"shell htalk shell 'rm {remote}'")
+
+    def remove_files(self, files: List[str]):
+        """
+        htalk命令，删除多个文件
+        :param files: 存放文件地址的列表
+        """
+        for file in files:
+            self.remove_file(file)
+            sleep(1)
+        sleep(1)
+
+    def remove_folder(self, folder: str):
+        """
+        htalk命令，删除文件夹
+        :param folder: 文件目录，不以分隔符结尾，例如、/log
+        """
+        self.__adb_command(f"shell htalk shell 'rm -r {folder}'")
