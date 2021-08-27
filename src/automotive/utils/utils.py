@@ -9,10 +9,12 @@
 import json
 import time
 import os
+import platform
+import subprocess as sp
 import random
 import inspect
 import zipfile
-from typing import Union, List, Any, Dict
+from typing import Union, List, Any, Dict, Tuple
 
 import yaml
 from enum import Enum
@@ -377,3 +379,25 @@ class Utils(metaclass=Singleton):
         filter_images = list(map(lambda x: "\\".join([folder, x]), images))
         logger.debug(f"{folder} contain {len(filter_images)} {image_name} files")
         return filter_images
+
+    @staticmethod
+    def exec_command_with_output(command: str, workspace: str = None, encoding: str = "utf-8") -> Tuple:
+        """
+        有输出的执行
+
+        :param command:  命令
+
+        :param workspace: 工作目录
+
+        :param encoding: 编码格式
+
+        :return: 输出的值
+        """
+        is_shell = False if platform.system() == "Windows" else True
+        if workspace:
+            logger.debug(f"cwd is [{workspace}]")
+            p = sp.Popen(command, shell=is_shell, cwd=workspace, stdout=sp.PIPE, stderr=sp.PIPE)
+        else:
+            p = sp.Popen(command, shell=is_shell, stdout=sp.PIPE, stderr=sp.PIPE)
+        stdout, stderr = p.communicate()
+        return stdout.decode(encoding), stderr.decode(encoding)

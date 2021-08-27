@@ -765,7 +765,7 @@ class BaseAndroid(metaclass=ABCMeta):
         截图到本地文件
 
         eg:
-            scren_shot(r"d:\temp\a.jpg")
+            screen_shot(r"d:\temp\a.jpg")
 
         :param file: 要存储的文件
         """
