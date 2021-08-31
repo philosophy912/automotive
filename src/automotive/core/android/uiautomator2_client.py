@@ -178,7 +178,7 @@ class UiAutomator2Client(BaseAndroid):
         return self._driver.serial
 
     def click_if_attribute(self, locator: Union[Tuple[int, int], str, Dict[str, str], UiObject],
-                        element_attribute: ElementAttributeEnum, status: bool, timeout: float = DEFAULT_TIME_OUT):
+                           element_attribute: ElementAttributeEnum, status: bool, timeout: float = DEFAULT_TIME_OUT):
         current_status = self.get_element_attribute(locator, timeout)[element_attribute]
         if current_status == status:
             self.click(locator, timeout)
@@ -202,23 +202,29 @@ class UiAutomator2Client(BaseAndroid):
         x, y = self._get_element_location(locator, DirectorEnum.CENTER, timeout)
         self._driver.long_click(x, y, duration)
 
-    def drag(self, start_x: int, start_y: int, end_x: int, end_y: int):
-        raise RuntimeError(f"uiautomator2 not support drag point")
+    def drag(self, start_x: int, start_y: int, end_x: int, end_y: int, duration: int = 1):
+        self._check_instance(start_x, int)
+        self._check_instance(start_y, int)
+        self._check_instance(end_x, int)
+        self._check_instance(end_y, int)
+        self._driver.drag(start_x, start_y, end_x, end_y, duration)
 
     def drag_element_to(self, locator1: Union[str, Dict[str, str], UiObject],
                         locator2: Union[str, Dict[str, str], UiObject],
-                        timeout: float = DEFAULT_TIME_OUT):
+                        duration: int = 1, timeout: float = DEFAULT_TIME_OUT):
         self._check_instance(locator1, (str, dict, UiObject))
         self._check_instance(locator2, (str, dict, UiObject))
-        x, y = self._get_element_location(locator2, DirectorEnum.CENTER, timeout)
-        self.drag_to(locator1, x, y, timeout)
+        start_x, start_y = self._get_element_location(locator1, DirectorEnum.CENTER, timeout)
+        end_x, end_y = self._get_element_location(locator2, DirectorEnum.CENTER, timeout)
+        self.drag(start_x, start_y, end_x, end_y, duration)
 
-    def drag_to(self, locator: Union[str, Dict[str, str], UiObject], x: int, y: int, timeout: float = DEFAULT_TIME_OUT):
+    def drag_to(self, locator: Union[str, Dict[str, str], UiObject], x: int, y: int, duration: int = 1,
+                timeout: float = DEFAULT_TIME_OUT):
         self._check_instance(locator, (str, dict, UiObject))
         self._check_instance(x, int)
         self._check_instance(y, int)
-        element = self.get_element(locator, timeout)
-        element.drag_to(x=x, y=y)
+        start_x, start_y = self._get_element_location(locator, DirectorEnum.CENTER, timeout)
+        self.drag(start_x, start_y, x, y, duration)
 
     def swipe_element(self, from_element: Union[str, Dict[str, str], UiObject],
                       to_element: Union[str, Dict[str, str], UiObject],

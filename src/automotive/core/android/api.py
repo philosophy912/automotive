@@ -561,7 +561,7 @@ class BaseAndroid(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def drag(self, start_x: int, start_y: int, end_x: int, end_y: int):
+    def drag(self, start_x: int, start_y: int, end_x: int, end_y: int, duration: int = 1):
         """
         从某点拖动到某点
 
@@ -578,13 +578,15 @@ class BaseAndroid(metaclass=ABCMeta):
         :param end_x: 拖动的结束点x坐标
 
         :param end_y: 拖动的结束点y坐标
+
+        :param duration: 拖动持续时间
         """
         pass
 
     @abstractmethod
     def drag_element_to(self, locator1: Union[str, Dict[str, str], WebElement, UiObject],
                         locator2: Union[str, Dict[str, str], WebElement, UiObject],
-                        timeout: float = _DEFAULT_TIME_OUT):
+                        duration: int = 1, timeout: float = _DEFAULT_TIME_OUT):
         """
         从某点拖动到某点
 
@@ -601,12 +603,13 @@ class BaseAndroid(metaclass=ABCMeta):
 
         :param locator2: 定位符2
 
+        :param duration: 拖动持续时间
         """
         pass
 
     @abstractmethod
     def drag_to(self, locator: Union[str, Dict[str, str], WebElement, UiObject],
-                x: int, y: int, timeout: float = _DEFAULT_TIME_OUT):
+                x: int, y: int, duration: int = 1, timeout: float = _DEFAULT_TIME_OUT):
         """
         从某个元素拖动到某点
 
@@ -624,6 +627,8 @@ class BaseAndroid(metaclass=ABCMeta):
         :param x: 拖动目的地的x
 
         :param y: 拖动目的地的y
+
+        :param duration: 拖动持续时间
 
         """
         pass

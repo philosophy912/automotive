@@ -925,7 +925,7 @@ class AndroidService(metaclass=Singleton):
         """
         self.__client.press(locator=locator, timeout=timeout, duration=duration)
 
-    def drag(self, start_x: int, start_y: int, end_x: int, end_y: int):
+    def drag(self, start_x: int, start_y: int, end_x: int, end_y: int, duration: int = 1):
         """
         从某点拖动到某点
 
@@ -936,12 +936,14 @@ class AndroidService(metaclass=Singleton):
         :param end_x: 拖动的结束点x坐标
 
         :param end_y: 拖动的结束点y坐标
+
+        :param duration: 拖动持续时间
         """
-        self.__client.drag(start_x=start_x, start_y=start_y, end_x=end_x, end_y=end_y)
+        self.__client.drag(start_x=start_x, start_y=start_y, end_x=end_x, end_y=end_y, duration=duration)
 
     def drag_element_to(self, locator1: Union[Tuple[int, int], str, Dict[str, str], WebElement, UiObject],
                         locator2: Union[Tuple[int, int], str, Dict[str, str], WebElement, UiObject],
-                        timeout: float = _DEFAULT_TIME_OUT):
+                        duration: int = 1, timeout: float = _DEFAULT_TIME_OUT):
         """
         从某点拖动到某点
 
@@ -951,11 +953,13 @@ class AndroidService(metaclass=Singleton):
 
         :param locator2: 定位符2
 
+        :param duration: 拖动持续时间
+
         """
-        self.__client.drag_element_to(locator1=locator1, locator2=locator2, timeout=timeout)
+        self.__client.drag_element_to(locator1=locator1, locator2=locator2, duration=duration, timeout=timeout)
 
     def drag_to(self, locator: Union[Tuple[int, int], str, Dict[str, str], WebElement, UiObject],
-                x: int, y: int, timeout: float = _DEFAULT_TIME_OUT):
+                x: int, y: int, duration: int = 1, timeout: float = _DEFAULT_TIME_OUT):
         """
         从某点拖动到某点
 
@@ -966,8 +970,10 @@ class AndroidService(metaclass=Singleton):
         :param x: 拖动目的地的x
 
         :param y: 拖动目的地的y
+
+        :param duration: 拖动持续时间
         """
-        self.__client.drag_to(locator=locator, x=x, y=y, timeout=timeout)
+        self.__client.drag_to(locator=locator, x=x, y=y, duration=duration, timeout=timeout)
 
     def swipe_element(self, from_element: Union[Tuple[int, int], str, Dict[str, str], WebElement, UiObject],
                       to_element: Union[Tuple[int, int], str, Dict[str, str], WebElement, UiObject],

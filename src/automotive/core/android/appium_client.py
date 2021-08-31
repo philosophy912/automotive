@@ -385,7 +385,7 @@ class AppiumClient(BaseAndroid):
         return x, y, width, height
 
     def click_if_attribute(self, locator: Union[Tuple[int, int], str, Dict[str, str], WebElement],
-                        element_attribute: ElementAttributeEnum, status: bool, timeout: float = DEFAULT_TIME_OUT):
+                           element_attribute: ElementAttributeEnum, status: bool, timeout: float = DEFAULT_TIME_OUT):
         current_status = self.get_element_attribute(locator, timeout)[element_attribute]
         if current_status == status:
             self.click(locator, timeout)
@@ -412,27 +412,28 @@ class AppiumClient(BaseAndroid):
         logger.info(f"the point[{x}:{y}] will be click")
         self.__press_point(x, y, duration)
 
-    def drag(self, start_x: int, start_y: int, end_x: int, end_y: int):
+    def drag(self, start_x: int, start_y: int, end_x: int, end_y: int, duration: int = 1):
         self._check_instance(start_x, int)
         self._check_instance(start_y, int)
         self._check_instance(end_x, int)
         self._check_instance(end_y, int)
-        self._actions.long_press(x=start_x, y=start_y).move_to(x=end_x, y=end_y).release().perform()
+        self._actions.long_press(x=start_x, y=start_y).move_to(x=end_x, y=end_y).wait(duration).release().perform()
 
     def drag_element_to(self, locator1: Union[str, Dict[str, str], WebElement],
                         locator2: Union[str, Dict[str, str], WebElement],
+                        duration: int = 1,
                         timeout: float = DEFAULT_TIME_OUT):
         self._check_instance(locator1, (str, dict, WebElement))
         self._check_instance(locator2, (str, dict, WebElement))
         x1, y1 = self.__get_click_point(self.get_element(locator1, timeout))
         x2, y2 = self.__get_click_point(self.get_element(locator2, timeout))
-        self.drag(x1, y1, x2, y2)
+        self.drag(x1, y1, x2, y2, duration)
 
-    def drag_to(self, locator: Union[str, Dict[str, str], WebElement], x: int, y: int,
+    def drag_to(self, locator: Union[str, Dict[str, str], WebElement], x: int, y: int, duration: int = 1,
                 timeout: float = DEFAULT_TIME_OUT):
         self._check_instance(locator, (str, dict, WebElement))
         x1, y1 = self.__get_click_point(self.get_element(locator, timeout))
-        self.drag(x1, y1, x, y)
+        self.drag(x1, y1, x, y, duration)
 
     def swipe_element(self, from_element: Union[Tuple[int, int], str, Dict[str, str], WebElement],
                       to_element: Union[Tuple[int, int], str, Dict[str, str], WebElement],

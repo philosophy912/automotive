@@ -13,6 +13,8 @@ import cv2
 import numpy as np
 import imagehash
 from PIL import Image
+from airtest.aircv import NoModuleError
+
 from automotive.logger import logger
 # 2960*1440设备 内存耗费： kaze (2GB) >> sift > akaze >> surf > brisk > brief > orb > tpl
 # 单纯效果,推荐程度： tpl > surf ≈ sift > kaze > brisk > akaze> brief > orb
@@ -713,15 +715,18 @@ class Images(object):
         compare_result = None
         confidence = 0
         for key, value in FindType.__dict__.items():
-            logger.debug(f"current type is {value}")
-            try:
-                result = self.__find_by_template(small_image, big_image, threshold, rgb, find_type=value)
-                if result:
-                    logger.debug(f"result = {result}")
-                    if result["confidence"] > confidence:
-                        compare_result = result
-            except NoMatchPointError:
-                logger.debug(f"skip")
+            if not key.startswith("_"):
+                logger.debug(f"current type is {value.name}")
+                try:
+                    result = self.__find_by_template(small_image, big_image, threshold, rgb, find_type=value)
+                    if result:
+                        logger.debug(f"result = {result}")
+                        if result["confidence"] > confidence:
+                            compare_result = result
+                except NoMatchPointError:
+                    logger.debug(f"skip")
+                except NoModuleError:
+                    logger.debug(f"skip")
         return compare_result
 
     def find_best_result_by_position(self, image1: Union[str, np.array], image2: Union[str, np.array],
