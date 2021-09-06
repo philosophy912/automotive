@@ -119,7 +119,7 @@ class ClusterHmi(BaseSocketDevice):
     def read(self) -> str:
         return self.__telnet.read()
 
-    def screen_shot(self, image_name: str, count: int, timeout: int, interval_time: float, display: int = None) -> List[str]:
+    def screen_shot(self, image_name: str, count: int, interval_time: float, timeout: int = 10, display: int = None) -> List[str]:
         """
         """
         # 10张图片
