@@ -93,14 +93,16 @@ class ClusterHmi(BaseSocketDevice):
             self.__ftp.upload_folder(self.__board_path, self.__test_binary)
             sleep(1)
             self.__telnet.write(f"chmod -R 777 {self.__board_path}")
+
+        if self.__service_list:
             # 新增两条命令
             self.__telnet.write(f"mount -uw /")
             self.__telnet.write(f"hamctrl -stop")
-            sleep(5)
-        if self.__service_list:
+            sleep(1)
             for service in self.__service_list:
                 self.__telnet.write(f"slay {service}")
         self.__telnet.write(f"cd {self.__board_path}")
+        self.__telnet.write(f"chmod 777 *")
 
     def disconnect(self):
         self.__ftp.disconnect()
