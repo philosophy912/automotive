@@ -169,7 +169,7 @@ class _LibUsbRelay(object):
             from ctypes import windll
             self.usbRelayDll = windll.LoadLibrary(file_path)
         except Exception:
-            raise RuntimeError(f"dll file[{file_path}] load failed ")
+            raise RuntimeError(f"dll file[{file_path}] load failed, please sure if install Visual Studio")
 
     def usb_relay_init(self):
         """
