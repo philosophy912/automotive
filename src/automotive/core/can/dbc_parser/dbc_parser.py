@@ -94,7 +94,7 @@ class DbcParser(object):
         :param json_file: 输出的json文件
         """
         messages = self.parse(dbc_file)
-        json_str = json.dumps(messages, ensure_ascii=False)
+        json_str = json.dumps(messages, ensure_ascii=False, indent=4)
         with open(json_file, "w", encoding="utf-8") as f:
             f.write(json_str)
 

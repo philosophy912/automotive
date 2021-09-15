@@ -7,6 +7,8 @@
 # @Created:     2021/5/1 - 23:34
 # --------------------------------------------------------
 import json
+import shutil
+import sys
 import time
 import os
 import platform
@@ -14,6 +16,7 @@ import subprocess as sp
 import random
 import inspect
 import zipfile
+from datetime import datetime
 from typing import Union, List, Any, Dict, Tuple
 
 import yaml
@@ -90,6 +93,30 @@ class Utils(metaclass=Singleton):
         :return: 当前系统时间，如：2018-07-27_14-18-59
         """
         return time.strftime(fmt, time.localtime(time.time()))
+
+    def get_week(self, date_time: str, fmt: str = '%Y%m%d') -> int:
+        year, week, week_of_day = self.convert_string_datetime(date_time, fmt).date().isocalendar()
+        return week
+
+    @staticmethod
+    def convert_datetime_string(date_time: datetime, fmt: str = '%Y%m%d_%H%M%S'):
+        """
+        转换时间为字符串
+        :param date_time: 时间
+        :param fmt: 转换格式
+        :return 时间字符串
+        """
+        return date_time.strftime(fmt)
+
+    @staticmethod
+    def convert_string_datetime(date_time: str, fmt: str = '%Y%m%d_%H%M%S'):
+        """
+        转换字符串为时间
+        :param date_time: 时间字符串
+        :param fmt: 转换格式
+        :return: 时间
+        """
+        return datetime.strptime(date_time, fmt)
 
     @staticmethod
     def random_decimal(min_: Union[float, int], max_: Union[float, int]) -> Union[float, int]:
@@ -401,3 +428,130 @@ class Utils(metaclass=Singleton):
             p = sp.Popen(command, shell=is_shell, stdout=sp.PIPE, stderr=sp.PIPE)
         stdout, stderr = p.communicate()
         return stdout.decode(encoding), stderr.decode(encoding)
+
+    def exec_command_must_success(self, command: str, workspace: str = None):
+        if self.exec_command(command, workspace, True) != 0:
+            logger.error(f"execute command [{command}] failed, please check it again")
+            sys.exit(1)
+
+    def exec_commands_must_success(self, commands: List, workspace: str = None):
+        for command in commands:
+            self.exec_command_must_success(command, workspace)
+
+    def exec_commands(self, commands: List, workspace: str = None, sub_process: bool = True):
+        for command in commands:
+            self.exec_command(command, workspace, sub_process)
+
+    @staticmethod
+    def exec_command(command: str, workspace: str = None, sub_process: bool = True) -> int:
+        """
+        执行命令, 涉及到bat命令的时候，都需要使用os.system的方式执行，否则会出问题
+
+        :param command: 命令
+
+        :param workspace: 工作目录
+
+        :param sub_process: 是否以子进程方式运行
+
+        :return: 执行成功的结果，由于os.system没有，则永远返回0
+        """
+        logger.debug(f"it will execute command[{command}]")
+        is_shell = False if platform.system() == "Windows" else True
+        if sub_process:
+            logger.trace("it use subprocess type")
+            if workspace:
+                logger.debug(f"cwd is [{workspace}]")
+                p = sp.Popen(command, shell=is_shell, cwd=workspace, universal_newlines=True)
+            else:
+                p = sp.Popen(command, shell=is_shell, universal_newlines=True)
+            p.communicate()
+            return p.returncode
+        else:
+            logger.trace("it use os.system type")
+            if workspace:
+                os.chdir(workspace)
+            os.system(command)
+            return 0
+
+    @staticmethod
+    def remove_tree(folder: str):
+        """
+        删除文件夹 可能存在权限问题导致无法删除
+
+        :param folder: 文件夹
+        """
+        if os.path.exists(folder) and os.path.isdir(folder):
+            logger.debug(f"it will remove folder 【{folder}】")
+            shutil.rmtree(folder)
+        else:
+            logger.info(f"[{folder}] is not exist or not folder")
+
+    @staticmethod
+    def check_file_exist(file: str):
+        """
+        检查文件是否存在
+        :param file: w文件
+        """
+        if not (os.path.exists(file) and os.path.isfile(file)):
+            raise RuntimeError(f"file[{file}] is not exist or not a file")
+
+    @staticmethod
+    def check_folder_exist(folder: str):
+        """
+        检查路径是否存在
+
+        :param folder: 文件夹名称
+        """
+        if not (os.path.exists(folder) and os.path.isdir(folder)):
+            raise RuntimeError(f"folder[{folder}] is not exist or not a folder")
+
+    def check_git_repository(self, folder: str):
+        """
+        检查路径是否为git仓库
+
+        :param folder: 文件夹名称
+        """
+        self.check_folder_exist(folder)
+        git_folder = os.path.join(folder, ".git")
+        if not (os.path.exists(git_folder) and os.path.isdir(git_folder)):
+            raise RuntimeError(f"folder[{folder}] is not a git repository, please check it.")
+
+    def check_repo_repository(self, folder: str):
+        """
+        检查路径是否为git仓库
+
+        :param folder: 文件夹名称
+        """
+        self.check_folder_exist(folder)
+        git_folder = os.path.join(folder, ".repo")
+        if not (os.path.exists(git_folder) and os.path.isdir(git_folder)):
+            raise RuntimeError(f"folder[{folder}] is not a repo repository, please check it.")
+
+    def delete_file(self, file_name: str):
+        """
+        删除文件
+        :param file_name: 文件名称
+        """
+        self.check_file_exist(file_name)
+        flag = True
+        if platform.system() == "Windows":
+            cmd = f"del \"{file_name}\""
+            flag = False
+        else:
+            cmd = f"rm -rvf {file_name}"
+        self.exec_command(cmd, sub_process=flag)
+
+    def delete_folder(self, folder_name: str):
+        """
+        删除文件夹
+
+        :param folder_name: 文件夹名称
+        """
+        self.check_folder_exist(folder_name)
+        flag = True
+        if platform.system() == "Windows":
+            cmd = f"rd /Q /S \"{folder_name}\""
+            flag = False
+        else:
+            cmd = f"rm -rvf {folder_name}"
+        self.exec_command(cmd, sub_process=flag)
