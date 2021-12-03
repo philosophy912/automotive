@@ -7,8 +7,10 @@
 # @Created:     2021/7/3 - 22:03
 # --------------------------------------------------------
 import os
-from typing import Dict, List, Tuple, Any
-from ..api import Reader, Testcase, split_char, replace_char, calc_hash_value, parse_id
+from typing import Dict, List, Tuple, Optional
+
+from automotive.application.common.constants import replace_char, split_char, Testcase
+from automotive.application.common.interfaces import BaseReader, TestCases
 from automotive.logger.logger import logger
 
 try:
@@ -20,19 +22,20 @@ finally:
     from xmind.core.topic import TopicElement
 
 
-class Xmind8Reader(Reader):
-    def __init__(self):
+class Xmind8Reader(BaseReader):
+    def __init__(self, is_sample: bool = False):
         self.__module_id = None
+        self.__is_sample = is_sample
 
-    def read_from_file(self, file: str) -> Dict[str, List[Testcase]]:
+    def read_from_file(self, file: str, ) -> Dict[str, TestCases]:
         """
         从文件中读取内容，返回字典类型
-        :param file:
+        :param file: xmind文件
         """
         module, testcase = self.__read_test_case_from_xmind(file)
         return {module: testcase}
 
-    def __read_test_case_from_xmind(self, file: str) -> Tuple[str, List[Testcase]]:
+    def __read_test_case_from_xmind(self, file: str) -> Tuple[str, TestCases]:
         """
         从xmind8文件中读取测试用例
         xmind8规则
@@ -53,7 +56,7 @@ class Xmind8Reader(Reader):
         logger.debug(f"now read file {file}")
         root_topic = self.__read_root_topic_data_from_file(file)
         if not self.__is_xmind8(root_topic):
-            module_name, module_id = parse_id(root_topic.getTitle())
+            module_name, module_id = self._parse_id(root_topic.getTitle())
             if module_id != "":
                 self.__module_id = module_id
                 dict_name = f"{module_name}{replace_char}{module_id}"
@@ -90,7 +93,7 @@ class Xmind8Reader(Reader):
         title = root_data["title"]
         return "Warning" in title and "Attention" in title and "Warnung" in title
 
-    def __filter_test_case_topic(self, root_topic: TopicElement) -> List[Testcase]:
+    def __filter_test_case_topic(self, root_topic: TopicElement) -> TestCases:
         """
         根据根节点遍历出来所有的测试用例的对象（规则参考read_test_case的注释)
         :param root_topic: 根节点
@@ -188,7 +191,7 @@ class Xmind8Reader(Reader):
         exception_str = "\n".join(exception_contents)
         return steps_str, exception_str
 
-    def __convert_testcase(self, test_cases: List[TopicElement]) -> List[Testcase]:
+    def __convert_testcase(self, test_cases: List[TopicElement]) -> TestCases:
         """
         解析测试用例
         :param test_cases: 测试用例对象（字典结构）
@@ -206,7 +209,7 @@ class Xmind8Reader(Reader):
             if self.__module_id:
                 testcase.module_id = self.__module_id
             # 测试用例名 TC“推荐”涵盖内容[#512] 用于拆分成测试用例名和禅道的需求ID
-            name, name_id = parse_id(tc.getTitle()[2:])
+            name, name_id = self._parse_id(tc.getTitle()[2:])
             # 考虑TC后有异常符号，做替换处理
             if name.startswith(" ") or name.startswith(",") or name.startswith("_") or name.startswith("-"):
                 name = name[1:]
@@ -218,9 +221,14 @@ class Xmind8Reader(Reader):
                 testcase.requirement_id = name_id
             # 解析
             pre_condition_list, steps_dict = self.__parse_testcase(tc)
-            if pre_condition_list and steps_dict:
-                testcase.pre_condition = pre_condition_list
-                testcase.steps = steps_dict
+            if self.__is_sample:
+                if steps_dict:
+                    # testcase.pre_condition = testcase.module.split(split_char)
+                    testcase.steps = steps_dict
+            else:
+                if pre_condition_list and steps_dict:
+                    testcase.pre_condition = pre_condition_list
+                    testcase.steps = steps_dict
             testcases.append(testcase)
             # 解析优先级
             markers = tc.getMarkers()
@@ -235,10 +243,10 @@ class Xmind8Reader(Reader):
                         if priority > 4:
                             priority = 4
                         testcase.priority = priority
-            testcase.identify = calc_hash_value(testcase)
+            testcase.calc_hash()
         return testcases
 
-    def __parse_testcase(self, testcase: TopicElement) -> Tuple[Any, Any]:
+    def __parse_testcase(self, testcase: TopicElement) -> Tuple[Optional[List[str]], Optional[Dict[str, List[str]]]]:
         """
         解析单个测试用例中的测试用例部分
 
@@ -246,36 +254,48 @@ class Xmind8Reader(Reader):
 
         :return: 前置条件, 执行步骤
         """
-        logger.debug(f"testcase is {testcase.getTitle()}")
+        testcase_title = testcase.getTitle()
+        logger.debug(f"testcase is {testcase_title}")
         topics = testcase.getSubTopics()
-        # 要考虑#的情况
-        if len(topics) < 2:
-            # 只支持一个P和一个S
-            logger.debug("子节点长度小于2")
-            return None, None
-        else:
-            pre_condition = None
-            steps = None
+        if self.__is_sample:
+            steps_dict = dict()
+            expects = []
             for topic in topics:
                 title = topic.getTitle()
-                if title.startswith("p") or title.startswith("P"):
-                    pre_condition = topic
-                if title.startswith("S") or title.startswith("s"):
-                    steps = topic
-            if pre_condition and steps:
-                logger.debug(f"pre_condition title is {pre_condition.getTitle()}")
-                logger.debug(f"steps title is {steps.getTitle()}")
-                # 树形结构的顺序的部分有xmind来保障
-                pre_condition_list = self.__parse_pre_condition(pre_condition)
-                steps_dict = self.__parse_steps(steps)
-                # 保证前置条件必须有，保证执行步骤必须有
-                if len(pre_condition_list) > 0 and len(steps_dict) > 0:
-                    return pre_condition_list, steps_dict
-                else:
-                    return None, None
-            else:
-                # 没有找到一个S和一个P
+                expects.append(title)
+            # 不再把数据变成小写字母，解决message存在的问题
+            steps_dict[testcase_title[2:]] = expects
+            logger.debug(f"steps_dict = {steps_dict}")
+            return None, steps_dict
+        else:
+            # 要考虑#的情况
+            if len(topics) < 2:
+                # 只支持一个P和一个S
+                logger.debug("子节点长度小于2")
                 return None, None
+            else:
+                pre_condition = None
+                steps = None
+                for topic in topics:
+                    title = topic.getTitle()
+                    if title.startswith("p") or title.startswith("P"):
+                        pre_condition = topic
+                    if title.startswith("S") or title.startswith("s"):
+                        steps = topic
+                if pre_condition and steps:
+                    logger.debug(f"pre_condition title is {pre_condition.getTitle()}")
+                    logger.debug(f"steps title is {steps.getTitle()}")
+                    # 树形结构的顺序的部分有xmind来保障
+                    pre_condition_list = self.__parse_pre_condition(pre_condition)
+                    steps_dict = self.__parse_steps(steps)
+                    # 保证前置条件必须有，保证执行步骤必须有
+                    if len(pre_condition_list) > 0 and len(steps_dict) > 0:
+                        return pre_condition_list, steps_dict
+                    else:
+                        return None, None
+                else:
+                    # 没有找到一个S和一个P
+                    return None, None
 
     @staticmethod
     def __parse_pre_condition(pre_condition: TopicElement) -> List[str]:

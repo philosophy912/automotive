@@ -10,7 +10,7 @@ from typing import List, Tuple
 
 from automotive.logger.logger import logger
 from automotive.core.battery.konstanter_control import KonstanterControl
-from automotive.common.api import BasePowerAdjustActions
+from ..common.interfaces import BasePowerAdjustActions
 
 
 class KonstanterActions(BasePowerAdjustActions):
@@ -20,9 +20,11 @@ class KonstanterActions(BasePowerAdjustActions):
 
     def __init__(self, port: str, baud_rate: int = 19200):
         super().__init__()
-        self.__konstanter = None
         self.__port = port.upper()
         self.__baud_rate = baud_rate
+        logger.info("初始化konstanter电源模块")
+        logger.info(f"打开串口{self.__port}")
+        self.__konstanter = KonstanterControl(port=self.__port, baud_rate=self.__baud_rate)
 
     @property
     def konstanter(self):
@@ -32,9 +34,6 @@ class KonstanterActions(BasePowerAdjustActions):
         """
         打开串口konstanter
         """
-        logger.info("初始化konstanter电源模块")
-        logger.info(f"打开串口{self.__port}")
-        self.__konstanter = KonstanterControl(port=self.__port, baud_rate=self.__baud_rate)
         self.__konstanter.open()
         logger.info("获取电源状态")
         idn = self.__konstanter.get("IDN")

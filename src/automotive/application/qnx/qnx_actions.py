@@ -7,9 +7,10 @@
 # @Created:     2021/5/1 - 23:55
 # --------------------------------------------------------
 from time import sleep
-from automotive.common.api import BaseActions
+
 from .qnx_device import QnxDevice
-from automotive.logger import logger
+from automotive.logger.logger import logger
+from ..common.interfaces import BaseActions
 
 
 class QnxActions(BaseActions):

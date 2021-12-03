@@ -12,8 +12,8 @@ from time import sleep
 from typing import Tuple, List
 
 from automotive.core.android.adb import ADB
-from automotive.logger import logger
-from automotive.common.api import BaseScreenShot
+from automotive.logger.logger import logger
+from ..common.interfaces import BaseScreenShot
 
 
 class HypervisorScreenShot(BaseScreenShot):
@@ -106,7 +106,7 @@ class HypervisorScreenShot(BaseScreenShot):
         commands = [f"shell \"echo 3 > /proc/sys/vm/drop_caches\"",
                     f"shell htalk shell 'sync'",
                     f"shell sync"
-        ]
+                    ]
         for command in commands:
             self.__adb_command(command)
 

@@ -8,9 +8,10 @@
 # --------------------------------------------------------
 import os
 import time
-from automotive.logger import logger
 from time import sleep
+from ..logger.logger import logger
 from .utils import Utils
+from ..common.constant import check_connect, connect_tips
 
 
 class SshUtils(object):
@@ -31,19 +32,6 @@ class SshUtils(object):
             self._ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
             self._utils = Utils()
             self._is_connect = False
-
-    def check_status(func):
-        """
-        检查设备是否已经连接
-        :param func: 装饰器函数
-        """
-
-        def wrapper(self, *args, **kwargs):
-            if not self._is_connect:
-                raise RuntimeError("please connect target first")
-            return func(self, *args, **kwargs)
-
-        return wrapper
 
     def connect(self, ipaddress: str, username: str, password: str, port: int = 22, timeout: int = 10):
         """
@@ -74,7 +62,7 @@ class SshUtils(object):
         self._ssh.close()
         self._is_connect = False
 
-    @check_status
+    @check_connect("_is_connect", connect_tips)
     def file_exist(self, file: str, timeout: float = 10, interval: float = 0.5) -> bool:
         """
         检查文件是否存在，
@@ -103,7 +91,7 @@ class SshUtils(object):
             sleep(interval)
         return file_exist
 
-    @check_status
+    @check_connect("_is_connect", connect_tips)
     def copy_file(self, remote_folder: str, target_folder: str):
         """
         拷贝远程文件夹下所有的文件到目标文件夹下, 由于ssh是阻塞式，所以无需等待
@@ -117,7 +105,7 @@ class SshUtils(object):
         stdin, stdout, stderr = self.exec_command(f"{copy_command}")
         logger.debug(f"stdout  = {stdout}")
 
-    @check_status
+    @check_connect("_is_connect", connect_tips)
     def exec_command(self, cmd: str) -> tuple:
         """
         执行命令

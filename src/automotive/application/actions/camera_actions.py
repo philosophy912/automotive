@@ -12,7 +12,7 @@ from time import sleep
 from automotive.utils.utils import Utils
 from automotive.logger.logger import logger
 from automotive.utils.camera import Camera
-from automotive.common.api import BaseDevice
+from ..common.interfaces import BaseDevice
 
 
 class CameraActions(BaseDevice):
@@ -21,7 +21,6 @@ class CameraActions(BaseDevice):
     """
 
     def __init__(self, template_folder: str = None):
-        super().__init__()
         self.__camera = Camera()
         # 拍摄的图片临时存放的位置
         self.__template_image = None
@@ -31,13 +30,14 @@ class CameraActions(BaseDevice):
             self.__save_folder = fr"{template_folder}\{folder_name}"
         else:
             self.__save_folder = fr"{os.getcwd()}\{folder_name}"
-        self.__folder_flag = False
+        self.__create_image_folder()
 
     def __create_image_folder(self):
         """
         创建文件夹
         """
         if not os.path.exists(self.__save_folder):
+            logger.info(f"创建文件夹{self.__save_folder}")
             os.mkdir(self.__save_folder)
 
     @staticmethod
@@ -51,20 +51,6 @@ class CameraActions(BaseDevice):
             image_name = image_name.replace(f".{extends}", "")
             image_name = f"{image_name}.jpg"
         return image_name
-
-    def create_folder(func):
-        """
-        检查folder是否被创建
-        :param func: 装饰器函数
-        """
-
-        def wrapper(self, *args, **kwargs):
-            if not self.__folder_flag:
-                self.__create_image_folder()
-                self.__folder_flag = True
-            return func(self, *args, **kwargs)
-
-        return wrapper
 
     @property
     def camera(self):
@@ -85,7 +71,6 @@ class CameraActions(BaseDevice):
         logger.info("关闭摄像头")
         self.__camera.close_camera()
 
-    @create_folder
     def take_picture(self, image_name: str = None) -> str:
         """
         拍照片， 只拍摄jpg照片
@@ -114,7 +99,6 @@ class CameraActions(BaseDevice):
         logger.debug(f"你有{time}分钟时间调整摄像头位置")
         self.__camera.camera_test(time, camera_id)
 
-    @create_folder
     def take_template_image(self, template_image_name: str):
         """
         根据传入的pic_name拍摄基准图片

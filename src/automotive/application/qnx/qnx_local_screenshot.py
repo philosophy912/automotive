@@ -9,9 +9,9 @@
 from time import sleep
 from typing import Tuple, List
 
-from automotive.common.api import BaseScreenShot
 from .qnx_device import QnxDevice
 from automotive.logger.logger import logger
+from ..common.interfaces import BaseScreenShot
 
 
 class QnxLocalScreenShot(BaseScreenShot):

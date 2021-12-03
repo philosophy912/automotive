@@ -6,13 +6,12 @@
 # @Author:      lizhe
 # @Created:     2021/5/1 - 23:42
 # --------------------------------------------------------
-import sys
-from typing import Union, List, Tuple, Any, Dict
+from typing import Union, List, Tuple, Dict
 
-from automotive.logger import logger
-from automotive.utils import Utils
-from functools import wraps
-from .dbc_parser import DbcParser
+from automotive.logger.logger import logger
+from automotive.utils.utils import Utils, Number
+from .common.typehints import Messages, NameMessage, IdMessage, MessageType, SignalType
+from .tools.parser.dbc_parser import DbcParser
 
 """
 工具类，单独给CAN Service中的Parser使用，基本上不对外使用
@@ -21,6 +20,7 @@ from .dbc_parser import DbcParser
 
 如需要可以将该类变成私有类
 """
+
 
 # 位长度
 _bit_length = 8
@@ -105,7 +105,7 @@ def __split_bytes(value: str, length: int, bit_index: int, byte_type: bool) -> L
     return values
 
 
-def check_value(value: Union[int, float], min_: Union[int, float], max_: Union[int, float]) -> bool:
+def check_value(value: Number, min_: Number, max_: Number) -> bool:
     """
     校验value是否处于min和max之间[min, max]
 
@@ -122,7 +122,7 @@ def check_value(value: Union[int, float], min_: Union[int, float], max_: Union[i
     return min_ <= value <= max_
 
 
-def set_data(data: List[Any], start_bit: int, byte_type: bool, value: int, bit_length: int, byte_length: int = 8):
+def set_data(data: List[int], start_bit: int, byte_type: bool, value: int, bit_length: int, byte_length: int = 8):
     """
     用于设置每个Signal后，计算出8Byte的值
 
@@ -186,7 +186,7 @@ def set_data(data: List[Any], start_bit: int, byte_type: bool, value: int, bit_l
     logger.trace(f"parser data is = {list(map(lambda x: hex(x), data))}")
 
 
-def get_data(data: List[Any], start_bit: int, byte_type: bool, bit_length: int, byte_length: int = 8) -> int:
+def get_data(data: List[int], start_bit: int, byte_type: bool, bit_length: int, byte_length: int = 8) -> int:
     """
     根据data计算出来每个signal的值
 
@@ -260,34 +260,7 @@ def get_data(data: List[Any], start_bit: int, byte_type: bool, bit_length: int, 
     return int(signal_value, 2)
 
 
-def control_decorator(func):
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        try:
-            ret = func(*args, **kwargs)
-            if ret == 1:
-                if func.__name__ == "init_device":
-                    logger.trace("Method <{}> call success, and init CAN{} success.".format(func.__name__, args[2]))
-                elif func.__name__ == "start_device":
-                    logger.trace("Method <{}> call success, and start CAN{} success.".format(func.__name__, args[2]))
-                else:
-                    logger.trace("Method <{}> call success, and return success.".format(func.__name__))
-                return ret
-            elif ret == 0:
-                raise RuntimeError("Method <{}> is called, and return failed.".format(func.__name__))
-            elif ret == -1:
-                raise RuntimeError("Method <{}> is called, and CAN is not exist.".format(func.__name__))
-            else:
-                raise RuntimeError("Method <{}> : Unknown error.".format(func.__name__))
-        except Exception:
-            error = sys.exc_info()
-            logger.error('ERROR: ' + str(error[0]) + ' : ' + str(error[1]))
-            raise RuntimeError(error[1])
-
-    return wrapper
-
-
-def get_message(messages: Union[str, List[Any]], encoding: str = "utf-8") -> Tuple[Any, Any]:
+def get_message(messages: Union[str, Messages], encoding: str = "utf-8") -> Tuple[Dict, Dict]:
     """
     从Json或者python文件中获取id和name的message字典
 
@@ -305,11 +278,14 @@ def get_message(messages: Union[str, List[Any]], encoding: str = "utf-8") -> Tup
     id_messages = dict()
     name_messages = dict()
     if isinstance(messages, str):
-        if messages.endswith(".json"):
-            messages = Utils().get_json_obj(messages, encoding=encoding)
-        elif messages.endswith(".dbc"):
+        message_name = messages
+        if message_name.endswith(".json"):
+            messages = Utils().get_json_obj(message_name, encoding=encoding)
+        elif message_name.endswith(".dbc"):
             dbc_parser = DbcParser()
-            messages = dbc_parser.parse(messages, encoding="gbk")
+            messages = dbc_parser.parse(message_name, encoding="gbk")
+        else:
+            raise RuntimeError("messages only support json or dbc file")
     for msg in messages:
         message = Message()
         message.set_value(msg)
@@ -437,7 +413,7 @@ class Message(object):
                 # 根据原来的数据message_data，替换某一部分的内容
                 set_data(self.data, signal.start_bit, signal.byte_type, signal.value, signal.bit_length,
                          self.data_length)
-            logger.debug(f"msg id {hex(self.msg_id)} and data is {list(map(lambda x: hex(x), self.data))}")
+            logger.trace(f"msg id {hex(self.msg_id)} and data is {list(map(lambda x: hex(x), self.data))}")
         # 收到数据
         else:
             logger.trace("receive message")
@@ -447,7 +423,7 @@ class Message(object):
                 logger.trace(f"value is {value}")
                 signal.value = value
 
-    def set_value(self, message: Dict[str, Any]):
+    def set_value(self, message: MessageType):
         """
         设置message对象
 
@@ -470,7 +446,10 @@ class Message(object):
             self.msg_send_type = "Event"
         else:
             self.msg_send_type = "Cycle and Event"
-        self.nm_message = message["nm_message"]
+        if "nm_message" in message:
+            self.nm_message = message["nm_message"]
+        else:
+            self.nm_message = False
         self.diag_request = message["diag_request"]
         self.diag_response = message["diag_response"]
         self.diag_state = message["diag_state"]
@@ -537,7 +516,7 @@ class Signal(object):
         # 物理值
         self.__physical_value = None
 
-    def set_value(self, signal: Dict[str, str]):
+    def set_value(self, signal: SignalType):
         """
         设置signal的值
 
@@ -609,14 +588,16 @@ class Signal(object):
         """
         self.__value = value
         self.__physical_value = int((float(value) * float(self.factor)) + float(self.offset))
-        logger.trace(f"signal[{self.signal_name}]value is {self.__value} and physical value is {self.__physical_value}")
+        logger.debug(f"signal[{self.signal_name}]value is {self.__value} and physical value is {self.__physical_value}")
 
     @property
     def physical_value(self):
         return self.__physical_value
 
     @physical_value.setter
-    def physical_value(self, physical_value: Union[int, float, str]):
+    def physical_value(self, physical_value: Number):
         self.__physical_value = physical_value
         self.__value = int((float(physical_value) - float(self.offset)) / float(self.factor))
-        logger.trace(f"physical value is {self.__physical_value} and value is {self.__value}")
+        if self.__value < 0 or self.__value > (2 ** self.bit_length - 1):
+            raise RuntimeError("it need input physical value not bus value")
+        logger.debug(f"physical value is {self.__physical_value} and value is {self.__value}")

@@ -8,11 +8,11 @@
 # --------------------------------------------------------
 import platform
 import subprocess as sp
-from typing import List, Tuple
-
-from automotive.logger import logger
-from .keycode import KeyCode
 from time import sleep
+from typing import List, Tuple, Optional
+
+from automotive.logger.logger import logger
+from .common.enums import KeyCodeEnum
 
 
 class ADB(object):
@@ -27,7 +27,7 @@ class ADB(object):
         stdout, stderr = pi.communicate()
         return stdout.decode("utf-8").split("\r\n")
 
-    def __adb_command(self, command: str, device_id: str = None) -> List[str]:
+    def __adb_command(self, command: str, device_id: Optional[str] = None) -> List[str]:
         """
         执行ADB命令，可以传入如 adb shell dumpsys window，如果传入了device_id则会加上-s参数
         :param command: adb命令
@@ -76,7 +76,7 @@ class ADB(object):
         """
         self.__execute("adb root")
 
-    def push(self, local: str, remote: str, device_id: str = None):
+    def push(self, local: str, remote: str, device_id: Optional[str] = None):
         """
         推送文件到服务器
 
@@ -88,7 +88,7 @@ class ADB(object):
         """
         self.__adb_command(f"push {local} {remote}", device_id)
 
-    def pull(self, remote: str, local: str, device_id: str = None):
+    def pull(self, remote: str, local: str, device_id: Optional[str] = None):
         """
         拉取文件到本地电脑, 并删除远程文件
 
@@ -103,14 +103,14 @@ class ADB(object):
             local = f"\"{local}\""
         self.__adb_command(f"pull {remote} {local}", device_id)
 
-    def remove(self, remote: str, device_id: str = None):
+    def remove(self, remote: str, device_id: Optional[str] = None):
         """
         删除源文件
         ：param remote:远程文件地址
         """
         self.__adb_command(f"shell rm {remote}", device_id)
 
-    def pull_files(self, files: List[str], local: str, device_id: str = None):
+    def pull_files(self, files: List[str], local: str, device_id: Optional[str] = None):
         """
         拉取所有文件到本地电脑
 
@@ -125,13 +125,13 @@ class ADB(object):
             sleep(1)
         sleep(1)
 
-    def remove_files(self, files: List[str], device_id: str = None):
+    def remove_files(self, files: List[str], device_id: Optional[str] = None):
         for file in files:
             self.remove(file, device_id)
             sleep(1)
         sleep(1)
 
-    def input_text(self, text: str, device_id: str = None):
+    def input_text(self, text: str, device_id: Optional[str] = None):
         """
         输入文字到对话框中
 
@@ -142,7 +142,7 @@ class ADB(object):
         self.__adb_command(f"shell input {text}", device_id)
         sleep(0.1)
 
-    def click(self, x: int, y: int, display_id: int = None, device_id: str = None):
+    def click(self, x: int, y: int, display_id: Optional[int] = None, device_id: Optional[str] = None):
         """
         利用adb命令点击屏幕
 
@@ -170,7 +170,7 @@ class ADB(object):
             self.__adb_command(f"shell input tap {x} {y}", device_id)
         sleep(0.1)
 
-    def press_key(self, key_code: KeyCode, device_id: str = None):
+    def press_key(self, key_code: KeyCodeEnum, device_id: Optional[str] = None):
         """
         利用adb输入按键事件 设备编号
 
@@ -181,8 +181,8 @@ class ADB(object):
         self.__adb_command(f"shell input keyevent {key_code.value}", device_id)
         sleep(0.1)
 
-    def screen_shot(self, image_name: str, count: int, interval_time: float = 0.1, display: int = None,
-                    device_id: str = None):
+    def screen_shot(self, image_name: str, count: int, interval_time: float = 0.1, display: Optional[int] = None,
+                    device_id: Optional[str] = None):
         """
         截图操作, 当截图有多张的时候，以__下划线分割并加编号
 
@@ -206,14 +206,18 @@ class ADB(object):
                 self.__adb_command(f"shell screencap -p {image_name}", device_id)
             sleep(interval_time)
 
-    def screen_shot_area(self, position: Tuple[int, int], image_name: str, count: int, interval_time: float,
-                         display: int = None):
+    def screen_shot_area(self,
+                         position: Tuple[int, int],
+                         image_name: str,
+                         count: int,
+                         interval_time: float,
+                         display: Optional[int] = None):
         """
         区域截图操作, 由于ADB不支持该操作，所以为空实现
         """
         raise RuntimeError("not support this function")
 
-    def is_keyboard_show(self, device_id: str = None) -> bool:
+    def is_keyboard_show(self, device_id: Optional[str] = None) -> bool:
         """
         键盘是否显示
 
@@ -222,7 +226,7 @@ class ADB(object):
         results = "".join(self.__adb_command("shell dumpsys input_method", device_id))
         return "mInputShown=true" in results if results else False
 
-    def start_app(self, package: str, activity: str, device_id: str = None):
+    def start_app(self, package: str, activity: str, device_id: Optional[str] = None):
         """
         启动app
 
@@ -234,7 +238,7 @@ class ADB(object):
         """
         self.__adb_command(f"shell am start -n {package}/{activity}", device_id)
 
-    def stop_app(self, package: str, device_id: str = None):
+    def stop_app(self, package: str, device_id: Optional[str] = None):
         """
         关闭app并清理数据app
 
@@ -244,7 +248,7 @@ class ADB(object):
         """
         self.__adb_command(f"shell am clear {package}", device_id)
 
-    def force_stop_app(self, package: str, device_id: str = None):
+    def force_stop_app(self, package: str, device_id: Optional[str] = None):
         """
         强制停止app
 
@@ -254,7 +258,7 @@ class ADB(object):
         """
         self.__adb_command(f"shell am force-stop {package}", device_id)
 
-    def install(self, local_apk: str, device_id: str = None):
+    def install(self, local_apk: str, device_id: Optional[str] = None):
         """
         安装app
         :param local_apk: 要安装的文件
@@ -266,7 +270,7 @@ class ADB(object):
         cmd = f"install {local_apk}"
         return self.__adb_command(cmd, device_id)
 
-    def uninstall(self, package_name: str, keep_data: bool = False, device_id: str = None):
+    def uninstall(self, package_name: str, keep_data: bool = False, device_id: Optional[str] = None):
         """
         卸载app
         :param device_id:设备编号

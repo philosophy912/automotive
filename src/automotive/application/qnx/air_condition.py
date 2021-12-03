@@ -11,7 +11,7 @@ from typing import Tuple
 from .qnx_device import QnxDevice
 from .qnx_actions import QnxActions
 from .qnx_local_screenshot import QnxLocalScreenShot
-from automotive.common.api import BaseScreenShot, BaseActions, BaseSocketDevice
+from ..common.interfaces import BaseScreenShot, BaseActions, BaseSocketDevice
 
 
 class AirCondition(BaseScreenShot, BaseActions, BaseSocketDevice):

@@ -8,9 +8,10 @@
 # --------------------------------------------------------
 import os
 from typing import Dict, List
-from automotive.logger.logger import logger
 
-from ..api import Writer, Testcase, split_char, priority_config, get_module
+from automotive.application.common.constants import split_char, Testcase, automation_prefix
+from automotive.application.common.interfaces import BaseWriter, TestCases
+from automotive.logger.logger import logger
 
 try:
     import xlwings as xw
@@ -30,21 +31,25 @@ finally:
     from xmind.core.workbook import WorkbookDocument
 
 
-class Xmind8Writer(Writer):
-    def write_to_file(self, file: str, testcases: Dict[str, List[Testcase]], need_write_testcase: bool = True):
+class Xmind8Writer(BaseWriter):
+
+    def __init__(self, is_sample: bool = False):
+        self.__is_sample = is_sample
+
+    def write_to_file(self, file: str, testcases: Dict[str, TestCases], need_write_testcase: bool = True):
         """
-            把测试用例写xmind
-            :param need_write_testcase: 是否写测试用例子节点
-            :param testcases: 测试用例
-            :param file:  输出的文件地址
-            """
+        把测试用例写xmind
+        :param need_write_testcase: 是否写测试用例子节点
+        :param testcases: 测试用例
+        :param file:  输出的文件地址
+        """
         self._check_testcases(testcases)
-        for module, testcases in testcases.items():
+        for module, testcase_list in testcases.items():
             logger.info(f"now write {module} to xmind")
-            self.__write_test_case_to_xmind(file, testcases, module, need_write_testcase)
+            self.__write_test_case_to_xmind(file, testcase_list, module, need_write_testcase)
         logger.info("testcase write done")
 
-    def __write_test_case_to_xmind(self, output: str, testcases: List[Testcase], module: str,
+    def __write_test_case_to_xmind(self, output: str, testcases: TestCases, module: str,
                                    need_write_testcase: bool = True):
         # 新建xmind
         workbook = xmind.load(output)
@@ -52,7 +57,7 @@ class Xmind8Writer(Writer):
         sheet.setTitle("画布")
         root_topic = sheet.getRootTopic()
         # 此处的module是{module_name}{replace_char}{module_id}，所以需要拆分加合并
-        module_name, module_id = get_module(module)
+        module_name, module_id = self._get_module(module)
         if module_id != "":
             module = f"{module_name}[{module_id}]"
         else:
@@ -61,7 +66,7 @@ class Xmind8Writer(Writer):
         self.__add_test_cases(root_topic, testcases, workbook, need_write_testcase)
         xmind.save(workbook)
 
-    def __add_test_cases(self, root_topic: TopicElement, testcases: List[Testcase], workbook: WorkbookDocument,
+    def __add_test_cases(self, root_topic: TopicElement, testcases: TestCases, workbook: WorkbookDocument,
                          need_write_testcase: bool = True):
         """
         遍历所有的测试用例
@@ -98,7 +103,10 @@ class Xmind8Writer(Writer):
             logger.debug(f"current topic = {current_topic.getTitle()} and module is {modules[-1]}")
             self.__create_test_case_node(testcase, current_topic, workbook, need_write_testcase)
 
-    def __create_test_case_node(self, testcase: Testcase, testcase_topic: TopicElement, workbook: WorkbookDocument,
+    def __create_test_case_node(self,
+                                testcase: Testcase,
+                                testcase_topic: TopicElement,
+                                workbook: WorkbookDocument,
                                 need_write_testcase: bool = True):
         """
         创建测试用例子节点
@@ -108,26 +116,35 @@ class Xmind8Writer(Writer):
         :param workbook: xmind文件
         """
         # 添加了测试用例节点, 判断了是否关联了需求ID
+        topic_titles = ["TC"]
+        if testcase.automation:
+            topic_titles.append(automation_prefix)
+        topic_titles.append(testcase.name)
         if testcase.requirement_id != "":
-            tc_topic = self.__create_topic(f"TC{testcase.name}[{testcase.requirement_id}]", workbook)
-        else:
-            tc_topic = self.__create_topic(f"TC{testcase.name}", workbook)
+            topic_titles.append(f"[{testcase.requirement_id}]")
+        tc_topic = self.__create_topic("".join(topic_titles), workbook)
         logger.debug(f"testcase.priority = {testcase.priority}")
         tc_topic.addMarker(f"priority-{testcase.priority}")
         testcase_topic.addSubTopic(tc_topic)
         if need_write_testcase:
-            tc_topic.setFolded()
-            # 添加了前置条件节点
-            p_topic = self.__create_topic("P", workbook)
-            tc_topic.addSubTopic(p_topic)
-            # 写入前置条件节点
-            pre_condition = testcase.pre_condition
-            self.__handle_pre_condition(p_topic, pre_condition, workbook)
-            # 添加了执行步骤节点
-            s_topic = self.__create_topic("S", workbook)
-            tc_topic.addSubTopic(s_topic)
-            steps = testcase.steps
-            self.__handle_steps(s_topic, steps, workbook)
+            if self.__is_sample:
+                for key, values in testcase.steps.items():
+                    for value in values:
+                        expect_topic = self.__create_topic(value, workbook)
+                        tc_topic.addSubTopic(expect_topic)
+            else:
+                tc_topic.setFolded()
+                # 添加了前置条件节点
+                p_topic = self.__create_topic("P", workbook)
+                tc_topic.addSubTopic(p_topic)
+                # 写入前置条件节点
+                pre_condition = testcase.pre_condition
+                self.__handle_pre_condition(p_topic, pre_condition, workbook)
+                # 添加了执行步骤节点
+                s_topic = self.__create_topic("S", workbook)
+                tc_topic.addSubTopic(s_topic)
+                steps = testcase.steps
+                self.__handle_steps(s_topic, steps, workbook)
 
     def __handle_steps(self, s_topic: TopicElement, steps: Dict[str, List[str]], workbook: WorkbookDocument):
         """

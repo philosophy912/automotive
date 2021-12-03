@@ -9,8 +9,10 @@
 import sys
 import os
 import platform
-from ctypes import c_char_p, c_int, byref, c_uint64, Structure, POINTER
-from automotive.logger.logger import logger
+from ctypes import c_char_p, c_int, byref, c_uint64, Structure, POINTER, CDLL
+
+from ..common.constant import check_connect, relay_tips
+from ..logger.logger import logger
 
 # C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\amd64> cl /LD needforspeed.c /o nfs.dll
 
@@ -52,28 +54,15 @@ class USBRelay(object):
     def __init__(self):
         self.__lib = _LibUsbRelay()
         self.__handle = None
-        self.is_open = False
+        self.__is_open = False
         self.__channel_count = 0
-
-    def check_status(func):
-        """
-        检查设备是否已经连接
-        :param func: 装饰器函数
-        """
-
-        def wrapper(self, *args, **kwargs):
-            if not self.is_open:
-                raise RuntimeError("please open relay device first")
-            return func(self, *args, **kwargs)
-
-        return wrapper
 
     def open_relay_device(self):
         """
         初始化继电器，并通过继电器的serial号打开该继电器。
         在需要使用继电器时，必须先调用该接口。
         """
-        if not self.is_open:
+        if not self.__is_open:
             ret = self.__lib.usb_relay_init()
             logger.debug(f"ret = [{ret}]")
             if not ret:
@@ -85,7 +74,7 @@ class USBRelay(object):
                         serial_number = dev[0]['serial_number']
                         self.__handle = self.__lib.usb_relay_device_open_with_serial_number(serial_number)
                         logger.debug(f"handler: {self.__handle}, type is {type(self.__handle)}")
-                        self.is_open = True
+                        self.__is_open = True
                 except Exception:
                     raise RuntimeError("usb relay init failed")
 
@@ -97,18 +86,18 @@ class USBRelay(object):
             self.__lib.usb_relay_device_close(self.__handle)
             exit_result = self.__lib.usb_relay_exit()
             if exit_result == 0:
-                self.is_open = False
+                self.__is_open = False
             else:
-                self.is_open = True
+                self.__is_open = True
 
-    @check_status
+    @check_connect("__is_open", relay_tips)
     def one_relay_channel_on(self, channel_index: int):
         """
         闭合继电器的某一个开关。
 
         :param channel_index: 继电器的开关编号。(从1开始)
         """
-        if not self.is_open:
+        if not self.__is_open:
             raise RuntimeError("please open relay device first")
         if not 1 <= channel_index <= self.__channel_count:
             raise RuntimeError(
@@ -117,7 +106,7 @@ class USBRelay(object):
             if self.__lib.usb_relay_device_open_one_relay_channel(self.__handle, channel_index) != 0:
                 raise RuntimeError(f"open channel [{channel_index}] failed")
 
-    @check_status
+    @check_connect("__is_open", relay_tips)
     def one_relay_channel_off(self, channel_index: int):
         """
         打开继电器的某一个开关。
@@ -131,7 +120,7 @@ class USBRelay(object):
             if self.__lib.usb_relay_device_close_one_relay_channel(self.__handle, channel_index) != 0:
                 raise RuntimeError(f"close channel [{channel_index}] failed")
 
-    @check_status
+    @check_connect("__is_open", relay_tips)
     def all_relay_channel_on(self):
         """
         闭合继电器的所有开关。
@@ -140,7 +129,7 @@ class USBRelay(object):
             if self.__lib.usb_relay_device_open_all_relay_channel(self.__handle) != 0:
                 raise RuntimeError(f"open all channel failed")
 
-    @check_status
+    @check_connect("__is_open", relay_tips)
     def all_relay_channel_off(self):
         """
         关闭继电器的所有开关。
@@ -166,8 +155,7 @@ class _LibUsbRelay(object):
         else:
             raise RuntimeError("only support windows and not support linux")
         try:
-            from ctypes import windll
-            self.usbRelayDll = windll.LoadLibrary(file_path)
+            self.usbRelayDll = CDLL(file_path)
         except Exception:
             raise RuntimeError(f"dll file[{file_path}] load failed, please sure if install Visual Studio")
 
@@ -258,9 +246,9 @@ class _LibUsbRelay(object):
         length = len(serial_number)
         self.usbRelayDll.usb_relay_device_open_with_serial_number.argtypes = [c_char_p, c_uint64]
         self.usbRelayDll.usb_relay_device_open_with_serial_number.restype = c_uint64
-        serial_number = c_char_p(serial_number.encode('utf-8'))
+        serial_number_p = c_char_p(serial_number.encode('utf-8'))
         try:
-            return self.usbRelayDll.usb_relay_device_open_with_serial_number(serial_number, length)
+            return self.usbRelayDll.usb_relay_device_open_with_serial_number(serial_number_p, length)
         except Exception:
             error = sys.exc_info()
             logger.error('ERROR: ' + str(error[0]) + ' : ' + str(error[1]))

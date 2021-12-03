@@ -13,9 +13,9 @@ from typing import List, Tuple
 
 from time import sleep
 
-from automotive.utils.utils import Utils
-from automotive.logger import logger
-from automotive.utils.serial_utils import SerialUtils
+from .utils import Utils
+from ..logger.logger import logger
+from .serial_utils import SerialUtils
 
 
 class Performance(object):
@@ -114,7 +114,7 @@ class Performance(object):
         total = reduce(lambda x, y: x + y, results)
         return round(total / len(results), 2)
 
-    def __get_hypervisor_qnx_cpu_use_and_memory_free(self) -> tuple:
+    def __get_hypervisor_qnx_cpu_use_and_memory_free(self) -> Tuple[str, str]:
         """
         获取cpu占用率以及内存空闲数
         :return: cpu占用率, 内存空闲数  (3.5, 410M)
@@ -171,7 +171,7 @@ class Performance(object):
         else:
             raise RuntimeError("no qnx memory use found")
 
-    def __get_hypervisor_qnx_data(self) -> Tuple:
+    def __get_hypervisor_qnx_data(self) -> Tuple[float, int, int]:
         """
         获取QNX系统的cpu占用率， 已使用的内存Mb， 总计内存大小
 
@@ -197,7 +197,7 @@ class Performance(object):
         logger.debug(f"content is {content}")
         return "".join(content)
 
-    def __get_qnx_data(self, content: str) -> Tuple:
+    def __get_qnx_data(self, content: str) -> Tuple[float, str, str]:
         result = self.__get_matched(content, r"CPU states:\s\d{1,2}.\d%")
         # CPU states: 18.1%
         cpu = result.split(":")[1].strip()[:-1]
@@ -213,7 +213,7 @@ class Performance(object):
         return float(cpu), f"{use_memory}M", f"{total_memory}M"
 
     @staticmethod
-    def __calc_datum(datum: List) -> Tuple:
+    def __calc_datum(datum: List) -> Tuple[float, float, int, int]:
         """
         计算平局值
 
@@ -237,7 +237,7 @@ class Performance(object):
         return round(cpu_use_average, 2), round(memory_percent * 100, 2), use_memory_average, total_memory_average
 
     @staticmethod
-    def __get_android_memory() -> Tuple:
+    def __get_android_memory() -> Tuple[str, str]:
         keyword1 = "Total RAM:"
         keyword2 = " Used RAM:"
         command = "adb shell dumpsys meminfo"
@@ -267,12 +267,12 @@ class Performance(object):
         logger.debug(f"cpu value is {cpu}")
         return f"{cpu}"
 
-    def __get_android_data(self) -> tuple:
+    def __get_android_data(self) -> Tuple[float, int, int]:
         cpu_use = self.__get_android_cpu()
         total, used = self.__get_android_memory()
         return float(cpu_use), self.__get_mb(used), self.__get_mb(total)
 
-    def __get_linux_data(self) -> tuple:
+    def __get_linux_data(self) -> Tuple[float, int, int]:
         """
         由于有颜色字符的存在，所以需要单独进行处理
         """
@@ -378,7 +378,7 @@ class Performance(object):
         datum = []
         for i in range(count):
             logger.info(f"第{i + 1}次获取数据")
-            cpu_use, memory_percent, use_memory, total_memory = self.__get_linux_data()
+            cpu_use, use_memory, total_memory = self.__get_linux_data()
             datum.append((cpu_use, use_memory, total_memory))
         self.__disconnect()
         cpu_use, memory_percent, use_memory, total_memory = self.__calc_datum(datum)

@@ -9,9 +9,10 @@
 import os
 from time import sleep
 from ftplib import FTP
-from typing import List
+from typing import List, Optional
 
-from automotive.logger.logger import logger
+from ..common.constant import check_connect, connect_tips
+from ..logger.logger import logger
 
 
 class FtpUtils(object):
@@ -24,19 +25,6 @@ class FtpUtils(object):
     def __init__(self):
         self.__ftp = FTP()
         self.__flag = False
-
-    def check_status(func):
-        """
-        检查设备是否已经连接
-        :param func: 装饰器函数
-        """
-
-        def wrapper(self, *args, **kwargs):
-            if not self.__flag:
-                raise RuntimeError("please connect target first")
-            return func(self, *args, **kwargs)
-
-        return wrapper
 
     def get_filename(self, remote: str):
         return self.__ftp.nlst(remote)
@@ -75,8 +63,8 @@ class FtpUtils(object):
         if self.__flag:
             self.__ftp.quit()
 
-    @check_status
-    def download_folder(self, remote_folder: str, local_folder: str, filter_type: str = None) -> list:
+    @check_connect("__flag", connect_tips)
+    def download_folder(self, remote_folder: str, local_folder: str, filter_type: Optional[str] = None) -> list:
         """
         下载文件夹中的所有文件到本地
         （未测试文件夹中包含文件夹是否成功）
@@ -110,7 +98,7 @@ class FtpUtils(object):
                     local_files.append(local_file)
         return local_files
 
-    @check_status
+    @check_connect("__flag", connect_tips)
     def download_files(self, remote_files: List[str], local_folder: str) -> List[str]:
         """
         下载文件列表到本地
@@ -127,7 +115,7 @@ class FtpUtils(object):
             sleep(1)
         return local_files
 
-    @check_status
+    @check_connect("__flag", connect_tips)
     def download_file(self, remote_file: str, local_folder: str) -> str:
         """
         下载文件到本地
@@ -154,7 +142,7 @@ class FtpUtils(object):
             return local_file
         raise RuntimeError(f"{remote_file} is not exist, please check it")
 
-    @check_status
+    @check_connect("__flag", connect_tips)
     def upload_file(self, remote_folder: str, local_file: str):
         """
         上传本地文件到ftp服务器位置
@@ -171,7 +159,7 @@ class FtpUtils(object):
         else:
             raise RuntimeError(f"{local_file} is not exist or not file")
 
-    @check_status
+    @check_connect("__flag", connect_tips)
     def upload_files(self, remote_folder: str, local_files: List[str]):
         """
         上传本地文件列表到ftp服务器位置
@@ -183,8 +171,8 @@ class FtpUtils(object):
         for file in local_files:
             self.upload_file(remote_folder, file)
 
-    @check_status
-    def upload_folder(self, remote_folder: str, local_folder: str, filter_type: str = None):
+    @check_connect("__flag", connect_tips)
+    def upload_folder(self, remote_folder: str, local_folder: str, filter_type: Optional[str] = None):
         """
         上传本地夹下所有文件到FTP服务器， 仅支持文件夹下所有内容为文件，带文件夹可能会导致错误
 
@@ -204,25 +192,17 @@ class FtpUtils(object):
         else:
             raise RuntimeError(f"{local_folder} is not exist or not folder")
 
-    @check_status
-    def downloadfile(self, localFile, remoteFile):  # 下载单个文件
-        file_handler = open(localFile, 'wb')
-        # print(file_handler)
-        # self.ftp.retrbinary("RETR %s" % (remoteFile), file_handler.write)#接收服务器上文件并写入本地文件
-        self.__ftp.retrbinary('RETR ' + remoteFile, file_handler.write)
-        file_handler.close()
-        return True
-
-    @check_status
-    def download_file_tree(self, localdir: str, remotedir:str, filter_type: str = None):  # 下载整个目录下的文件
-        logger.debug(f"远程文件夹remotedir: {remotedir}")
-        if not os.path.exists(localdir):
-            os.makedirs(localdir)
-        self.__ftp.cwd(remotedir)
-        remotenames = self.__ftp.nlst()
-        logger.debug(f"远程文件目录： {remotenames}")
-        for file in remotenames:
-            Local = os.path.join(localdir, file)
+    @check_connect("__flag", connect_tips)
+    def download_file_tree(self, local_dir: str, remote_dir: str, filter_type: Optional[str] = None):
+        # 下载整个目录下的文件
+        logger.debug(f"远程文件夹remote dir: {remote_dir}")
+        if not os.path.exists(local_dir):
+            os.makedirs(local_dir)
+        self.__ftp.cwd(remote_dir)
+        remote_names = self.__ftp.nlst()
+        logger.debug(f"远程文件目录： {remote_names}")
+        for file in remote_names:
+            Local = os.path.join(local_dir, file)
             logger.debug(f"正在下载： {self.__ftp.nlst(file)}")
             if filter_type:
                 if file.endswith(filter_type):
@@ -231,7 +211,7 @@ class FtpUtils(object):
                             os.makedirs(Local)
                         self.download_file_tree(Local, file)
                     else:
-                        self.downloadfile(Local, file)
+                        self.download_file(Local, file)
             else:
                 logger.debug(f"all type file is ok")
                 if file.find(".") == -1:
@@ -239,6 +219,6 @@ class FtpUtils(object):
                         os.makedirs(Local)
                     self.download_file_tree(Local, file)
                 else:
-                    self.downloadfile(Local, file)
+                    self.download_file(Local, file)
         self.__ftp.cwd("..")
         return

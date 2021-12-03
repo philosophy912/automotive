@@ -13,21 +13,10 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.application import MIMEApplication
 from email.header import Header
 from email.mime.text import MIMEText
-from enum import Enum, unique
-from typing import List, Any
+from typing import List, Any, Optional
 
-from automotive import logger
-
-
-@unique
-class EmailType(Enum):
-    """
-    邮箱类型
-    """
-    # SMTP模式
-    SMTP = "smtp"
-    # EXCHANGE模式
-    EXCHANGE = "exchange"
+from ..logger.logger import logger
+from .common.enums import EmailTypeEnum
 
 
 class EmailUtils(object):
@@ -35,8 +24,14 @@ class EmailUtils(object):
     电子邮件类，实现电子邮件的发送(已完成)与接收(未完成)功能
     """
 
-    def __init__(self, email_address: str, password: str, email_type: EmailType = EmailType.SMTP,
-                 smtp_address: str = None, smtp_port: int = 25, pop3_address: str = None, pop3_port: str = 110,
+    def __init__(self,
+                 email_address: str,
+                 password: str,
+                 email_type: EmailTypeEnum = EmailTypeEnum.SMTP,
+                 smtp_address: Optional[str] = None,
+                 smtp_port: int = 25,
+                 pop3_address: Optional[str] = None,
+                 pop3_port: int = 110,
                  is_tsl: bool = False):
         """
         初始化配置参数
@@ -60,7 +55,7 @@ class EmailUtils(object):
 
         self.__type = email_type
         self.__email_address = email_address
-        if email_type == EmailType.SMTP:
+        if email_type == EmailTypeEnum.SMTP:
             if smtp_address and smtp_port:
                 if smtp_port == 465:
                     self.__server = smtplib.SMTP(smtp_address, smtp_port)
@@ -92,7 +87,8 @@ class EmailUtils(object):
         return Account(primary_smtp_address=email_address, credentials=credentials,
                        autodiscover=True, access_type=DELEGATE)
 
-    def __send_exchange_email(self, email_to: List[str], subject: str, content: str, attachments=None, email_cc=None):
+    def __send_exchange_email(self, email_to: List[str], subject: str, content: str,
+                              attachments: Optional[List[str]] = None, email_cc: Optional[List[str]] = None):
         from exchangelib import Message, Mailbox, HTMLBody, FileAttachment
         to_recipients = []
         for to in email_to:
@@ -114,7 +110,8 @@ class EmailUtils(object):
                 message.attach(attachment_file)
         message.send()
 
-    def send_email(self, email_to: List[str], subject: str, content: str, attachments=None, email_cc=None):
+    def send_email(self, email_to: List[str], subject: str, content: str, attachments: Optional[List[str]] = None,
+                   email_cc: Optional[List[str]] = None):
         """
         发送邮件
         :param email_to:  邮件要发到哪里去
@@ -125,10 +122,10 @@ class EmailUtils(object):
         :return:
         """
         if email_cc is None:
-            email_cc = []
+            email_cc = List[str]()
         if attachments is None:
-            attachments = []
-        if self.__type == EmailType.SMTP:
+            attachments = List[str]()
+        if self.__type == EmailTypeEnum.SMTP:
             message = MIMEMultipart()
             message.attach(MIMEText(content, "html", "utf-8"))
             message["From"] = self.__email_address
@@ -152,7 +149,7 @@ class EmailUtils(object):
         else:
             self.__send_exchange_email(email_to, subject, content, attachments, email_cc)
 
-    def receive_email(self, email_size: int = 10, folder: str = None) -> List[Any]:
+    def receive_email(self, email_size: int = 10, folder: Optional[str] = None) -> List[Any]:
         """
         TODO 暂时未完成测试
         接收邮件
@@ -163,7 +160,7 @@ class EmailUtils(object):
         :return: (author, datetime_received, subject, content, attachments)
         """
         logger.info(f"email size is not used, size is {email_size}")
-        if self.__type == EmailType.SMTP:
+        if self.__type == EmailTypeEnum.SMTP:
             # 返回邮件总数目和占用服务器的空间大小（字节数）， 通过stat()方法即可
             email_count, email_size = self.__pop3_server.stat()
             logger.info("消息的数量: {0}, 消息的总大小: {1}".format(email_count, email_size))

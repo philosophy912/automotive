@@ -7,7 +7,7 @@
 # @Created:     2021/5/1 - 23:48
 # --------------------------------------------------------
 import time
-from typing import Dict, Union, Tuple, List
+from typing import Dict, Union, Tuple, List, Optional
 
 from appium import webdriver
 from appium.webdriver import WebElement
@@ -16,18 +16,25 @@ from appium.webdriver.webdriver import WebDriver
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 
-from automotive.logger import logger
+from automotive.logger.logger import logger
+from .common.constants import UISELECTORS, LOCATORS, DEFAULT_TIME_OUT
 
-from .api import ElementAttributeEnum, SwipeDirectorEnum, DirectorEnum, BaseAndroid
+from .common.enums import ElementAttributeEnum, SwipeDirectorEnum, DirectorEnum
+from .common.interfaces import BaseAndroid
+from .common.typehints import AppiumLocatorElement, Locator, Attributes, ClickPosition, LocatorElement
+from ...common.typehints import Position
+from time import sleep
 
 
 class AppiumClient(BaseAndroid):
-    DEFAULT_TIME_OUT = 3
-    LOCATORS_TYPE = 1
-    UISELECTORS_TYPE = 2
+
+    def __init__(self):
+        super().__init__()
+        self._driver = None
+        self._actions = None
 
     @staticmethod
-    def __get_key_value(locator: dict) -> tuple:
+    def __get_key_value(locator: dict) -> Tuple[str, str]:
         """
         获取key, value
         :param locator: 字典，长度为1
@@ -48,7 +55,7 @@ class AppiumClient(BaseAndroid):
         return "//*[@text=\"" + text + "\"]"
 
     @staticmethod
-    def __get_attribute(element: WebElement) -> dict:
+    def __get_attribute(element: WebElement) -> Attributes:
         """
         获取控件的属性值
 
@@ -56,14 +63,15 @@ class AppiumClient(BaseAndroid):
 
         :return:  字典对象，如{"checkable": True}
         """
-        attribute = dict()
+        attribute = Attributes()
         for attr in ElementAttributeEnum:
             result = element.get_attribute(attr.value)
             logger.debug(f"the {attr.value} value is {result}")
             attribute[attr] = True if result == "true" else False
         return attribute
 
-    def __get_by_type(self, by_type: str) -> str:
+    @staticmethod
+    def __get_by_type(by_type: str) -> str:
         """
         将类型变成appium方式支持的类型
 
@@ -74,8 +82,8 @@ class AppiumClient(BaseAndroid):
         :return:
             除了description返回str外，其他返回By
         """
-        if by_type not in self._LOCATORS:
-            raise TypeError(f"by_type[{by_type}] is not support, only support {self._LOCATORS}")
+        if by_type not in LOCATORS:
+            raise TypeError(f"by_type[{by_type}] is not support, only support {LOCATORS}")
         if by_type == "resourceId":
             return By.ID
         elif by_type == "className":
@@ -87,7 +95,8 @@ class AppiumClient(BaseAndroid):
         elif by_type == "description":
             return "description"
 
-    def __get_ui_selector(self, locator: Dict[str, str]) -> str:
+    @staticmethod
+    def __get_ui_selector(locator: Locator) -> str:
         """
         根据locator来获取selector
 
@@ -97,15 +106,17 @@ class AppiumClient(BaseAndroid):
         """
         selector = ""
         for key, value in locator.items():
-            if key not in self._UISELECTORS:
-                raise ValueError(f"locator type[{key}] not support, only support[{self._UISELECTORS}]")
+            if key not in UISELECTORS:
+                raise ValueError(f"locator type[{key}] not support, only support[{UISELECTORS}]")
             selector = f"{selector}.{key}(\"{value}\")"
         # 需要去掉第一个的点[.]
         return selector[1:].replace("True", "true").replace("False", "false")
 
     @staticmethod
-    def __wait_until(element: Union[WebDriver, WebElement], locator: Union[str, Tuple[str, str]], function_name: str,
-                     timeout: float) -> Union[WebElement, List[WebElement]]:
+    def __wait_until(element: Union[WebDriver, WebElement],
+                     locator: Union[str, Tuple[str, str]],
+                     function_name: str,
+                     timeout: Optional[float]) -> Union[WebElement, List[WebElement]]:
         """
         等待元素出现
 
@@ -145,8 +156,10 @@ class AppiumClient(BaseAndroid):
             else:
                 return getattr(element, function_name)(locator)
 
-    def __find_element_by_ui_selector(self, element: Union[WebDriver, WebElement], locator: str,
-                                      timeout: float) -> WebElement:
+    def __find_element_by_ui_selector(self,
+                                      element: Union[WebDriver, WebElement],
+                                      locator: str,
+                                      timeout: Optional[float]) -> WebElement:
         """
         通过uiselector方式查找element
 
@@ -158,8 +171,10 @@ class AppiumClient(BaseAndroid):
         """
         return self.__wait_until(element, locator, "find_element_by_android_uiautomator", timeout)
 
-    def __find_elements_by_ui_selector(self, element: Union[WebDriver, WebElement], locator: str,
-                                       timeout: float) -> List[WebElement]:
+    def __find_elements_by_ui_selector(self,
+                                       element: Union[WebDriver, WebElement],
+                                       locator: str,
+                                       timeout: Optional[float]) -> List[WebElement]:
         """
         通过uiselector方式查找elements
 
@@ -171,8 +186,10 @@ class AppiumClient(BaseAndroid):
         """
         return self.__wait_until(element, locator, "find_elements_by_android_uiautomator", timeout)
 
-    def __get_element(self, element: Union[WebDriver, WebElement], locator: Union[str, Dict[str, str]],
-                      timeout: float) -> WebElement:
+    def __get_element(self,
+                      element: Union[WebDriver, WebElement],
+                      locator: Locator,
+                      timeout: Optional[float]) -> WebElement:
         """
         查找element下面的locator定位的元素, 只支持一种定位方式，即len(locator) = 1
 
@@ -188,7 +205,7 @@ class AppiumClient(BaseAndroid):
             locator = self._convert_locator(locator)
         for key, value in locator.items():
             logger.trace(f"key is {key}")
-            if key in self._LOCATORS:
+            if key in LOCATORS:
                 by_type = self.__get_by_type(key)
                 if by_type == "description":
                     return self.__wait_until(element, (by_type, value), "find_element_by_accessibility_id", timeout)
@@ -198,14 +215,14 @@ class AppiumClient(BaseAndroid):
                     return self.__wait_until(element, (by_type, value), "find_element", timeout)
                 else:
                     return self.__wait_until(element, (by_type, value), "find_element", timeout)
-            elif key in self._UISELECTORS:
+            elif key in UISELECTORS:
                 locator = self.__get_ui_selector(locator)
                 return self.__find_element_by_ui_selector(element, locator, timeout)
             else:
-                raise TypeError(f"key[{key}] is not support and only support {self._UISELECTORS} and {self._LOCATORS}")
+                raise TypeError(f"key[{key}] is not support and only support {UISELECTORS} and {LOCATORS}")
 
     def __get_elements(self, element: Union[WebDriver, WebElement], locator: Dict[str, str],
-                       timeout: float) -> List[WebElement]:
+                       timeout: Optional[float]) -> List[WebElement]:
         """
         查找element下面的locator定位所在的元素列表, 只支持一种定位方式，即len(locator) = 1
 
@@ -221,7 +238,7 @@ class AppiumClient(BaseAndroid):
             locator = self._convert_locator(locator)
         for key, value in locator.items():
             logger.trace(f"key is {key}")
-            if key in self._LOCATORS:
+            if key in LOCATORS:
                 by_type = self.__get_by_type(key)
                 if by_type == "description":
                     return self.__wait_until(element, (by_type, value), "find_elements_by_accessibility_id", timeout)
@@ -231,13 +248,13 @@ class AppiumClient(BaseAndroid):
                     return self.__wait_until(element, (by_type, value), "find_elements", timeout)
                 else:
                     return self.__wait_until(element, (by_type, value), "find_elements", timeout)
-            elif key in self._UISELECTORS:
+            elif key in UISELECTORS:
                 locator = self.__get_ui_selector(locator)
                 return self.__find_elements_by_ui_selector(element, locator, timeout)
             else:
-                raise TypeError(f"key[{key}] is not support and only support {self._UISELECTORS} and {self._LOCATORS}")
+                raise TypeError(f"key[{key}] is not support and only support {UISELECTORS} and {LOCATORS}")
 
-    def __get_click_point(self, element: WebElement, position: DirectorEnum = DirectorEnum.CENTER) -> Tuple[int, int]:
+    def __get_click_point(self, element: WebElement, position: DirectorEnum = DirectorEnum.CENTER) -> ClickPosition:
         """
         根据position确定需要点击的范围
 
@@ -282,28 +299,30 @@ class AppiumClient(BaseAndroid):
         self._driver = webdriver.Remote(url, capability)
         self._actions = TouchAction(self._driver)
 
+    def disconnect(self):
+        self._driver = None
+        self._actions = None
+
     def open_app(self, package: str, activity: str):
         self._driver.start_activity(package, activity)
 
     def close_app(self, package: str = None):
         self._driver.quit()
 
-    def get_element(self, locator: Union[str, Dict[str, str], WebElement],
-                    timeout: float = DEFAULT_TIME_OUT) -> WebElement:
-        self._check_instance(locator, (str, dict, WebElement))
+    def get_element(self, locator: AppiumLocatorElement, timeout: float = DEFAULT_TIME_OUT) -> WebElement:
         if isinstance(locator, WebElement):
             return locator
         else:
-            if isinstance(locator, (str, dict)):
+            if isinstance(locator, (str, Locator)):
                 locator = self._convert_locator(locator)
             if len(locator) == 1:
                 key, value = self.__get_key_value(locator)
                 # 当支持的key属于"resourceId", "className", "xpath", "text", "description"中的某一种的时候
                 # 采用get_element方式定位
-                if key in self._LOCATORS:
+                if key in LOCATORS:
                     return self.__get_element(self._driver, locator, timeout)
                 # 检查是否属于uiselector中的某一种定位方式
-                elif key in self._UISELECTORS:
+                elif key in UISELECTORS:
                     locator = self.__get_ui_selector(locator)
                     return self.__find_element_by_ui_selector(self._driver, locator, timeout)
                 else:
@@ -312,17 +331,16 @@ class AppiumClient(BaseAndroid):
                 locator = self.__get_ui_selector(locator)
                 return self.__find_element_by_ui_selector(self._driver, locator, timeout)
 
-    def get_elements(self, locator: Dict[str, str], timeout: float = DEFAULT_TIME_OUT) -> List[WebElement]:
-        self._check_instance(locator, dict)
+    def get_elements(self, locator: Locator, timeout: float = DEFAULT_TIME_OUT) -> List[WebElement]:
         if len(locator) == 1:
             locator = self._convert_locator(locator)
             key, value = self.__get_key_value(locator)
             # 当支持的key属于"resourceId", "className", "xpath", "text", "description"中的某一种的时候
             # 采用get_element方式定位
-            if key in self._LOCATORS:
+            if key in LOCATORS:
                 return self.__get_elements(self._driver, locator, timeout)
             # 检查是否属于uiselector中的某一种定位方式
-            elif key in self._UISELECTORS:
+            elif key in UISELECTORS:
                 locator = self.__get_ui_selector(locator)
                 return self.__find_elements_by_ui_selector(self._driver, locator, timeout)
             else:
@@ -331,23 +349,23 @@ class AppiumClient(BaseAndroid):
             locator = self.__get_ui_selector(locator)
             return self.__find_elements_by_ui_selector(self._driver, locator, timeout)
 
-    def get_child_element(self, parent: Union[Dict[str, str], WebElement], locator: Union[str, Dict[str, str]],
+    def get_child_element(self,
+                          parent: AppiumLocatorElement,
+                          locator: Locator,
                           timeout: float = DEFAULT_TIME_OUT) -> WebElement:
-        self._check_instance(parent, (dict, WebElement))
-        self._check_instance(locator, (str, dict))
         element = self.get_element(parent, timeout)
         return self.__get_element(element, locator, timeout)
 
-    def get_child_elements(self, parent: Union[Dict[str, str], WebElement], locator: Union[str, Dict[str, str]],
+    def get_child_elements(self,
+                           parent: AppiumLocatorElement,
+                           locator: Locator,
                            timeout: float = DEFAULT_TIME_OUT) -> List[WebElement]:
-        self._check_instance(parent, (dict, WebElement))
-        self._check_instance(locator, (str, dict))
         element = self.get_element(parent, timeout)
         return self.__get_elements(element, locator, timeout)
 
-    def get_element_attribute(self, locator: Union[str, Dict[str, str], WebElement],
-                              timeout: float = DEFAULT_TIME_OUT) -> Dict[ElementAttributeEnum, bool]:
-        self._check_instance(locator, (str, dict, WebElement))
+    def get_element_attribute(self,
+                              locator: AppiumLocatorElement,
+                              timeout: float = DEFAULT_TIME_OUT) -> Attributes:
         attributes = dict()
         element = self.get_element(locator, timeout)
         for attr in list(map(lambda x: x.value, ElementAttributeEnum.__members__.values())):
@@ -359,13 +377,17 @@ class AppiumClient(BaseAndroid):
             attributes[ElementAttributeEnum.from_value(attr)] = True if value == "true" else False
         return attributes
 
-    def scroll_get_element(self, element: Union[str, Dict[str, str], WebElement], locator: Dict[str, str], text: str,
-                           exact_match: bool = True, duration: float = None,
-                           direct: SwipeDirectorEnum = SwipeDirectorEnum.UP, swipe_time: int = None,
-                           swipe_percent: float = 0.8, timeout: float = DEFAULT_TIME_OUT,
-                           wait_time: float = None) -> WebElement:
-        self._check_instance(locator, (str, dict, WebElement))
-        self._check_instance(locator, dict)
+    def scroll_get_element(self,
+                           element: AppiumLocatorElement,
+                           locator: Locator,
+                           text: str,
+                           exact_match: bool = True,
+                           duration: Optional[float] = None,
+                           direct: SwipeDirectorEnum = SwipeDirectorEnum.UP,
+                           swipe_time: Optional[int] = None,
+                           swipe_percent: float = 0.8,
+                           timeout: float = DEFAULT_TIME_OUT,
+                           wait_time: Optional[float] = None) -> WebElement:
         start_x, start_y, end_x, end_y, duration = self._get_swipe_param(element, direct, duration, swipe_percent)
         return self._scroll_element(start_x, start_y, end_x, end_y, duration, direct, element, locator, text,
                                     exact_match, timeout, swipe_time, wait_time)
@@ -373,9 +395,7 @@ class AppiumClient(BaseAndroid):
     def get_device_id(self) -> str:
         return self._driver.capabilities["deviceName"]
 
-    def get_location(self, locator: Union[str, Dict[str, str], WebElement],
-                     timeout: float = DEFAULT_TIME_OUT) -> Tuple[int, int, int, int]:
-        self._check_instance(locator, (str, dict, WebElement))
+    def get_location(self, locator: AppiumLocatorElement, timeout: float = DEFAULT_TIME_OUT) -> Position:
         element = self.get_element(locator, timeout)
         location = element.location
         size = element.size
@@ -384,72 +404,77 @@ class AppiumClient(BaseAndroid):
         logger.debug(f"x = [{x}], y = [{y}], width = {width}, height = {height}")
         return x, y, width, height
 
-    def click_if_attribute(self, locator: Union[Tuple[int, int], str, Dict[str, str], WebElement],
-                           element_attribute: ElementAttributeEnum, status: bool, timeout: float = DEFAULT_TIME_OUT):
+    def click_if_attribute(self,
+                           locator: AppiumLocatorElement,
+                           element_attribute: ElementAttributeEnum,
+                           status: bool,
+                           timeout: float = DEFAULT_TIME_OUT):
         current_status = self.get_element_attribute(locator, timeout)[element_attribute]
         if current_status == status:
             self.click(locator, timeout)
 
-    def click(self, locator: Union[Tuple[int, int], str, Dict[str, str], WebElement],
+    def click(self, locator: Union[ClickPosition, AppiumLocatorElement],
               timeout: float = DEFAULT_TIME_OUT):
-        self._check_instance(locator, (tuple, str, dict, WebElement))
         x, y = self._get_element_location(locator, DirectorEnum.CENTER, timeout)
         logger.info(f"the point[{x}:{y}] will be click")
         self.__click_point(x, y)
 
-    def double_click(self, locator: Union[Tuple[int, int], str, Dict[str, str], WebElement],
+    def double_click(self,
+                     locator: Union[ClickPosition, AppiumLocatorElement],
                      timeout: float = DEFAULT_TIME_OUT,
                      duration: float = 0.1):
-        self._check_instance(locator, (tuple, str, dict, WebElement))
         x, y = self._get_element_location(locator, DirectorEnum.CENTER, timeout)
         logger.info(f"the point[{x}:{y}] will be click")
         self.__click_point(x, y, 2)
 
-    def press(self, locator: Union[Tuple[int, int], str, Dict[str, str], WebElement], duration: float = None,
+    def press(self,
+              locator: Union[ClickPosition, AppiumLocatorElement],
+              duration: Optional[float] = None,
               timeout: float = DEFAULT_TIME_OUT):
-        self._check_instance(locator, (tuple, str, dict, WebElement))
         x, y = self._get_element_location(locator, DirectorEnum.CENTER, timeout)
         logger.info(f"the point[{x}:{y}] will be click")
         self.__press_point(x, y, duration)
 
     def drag(self, start_x: int, start_y: int, end_x: int, end_y: int, duration: int = 1):
-        self._check_instance(start_x, int)
-        self._check_instance(start_y, int)
-        self._check_instance(end_x, int)
-        self._check_instance(end_y, int)
         self._actions.long_press(x=start_x, y=start_y).move_to(x=end_x, y=end_y).wait(duration).release().perform()
 
-    def drag_element_to(self, locator1: Union[str, Dict[str, str], WebElement],
-                        locator2: Union[str, Dict[str, str], WebElement],
+    def drag_element_to(self,
+                        locator1: AppiumLocatorElement,
+                        locator2: AppiumLocatorElement,
                         duration: int = 1,
                         timeout: float = DEFAULT_TIME_OUT):
-        self._check_instance(locator1, (str, dict, WebElement))
-        self._check_instance(locator2, (str, dict, WebElement))
         x1, y1 = self.__get_click_point(self.get_element(locator1, timeout))
         x2, y2 = self.__get_click_point(self.get_element(locator2, timeout))
         self.drag(x1, y1, x2, y2, duration)
 
-    def drag_to(self, locator: Union[str, Dict[str, str], WebElement], x: int, y: int, duration: int = 1,
+    def drag_to(self,
+                locator: AppiumLocatorElement,
+                x: int,
+                y: int,
+                duration: int = 1,
                 timeout: float = DEFAULT_TIME_OUT):
-        self._check_instance(locator, (str, dict, WebElement))
         x1, y1 = self.__get_click_point(self.get_element(locator, timeout))
         self.drag(x1, y1, x, y, duration)
 
-    def swipe_element(self, from_element: Union[Tuple[int, int], str, Dict[str, str], WebElement],
-                      to_element: Union[Tuple[int, int], str, Dict[str, str], WebElement],
-                      duration: int = None, timeout: float = DEFAULT_TIME_OUT):
-        self._check_instance(from_element, (tuple, str, dict, WebElement))
-        self._check_instance(to_element, (tuple, str, dict, WebElement))
+    def swipe_element(self,
+                      from_element: Union[ClickPosition, AppiumLocatorElement],
+                      to_element: Union[ClickPosition, AppiumLocatorElement],
+                      duration: Optional[int] = None,
+                      timeout: float = DEFAULT_TIME_OUT):
         start_x, start_y = self._get_element_location(from_element, DirectorEnum.CENTER, timeout)
         end_x, end_y = self._get_element_location(to_element, DirectorEnum.CENTER, timeout)
         logger.info(f"start from {start_x} : {start_y} to scroll to {end_x}: {end_y}")
         self._driver.swipe(start_x, start_y, end_x, end_y, duration)
 
-    def swipe(self, swipe_element: Union[Dict[str, str], WebElement], locator: Dict[str, str], duration: float = None,
-              direction: SwipeDirectorEnum = SwipeDirectorEnum.UP, swipe_time: int = None, wait_time: float = None,
-              timeout: float = DEFAULT_TIME_OUT, swipe_percent: float = 0.8):
-        self._check_instance(swipe_element, (tuple, str, dict, WebElement))
-        self._check_instance(locator, dict)
+    def swipe(self,
+              swipe_element: AppiumLocatorElement,
+              locator: Locator,
+              duration: Optional[float] = None,
+              direction: SwipeDirectorEnum = SwipeDirectorEnum.UP,
+              swipe_time: Optional[int] = None,
+              wait_time: Optional[float] = None,
+              timeout: float = DEFAULT_TIME_OUT,
+              swipe_percent: float = 0.8):
         logger.debug(f"swipe_element is {swipe_element}")
         # 首先获取locator定位的元素， 并判断该元素是否可滑动，若不可滑动则发出警告信息
         swipe_element = self.get_element(swipe_element, timeout)
@@ -463,18 +488,15 @@ class AppiumClient(BaseAndroid):
         self._scroll_element(start_x, start_y, end_x, end_y, duration, direction, swipe_element, locator,
                              timeout=timeout, swipe_time=swipe_time, wait_time=wait_time)
 
-    def get_text(self, locator: Union[str, Dict[str, str], WebElement], timeout: float = DEFAULT_TIME_OUT) -> str:
-        self._check_instance(locator, (str, dict, WebElement))
+    def get_text(self, locator: AppiumLocatorElement, timeout: float = DEFAULT_TIME_OUT) -> str:
         return self.get_element(locator, timeout).text
 
-    def input_text(self, locator: Union[str, Dict[str, str], WebElement], text: str, timeout: float = DEFAULT_TIME_OUT):
-        self._check_instance(locator, (str, dict, WebElement))
+    def input_text(self, locator: AppiumLocatorElement, text: str, timeout: float = DEFAULT_TIME_OUT):
         element = self.get_element(locator, timeout)
         logger.debug(f"it will input text {text} to element")
         element.send_keys(text)
 
-    def clear_text(self, locator: Union[str, Dict[str, str], WebElement], timeout: float = DEFAULT_TIME_OUT):
-        self._check_instance(locator, (str, dict, WebElement))
+    def clear_text(self, locator: AppiumLocatorElement, timeout: float = DEFAULT_TIME_OUT):
         element = self.get_element(locator, timeout)
         logger.debug(f"it will clear text in element")
         element.clear()
@@ -484,3 +506,36 @@ class AppiumClient(BaseAndroid):
 
     def get_xml_struct(self) -> str:
         return self._driver.page_source
+
+    def swipe_point(self, start_point: ClickPosition, end_point: ClickPosition, swipe_time: int, duration: float):
+        start_x = start_point[0]
+        start_y = start_point[1]
+        end_x = end_point[0]
+        end_y = end_point[1]
+        for i in range(swipe_time):
+            self._driver.swipe(start_x, start_y, end_x, end_y)
+            sleep(duration)
+
+    def swipe_in_element(self, element: LocatorElement, swipe_time: int, duration: float, percent: float = 0.8,
+                         director: SwipeDirectorEnum = SwipeDirectorEnum.UP):
+        """
+        滑动可滑动元素
+        :param element: 可滑动的元素
+        :param percent: 滑动幅度
+        :param swipe_time: 滑动次数
+        :param duration: 每次滑动持续时间
+        :param director: 滑动方向
+        """
+        logger.debug(f"swipe_element is {element}")
+        # 首先获取locator定位的元素， 并判断该元素是否可滑动，若不可滑动则发出警告信息
+        swipe_element = self.get_element(element)
+        if not self.get_element_attribute(swipe_element)[ElementAttributeEnum.SCROLLABLE]:
+            logger.warning(f"element is not scrollable")
+        # 其次，根据方向确定start_x, start_y, end_x, end_y
+        x, y, width, height = self.get_location(swipe_element)
+        start_x, start_y, end_x, end_y = self._get_swipe_point(x, y, width, height, director, percent)
+        logger.debug(f"swipe from {start_x}, {start_y} to {end_x}, {end_y}")
+        # 若swipe_time为None，表示滑动到顶
+        for i in range(swipe_time):
+            self._driver.swipe(start_x, start_y, end_x, end_y, duration)
+            sleep(0.5)

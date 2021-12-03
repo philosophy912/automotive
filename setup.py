@@ -40,13 +40,13 @@ setuptools.setup(
         "opencv-python>=4.5.1.48",
         "Appium-Python-Client>=0.40",
         "uiautomator2>=2.10.0",
-        "wheel>=0.34.2",
-        "pytest>=5.3.5",
+        # "wheel>=0.34.2",
+        # "pytest>=5.3.5",
         "airtest>=1.1.3",
         "ImageHash>=4.0",
         "chardet>=3.0.4",
         "pyserial>=3.4",
-        "allure-pytest>=2.8.12",
+        # "allure-pytest>=2.8.12"
     ],
     classifiers=[
         "Programming Language :: Python :: 3.6",

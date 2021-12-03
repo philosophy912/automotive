@@ -9,7 +9,7 @@
 from time import sleep
 from automotive.logger.logger import logger
 from automotive.utils.usb_relay import USBRelay
-from automotive.common.api import BasePowerActions
+from ..common.interfaces import BasePowerActions
 
 
 class RelayActions(BasePowerActions):
@@ -55,7 +55,10 @@ class RelayActions(BasePowerActions):
             else:
                 self.__relay.one_relay_channel_off(channel)
         else:
-            self.__relay.all_relay_channel_on()
+            if reverse:
+                self.__relay.all_relay_channel_on()
+            else:
+                self.__relay.all_relay_channel_off()
         sleep(interval)
 
     def channel_off(self, channel: int = None, interval: float = 1, reverse: bool = False):
@@ -75,7 +78,10 @@ class RelayActions(BasePowerActions):
             else:
                 self.__relay.one_relay_channel_on(channel)
         else:
-            self.__relay.all_relay_channel_off()
+            if reverse:
+                self.__relay.all_relay_channel_off()
+            else:
+                self.__relay.all_relay_channel_on()
         sleep(interval)
 
     def fast_on_off(self, duration: int, interval: float, channel: int, stop_status: bool = True):
@@ -106,8 +112,8 @@ class RelayActions(BasePowerActions):
         sleep(1)
         logger.info(f"随机{duration}开关继电器通道{channel}结束")
 
-    def on(self):
-        self.channel_on()
+    def on(self, reverse: bool = False):
+        self.channel_on(reverse=reverse)
 
-    def off(self):
-        self.channel_off()
+    def off(self, reverse: bool = False):
+        self.channel_off(reverse=reverse)

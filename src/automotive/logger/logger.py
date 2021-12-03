@@ -8,7 +8,7 @@
 # --------------------------------------------------------
 import os
 import sys
-from typing import List, Tuple, Any
+from typing import List, Tuple, Any, Optional
 
 import yaml
 
@@ -31,7 +31,7 @@ current_path = os.getcwd()
 log_level_type = "trace", "debug", "info", "warning", "error"
 
 
-def set_logger(level: str = "debug", folder: str = None):
+def set_logger(level: str = "debug", folder: Optional[str] = None):
     # LOG的格式
     formats = "<g>[{time:YYYY-MM-DD HH:mm:ss.SSS}]</g>" \
               "<level>[{level: ^9}]</level>|" \
@@ -145,6 +145,5 @@ logger_level, logger_folder = find_config_file(current_path, config_file_name)
 if logger_level.lower() not in log_level_type:
     logger_level = "info"
 set_logger(logger_level, logger_folder)
-
 # 返回logger对象
 logger = _logger

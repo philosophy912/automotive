@@ -9,7 +9,8 @@
 import os
 from typing import Dict, List
 
-from ..api import Reader, Testcase, calc_hash_value, point, priority_config
+from automotive.application.common.constants import Testcase, priority_config, point
+from automotive.application.common.interfaces import BaseReader, TestCases
 from automotive.logger.logger import logger
 
 try:
@@ -21,14 +22,17 @@ finally:
     from xlwings import Sheet, Book
 
 
-class StandardExcelReader(Reader):
+class StandardExcelReader(BaseReader):
 
-    def __init__(self, ignore_sheet_name: List[str] = "Summary"):
+    def __init__(self, ignore_sheet_name: List[str] = None, is_sample: bool = False):
         # 从哪一行开始读取
+        if ignore_sheet_name is None:
+            ignore_sheet_name = ["Summary"]
         self.__start_row = 3
         self.__ignore_sheet_name = ignore_sheet_name
+        self.__is_sample = is_sample
 
-    def read_from_file(self, file: str) -> Dict[str, List[Testcase]]:
+    def read_from_file(self, file: str) -> Dict[str, TestCases]:
         result = dict()
         app = xw.App(visible=False, add_book=False)
         app.display_alerts = False
@@ -49,7 +53,7 @@ class StandardExcelReader(Reader):
         logger.info("read excel done")
         return result
 
-    def __handle_sheet(self, wb: Book, sheet_name: str, result: Dict[str, List[Testcase]]):
+    def __handle_sheet(self, wb: Book, sheet_name: str, result: Dict[str, TestCases]):
         """
         解析sheet
         :param wb: workbook
@@ -61,7 +65,7 @@ class StandardExcelReader(Reader):
         testcases = self.__parse_test_case(sheet)
         result[sheet_name] = testcases
 
-    def __parse_test_case(self, sheet: Sheet) -> List[Testcase]:
+    def __parse_test_case(self, sheet: Sheet) -> TestCases:
         """
         逐个解析测试用例
         :param sheet:
@@ -72,15 +76,25 @@ class StandardExcelReader(Reader):
         for i in range(max_row + 1):
             if i > (self.__start_row - 1):
                 testcase = Testcase()
-                testcase.name = sheet.range(f"B{i}").value
-                testcase.module = sheet.range(f"C{i}").value
-                testcase.pre_condition = self.__parse_pre_condition(sheet.range(f"D{i}").value)
-                testcase.steps = self.__parse_steps(sheet.range(f"E{i}").value, sheet.range(f"F{i}").value)
-                testcase.priority = priority_config[sheet.range(f"G{i}").value]
-                testcase.identify = calc_hash_value(testcase)
-                # 避免空行的存在
-                # if testcase.name and testcase.module and len(testcase.pre_condition) > 0 \
-                #         and testcase.pre_condition and len(testcase.steps) > 0:
+                if self.__is_sample:
+                    testcase.name = sheet.range(f"C{i}").value
+                    testcase.module = sheet.range(f"B{i}").value
+                    testcase.pre_condition = self.__parse_pre_condition(sheet.range(f"D{i}").value)
+                    testcase.steps = self.__parse_steps(sheet.range(f"E{i}").value, sheet.range(f"F{i}").value)
+                    testcase.requirement = sheet.range(f"G{i}").value
+                    testcase.automation = sheet.range(f"H{i}").value.strip() == "是"
+                    testcase.priority = priority_config[sheet.range(f"I{i}").value]
+                    testcase.calc_hash()
+                else:
+                    testcase.name = sheet.range(f"C{i}").value
+                    testcase.module = sheet.range(f"B{i}").value
+                    testcase.pre_condition = self.__parse_pre_condition(sheet.range(f"E{i}").value)
+                    testcase.steps = self.__parse_steps(sheet.range(f"F{i}").value, sheet.range(f"G{i}").value)
+                    testcase.priority = priority_config[sheet.range(f"I{i}").value]
+                    testcase.calc_hash()
+                    # 避免空行的存在
+                    # if testcase.name and testcase.module and len(testcase.pre_condition) > 0 \
+                    #         and testcase.pre_condition and len(testcase.steps) > 0:
                 testcases.append(testcase)
         return testcases
 
@@ -155,7 +169,7 @@ class StandardExcelReader(Reader):
                         finally:
                             e_content = e_content.strip()
                         if step_index == e_index:
-                            # 配成一堆
+                            # 配成一对
                             exception_list.append(e_content)
                     contents[content] = exception_list
         logger.debug(f"steps  = {contents}")

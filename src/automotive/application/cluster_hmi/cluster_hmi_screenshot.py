@@ -7,11 +7,10 @@
 # @Created:     2021/5/1 - 23:53
 # --------------------------------------------------------
 from typing import List, Tuple
-
-from automotive.common.api import BaseScreenShot
+from time import sleep
 from automotive.utils.telnet_utils import TelnetUtils
 from automotive.logger.logger import logger
-from time import sleep
+from ..common.interfaces import BaseScreenShot
 
 
 class ClusterHmiScreenshot(BaseScreenShot):

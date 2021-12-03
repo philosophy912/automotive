@@ -8,6 +8,8 @@
 # --------------------------------------------------------
 import math
 import time
+from typing import Optional
+
 from automotive.logger.logger import logger
 from .konstanter import Konstanter
 
@@ -82,7 +84,7 @@ class KonstanterControl(object):
         self.__kon.set_current_limit(current)
         self.__kon.set_voltage_limit(voltage)
 
-    def set_voltage_current(self, voltage: float = None, current: float = None):
+    def set_voltage_current(self, voltage: Optional[float] = None, current: Optional[float] = None):
         """
         设置输出的电压电流值
 
@@ -141,7 +143,7 @@ class KonstanterControl(object):
         self.__kon.get_store()
         return result
 
-    def start(self, begin: int, end: int, check_time: float = 0.01, total_time: float = None):
+    def start(self, begin: int, end: int, check_time: float = 0.01, total_time: Optional[float] = None):
         """
         执行设置好的电源参数，即依次调用寄存器， begin以及end可以通过set_user_voltages以及set_voltage_current的返回值得到
 

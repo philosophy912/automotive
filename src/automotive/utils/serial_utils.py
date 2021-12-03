@@ -7,10 +7,12 @@
 # @Created:     2021/5/1 - 23:34
 # --------------------------------------------------------
 import time
-from .serial_port import SerialPort
-from .utils import SystemTypeEnum
-from automotive.logger.logger import logger
 from time import sleep
+from typing import List, Optional
+
+from .serial_port import SerialPort
+from .common.enums import SystemTypeEnum
+from ..logger.logger import logger
 
 
 class SerialUtils(object):
@@ -22,7 +24,7 @@ class SerialUtils(object):
     def serial_port(self) -> SerialPort:
         return self.__serial_port
 
-    def connect(self, port: str, baud_rate: int = 115200, log_folder: str = None):
+    def connect(self, port: str, baud_rate: int = 115200, log_folder: Optional[str] = None):
         """
         连接端口
 
@@ -65,13 +67,14 @@ class SerialUtils(object):
         """
         return self.__serial_port.read_all()
 
-    def read_lines(self) -> list:
+    def read_lines(self) -> List[str]:
         """
         读取内容
         """
         return self.__serial_port.read_lines()
 
-    def file_exist(self, file: str, check_times: int = None, interval: float = 0.5, timeout: int = 10) -> bool:
+    def file_exist(self, file: str, check_times: Optional[int] = None, interval: float = 0.5,
+                   timeout: int = 10) -> bool:
         if check_times:
             for i in range(check_times):
                 self.__serial_port.send(f"ls -l {file}")

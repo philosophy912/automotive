@@ -7,15 +7,16 @@
 # @Created:     2021/5/1 - 23:33
 # --------------------------------------------------------
 import os
-from concurrent.futures.thread import ThreadPoolExecutor
-from typing import Union, Dict, Any
-import numpy as np
-
 import cv2
 import time
 import threading
-from automotive.logger.logger import logger
+from concurrent.futures.thread import ThreadPoolExecutor
+from typing import Union, Dict, Any, Optional
+
+from ..common.typehints import NumpyArray
+from ..logger.logger import logger
 from .utils import Utils
+from ..common.constant import check_connect, camera_tips
 
 
 class CameraProperty(object):
@@ -163,25 +164,17 @@ class Camera(object):
         # 线程池句柄
         self.__thread_pool = ThreadPoolExecutor(max_workers=1)
 
-    def check_status(func):
-        """
-        检查设备是否已经连接
-        :param func: 装饰器函数
-        """
-
-        def wrapper(self, *args, **kwargs):
-            if not self.__capture:
-                raise RuntimeError("please open camera first")
-            return func(self, *args, **kwargs)
-
-        return wrapper
-
     @staticmethod
-    def __handle_frame( frame:np.ndarray, gray:bool = False):
+    def __handle_frame(frame: NumpyArray, gray: bool = False):
+        """
+        处理图像帧
+
+        :param frame: 帧
+
+        :param gray: 是否灰化
+        """
         return cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY) if gray else frame
 
-
-    @check_status
     def __take_frame(self, name: str, gray=False):
         """
         获取一帧图像并保存
@@ -238,7 +231,11 @@ class Camera(object):
         out.release()
         logger.debug("done record thread")
 
-    def open_camera(self, camera_id: int = 0, frame_id: FrameID = FrameID(), width: int = None, height: int = None):
+    def open_camera(self,
+                    camera_id: int = 0,
+                    frame_id: FrameID = FrameID(),
+                    width: Optional[int] = None,
+                    height: Optional[int] = None):
         """
         打开摄像头
 
@@ -280,7 +277,7 @@ class Camera(object):
             cv2.destroyAllWindows()
             self.__capture = None
 
-    @check_status
+    @check_connect("__capture", camera_tips)
     def stop_record(self):
         """
         停止录制
@@ -288,17 +285,19 @@ class Camera(object):
         self.__stop_flag = True
         time.sleep(1)
 
-    @check_status
+    @check_connect("__capture", camera_tips)
     def get_picture_from_record(self, path: str, gray: bool = False):
         """
         在录像过程中获取照片,与record_video配合使用
 
+        :param gray: 是否拍摄黑白图片
+        
         :param path: 截图图片的绝对路径
         """
         frame = self.__handle_frame(self.__frame, gray)
         cv2.imwrite(path, frame)
 
-    @check_status
+    @check_connect("__capture", camera_tips)
     def take_picture(self, path: str, gray: bool = False):
         """
         拍照
@@ -309,9 +308,15 @@ class Camera(object):
         """
         self.__take_frame(path, gray)
 
-    @check_status
-    def record_video(self, name: str, fps: float = 20, total_time: float = None, width: int = None,
-                     height: int = None, codec: str = 'XVID', mark: Mark = Mark()):
+    @check_connect("__capture", camera_tips)
+    def record_video(self,
+                     name: str,
+                     fps: float = 20,
+                     total_time: Optional[float] = None,
+                     width: Optional[int] = None,
+                     height: Optional[int] = None,
+                     codec: str = 'XVID',
+                     mark: Mark = Mark()):
         """
         录制视频(请在开始之前调用open_camera打开摄像头，并在结束后调用close_camera关闭摄像头)
 
@@ -379,7 +384,7 @@ class Camera(object):
         self.close_camera()
         logger.warning("如果要再次使用摄像头，请再次调用open_camera方法")
 
-    @check_status
+    @check_connect("__capture", camera_tips)
     def set_property(self, frame_id: FrameID = FrameID()):
         """
         设置摄像头参数
@@ -389,7 +394,7 @@ class Camera(object):
         for key, item in frame_id.__dict__.items():
             self.__capture.set(key, item)
 
-    @check_status
+    @check_connect("__capture", camera_tips)
     def reset_property(self):
         """
         重置所有摄像头参数为初始值
@@ -398,7 +403,7 @@ class Camera(object):
         for key, item in frame_id.__dict__.items():
             self.__capture.set(key, item)
 
-    @check_status
+    @check_connect("__capture", camera_tips)
     def get_property(self, property_name: str = '') -> Union[str, Dict[str, Any]]:
         """
         获取摄像头当前参数设置
@@ -465,6 +470,8 @@ class MicroPhone(object):
         finally:
             import sounddevice as sd
             from scipy.io import wavfile
+        # print(sd.query_devices())
+        # sd.default.device[0] = 1
         recoding = sd.rec(record_time * self.__sample_rate, samplerate=self.__sample_rate,
                           channels=self.__channels, blocking=True)
         logger.debug(f"writing record data to file[{record_file}]")

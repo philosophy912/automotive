@@ -6,11 +6,13 @@
 # @Author:      lizhe
 # @Created:     2021/5/1 - 23:55
 # --------------------------------------------------------
-from automotive.common.api import BaseSocketDevice
+
 from time import sleep
-from automotive.logger import logger
+from automotive.logger.logger import logger
 from automotive.utils.serial_utils import SerialUtils
-from automotive.utils.utils import Utils, SystemTypeEnum
+from automotive.utils.utils import Utils
+from automotive.utils.common.enums import SystemTypeEnum
+from ..common.interfaces import BaseSocketDevice
 
 
 class QnxDevice(BaseSocketDevice):

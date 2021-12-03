@@ -6,21 +6,51 @@
 # @Author:      lizhe
 # @Created:     2021/5/2 - 0:01
 # --------------------------------------------------------
-from typing import Any, Dict, Tuple, Union, List
+from typing import Any, Dict, Union, List
 
+from automotive.core.can.message import Message
 from automotive.logger.logger import logger
 from automotive.core.can.can_service import CANService
-from automotive.common.api import BaseDevice
+from ..common.interfaces import BaseDevice
+from automotive.core.can.common.enums import CanBoxDeviceEnum
 
 
 class CanActions(BaseDevice):
     """
-    CAN盒操作类
+    CAN盒操作类， 提供了以下的方法
+
+    1、send_default_messages， 发送过滤CAN总线的默认值，建议过滤掉被测对象发出的消息， (默认过滤了网络管理报文和诊断报文)
+
+    2、send_random_messages， 随机发送CAN信号
+
+    3、send_message 发送CAN信号(根据帧ID和信号值发送消息)
+
+    4、receive_message 接受信号(根据帧ID和信号值接收消息)
+
+    5、check_message 检查信号 (需要手动的获取总线的消息， 建议在操作之前清除消息，并在操作后调用get_messages获取消息)
+
+    6、get_messages 获取总线接收到的所有帧消息
+
+    7、clear_messages 清除总线接收到的所有帧消息
+
+    如果要使用CANService的原生方法，可以使用实例化后的对象.can_service调用， 如
+
+    actions = CanActions(messages)
+
+    action.can_service.send_can_message_by_id_or_name(0x152)
     """
 
-    def __init__(self, messages: Dict[str, Any]):
+    def __init__(self, messages: Union[str, Dict[str, Any]], can_fd: bool = False,
+                 can_box_device: CanBoxDeviceEnum = None):
+        """
+        初始化类
+        :param messages: DBC文件或者转换后的产物
+        :param can_fd: 是否CAN FD
+        """
         super().__init__()
         self.__can = None
+        self.__can_fd = can_fd
+        self.__can_box_device = can_box_device
         self.__messages = messages
 
     @property
@@ -32,7 +62,11 @@ class CanActions(BaseDevice):
         打开can
         """
         logger.info("初始化CAN模块")
-        self.__can = CANService(self.__messages)
+        if self.__can_fd:
+            logger.info(f"使用CAN FD模式")
+        else:
+            logger.info(f"使用Standard CAN模式")
+        self.__can = CANService(self.__messages, can_box_device=self.__can_box_device, can_fd=self.__can_fd)
         self.__can.open_can()
         logger.info(f"*************CAN模块初始化成功*************")
 
@@ -42,19 +76,6 @@ class CanActions(BaseDevice):
         """
         logger.info("关闭CAN盒子")
         self.__can.close_can()
-
-    def reverse_on(self, signal: Tuple[int, str, int]):
-        """
-        发送倒档信号
-
-        :param signal: signal配置 如 [0x150, "signal_name", 0x1]
-        """
-        logger.info(f"发送倒档信号")
-        msg = signal[0]
-        signal_name = signal[1]
-        signal_value = signal[2]
-        logger.info(f"发送msg为[{msg}],signal名字为[{signal_name}]，值为[{signal_value}]到CAN总线")
-        self.__can.send_can_signal_message(msg, {signal_name, signal_value})
 
     def send_default_messages(self, node_name: Union[str, List[str]] = None):
         """
@@ -84,7 +105,7 @@ class CanActions(BaseDevice):
             logger.info(f"默认消息为{default_message}")
         self.__can.send_random(filter_sender, cycle_time, interval, default_message)
 
-    def send_can_signal_message(self, msg: Union[int, str], signal: Dict[str, int]):
+    def send_message(self, msg: Union[int, str], signal: Dict[str, int]):
         """
         根据矩阵表中定义的Messages，来设置并发送message。
 
@@ -100,7 +121,7 @@ class CanActions(BaseDevice):
         logger.info(f"发送{hex(msg_id)}, 信号是{signal}")
         self.__can.send_can_signal_message(msg, signal)
 
-    def receive_can_message_signal_value(self, message_id: int, signal_name: str) -> float:
+    def receive_message(self, message_id: int, signal_name: str) -> float:
         """
         接收CAN上收到的消息并返回指定的signal的值， 如果Message不是在messages中已定义的，则回抛出异常
 
@@ -115,36 +136,44 @@ class CanActions(BaseDevice):
         logger.info(f"Message[{hex(message_id)}]中的信号{signal_name}的值是{value}")
         return value
 
-    def is_signal_value_changed(self, msg_id: int, signal_name: str, continue_time: int = 10, ) -> bool:
+    def check_message(self, stack: List[Message], message_id: int, signal_name: str,
+                      expect_value: int, count: int = None, exact: bool = True) -> bool:
         """
-        检测某个msg中某个signal是否有变化
+        检查信号
+        :param stack: 记录的message数据， 调用get_messages方法获取
 
-        :param msg_id: 信号ID
+        :param message_id:  帧ID
 
-        :param signal_name: 信号名称
+        :param signal_name: 信号名字
 
-        :param continue_time: 检测持续时间， 默认10秒
+        :param expect_value: 期望值
 
-        :return:
-            True: 有变化
+        :param count: 应该接收到的数量
 
-            False: 没有变化
+        :param exact: 是否
+
+        :return: 正确/错误
         """
-        logger.info(f"检查{hex(msg_id)}中的信号{signal_name}的值是否有变化")
-        value = self.__can.is_signal_value_changed(msg_id, signal_name, continue_time)
-        logger.info(f"Messages[{hex(msg_id)}]中的信号{signal_name}的值被更改过")
-        return value
-
-    def is_can_bus_lost(self, continue_time: int = 5) -> bool:
-        """
-        can总线是否数据丢失，如果检测周期内有一帧can信号表示can网络没有中断
-
-        :param continue_time: 清空数据，10s内收不到任何的CAN消息表示CAN总线丢失
-        """
-        logger.info(f"检查CAN总线是否已丢失")
-        result = self.__can.is_can_bus_lost(continue_time)
+        logger.info(f"检查{hex(message_id)}中的信号{signal_name},期望值是{expect_value}")
+        if count:
+            logger.info(f"该值应该有{count}个")
+        result = self.__can.check_signal_value(stack, message_id, signal_name, exact, count, exact)
         if result:
-            logger.warning(f"**************************检查CAN总线已丢失**************************")
+            logger.info("检查结果是通过的")
         else:
-            logger.info(f"检查CAN总线没有丢失")
+            logger.info("检查结果是不通过的")
         return result
+
+    def get_messages(self) -> List[Message]:
+        """
+        获取总线接收的消息
+        :return:
+        """
+        return self.__can.get_stack()
+
+    def clear_messages(self):
+        """
+        清除总线接收的消息
+        :return:
+        """
+        self.__can.clear_stack_data()

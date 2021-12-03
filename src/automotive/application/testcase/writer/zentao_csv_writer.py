@@ -9,12 +9,12 @@
 import csv
 from typing import Dict, List, Tuple
 
+from automotive.application.common.interfaces import BaseWriter, TestCases
 from automotive.logger.logger import logger
-from ..api import Writer, Testcase, get_module
 
 
-class ZentaoCsvWriter(Writer):
-    def write_to_file(self, file: str, testcases: Dict[str, List[Testcase]]):
+class ZentaoCsvWriter(BaseWriter):
+    def write_to_file(self, file: str, testcases: Dict[str, TestCases]):
         """
         把测试用例写入到excel文件中去
 
@@ -33,7 +33,7 @@ class ZentaoCsvWriter(Writer):
                 f_csv.writerow(file_header)
                 f_csv.writerows(contents)
 
-    def __convert_csv_testcases(self, module: str, testcases: List[Testcase]) -> List[List[str]]:
+    def __convert_csv_testcases(self, module: str, testcases: TestCases) -> List[List[str]]:
         """
         根据模板文件生成相关的内容
         :param testcases: 测试用例列表
@@ -65,7 +65,7 @@ class ZentaoCsvWriter(Writer):
             requirement_id = f"({testcase.requirement_id})"
             # 统一成了字符串格式，方便处理
             # 需要特别处理module
-            module_name, module_id = get_module(module)
+            module_name, module_id = self._get_module(module)
             new_module = f"{module_name}({module_id})"
             line = [new_module, test_case_name, steps, exception, keyword, test_case_type,
                     str(priority), status, phase, pre_condition, requirement_id]

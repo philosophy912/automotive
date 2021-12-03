@@ -7,10 +7,11 @@
 # @Created:     2021/7/3 - 22:37
 # --------------------------------------------------------
 import os
-from typing import Dict, List, Tuple, Any
+from typing import Dict, List, Tuple
 
+from automotive.application.common.constants import priority_config, column_config
+from automotive.application.common.interfaces import BaseWriter, TestCases
 from automotive.logger.logger import logger
-from ..api import Writer, Testcase, column_config, get_module, priority_config
 
 try:
     import xlwings as xw
@@ -22,17 +23,19 @@ finally:
     from xlwings.constants import DVType
 
 
-class StandardExcelWriter(Writer):
+class StandardExcelWriter(BaseWriter):
 
-    def __init__(self):
+    def __init__(self, is_sample: bool = False):
         self.__start_row = 3
+        self.__is_sample = is_sample
 
-    def write_to_file(self, file: str, testcases: Dict[str, List[Testcase]]):
+    def write_to_file(self, file: str, testcases: Dict[str, TestCases], need_format: bool = True):
         """
-            把测试用例写入到excel文件中去
-            :param file:  输出的excel文件
-            :param testcases:  测试用例集合，字典类型
-            """
+        把测试用例写入到excel文件中去
+        :param file:  输出的excel文件
+        :param testcases:  测试用例集合，字典类型
+        :param need_format: 是否格式化单元格
+        """
         self._check_testcases(testcases)
         logger.debug(f"testcases is {testcases}")
         template = self.__get_template_file()
@@ -46,7 +49,7 @@ class StandardExcelWriter(Writer):
         index = 1
         for module, testcase in testcases.items():
             logger.debug(f"module is {module}")
-            module_name, module_id = get_module(module)
+            module_name, module_id = self._get_module(module)
             logger.debug(f"module_name = {module_name} and module_id = {module_id}")
             contents = self.__convert_testcases(testcase)
             logger.info(f"write [{module_name}].........")
@@ -58,10 +61,11 @@ class StandardExcelWriter(Writer):
             logger.debug(f"写入sheet名字{new_sheet.name}")
             # 写入内容到excel中并格式化单元格
             self.__write_content_to_cell(new_sheet, contents)
-            # 格式化数据 [特别影响效率，会非常慢]
-            self.__format_excel(new_sheet)
-            # 写公式
-            self.__write_formula(summary_sheet, module, index, "A")
+            if need_format:
+                # 格式化数据 [特别影响效率，会非常慢]
+                self.__format_excel(new_sheet)
+                # 写公式
+                self.__write_formula(summary_sheet, module, index, "A")
             index += 1
         self.__write_summary(summary_sheet, index)
         # 删除module_sheet
@@ -75,16 +79,18 @@ class StandardExcelWriter(Writer):
             logger.debug("app kill fail")
         logger.info(f"write to file [{file}] done")
 
-    @staticmethod
-    def __get_template_file(template: str = None):
+    def __get_template_file(self, template: str = None):
         if not template:
             logger.debug(__file__)
             # 只考虑windows的情况, 找寻当前文件的文件夹所在路径
             directory, file = os.path.split(__file__)
-            template = fr"{directory}\template.xlsx"
+            if self.__is_sample:
+                template = fr"{directory}\template_sample.xlsx"
+            else:
+                template = fr"{directory}\template.xlsx"
         return template
 
-    def __convert_testcases(self, testcases: List[Testcase]) -> List[Any]:
+    def __convert_testcases(self, testcases: TestCases) -> List[Tuple]:
         """
         根据模板文件生成相关的内容
         :param testcases: 测试用例列表
@@ -109,14 +115,20 @@ class StandardExcelWriter(Writer):
                 exception = exception.replace(exception[0], '', 1)
             priority = testcase.priority
             requirement_id = testcase.requirement_id
+            requirement = testcase.requirement
+            automation = "是" if testcase.automation else "否"
             # *********************** 如果excel变化，需要修改这里 ***********************
-            line = (index, module_id, test_case_name, sub_module, pre_condition,
-                    steps, exception, requirement_id, priority_config[int(priority)])
+            if self.__is_sample:
+                line = (index, testcase.category, test_case_name, pre_condition, steps,
+                        exception, requirement, automation, priority_config[int(priority)])
+            else:
+                line = (index, module_id, test_case_name, sub_module, pre_condition,
+                        steps, exception, requirement_id, priority_config[int(priority)])
             logger.debug(f"{index} line value is {line}")
             result.append(line)
         return result
 
-    def __write_content_to_cell(self, sheet: Sheet, contents: List[Any]):
+    def __write_content_to_cell(self, sheet: Sheet, contents: List[Tuple]):
         """
         一行一行写入数据
         :param sheet: sheet
@@ -187,11 +199,11 @@ class StandardExcelWriter(Writer):
         }
         for key, value in cells.items():
             cell_range = summary_sheet.range(f"{key}{actual_index}")
-            is_formula, is_percent, value = value
+            is_formula, is_percent, cell_value = value
             if is_formula:
-                cell_range.value = value
+                cell_range.value = cell_value
             else:
-                cell_range.formula = value
+                cell_range.formula = cell_value
             if is_percent:
                 cell_range.api.NumberFormat = "0.00%"
             self.__set_border(cell_range, border_width=3)

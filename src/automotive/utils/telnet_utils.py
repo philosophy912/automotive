@@ -7,11 +7,12 @@
 # @Created:     2021/5/1 - 23:34
 # --------------------------------------------------------
 import time
+from time import sleep
 from telnetlib import Telnet
 
-from .utils import SystemTypeEnum
-from automotive.logger.logger import logger
-from time import sleep
+from .common.enums import SystemTypeEnum
+from ..logger.logger import logger
+from ..common.constant import check_connect, connect_tips
 
 
 class TelnetUtils(object):
@@ -20,19 +21,6 @@ class TelnetUtils(object):
         self.__tn = Telnet()
         self.__ip_address = None
         self.__flag = False
-
-    def check_status(func):
-        """
-        检查设备是否已经连接
-        :param func: 装饰器函数
-        """
-
-        def wrapper(self, *args, **kwargs):
-            if not self.__flag:
-                raise RuntimeError("please connect target first")
-            return func(self, *args, **kwargs)
-
-        return wrapper
 
     @staticmethod
     def __codec(content: str, next_line: bool = True) -> bytes:
@@ -60,7 +48,7 @@ class TelnetUtils(object):
         """
         return content.decode("ascii")
 
-    @check_status
+    @check_connect("__flag", connect_tips)
     def write(self, content: str, interval: float = 0.5):
         """
         写入telnet
@@ -73,7 +61,7 @@ class TelnetUtils(object):
         self.__tn.write(self.__codec(content))
         sleep(interval)
 
-    @check_status
+    @check_connect("__flag", connect_tips)
     def read(self) -> str:
         """
         从telnet中读取内容
@@ -82,7 +70,7 @@ class TelnetUtils(object):
         """
         return self.__decode(self.__tn.read_very_eager())
 
-    @check_status
+    @check_connect("__flag", connect_tips)
     def file_exist(self, file: str, check_times: int = 3, interval: float = 0.5) -> bool:
         """
         检查文件是否存在
@@ -104,7 +92,7 @@ class TelnetUtils(object):
         logger.debug(f"{file} is not exist")
         return False
 
-    @check_status
+    @check_connect("__flag", connect_tips)
     def copy_file(self, remote_folder: str, target_folder: str, system_type: SystemTypeEnum, timeout: float = 300):
         """
         拷贝远程文件夹下所有的文件到目标文件夹下, 由于ssh是阻塞式，所以无需等待

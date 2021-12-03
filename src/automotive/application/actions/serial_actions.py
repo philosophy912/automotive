@@ -6,9 +6,12 @@
 # @Author:      lizhe
 # @Created:     2021/5/2 - 0:02
 # --------------------------------------------------------
+from typing import List
+
 from automotive.utils.serial_utils import SerialUtils
 from automotive.logger.logger import logger
-from automotive.common.api import BaseDevice
+from automotive.utils.common.enums import SystemTypeEnum
+from ..common.interfaces import BaseDevice
 
 
 class SerialActions(BaseDevice):
@@ -45,13 +48,81 @@ class SerialActions(BaseDevice):
         logger.info("关闭串口")
         self.__serial.disconnect()
 
+    def write(self, command: str):
+        """
+        向串口写入数据
+        :param command:
+        """
+        self.__serial.write(command)
+
+    def read(self) -> str:
+        """
+        从串口中读取数据
+        :return:
+        """
+        return self.__serial.read()
+
+    def read_lines(self) -> List[str]:
+        """
+        从串口中读取数据，按行来读取
+        :return:
+        """
+        return self.__serial.read_lines()
+
     def clear_buffer(self):
         """
         清空串口缓存数据
         """
-        self.__serial.serial_port.read_all()
+        self.read()
 
-    def check_reset_text(self, contents: str) -> bool:
+    def file_exist(self, file: str, check_times: int = None, interval: float = 0.5, timeout: int = 10) -> bool:
+        """
+        检查文件是否存在
+
+        :param file: 文件名(绝对路径)
+
+        :param check_times:  检查次数
+
+        :param interval:  间隔时间
+
+        :param timeout: 超时时间
+
+        :return: 存在/不存在
+        """
+        logger.info(f"检查文件{file}是否存在")
+        return self.__serial.file_exist(file, check_times, interval, timeout)
+
+    def login(self, username: str, password: str, double_check: bool = False, login_locator: str = "login"):
+        """
+        登陆系统
+
+        :param username: 用户名
+
+        :param password: 密码
+
+        :param double_check: 登陆后的二次检查
+
+        :param login_locator:  登陆定位符
+        """
+        logger.info(f"登陆系统，用户名{username}, 密码{password}")
+        self.__serial.login(username, password, double_check, login_locator)
+
+    def copy_file(self, remote_folder: str, target_folder: str, system_type: SystemTypeEnum, timeout: float = 300):
+        """
+        复制文件
+
+        :param remote_folder: 原始文件
+
+        :param target_folder: 目标文件夹
+
+        :param system_type: 系统类型，目前支持QNX和Linux
+
+        :param timeout: 超时时间
+        """
+        logger.info(f"复制{remote_folder}下面所有的文件到{target_folder}")
+        self.__serial.copy_file(remote_folder, target_folder, system_type, timeout)
+
+    def check_text(self, contents: str) -> bool:
         """
         检查是否重启
         :param contents: 重启的标识内容
@@ -60,7 +131,7 @@ class SerialActions(BaseDevice):
             False: 串口输出没有找到匹配的内容
         """
         logger.warning("使用前请调用clear_buffer方法清除缓存")
-        data = self.__serial.serial_port.read_all()
+        data = self.read()
         result = True
         for content in contents:
             logger.debug(f"现在检查{content}是否在串口数据中存在")

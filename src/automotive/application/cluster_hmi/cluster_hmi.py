@@ -6,15 +6,16 @@
 # @Author:      lizhe
 # @Created:     2021/5/1 - 23:53
 # --------------------------------------------------------
+import time
 from time import sleep
 from typing import List
 
-from automotive.common.api import BaseSocketDevice
 from .cluster_hmi_screenshot import ClusterHmiScreenshot
 from automotive.utils.ftp_utils import FtpUtils
 from automotive.utils.telnet_utils import TelnetUtils
 from automotive.logger.logger import logger
-import time
+from ..common.interfaces import BaseSocketDevice
+
 
 _start_service_list = "clusterNormal_service", "safety", "GaugeMagServer", "cluster_iviinterface"
 

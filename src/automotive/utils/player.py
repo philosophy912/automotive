@@ -9,9 +9,9 @@
 import os
 
 from time import sleep
-from typing import Union
+from typing import Union, Optional
 
-from automotive.logger import logger
+from ..logger.logger import logger
 
 
 class Player(object):
@@ -69,7 +69,7 @@ class Player(object):
             text = text.decode('utf-8')
         self.speaker.Speak(text)
 
-    def play_audio(self, filename: str, playtime: float = None, loops: int = 0, start: float = 0.0,
+    def play_audio(self, filename: str, playtime: Optional[float] = None, loops: int = 0, start: float = 0.0,
                    timeout: int = 300):
         """
         播放电脑端音频文件

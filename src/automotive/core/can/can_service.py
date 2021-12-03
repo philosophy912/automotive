@@ -10,80 +10,70 @@ import time
 import random
 import copy
 from time import sleep
-from typing import Tuple, Union, List, Any, Dict
+from typing import Tuple, Union, List, Any, Dict, Optional
 
-from automotive.logger.logger import logger
-from .peakcan import PCanBus
-from .usbcan import UsbCanBus
-from .api import CanBoxDevice, BaseCanBus
-from ..singleton import Singleton
+from .common.typehints import MessageType, FilterNode, MessageIdentity
 from .message import Message, get_message
+from .common.interfaces import BaseCanBus
+from .common.enums import CanBoxDeviceEnum, BaudRateEnum
+from .hardware.itek.itek_usb_can_bus import ItekUsbCanBus
+from .hardware.peakcan.pcan_bus import PCanBus
+from .hardware.tscan.tsmaster_bus import TsMasterCanBus
+from .hardware.usbcan.usb_can_bus import UsbCanBus
+from automotive.common.singleton import Singleton
+from automotive.logger.logger import logger
 
 
-def __get_can_bus(can_box_device: CanBoxDevice) -> BaseCanBus:
-    if can_box_device == CanBoxDevice.PEAKCAN:
+def __get_can_bus(can_box_device: CanBoxDeviceEnum, baud_rate: BaudRateEnum, can_fd: bool) -> BaseCanBus:
+    if can_box_device == CanBoxDeviceEnum.PEAKCAN:
         logger.info("use pcan")
-        return PCanBus()
+        return PCanBus(baud_rate=baud_rate, can_fd=can_fd)
+    elif can_box_device == CanBoxDeviceEnum.TSMASTER:
+        logger.info("use tsmaster")
+        return TsMasterCanBus(baud_rate=baud_rate, can_fd=can_fd)
+    elif can_box_device == CanBoxDeviceEnum.CANALYST or can_box_device == CanBoxDeviceEnum.USBCAN:
+        return UsbCanBus(can_box_device, baud_rate=baud_rate, can_fd=can_fd)
+    elif can_box_device == CanBoxDeviceEnum.ITEK:
+        return ItekUsbCanBus(baud_rate=baud_rate, can_fd=can_fd)
     else:
-        logger.info("use can box")
-        return UsbCanBus(can_box_device)
+        raise RuntimeError(f"{can_box_device.value} not support")
 
 
-def __get_can_box_device() -> CanBoxDevice:
+def get_can_box_device(can_box_device: CanBoxDeviceEnum, baud_rate: BaudRateEnum,
+                       can_fd: bool) -> Tuple[CanBoxDeviceEnum, BaseCanBus]:
     """
     获取can盒子的类型， 依次从PCan找到CANALYST然后到USBCAN
     :return: can盒类型
     """
-    can = PCanBus()
-    try:
-        can.open_can()
-        if can.is_open():
-            can.close_can()
-            return CanBoxDevice.PEAKCAN
-    except RuntimeError:
-        logger.debug("open PEAKCAN failed")
-    can = UsbCanBus(can_box_device=CanBoxDevice.CANALYST)
-    try:
-        can.open_can()
-        if can.is_open():
-            can.close_can()
-            return CanBoxDevice.CANALYST
-    except RuntimeError:
-        logger.debug("open CANALYST failed")
-    can = UsbCanBus(can_box_device=CanBoxDevice.USBCAN)
-    try:
-        can.open_can()
-        if can.is_open():
-            can.close_can()
-            return CanBoxDevice.USBCAN
-    except RuntimeError:
-        logger.debug("open USBCAN failed")
-    raise RuntimeError("No device found, is can box connected")
+    if can_box_device:
+        return can_box_device, __get_can_bus(can_box_device, baud_rate, can_fd)
+    else:
+        for key, value in CanBoxDeviceEnum.__members__.items():
+            logger.info(f"try to open {key}")
+            can = __get_can_bus(value, baud_rate, can_fd)
+            try:
+                can.open_can()
+                sleep(1)
+                can.close_can()
+                return can_box_device, can
+            except RuntimeError:
+                logger.debug(f"open {value.value} failed")
+        raise RuntimeError("No device found, is can box connected")
 
 
-def get_can_bus(can_box_device: CanBoxDevice) -> Tuple[CanBoxDevice, BaseCanBus]:
-    """
-    获取Can bus实例，并返回CAN设备的类型
-
-    :param can_box_device: can box的设备类型
-
-    :return: CAN设备的类型， Can bus实例
-    """
-    if not can_box_device:
-        can_box_device = __get_can_box_device()
-    return can_box_device, __get_can_bus(can_box_device)
-
-
-class BaseCan(metaclass=Singleton):
+class Can(metaclass=Singleton):
     """
     CAN设备操作的父类，实现CAN的最基本的操作， 如打开、关闭设备, 传输、接收CAN消息，停止传输CAN消息，查看CAN设备打开状态等
     """
 
-    def __init__(self, can_box_device: CanBoxDevice = None):
-        self._can_box_device, self._can = get_can_bus(can_box_device)
+    def __init__(self,
+                 can_box_device: Optional[CanBoxDeviceEnum] = None,
+                 baud_rate: BaudRateEnum = BaudRateEnum.HIGH,
+                 can_fd: bool = False):
+        self._can_box_device, self._can = get_can_box_device(can_box_device, baud_rate, can_fd)
 
     @property
-    def can_box_device(self) -> CanBoxDevice:
+    def can_box_device(self) -> CanBoxDeviceEnum:
         return self._can_box_device
 
     def open_can(self):
@@ -114,18 +104,6 @@ class BaseCan(metaclass=Singleton):
         """
         self._can.resume_transmit(message_id)
 
-    def is_open(self) -> bool:
-        """
-        CAN设备是否被打开
-
-        :return:
-
-            True 打开
-
-            False 关闭
-        """
-        return self._can.is_open()
-
     def transmit(self, message: Message):
         """
         发送CAN消息帧
@@ -133,6 +111,14 @@ class BaseCan(metaclass=Singleton):
         :param message CAN消息帧，Message对象
         """
         self._can.transmit(message)
+
+    def transmit_one(self, message: Message):
+        """
+        仅发一帧数据
+
+        :param message:
+        """
+        self._can.transmit_one(message)
 
     def receive(self, message_id: int) -> Message:
         """
@@ -144,8 +130,22 @@ class BaseCan(metaclass=Singleton):
         """
         return self._can.receive(message_id)
 
+    def clear_stack_data(self):
+        """
+        清除栈数据
+        """
+        self._can.clear_stack_data()
 
-class CANService(BaseCan):
+    def get_stack(self) -> List[Message]:
+        """
+        获取当前栈中所收到的消息
+
+        :return:  栈中数据List<Message>
+        """
+        return self._can.get_stack()
+
+
+class CANService(Can):
     """
     CAN的服务类，主要用于CAN信号的发送，接收等操作。
 
@@ -173,16 +173,22 @@ class CANService(BaseCan):
 
     """
 
-    def __init__(self, messages: Union[str, Dict[str, Any]], encoding: str = "utf-8",
-                 can_box_device: CanBoxDevice = None):
-        super().__init__(can_box_device)
+    def __init__(self,
+                 messages: Union[str, MessageType],
+                 encoding: str = "utf-8",
+                 can_box_device: Optional[CanBoxDeviceEnum] = None,
+                 baud_rate: BaudRateEnum = BaudRateEnum.HIGH,
+                 can_fd: bool = False):
+        super().__init__(can_box_device, baud_rate, can_fd)
         logger.debug(f"read message from file {messages}")
         self.__messages, self.__name_messages = get_message(messages, encoding=encoding)
         # 备份message, 可以作为初始值发送
         self.__backup_messages = copy.deepcopy(self.__messages)
         self.__backup_name_messages = copy.deepcopy(self.__name_messages)
-        # 用于记录当前栈中msg的最后一个数据的时间点
-        self.__last_msg_time_in_stack = dict()
+
+    @property
+    def can_bus(self) -> BaseCanBus:
+        return self._can
 
     @property
     def name_messages(self) -> Dict[str, Any]:
@@ -213,7 +219,7 @@ class CANService(BaseCan):
         return msg
 
     @staticmethod
-    def __is_message_in_node(message: Message, filter_sender: Union[str, Tuple[str]]) -> bool:
+    def __is_message_in_node(message: Message, filter_sender: FilterNode) -> bool:
         sender = message.sender.lower()
         if isinstance(filter_sender, str):
             return sender == filter_sender.lower()
@@ -223,7 +229,9 @@ class CANService(BaseCan):
                     return True
             return False
 
-    def __filter_messages(self, filter_sender: Union[str, List[str]] = None, filter_nm: bool = True,
+    def __filter_messages(self,
+                          filter_sender: Optional[FilterNode] = None,
+                          filter_nm: bool = True,
                           filter_diag: bool = True) -> List[Message]:
         """
         根据条件过滤相应的消息帧
@@ -248,11 +256,15 @@ class CANService(BaseCan):
                 messages.append(message)
         return messages
 
-    def __send_message(self, message: Message, default_message: Dict[str, str] = None,
+    def __send_message(self,
+                       message: Message,
+                       default_message: Optional[Dict[str, str]] = None,
                        is_random_value: bool = False):
         """
         计算值并发送消息
+
         :param message: 消息
+
         :param default_message: 默认发送的消息
         """
         msg_id = message.msg_id
@@ -279,14 +291,17 @@ class CANService(BaseCan):
         except RuntimeError as e:
             logger.error(f"transmit message {hex(msg_id)} failed, error is {e}")
 
-    def __send_messages(self, messages: List[Message], interval: float = 0, default_message: Dict[str, str] = None,
+    def __send_messages(self,
+                        messages: List[Message],
+                        interval: float = 0,
+                        default_message: Optional[Dict[str, str]] = None,
                         is_random_value: bool = False):
         for message in messages:
             self.__send_message(message, default_message, is_random_value)
         if interval > 0:
             sleep(interval)
 
-    def send_can_message_by_id_or_name(self, msg: Union[int, str]):
+    def send_can_message_by_id_or_name(self, msg: MessageIdentity):
         """
         据矩阵表中定义的Messages，通过msg ID或者name来发送message到网络中
 
@@ -302,7 +317,7 @@ class CANService(BaseCan):
             raise RuntimeError(f"msg only support str or int, but now is {msg}")
         self.send_can_message(send_msg, False)
 
-    def send_can_signal_message(self, msg: Union[int, str], signal: Dict[str, int]):
+    def send_can_signal_message(self, msg: MessageIdentity, signal: Dict[str, int]):
         """
         根据矩阵表中定义的Messages，来设置并发送message。
 
@@ -341,6 +356,7 @@ class CANService(BaseCan):
         """
         send_msg.check_message(type_)
         if not type_:
+            logger.debug("now update message")
             send_msg.update(True)
         logger.debug(f"msg Id {hex(send_msg.msg_id)}, msg data is {list(map(lambda x: hex(x), send_msg.data))}")
         self.transmit(send_msg)
@@ -365,7 +381,7 @@ class CANService(BaseCan):
 
     def receive_can_message_signal_value(self, message_id: int, signal_name: str) -> float:
         """
-        接收CAN上收到的消息并返回指定的signal的值， 如果Message不是在messages中已定义的，则回抛出异常
+        接收CAN上收到的消息并返回指定的signal的值， 如果Message不是在messages中已定义的，则会抛出异常
 
         :param message_id: message id值
 
@@ -375,8 +391,12 @@ class CANService(BaseCan):
         """
         return self.receive_can_message(message_id).signals[signal_name].physical_value
 
-    def is_lost_message(self, msg_id: int, cycle_time: int, continue_time: int = 5, lost_period: int = None,
-                        bus_time: int = None) -> bool:
+    def is_lost_message(self,
+                        msg_id: int,
+                        cycle_time: int,
+                        continue_time: int = 5,
+                        lost_period: Optional[int] = None,
+                        bus_time: Optional[int] = None) -> bool:
         """
         判断message是否丢失
 
@@ -442,11 +462,12 @@ class CANService(BaseCan):
         time.sleep(continue_time)
         return len(self._can.get_stack()) == 0
 
-    def is_msg_value_changed(self, msg_id: int, continue_time: int = 5) -> bool:
+    @staticmethod
+    def is_msg_value_changed(stack: List[Message], msg_id: int) -> bool:
         """
         检测某个msg是否有变化，只能检测到整个8byte数据是否有变化
 
-        :param continue_time: 检测持续时间
+        :param stack: 记录下来的CAN消息
 
         :param msg_id: 信号ID
 
@@ -455,11 +476,6 @@ class CANService(BaseCan):
 
             False: 没有变化
         """
-        # 清空栈数据
-        self.clear_stack_data()
-        logger.info(f"start detect msg data, if you have any operation, please finished it in {continue_time}")
-        time.sleep(continue_time)
-        stack = self._can.get_stack()
         # 过滤掉没有用的数据
         data_list = list(filter(lambda x: x.msg_id == msg_id, stack))
         duplicate = set()
@@ -468,26 +484,22 @@ class CANService(BaseCan):
             duplicate.add(data)
         return len(duplicate) > 1
 
-    def is_signal_value_changed(self, msg_id: int, signal_name: str, continue_time: int = 10, ) -> bool:
+    @staticmethod
+    def is_signal_value_changed(stack: List[Message], msg_id: int, signal_name: str) -> bool:
         """
         检测某个msg中某个signal是否有变化
+
+        :param stack: 记录下来的CAN消息
 
         :param msg_id: 信号ID
 
         :param signal_name: 信号名称
-
-        :param continue_time: 检测持续时间， 默认10秒
 
         :return:
             True: 有变化
 
             False: 没有变化
         """
-        # 清空栈数据
-        self.clear_stack_data()
-        logger.info(f"start detect msg data, if you have any operation, please finished it in {continue_time}")
-        time.sleep(continue_time)
-        stack = self._can.get_stack()
         # 过滤掉没有用的数据
         data_list = list(filter(lambda x: x.msg_id == msg_id, stack))
         duplicate = set()
@@ -496,23 +508,12 @@ class CANService(BaseCan):
             duplicate.add(signal.value)
         return len(duplicate) > 1
 
-    def clear_stack_data(self):
-        """
-        清除栈数据
-        """
-        # 清除message记录的时间
-        self.__last_msg_time_in_stack.clear()
-        self._can.clear_stack_data()
-
-    def get_stack(self) -> list:
-        """
-        获取当前栈中所收到的消息
-
-        :return:  栈中数据List<Message>
-        """
-        return self._can.get_stack()
-
-    def check_signal_value(self, stack: List[Message], msg_id: int, sig_name: str, expect_value: int, count: int = None,
+    def check_signal_value(self,
+                           stack: List[Message],
+                           msg_id: int,
+                           signal_name: str,
+                           expect_value: int,
+                           count: Optional[int] = None,
                            exact: bool = True):
         """
         检查signal的值是否符合要求
@@ -521,7 +522,7 @@ class CANService(BaseCan):
 
         :param msg_id: msg id
 
-        :param sig_name:  sig name
+        :param signal_name:  sig name
 
         :param expect_value: expect value
 
@@ -538,7 +539,7 @@ class CANService(BaseCan):
                 logger.debug(f"msg data = {msg.data}")
                 # 此时的msg只有data，需要调用方法更新内容
                 message = self.__set_message(msg.msg_id, msg.data)
-                actual_value = message.signals[sig_name].physical_value
+                actual_value = message.signals[signal_name].physical_value
                 logger.debug(f"actual_value = {actual_value}")
                 if actual_value == expect_value:
                     msg_count += 1
@@ -549,12 +550,16 @@ class CANService(BaseCan):
                 return msg_count >= count
         else:
             # 直接读取can上的最后的值
-            actual_value = self.receive_can_message_signal_value(msg_id, sig_name)
+            actual_value = self.receive_can_message_signal_value(msg_id, signal_name)
             logger.info(f"current value is {actual_value}, expect value is {expect_value}")
             return expect_value == actual_value
 
-    def send_random(self, filter_sender: Union[str, List[str]] = None, cycle_time: int = None, interval: float = 0.1,
-                    default_message: Dict[str, str] = None, filter_nm: bool = True, filter_diag: bool = True):
+    def send_random(self,
+                    filter_sender: Optional[FilterNode] = None,
+                    cycle_time: Optional[int] = None, interval: float = 0.1,
+                    default_message: Optional[Dict[str, str]] = None,
+                    filter_nm: bool = True,
+                    filter_diag: bool = True):
         """
         随机发送信号
 
@@ -585,7 +590,7 @@ class CANService(BaseCan):
             while True:
                 self.__send_messages(messages, interval, default_message, True)
 
-    def send_messages(self, filter_sender: Union[str, List[str]] = None):
+    def send_messages(self, filter_sender: Optional[FilterNode] = None):
         """
         发送除了filter_sender之外的所有信号，该方法用于发送出测试对象之外的所有信号
 
@@ -594,11 +599,11 @@ class CANService(BaseCan):
         messages = self.__filter_messages(filter_sender)
         self.__send_messages(messages)
 
-    def send_default_messages(self, node_name: Union[str, List[str]] = None):
+    def send_default_messages(self, filter_sender: Optional[FilterNode] = None):
         """
         发送除了node_name之外的所有信号的默认数据，该方法用于发送出测试对象之外的所有信号
 
-        :param node_name: 测试对象节点名称
+        :param filter_sender: 测试对象节点名称
         """
         self.__restore_default_message()
-        self.send_messages(node_name)
+        self.send_messages(filter_sender)

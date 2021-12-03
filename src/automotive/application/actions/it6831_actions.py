@@ -11,8 +11,8 @@ from typing import Tuple
 
 from automotive.logger.logger import logger
 from automotive.core.battery.it6831 import IT6831
-from automotive.common.api import BasePowerAdjustActions
 from automotive.utils.utils import Utils
+from ..common.interfaces import BasePowerAdjustActions
 
 
 class It6831Actions(BasePowerAdjustActions):
@@ -22,18 +22,18 @@ class It6831Actions(BasePowerAdjustActions):
 
     def __init__(self, port: str, baud_rate: int = 9600):
         super().__init__()
-        self.__it6831 = None
         self.__port = port.upper()
         self.__baud_rate = baud_rate
         # 默认开启电压
         self.__default_voltage = 12
+        logger.info("初始化IT6831电源模块")
+        self.__it6831 = IT6831(port=self.__port, baud_rate=self.__baud_rate)
 
     def open(self):
         """
         打开it6831
         """
-        logger.info("初始化IT6831电源模块")
-        self.__it6831 = IT6831(port=self.__port, baud_rate=self.__baud_rate)
+
         self.__it6831.open()
         logger.info("获取电源状态")
         self.__it6831.get_all_status()

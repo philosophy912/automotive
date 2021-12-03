@@ -16,54 +16,14 @@ import subprocess as sp
 import random
 import inspect
 import zipfile
-from datetime import datetime
-from typing import Union, List, Any, Dict, Tuple
-
 import yaml
-from enum import Enum
+from datetime import datetime
+from typing import Union, List, Any, Dict, Tuple, Optional
 
-from automotive.logger import logger
-from automotive.core.singleton import Singleton
-
-
-class SystemTypeEnum(Enum):
-    """
-    系统类型
-    """
-    QNX = "qnx"
-    LINUX = "linux"
-
-    @staticmethod
-    def from_value(value: str):
-        for key, item in SystemTypeEnum.__members__.items():
-            if value.upper() == item.value.upper():
-                return item
-        raise ValueError(f"{value} can not be found in {SystemTypeEnum.__name__}")
-
-
-class PinyinEnum(Enum):
-    """
-    枚举类，仅仅列出了拼音的类型
-
-    DIACRITICAL: 输出的拼音含有声调
-
-    NUMERICAL: 输出拼音音调以数字形式紧随拼音
-
-    STRIP: 不包含声调
-    """
-    # 输出的拼音含有声调
-    DIACRITICAL = "diacritical"
-    # 输出拼音音调以数字形式紧随拼音
-    NUMERICAL = "numerical"
-    # 不包含声调
-    STRIP = "strip"
-
-    @staticmethod
-    def from_value(value: str):
-        for key, item in PinyinEnum.__members__.items():
-            if value.upper() == item.value.upper():
-                return item
-        raise ValueError(f"{value} can not be found in {PinyinEnum.__name__}")
+from ..common.typehints import Number
+from ..logger.logger import logger
+from ..common.singleton import Singleton
+from .common.enums import PinyinEnum
 
 
 class Utils(metaclass=Singleton):
@@ -95,6 +55,15 @@ class Utils(metaclass=Singleton):
         return time.strftime(fmt, time.localtime(time.time()))
 
     def get_week(self, date_time: str, fmt: str = '%Y%m%d') -> int:
+        """
+        获取指定时间是第几周
+
+        :param date_time: 指定时间的字符串
+
+        :param fmt: 指定时间的时间格式化类型
+
+        :return: 第几周
+        """
         year, week, week_of_day = self.convert_string_datetime(date_time, fmt).date().isocalendar()
         return week
 
@@ -102,8 +71,11 @@ class Utils(metaclass=Singleton):
     def convert_datetime_string(date_time: datetime, fmt: str = '%Y%m%d_%H%M%S'):
         """
         转换时间为字符串
+
         :param date_time: 时间
+
         :param fmt: 转换格式
+
         :return 时间字符串
         """
         return date_time.strftime(fmt)
@@ -112,14 +84,17 @@ class Utils(metaclass=Singleton):
     def convert_string_datetime(date_time: str, fmt: str = '%Y%m%d_%H%M%S'):
         """
         转换字符串为时间
+
         :param date_time: 时间字符串
+
         :param fmt: 转换格式
+
         :return: 时间
         """
         return datetime.strptime(date_time, fmt)
 
     @staticmethod
-    def random_decimal(min_: Union[float, int], max_: Union[float, int]) -> Union[float, int]:
+    def random_decimal(min_: float, max_: float) -> float:
         """
         随机返回一个最小数和最大数之间的小数
 
@@ -132,7 +107,7 @@ class Utils(metaclass=Singleton):
         return random.uniform(min_, max_)
 
     @staticmethod
-    def random_int(min_: Union[float, int], max_: Union[float, int]) -> Union[float, int]:
+    def random_int(min_: int, max_: int) -> int:
         """
         随机返回一个最小数和最大数之间的整数
 
@@ -179,7 +154,7 @@ class Utils(metaclass=Singleton):
         return pinyin.get_initial(text, delimiter) if is_first else pinyin.get(text, delimiter, format_.value)
 
     @staticmethod
-    def is_type_correct(actual_: object, except_: Union[object, tuple]) -> bool:
+    def is_type_correct(actual_: Any, except_: Any) -> bool:
         """
         判断类型是否属于期望类型
 
@@ -204,25 +179,7 @@ class Utils(metaclass=Singleton):
         return inspect.stack()[1][3]
 
     @staticmethod
-    def is_sub_list(list1: List[Any], list2: List[Any]) -> bool:
-        """
-        列表list1中所有的是否包含在list2中
-
-        :param list1: 列表1
-
-        :param list2: 列表2
-
-        :return:
-            True 包含在其中
-
-            False 不包含在其中
-        """
-        list1 = set(list1)
-        list2 = set(list2)
-        return list1.issubset(list2)
-
-    @staticmethod
-    def sleep(sleep_time: float, text: str = None):
+    def sleep(sleep_time: float, text: Optional[str] = None):
         """
         带文字版的sleep，其中logger为loguru输出，级别为info
 
@@ -234,7 +191,7 @@ class Utils(metaclass=Singleton):
         if text is None:
             logger.info(f"--------------------休息{sleep_time}秒--------------------")
         else:
-            logger.info(f"--------------------休息{text},休息{sleep_time}秒--------------------")
+            logger.info(f"--------------------{text},休息{sleep_time}秒--------------------")
         integer = int(sleep_time // 1)
         decimal = sleep_time - integer
         # 超过1分钟的休眠会分段休息
@@ -245,7 +202,7 @@ class Utils(metaclass=Singleton):
             time.sleep(sleep_time)
         time.sleep(decimal)
 
-    def random_sleep(self, start: Union[int, float], end: Union[int, float]):
+    def random_sleep(self, start: Number, end: Number):
         """
         随机sleep
 
@@ -265,7 +222,7 @@ class Utils(metaclass=Singleton):
             time.sleep(sleep_time)
 
     @staticmethod
-    def text(content: str, level: str = None):
+    def text(content: str, level: Optional[str] = None):
         """
         输出文字，方便调用
 
@@ -408,7 +365,7 @@ class Utils(metaclass=Singleton):
         return filter_images
 
     @staticmethod
-    def exec_command_with_output(command: str, workspace: str = None, encoding: str = "utf-8") -> Tuple:
+    def exec_command_with_output(command: str, workspace: Optional[str] = None, encoding: str = "utf-8") -> Tuple:
         """
         有输出的执行
 
@@ -429,21 +386,50 @@ class Utils(metaclass=Singleton):
         stdout, stderr = p.communicate()
         return stdout.decode(encoding), stderr.decode(encoding)
 
-    def exec_command_must_success(self, command: str, workspace: str = None):
+    def exec_command_must_success(self, command: str, workspace: Optional[str] = None):
+        """
+        有输出的执行必须成功
+
+        :param command:  命令
+
+        :param workspace: 工作目录
+
+        :return: 输出的值
+        """
         if self.exec_command(command, workspace, True) != 0:
             logger.error(f"execute command [{command}] failed, please check it again")
             sys.exit(1)
 
-    def exec_commands_must_success(self, commands: List, workspace: str = None):
+    def exec_commands_must_success(self, commands: List, workspace: Optional[str] = None):
+        """
+        有输出的执行必须成功
+
+        :param commands:  命令集合
+
+        :param workspace: 工作目录
+
+        :return: 输出的值
+        """
         for command in commands:
             self.exec_command_must_success(command, workspace)
 
-    def exec_commands(self, commands: List, workspace: str = None, sub_process: bool = True):
+    def exec_commands(self, commands: List, workspace: Optional[str] = None, sub_process: bool = True):
+        """
+        执行命令集
+
+        :param commands:  命令集合
+
+        :param workspace: 工作目录
+
+        :param sub_process: 是否以子进程方式运行
+
+        :return: 输出的值
+        """
         for command in commands:
             self.exec_command(command, workspace, sub_process)
 
     @staticmethod
-    def exec_command(command: str, workspace: str = None, sub_process: bool = True) -> int:
+    def exec_command(command: str, workspace: Optional[str] = None, sub_process: bool = True) -> int:
         """
         执行命令, 涉及到bat命令的时候，都需要使用os.system的方式执行，否则会出问题
 

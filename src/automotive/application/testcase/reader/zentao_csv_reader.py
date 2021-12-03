@@ -9,16 +9,17 @@
 import csv
 from typing import Dict, List
 
-from ..api import Reader, Testcase, standard_header, parse_id, split_char, point
+from automotive.application.common.constants import standard_header, Testcase, split_char, point
+from automotive.application.common.interfaces import BaseReader, TestCases
 from automotive.logger.logger import logger
 
 
-class ZentaoCsvReader(Reader):
+class ZentaoCsvReader(BaseReader):
 
     def __init__(self):
         self.__module = None
 
-    def read_from_file(self, file: str) -> Dict[str, List[Testcase]]:
+    def read_from_file(self, file: str) -> Dict[str, TestCases]:
         """
         从csv中读取成测试用例
         :param file: csv文件
@@ -65,7 +66,7 @@ class ZentaoCsvReader(Reader):
         pre_condition = row[standard_header["前置条件"]]
         requirement_id = row[standard_header["相关需求"]]
         testcase = Testcase()
-        module, module_id = parse_id(module, ("(", ")"))
+        module, module_id = self._parse_id(module, ("(", ")"))
         self.__module = module
         # 此处的模块是需要name去做拆分的
         name_list = name.split(split_char)
