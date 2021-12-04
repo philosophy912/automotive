@@ -84,6 +84,8 @@ class StandardExcelReader(BaseReader):
                     testcase.requirement = sheet.range(f"G{i}").value
                     testcase.automation = sheet.range(f"H{i}").value.strip() == "是"
                     testcase.priority = priority_config[sheet.range(f"I{i}").value]
+                    test_result = sheet.range(f"M{i}").value
+                    testcase.test_result = test_result.strip().upper() if test_result else None
                     testcase.calc_hash()
                 else:
                     testcase.name = sheet.range(f"C{i}").value

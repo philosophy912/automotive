@@ -19,8 +19,6 @@ class PCanBus(BaseCanBus):
     """
 
     def __init__(self, baud_rate: BaudRateEnum = BaudRateEnum.HIGH, can_fd: bool = False):
-        if can_fd:
-            raise RuntimeError("pcan not support canfd")
         super().__init__(baud_rate=baud_rate, can_fd=can_fd)
         # PCAN实例化
         self._can = PCanDevice(can_fd)

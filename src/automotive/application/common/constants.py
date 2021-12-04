@@ -36,7 +36,7 @@ standard_header = {'所属模块': 0,
                    '前置条件': 9,
                    '相关需求': 10}
 
-priority_config = {1: "A", 2: "B", 3: "C", 4: "D", "A": 1, "B": 2, "C": 3, "D": 4}
+priority_config = {1: "A", 2: "B", 3: "C", 4: "D", 5: "", "A": 1, "B": 2, "C": 3, "D": 4, "": 5}
 
 split_char = "-"
 replace_char = "_"
@@ -44,6 +44,7 @@ point = "."
 module_prefix = "[M]"
 requirement_prefix = "[R]"
 automation_prefix = "[A]"
+results = "PASS", "FAIL", "BLOCK", "NT"
 
 
 class Testcase(object):
@@ -68,7 +69,7 @@ class Testcase(object):
         # 执行步骤
         self.steps = dict()
         # 优先级
-        self.priority = 3
+        self.priority = 5
         # 关键词
         self.keywords = ""
         # 用例类型
@@ -79,6 +80,8 @@ class Testcase(object):
         self.status = "正常"
         # 是否自动化
         self.automation = False
+        # 测试结果
+        self.test_result = None
 
     def __str__(self):
         values = []
@@ -108,6 +111,8 @@ class Testcase(object):
                 for ex in value:
                     if requirement_prefix in ex:
                         self.requirement = ex.replace(requirement_prefix, "")
+                    elif ex.strip().upper() in results:
+                        self.test_result = ex.strip().upper()
                     else:
                         values.append(ex)
                 if key.startswith(automation_prefix):
@@ -132,6 +137,7 @@ class Testcase(object):
             self.name = f"{category}_{index + 1}"
         # print("after")
         # print(self)
+        logger.debug(self)
 
     def convert(self, category: str):
         category = category.replace(split_char, replace_char)
@@ -149,7 +155,10 @@ class Testcase(object):
             self.name = key
             if self.requirement:
                 value.append(f"{requirement_prefix}{self.requirement}")
+            if self.test_result:
+                value.append(f"{self.test_result.strip().upper()}")
         self.pre_condition = []
+        logger.debug(self)
 
     def calc_hash(self):
         # total = [self.name]

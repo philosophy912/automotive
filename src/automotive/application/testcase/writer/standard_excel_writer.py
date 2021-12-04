@@ -9,7 +9,7 @@
 import os
 from typing import Dict, List, Tuple
 
-from automotive.application.common.constants import priority_config, column_config
+from automotive.application.common.constants import priority_config, column_config, results
 from automotive.application.common.interfaces import BaseWriter, TestCases
 from automotive.logger.logger import logger
 
@@ -117,10 +117,11 @@ class StandardExcelWriter(BaseWriter):
             requirement_id = testcase.requirement_id
             requirement = testcase.requirement
             automation = "是" if testcase.automation else "否"
+            test_result = testcase.test_result
             # *********************** 如果excel变化，需要修改这里 ***********************
             if self.__is_sample:
                 line = (index, testcase.category, test_case_name, pre_condition, steps,
-                        exception, requirement, automation, priority_config[int(priority)])
+                        exception, requirement, automation, priority_config[int(priority)], "", "", "", test_result)
             else:
                 line = (index, module_id, test_case_name, sub_module, pre_condition,
                         steps, exception, requirement_id, priority_config[int(priority)])
@@ -147,7 +148,6 @@ class StandardExcelWriter(BaseWriter):
         :return:
         """
         column_range = column_config.keys()
-        values = ["PASS", "FAIL", "BLOCK", "NT"]
         max_row = sheet.used_range.last_cell.row
         # 处理边框
         for i in range(max_row - 1):
@@ -160,7 +160,7 @@ class StandardExcelWriter(BaseWriter):
                     self.__set_border(cell_range, True)
                 # 测试结果
                 if column_config[column] == "测试结果":
-                    self.__set_valid_value(cell_range, values)
+                    self.__set_valid_value(cell_range, results)
 
     @staticmethod
     def __set_valid_value(cell_range: Range, values: list):
@@ -262,8 +262,7 @@ class StandardExcelWriter(BaseWriter):
         else:
             return ""
 
-    @staticmethod
-    def __convert_steps_condition(steps: Dict[str, List[str]]) -> Tuple[str, str]:
+    def __convert_steps_condition(self, steps: Dict[str, List[str]]) -> Tuple[str, str]:
         """
 
         :param steps:
@@ -275,7 +274,13 @@ class StandardExcelWriter(BaseWriter):
             # 用于定义主编号
             index = 1
             for key, value in steps.items():
-                steps_contents.append(f"{index} {key}")
+                if self.__is_sample:
+                    if key.startswith("1"):
+                        steps_contents.append(f"{key}")
+                    else:
+                        steps_contents.append(f"{index} {key}")
+                else:
+                    steps_contents.append(f"{index} {key}")
                 value_size = len(value)
                 # 用于定义子编号
                 if value_size > 0:
@@ -284,7 +289,10 @@ class StandardExcelWriter(BaseWriter):
                             exception_contents.append(f"{index} {exception}")
                     else:
                         for sub_index, exception in enumerate(value):
-                            exception_contents.append(f"{index}.{sub_index + 1} {exception}")
+                            if self.__is_sample:
+                                exception_contents.append(f"{sub_index} {exception}")
+                            else:
+                                exception_contents.append(f"{index}.{sub_index + 1} {exception}")
                 index += 1
         steps_str = "\n".join(steps_contents)
         exception_str = "\n".join(exception_contents)

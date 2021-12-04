@@ -9,6 +9,8 @@
 import importlib
 from typing import Dict, List
 
+from automotive.application.testcase.writer.standard_excel_writer import StandardExcelWriter
+
 from automotive.application.common.constants import Testcase
 from automotive.application.common.enums import FileTypeEnum
 from automotive.application.common.interfaces import BaseReader, BaseWriter
@@ -78,7 +80,10 @@ class TestCaseGenerator(object):
             if FileTypeEnum.from_extends(in_file) == FileTypeEnum.STANDARD_EXCEL:
                 self.__convert_testcases(testcases)
             logger.debug(f"testcases is {testcases}")
-            writer.write_to_file(out_file, testcases)
+            if isinstance(writer, StandardExcelWriter):
+                writer.write_to_file(out_file, testcases, need_format=False)
+            else:
+                writer.write_to_file(out_file, testcases)
             logger.info(f"read testcase from [{in_file}] and write to file [{out_file}]")
         else:
             reader = self.__get_reader(in_file, is_sample)
