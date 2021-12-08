@@ -82,8 +82,10 @@ class StandardExcelReader(BaseReader):
                     testcase.pre_condition = self.__parse_pre_condition(sheet.range(f"D{i}").value)
                     testcase.steps = self.__parse_steps(sheet.range(f"E{i}").value, sheet.range(f"F{i}").value)
                     testcase.requirement = sheet.range(f"G{i}").value
-                    testcase.automation = sheet.range(f"H{i}").value.strip() == "是"
-                    testcase.priority = priority_config[sheet.range(f"I{i}").value]
+                    automation_cell = sheet.range(f"H{i}").value
+                    testcase.automation = automation_cell == "是" if automation_cell else None
+                    priority_cell = sheet.range(f"I{i}").value
+                    testcase.priority = priority_config[priority_cell] if priority_cell else None
                     test_result = sheet.range(f"M{i}").value
                     testcase.test_result = test_result.strip().upper() if test_result else None
                     testcase.calc_hash()
@@ -131,48 +133,70 @@ class StandardExcelReader(BaseReader):
         :return:
         """
         contents = dict()
-        if steps and exception:
-            steps_list = list(filter(lambda x: self.__filter_automotive(x) and x != "", steps.split("\n")))
-            steps_list = list(map(lambda x: x.replace("、", "."), steps_list))
-            exceptions = list(filter(lambda x: self.__filter_automotive(x) and x != "", exception.split("\n")))
-            exceptions = list(map(lambda x: x.replace("、", "."), exceptions))
-            for step in steps_list:
-                # 去掉前后的空格
-                step = step.strip()
-                logger.debug(f"step = [{step}]")
-                # 容错，去掉空行
-                if step != "":
-                    # 找寻序号 固定方式，即第一个字符就是序号， 如： 1.电源ON
-                    step_index = step[0]
-                    content = step[1:]
-                    # 去掉点
-                    if content[0] == point:
-                        content = content[1:]
-                    # 去掉空格，因为格式有可能是 1 电源ON
-                    content = content.strip()
-                    exception_list = []
-                    for exc in exceptions:
-                        logger.debug(f"exc = [{exc}]")
-                        # 找寻序号，固定方式，即第一个字符就是序号
-                        e_index = exc[0]
-                        e_content = exc[1:]
+        if self.__is_sample:
+            exception_list = []
+            if steps:
+                if "\n" in steps:
+                    lines = steps.split("\n")
+                    flag = False
+                    for line in lines:
+                        if line.startswith("2"):
+                            flag = True
+                    steps_list = steps if flag else steps[1:].strip()
+                else:
+                    steps_list = steps[1:].strip()
+            else:
+                raise RuntimeError("no steps found in testcase")
+            if exception:
+                exceptions = list(filter(lambda x: self.__filter_automotive(x) and x != "", exception.split("\n")))
+                exceptions = list(map(lambda x: x.replace("、", "."), exceptions))
+                for exe in exceptions:
+                    exception_list.append(exe)
+            contents[steps_list] = exception_list
+        else:
+            if steps and exception:
+                steps_list = list(filter(lambda x: self.__filter_automotive(x) and x != "", steps.split("\n")))
+                steps_list = list(map(lambda x: x.replace("、", "."), steps_list))
+                exceptions = list(filter(lambda x: self.__filter_automotive(x) and x != "", exception.split("\n")))
+                exceptions = list(map(lambda x: x.replace("、", "."), exceptions))
+                for step in steps_list:
+                    # 去掉前后的空格
+                    step = step.strip()
+                    logger.debug(f"step = [{step}]")
+                    # 容错，去掉空行
+                    if step != "":
+                        # 找寻序号 固定方式，即第一个字符就是序号， 如： 1.电源ON
+                        step_index = step[0]
+                        content = step[1:]
                         # 去掉点
-                        if e_content[0] == point:
-                            e_content = e_content[1:]
-                        # 表示一个步骤有多个期望结果 如 2.1 动态轨迹线不偏移，与静态轨迹线平行
-                        # 解析后就变成了e_content = 1 动态轨迹线不偏移，与静态轨迹线平行
-                        try:
-                            sub_e_index = int(e_content[0])
-                            logger.debug(f"sub exception index is {sub_e_index}")
-                            e_content = e_content[1:]
-                        except ValueError:
-                            # 没有子节点
-                            logger.debug(f" sub_exception not exist")
-                        finally:
-                            e_content = e_content.strip()
-                        if step_index == e_index:
-                            # 配成一对
-                            exception_list.append(e_content)
-                    contents[content] = exception_list
+                        if content[0] == point:
+                            content = content[1:]
+                        # 去掉空格，因为格式有可能是 1 电源ON
+                        content = content.strip()
+                        # 处理期望结果
+                        exception_list = []
+                        for exc in exceptions:
+                            logger.debug(f"exc = [{exc}]")
+                            # 找寻序号，固定方式，即第一个字符就是序号
+                            e_index = exc[0]
+                            e_content = exc[1:]
+                            # 去掉点
+                            if e_content[0] == point:
+                                e_content = e_content[1:]
+                            # 表示一个步骤有多个期望结果 如 2.1 动态轨迹线不偏移，与静态轨迹线平行
+                            # 解析后就变成了e_content = 1 动态轨迹线不偏移，与静态轨迹线平行
+                            try:
+                                sub_e_index = int(e_content[0])
+                                logger.debug(f"sub exception index is {sub_e_index}")
+                                e_content = e_content[1:]
+                            except ValueError:
+                                # 没有子节点
+                                logger.trace(f" sub_exception not exist")
+                            finally:
+                                e_content = e_content.strip()
+                            if step_index == e_index:
+                                # 配成一对
+                                exception_list.append(e_content)
+                        contents[content] = exception_list
         logger.debug(f"steps  = {contents}")
         return contents

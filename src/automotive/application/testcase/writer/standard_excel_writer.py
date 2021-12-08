@@ -113,18 +113,21 @@ class StandardExcelWriter(BaseWriter):
             if exception.startswith('-') or exception.startswith('_') or exception.startswith(
                     '.') or exception.startswith(' '):
                 exception = exception.replace(exception[0], '', 1)
-            priority = testcase.priority
+            priority = priority_config[int(testcase.priority)] if testcase.priority else ""
             requirement_id = testcase.requirement_id
             requirement = testcase.requirement
-            automation = "是" if testcase.automation else "否"
+            if testcase.automation is not None:
+                automation = "是" if testcase.automation else "否"
+            else:
+                automation = ""
             test_result = testcase.test_result
             # *********************** 如果excel变化，需要修改这里 ***********************
             if self.__is_sample:
                 line = (index, testcase.category, test_case_name, pre_condition, steps,
-                        exception, requirement, automation, priority_config[int(priority)], "", "", "", test_result)
+                        exception, requirement, automation, priority, "", "", "", test_result)
             else:
                 line = (index, module_id, test_case_name, sub_module, pre_condition,
-                        steps, exception, requirement_id, priority_config[int(priority)])
+                        steps, exception, requirement_id, priority)
             logger.debug(f"{index} line value is {line}")
             result.append(line)
         return result
@@ -290,12 +293,13 @@ class StandardExcelWriter(BaseWriter):
                     else:
                         for sub_index, exception in enumerate(value):
                             if self.__is_sample:
-                                exception_contents.append(f"{sub_index} {exception}")
+                                exception_contents.append(f"{sub_index + 1} {exception}")
                             else:
                                 exception_contents.append(f"{index}.{sub_index + 1} {exception}")
                 index += 1
         steps_str = "\n".join(steps_contents)
         exception_str = "\n".join(exception_contents)
+        logger.debug(f"exception_str = {exception_str}")
         return steps_str, exception_str
 
     @staticmethod

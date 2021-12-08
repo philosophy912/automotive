@@ -13,7 +13,7 @@ from automotive.application.testcase.writer.standard_excel_writer import Standar
 
 from automotive.application.common.constants import Testcase
 from automotive.application.common.enums import FileTypeEnum
-from automotive.application.common.interfaces import BaseReader, BaseWriter
+from automotive.application.common.interfaces import BaseReader, BaseWriter, TestCases
 from automotive.logger.logger import logger
 
 
@@ -50,7 +50,7 @@ class TestCaseGenerator(object):
             for i, tc in enumerate(value):
                 tc.update(i, key)
                 tc.calc_hash()
-                logger.debug(tc)
+                # logger.debug(tc)
 
     @staticmethod
     def __convert_testcases(testcases: Dict[str, List[Testcase]]):
@@ -58,7 +58,27 @@ class TestCaseGenerator(object):
             for i, tc in enumerate(value):
                 tc.convert(key)
                 tc.calc_hash()
-                logger.debug(tc)
+                # logger.debug(tc)
+
+    def get_testcases(self, file: str, is_sample: bool = False) -> Dict[str, TestCases]:
+        """
+        获取测试用例
+        :param file: 输入文件
+        :param is_sample: 简版输入，读取的时候会重新组织内容
+        :return:
+        """
+        if is_sample:
+            self.__check_sample_file(file, file)
+            reader = self.__get_reader(file, is_sample)
+            testcases = reader.read_from_file(file)
+            if FileTypeEnum.from_extends(file) == FileTypeEnum.XMIND8:
+                self.__update_testcases(testcases)
+            if FileTypeEnum.from_extends(file) == FileTypeEnum.STANDARD_EXCEL:
+                self.__convert_testcases(testcases)
+            return testcases
+        else:
+            reader = self.__get_reader(file, is_sample)
+            return reader.read_from_file(file)
 
     def generator(self, in_file: str, out_file: str, is_sample: bool = False):
         """

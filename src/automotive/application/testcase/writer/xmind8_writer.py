@@ -124,7 +124,8 @@ class Xmind8Writer(BaseWriter):
             topic_titles.append(f"[{testcase.requirement_id}]")
         tc_topic = self.__create_topic("".join(topic_titles), workbook)
         logger.debug(f"testcase.priority = {testcase.priority}")
-        tc_topic.addMarker(f"priority-{testcase.priority}")
+        if testcase.priority is not None:
+            tc_topic.addMarker(f"priority-{testcase.priority}")
         testcase_topic.addSubTopic(tc_topic)
         if need_write_testcase:
             if self.__is_sample:

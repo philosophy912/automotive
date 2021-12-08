@@ -36,7 +36,7 @@ standard_header = {'所属模块': 0,
                    '前置条件': 9,
                    '相关需求': 10}
 
-priority_config = {1: "A", 2: "B", 3: "C", 4: "D", 5: "", "A": 1, "B": 2, "C": 3, "D": 4, "": 5}
+priority_config = {1: "A", 2: "B", 3: "C", 4: "D", "A": 1, "B": 2, "C": 3, "D": 4}
 
 split_char = "-"
 replace_char = "_"
@@ -69,7 +69,7 @@ class Testcase(object):
         # 执行步骤
         self.steps = dict()
         # 优先级
-        self.priority = 5
+        self.priority = None
         # 关键词
         self.keywords = ""
         # 用例类型
@@ -79,7 +79,7 @@ class Testcase(object):
         # 用例状态
         self.status = "正常"
         # 是否自动化
-        self.automation = False
+        self.automation = None
         # 测试结果
         self.test_result = None
 
@@ -174,7 +174,7 @@ class Testcase(object):
             total.append(self.requirement)
         if self.requirement_id:
             total.append(self.requirement_id)
-        logger.debug(f"total is {total}")
+        logger.trace(f"total is {total}")
         total_str = "".join(total)
         self.identify = hashlib.md5(total_str.encode(encoding='UTF-8')).hexdigest()
 
@@ -189,6 +189,6 @@ class Testcase(object):
         for key, value in self.steps.items():
             total.append(key)
             total.extend(value)
-        logger.debug(f"total is {total}")
+        logger.trace(f"total is {total}")
         total_str = "".join(total)
         self.identify = hashlib.md5(total_str.encode(encoding='UTF-8')).hexdigest()
