@@ -9,8 +9,6 @@
 import importlib
 from typing import Dict, List
 
-from automotive.application.testcase.writer.standard_excel_writer import StandardExcelWriter
-
 from automotive.application.common.constants import Testcase
 from automotive.application.common.enums import FileTypeEnum
 from automotive.application.common.interfaces import BaseReader, BaseWriter, TestCases
@@ -23,17 +21,29 @@ class TestCaseGenerator(object):
     def __get_reader(file: str, is_sample: bool) -> BaseReader:
         file_type = FileTypeEnum.from_extends(file)
         module_name, class_name, extends_names = file_type.value
-        reader = f"automotive.application.testcase.reader.{module_name}_reader"
+        if is_sample:
+            reader = f"automotive.application.testcase.reader.{module_name}_reader_sample"
+        else:
+            reader = f"automotive.application.testcase.reader.{module_name}_reader"
         module = importlib.import_module(reader)
-        return getattr(module, f"{class_name}Reader")(is_sample=is_sample)
+        if is_sample:
+            return getattr(module, f"{class_name}SampleReader")()
+        else:
+            return getattr(module, f"{class_name}Reader")()
 
     @staticmethod
     def __get_writer(file: str, is_sample: bool) -> BaseWriter:
         file_type = FileTypeEnum.from_extends(file)
         module_name, class_name, extends_names = file_type.value
-        writer = f"automotive.application.testcase.writer.{module_name}_writer"
+        if is_sample:
+            writer = f"automotive.application.testcase.writer.{module_name}_writer_sample"
+        else:
+            writer = f"automotive.application.testcase.writer.{module_name}_writer"
         module = importlib.import_module(writer)
-        return getattr(module, f"{class_name}Writer")(is_sample=is_sample)
+        if is_sample:
+            return getattr(module, f"{class_name}SampleWriter")()
+        else:
+            return getattr(module, f"{class_name}Writer")()
 
     @staticmethod
     def __check_sample_file(file1: str, file2: str):
@@ -95,15 +105,8 @@ class TestCaseGenerator(object):
             reader = self.__get_reader(in_file, is_sample)
             writer = self.__get_writer(out_file, is_sample)
             testcases = reader.read_from_file(in_file)
-            if FileTypeEnum.from_extends(in_file) == FileTypeEnum.XMIND8:
-                self.__update_testcases(testcases)
-            if FileTypeEnum.from_extends(in_file) == FileTypeEnum.STANDARD_EXCEL:
-                self.__convert_testcases(testcases)
             logger.debug(f"testcases is {testcases}")
-            if isinstance(writer, StandardExcelWriter):
-                writer.write_to_file(out_file, testcases, need_format=False)
-            else:
-                writer.write_to_file(out_file, testcases)
+            writer.write_to_file(out_file, testcases)
             logger.info(f"read testcase from [{in_file}] and write to file [{out_file}]")
         else:
             reader = self.__get_reader(in_file, is_sample)

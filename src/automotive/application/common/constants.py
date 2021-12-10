@@ -45,6 +45,7 @@ module_prefix = "[M]"
 requirement_prefix = "[R]"
 automation_prefix = "[A]"
 results = "PASS", "FAIL", "BLOCK", "NT"
+index_list = list(map(lambda x: f"{x}", [x + 1 for x in range(9)]))
 
 
 class Testcase(object):
@@ -55,7 +56,7 @@ class Testcase(object):
         # 分类
         self.category = ""
         # 模块名 禅道的模块名只会去解析(#93)，前面的内容可以随便填写
-        self.module = ""
+        self.module = None
         # 禅道的模块编号
         self.module_id = ""
         # 需求内容
@@ -68,6 +69,10 @@ class Testcase(object):
         self.pre_condition = []
         # 执行步骤
         self.steps = dict()
+        # 执行步骤
+        self.actions = None
+        # 期望结果
+        self.exceptions = None
         # 优先级
         self.priority = None
         # 关键词
@@ -85,80 +90,12 @@ class Testcase(object):
 
     def __str__(self):
         values = []
-        exclude = "category", "module", "module_id", "requirement_id", "keywords", "test_case_type", "phase", "status"
+        # exclude = "category", "module", "module_id", "requirement_id", "keywords", "test_case_type", "phase", "status"
+        exclude = []
         for key, value in self.__dict__.items():
             if key not in exclude:
                 values.append(f"{key}={value}")
         return ",".join(values)
-
-    def update(self, index: int, category: str):
-        # print(self)
-        sub_module = []
-        # 把模块名变成前置条件
-        if not self.pre_condition:
-            for i, module in enumerate(self.module.split(split_char)):
-                if module.startswith(module_prefix):
-                    sub_module.append(module.replace(module_prefix, ""))
-                else:
-                    self.pre_condition.append(f"{module}")
-
-        # 处理步骤
-        if self.steps:
-            new_steps = {}
-            values = []
-            for key, value in self.steps.items():
-                # print(f"key = {key}")
-                for ex in value:
-                    if requirement_prefix in ex:
-                        self.requirement = ex.replace(requirement_prefix, "")
-                    elif ex.strip().upper() in results:
-                        self.test_result = ex.strip().upper()
-                    else:
-                        values.append(ex)
-                if key.startswith(automation_prefix):
-                    self.automation = True
-                    new_key = key.replace(automation_prefix, "")
-                else:
-                    new_key = key
-                new_steps[new_key] = values
-            self.steps = new_steps
-        else:
-            if self.name.startswith(automation_prefix):
-                self.automation = True
-                self.name = self.name.replace(automation_prefix, "")
-            self.steps[self.name] = []
-        self.category = category.split(split_char)[0]
-        self.module = ""
-        category = category.replace(split_char, replace_char)
-        if sub_module:
-            sub_module = replace_char.join(sub_module)
-            self.name = f"{category}_{sub_module}_{index + 1}"
-        else:
-            self.name = f"{category}_{index + 1}"
-        # print("after")
-        # print(self)
-        logger.debug(self)
-
-    def convert(self, category: str):
-        category = category.replace(split_char, replace_char)
-        sub_module_str = self.name.replace(category, "")[1:]
-        sub_module = []
-        if replace_char in sub_module_str:
-            sub_module = sub_module_str.split(replace_char)[:-1]
-        if sub_module:
-            for module in sub_module:
-                self.pre_condition.insert(0, f"{module_prefix}{module}")
-        # 把前置条件变成模块名
-        self.module = split_char.join(self.pre_condition)
-        for key, value in self.steps.items():
-            # 把key变成name
-            self.name = key
-            if self.requirement:
-                value.append(f"{requirement_prefix}{self.requirement}")
-            if self.test_result:
-                value.append(f"{self.test_result.strip().upper()}")
-        self.pre_condition = []
-        logger.debug(self)
 
     def calc_hash(self):
         # total = [self.name]
@@ -171,9 +108,18 @@ class Testcase(object):
             total.append(key)
             total.extend(value)
         if self.requirement:
-            total.append(self.requirement)
+            for requirement in self.requirement:
+                total.append(requirement)
         if self.requirement_id:
             total.append(self.requirement_id)
+        if self.module:
+            total.append(self.module)
+        if self.actions:
+            for action in self.actions:
+                total.append(action)
+        if self.exceptions:
+            for exception in self.exceptions:
+                total.append(exception)
         logger.trace(f"total is {total}")
         total_str = "".join(total)
         self.identify = hashlib.md5(total_str.encode(encoding='UTF-8')).hexdigest()
@@ -192,3 +138,7 @@ class Testcase(object):
         logger.trace(f"total is {total}")
         total_str = "".join(total)
         self.identify = hashlib.md5(total_str.encode(encoding='UTF-8')).hexdigest()
+
+
+
+

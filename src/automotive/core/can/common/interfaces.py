@@ -134,7 +134,7 @@ class BaseCanBus(metaclass=ABCMeta):
         logger.trace(f"cycle_time = {cycle_time}")
         msg_id = message.msg_id
         while can.is_open and not message.stop_flag and self._need_transmit:
-            logger.trace(f"send msg {hex(msg_id)} and cycle time is {message.cycle_time}")
+            logger.info(f"send msg {hex(msg_id)} and cycle time is {message.cycle_time}")
             try:
                 can.transmit(message)
             except RuntimeError as e:
@@ -164,8 +164,8 @@ class BaseCanBus(metaclass=ABCMeta):
             cycle_time = message.cycle_time / 1000.0
             message.stop_flag = False
             # 周期性发送
-            logger.info(f"****** Transmit [Cycle] {hex_msg_id} : {list(map(lambda x: hex(x), data))}"
-                        f"Circle time is {message.cycle_time}ms ******")
+            logger.debug(f"****** Transmit [Cycle] {hex_msg_id} : {list(map(lambda x: hex(x), data))}"
+                         f"Circle time is {message.cycle_time}ms ******")
             task = self._thread_pool.submit(self.__transmit, can, message, cycle_time)
             self._transmit_thread.append(task)
         else:
@@ -190,9 +190,9 @@ class BaseCanBus(metaclass=ABCMeta):
         while self._need_transmit and msg_id in self._event_send_messages and len(
                 self._event_send_messages[msg_id]) > 0:
             message = self._event_send_messages[msg_id].pop(0)
-            logger.info(f"****** Transmit [Event] {msg_id} : {list(map(lambda x: hex(x), message.data))}"
-                        f"Event Cycle time [{message.cycle_time_fast}]")
             can.transmit(message)
+            logger.debug(f"****** Transmit [Event] {msg_id} : {list(map(lambda x: hex(x), message.data))}"
+                         f"Event Cycle time [{message.cycle_time_fast}]")
             sleep(cycle_time)
 
     def __event(self, can: BaseCanDevice, message: Message):
@@ -261,7 +261,6 @@ class BaseCanBus(metaclass=ABCMeta):
         self._thread_pool = None
         logger.trace("close_device")
         self._can.close_device()
-
 
     def transmit(self, message: Message):
         """

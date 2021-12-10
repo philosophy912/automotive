@@ -40,7 +40,7 @@ class CanBoxDeviceEnum(Enum):
     # 同星
     TSMASTER = "TSMASTER"
     # 爱泰 CAN FD
-    ITEK = "ITEK"
+    # ITEK = "ITEK"
     # CAN LIN Analyser
     # ANALYSER = "ANALYSER"
 

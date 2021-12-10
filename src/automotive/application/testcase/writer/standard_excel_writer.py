@@ -25,9 +25,8 @@ finally:
 
 class StandardExcelWriter(BaseWriter):
 
-    def __init__(self, is_sample: bool = False):
+    def __init__(self):
         self.__start_row = 3
-        self.__is_sample = is_sample
 
     def write_to_file(self, file: str, testcases: Dict[str, TestCases], need_format: bool = True):
         """
@@ -79,15 +78,13 @@ class StandardExcelWriter(BaseWriter):
             logger.debug("app kill fail")
         logger.info(f"write to file [{file}] done")
 
-    def __get_template_file(self, template: str = None):
+    @staticmethod
+    def __get_template_file(template: str = None):
         if not template:
             logger.debug(__file__)
             # 只考虑windows的情况, 找寻当前文件的文件夹所在路径
             directory, file = os.path.split(__file__)
-            if self.__is_sample:
-                template = fr"{directory}\template_sample.xlsx"
-            else:
-                template = fr"{directory}\template.xlsx"
+            template = fr"{directory}\template.xlsx"
         return template
 
     def __convert_testcases(self, testcases: TestCases) -> List[Tuple]:
@@ -115,19 +112,9 @@ class StandardExcelWriter(BaseWriter):
                 exception = exception.replace(exception[0], '', 1)
             priority = priority_config[int(testcase.priority)] if testcase.priority else ""
             requirement_id = testcase.requirement_id
-            requirement = testcase.requirement
-            if testcase.automation is not None:
-                automation = "是" if testcase.automation else "否"
-            else:
-                automation = ""
-            test_result = testcase.test_result
             # *********************** 如果excel变化，需要修改这里 ***********************
-            if self.__is_sample:
-                line = (index, testcase.category, test_case_name, pre_condition, steps,
-                        exception, requirement, automation, priority, "", "", "", test_result)
-            else:
-                line = (index, module_id, test_case_name, sub_module, pre_condition,
-                        steps, exception, requirement_id, priority)
+            line = (index, module_id, test_case_name, sub_module, pre_condition,
+                    steps, exception, requirement_id, priority)
             logger.debug(f"{index} line value is {line}")
             result.append(line)
         return result
@@ -265,7 +252,8 @@ class StandardExcelWriter(BaseWriter):
         else:
             return ""
 
-    def __convert_steps_condition(self, steps: Dict[str, List[str]]) -> Tuple[str, str]:
+    @staticmethod
+    def __convert_steps_condition(steps: Dict[str, List[str]]) -> Tuple[str, str]:
         """
 
         :param steps:
@@ -277,13 +265,7 @@ class StandardExcelWriter(BaseWriter):
             # 用于定义主编号
             index = 1
             for key, value in steps.items():
-                if self.__is_sample:
-                    if key.startswith("1"):
-                        steps_contents.append(f"{key}")
-                    else:
-                        steps_contents.append(f"{index} {key}")
-                else:
-                    steps_contents.append(f"{index} {key}")
+                steps_contents.append(f"{index} {key}")
                 value_size = len(value)
                 # 用于定义子编号
                 if value_size > 0:
@@ -292,10 +274,7 @@ class StandardExcelWriter(BaseWriter):
                             exception_contents.append(f"{index} {exception}")
                     else:
                         for sub_index, exception in enumerate(value):
-                            if self.__is_sample:
-                                exception_contents.append(f"{sub_index + 1} {exception}")
-                            else:
-                                exception_contents.append(f"{index}.{sub_index + 1} {exception}")
+                            exception_contents.append(f"{index}.{sub_index + 1} {exception}")
                 index += 1
         steps_str = "\n".join(steps_contents)
         exception_str = "\n".join(exception_contents)

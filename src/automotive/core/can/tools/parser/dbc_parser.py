@@ -6,6 +6,7 @@
 # @Author:      lizhe
 # @Created:     2021/5/1 - 23:38
 # --------------------------------------------------------
+import copy
 import json
 import re
 from typing import List, Dict, Union, Any
@@ -86,7 +87,8 @@ class DbcParser(object):
         """
         contents = self.__read_content(dbc_file, encoding)
         logger.trace(f"contents = {contents}")
-        return self.__parse_message(contents)
+        messages = self.__parse_message(contents)
+        return self.__filter_messages(messages)
 
     def parse_to_file(self, dbc_file: str, json_file: str):
         """
@@ -98,6 +100,22 @@ class DbcParser(object):
         json_str = json.dumps(messages, ensure_ascii=False, indent=4)
         with open(json_file, "w", encoding="utf-8") as f:
             f.write(json_str)
+
+    @staticmethod
+    def __filter_messages(messages: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        """
+        去除掉大于0x7ff的数据
+        :param messages:
+        :return:
+        """
+        new_messages = copy.deepcopy(messages)
+        msg_ids = []
+        for i, message in enumerate(new_messages):
+            if message["id"] > 0x7ff:
+                msg_ids.append(i)
+        for msg_id in msg_ids:
+            new_messages.pop(msg_id)
+        return new_messages
 
     @staticmethod
     def __judge_content(content: str, *args):
@@ -156,6 +174,22 @@ class DbcParser(object):
                 return signal
         raise RuntimeError(f"no signal name[{name}] found in signal")
 
+    @staticmethod
+    def __read_from_file(dbc_file: str, encoding: str) -> List[str]:
+        try:
+            with open(dbc_file, "r", encoding=encoding) as f:
+                contents = f.readlines()
+                return contents
+        except UnicodeDecodeError:
+            try:
+                with open(dbc_file, "r", encoding="utf-8") as f:
+                    contents = f.readlines()
+                    return contents
+            except UnicodeDecodeError:
+                with open(dbc_file, "r", encoding="GB18030") as f:
+                    contents = f.readlines()
+                    return contents
+
     def __read_content(self, dbc_file: str, encoding: str) -> List[str]:
         """
         从DBC文件中读取数据并且处理多行的情况
@@ -164,26 +198,25 @@ class DbcParser(object):
         """
         # 处理后的数据
         after_handle_contents = []
-        with open(dbc_file, "r", encoding=encoding) as f:
-            contents = f.readlines()
-            final_content = ""
-            need_add = True
-            for index, content in enumerate(contents):
-                # 去掉空行
-                content = content.strip()
-                logger.trace(f"index = {index} and content is {content}")
-                if self.__judge_content(content, self.BO, self.SG, self.CM, self.BA_DEF, self.BA_DEF_DEF,
-                                        self.BA_DEF_DEF_REL, self.BA_DEF_REL, self.BA, self.VAL):
-                    need_add = True
-                    if len(final_content) != 0:
-                        after_handle_contents.append(final_content)
-                        final_content = ""
-                    final_content += content
-                elif self.__judge_content(content, self.CM_ONLY_QUOTATION):
-                    need_add = False
-                else:
-                    if need_add:
-                        final_content += content + self.BLANK
+        contents = self.__read_from_file(dbc_file, encoding)
+        final_content = ""
+        need_add = True
+        for index, content in enumerate(contents):
+            # 去掉空行
+            content = content.strip()
+            logger.trace(f"index = {index} and content is {content}")
+            if self.__judge_content(content, self.BO, self.SG, self.CM, self.BA_DEF, self.BA_DEF_DEF,
+                                    self.BA_DEF_DEF_REL, self.BA_DEF_REL, self.BA, self.VAL):
+                need_add = True
+                if len(final_content) != 0:
+                    after_handle_contents.append(final_content)
+                    final_content = ""
+                final_content += content
+            elif self.__judge_content(content, self.CM_ONLY_QUOTATION):
+                need_add = False
+            else:
+                if need_add:
+                    final_content += content + self.BLANK
         return after_handle_contents
 
     @staticmethod

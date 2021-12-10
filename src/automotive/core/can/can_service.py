@@ -16,10 +16,6 @@ from .common.typehints import MessageType, FilterNode, MessageIdentity
 from .message import Message, get_message
 from .common.interfaces import BaseCanBus
 from .common.enums import CanBoxDeviceEnum, BaudRateEnum
-from .hardware.itek.itek_usb_can_bus import ItekUsbCanBus
-from .hardware.peakcan.pcan_bus import PCanBus
-from .hardware.tscan.tsmaster_bus import TsMasterCanBus
-from .hardware.usbcan.usb_can_bus import UsbCanBus
 from automotive.common.singleton import Singleton
 from automotive.logger.logger import logger
 
@@ -27,14 +23,15 @@ from automotive.logger.logger import logger
 def __get_can_bus(can_box_device: CanBoxDeviceEnum, baud_rate: BaudRateEnum, can_fd: bool) -> BaseCanBus:
     if can_box_device == CanBoxDeviceEnum.PEAKCAN:
         logger.info("use pcan")
+        from .hardware.peakcan.pcan_bus import PCanBus
         return PCanBus(baud_rate=baud_rate, can_fd=can_fd)
     elif can_box_device == CanBoxDeviceEnum.TSMASTER:
         logger.info("use tsmaster")
+        from .hardware.tscan.tsmaster_bus import TsMasterCanBus
         return TsMasterCanBus(baud_rate=baud_rate, can_fd=can_fd)
     elif can_box_device == CanBoxDeviceEnum.CANALYST or can_box_device == CanBoxDeviceEnum.USBCAN:
+        from .hardware.usbcan.usb_can_bus import UsbCanBus
         return UsbCanBus(can_box_device, baud_rate=baud_rate, can_fd=can_fd)
-    elif can_box_device == CanBoxDeviceEnum.ITEK:
-        return ItekUsbCanBus(baud_rate=baud_rate, can_fd=can_fd)
     else:
         raise RuntimeError(f"{can_box_device.value} not support")
 

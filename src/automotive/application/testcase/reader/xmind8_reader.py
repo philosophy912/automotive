@@ -23,9 +23,8 @@ finally:
 
 
 class Xmind8Reader(BaseReader):
-    def __init__(self, is_sample: bool = False):
+    def __init__(self):
         self.__module_id = None
-        self.__is_sample = is_sample
 
     def read_from_file(self, file: str, ) -> Dict[str, TestCases]:
         """
@@ -34,6 +33,31 @@ class Xmind8Reader(BaseReader):
         """
         module, testcase = self.__read_test_case_from_xmind(file)
         return {module: testcase}
+
+    @staticmethod
+    def __read_root_topic_data_from_file(xmind_file: str) -> TopicElement:
+        """
+        从xmind文件中读取到了所有的内容
+        :param xmind_file: xmind8的文档，
+        :return: 返回根节点
+        """
+        workbook = xmind.load(xmind_file)
+        sheet = workbook.getPrimarySheet()
+        root_topic = sheet.getRootTopic()
+        # 无子节点的情况 sub_topics为空列表
+        logger.debug(f"root topic title is {root_topic.getTitle()}")
+        return root_topic
+
+    @staticmethod
+    def __is_xmind8(root_topic: TopicElement) -> bool:
+        """
+        xmind版本是否是xind8
+        :param root_topic: 根节点
+        :return: bool
+        """
+        root_data = root_topic.getData()
+        title = root_data["title"]
+        return "Warning" in title and "Attention" in title and "Warnung" in title
 
     def __read_test_case_from_xmind(self, file: str) -> Tuple[str, TestCases]:
         """
@@ -67,31 +91,6 @@ class Xmind8Reader(BaseReader):
             return dict_name, testcases
         xmind_url = "https://www.xmind.cn/download/xmind8/"
         raise RuntimeError(f"please convert xmind file by using xmind8, download url is {xmind_url}")
-
-    @staticmethod
-    def __read_root_topic_data_from_file(xmind_file: str) -> TopicElement:
-        """
-        从xmind文件中读取到了所有的内容
-        :param xmind_file: xmind8的文档，
-        :return: 返回根节点
-        """
-        workbook = xmind.load(xmind_file)
-        sheet = workbook.getPrimarySheet()
-        root_topic = sheet.getRootTopic()
-        # 无子节点的情况 sub_topics为空列表
-        logger.debug(f"root topic title is {root_topic.getTitle()}")
-        return root_topic
-
-    @staticmethod
-    def __is_xmind8(root_topic: TopicElement) -> bool:
-        """
-        xmind版本是否是xind8
-        :param root_topic: 根节点
-        :return: bool
-        """
-        root_data = root_topic.getData()
-        title = root_data["title"]
-        return "Warning" in title and "Attention" in title and "Warnung" in title
 
     def __filter_test_case_topic(self, root_topic: TopicElement) -> TestCases:
         """
@@ -147,21 +146,6 @@ class Xmind8Reader(BaseReader):
                     logger.debug(f"after pop module,  modules = {modules}")
                 else:
                     modules.pop(-1)
-
-    @staticmethod
-    def __convert_pre_condition(pre_conditions: List[str]) -> str:
-        """
-        先把列表加上序号来进行相关的处理
-        :param pre_conditions:前置条件列表
-        :return: 要写入excel的文字
-        """
-        if len(pre_conditions) > 0:
-            contents = []
-            for i, pre_condition in enumerate(pre_conditions):
-                contents.append(f"{i + 1} {pre_condition}")
-            return "\n".join(contents)
-        else:
-            return ""
 
     @staticmethod
     def __convert_steps_condition(steps: Dict[str, List[str]]) -> Tuple[str, str]:
@@ -221,14 +205,9 @@ class Xmind8Reader(BaseReader):
                 testcase.requirement_id = name_id
             # 解析
             pre_condition_list, steps_dict = self.__parse_testcase(tc)
-            if self.__is_sample:
-                if steps_dict:
-                    # testcase.pre_condition = testcase.module.split(split_char)
-                    testcase.steps = steps_dict
-            else:
-                if pre_condition_list and steps_dict:
-                    testcase.pre_condition = pre_condition_list
-                    testcase.steps = steps_dict
+            if pre_condition_list and steps_dict:
+                testcase.pre_condition = pre_condition_list
+                testcase.steps = steps_dict
             testcases.append(testcase)
             # 解析优先级
             markers = tc.getMarkers()
@@ -257,45 +236,34 @@ class Xmind8Reader(BaseReader):
         testcase_title = testcase.getTitle()
         logger.debug(f"testcase is {testcase_title}")
         topics = testcase.getSubTopics()
-        if self.__is_sample:
-            steps_dict = dict()
-            expects = []
+        # 要考虑#的情况
+        if len(topics) < 2:
+            # 只支持一个P和一个S
+            logger.debug("子节点长度小于2")
+            return None, None
+        else:
+            pre_condition = None
+            steps = None
             for topic in topics:
                 title = topic.getTitle()
-                expects.append(title)
-            # 不再把数据变成小写字母，解决message存在的问题
-            steps_dict[testcase_title[2:]] = expects
-            logger.debug(f"steps_dict = {steps_dict}")
-            return None, steps_dict
-        else:
-            # 要考虑#的情况
-            if len(topics) < 2:
-                # 只支持一个P和一个S
-                logger.debug("子节点长度小于2")
-                return None, None
-            else:
-                pre_condition = None
-                steps = None
-                for topic in topics:
-                    title = topic.getTitle()
-                    if title.startswith("p") or title.startswith("P"):
-                        pre_condition = topic
-                    if title.startswith("S") or title.startswith("s"):
-                        steps = topic
-                if pre_condition and steps:
-                    logger.debug(f"pre_condition title is {pre_condition.getTitle()}")
-                    logger.debug(f"steps title is {steps.getTitle()}")
-                    # 树形结构的顺序的部分有xmind来保障
-                    pre_condition_list = self.__parse_pre_condition(pre_condition)
-                    steps_dict = self.__parse_steps(steps)
-                    # 保证前置条件必须有，保证执行步骤必须有
-                    if len(pre_condition_list) > 0 and len(steps_dict) > 0:
-                        return pre_condition_list, steps_dict
-                    else:
-                        return None, None
+                if title.startswith("p") or title.startswith("P"):
+                    pre_condition = topic
+                if title.startswith("S") or title.startswith("s"):
+                    steps = topic
+            if pre_condition and steps:
+                logger.debug(f"pre_condition title is {pre_condition.getTitle()}")
+                logger.debug(f"steps title is {steps.getTitle()}")
+                # 树形结构的顺序的部分有xmind来保障
+                pre_condition_list = self.__parse_pre_condition(pre_condition)
+                steps_dict = self.__parse_steps(steps)
+                # 保证前置条件必须有，保证执行步骤必须有
+                if len(pre_condition_list) > 0 and len(steps_dict) > 0:
+                    return pre_condition_list, steps_dict
                 else:
-                    # 没有找到一个S和一个P
                     return None, None
+            else:
+                # 没有找到一个S和一个P
+                return None, None
 
     @staticmethod
     def __parse_pre_condition(pre_condition: TopicElement) -> List[str]:
@@ -315,6 +283,21 @@ class Xmind8Reader(BaseReader):
                 if title and not title.startswith("#"):
                     pre_conditions.append(title)
         return pre_conditions
+
+    @staticmethod
+    def _convert_pre_condition(pre_conditions: List[str]) -> str:
+        """
+        先把列表加上序号来进行相关的处理
+        :param pre_conditions:前置条件列表
+        :return: 要写入excel的文字
+        """
+        if len(pre_conditions) > 0:
+            contents = []
+            for i, pre_condition in enumerate(pre_conditions):
+                contents.append(f"{i + 1} {pre_condition}")
+            return "\n".join(contents)
+        else:
+            return ""
 
     def __parse_steps(self, steps: TopicElement) -> Dict[str, List[str]]:
         """

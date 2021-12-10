@@ -1,10 +1,8 @@
 # -*- coding:utf-8 -*-
 # --------------------------------------------------------
-# Copyright (C), 2016-2020, lizhe, All rights reserved
+# Copyright (C), 2016-2021, lizhe, All rights reserved
 # --------------------------------------------------------
-# @Name:        version.py
+# @Name:        __init__.py.py
 # @Author:      lizhe
-# @Created:     2021/5/1 - 23:19
+# @Created:     2021/12/13 - 22:25
 # --------------------------------------------------------
-
-VERSION = '5.1.0'

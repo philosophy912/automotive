@@ -283,7 +283,6 @@ class BasePowerAdjustActions(BasePowerActions):
 
 class BaseTestCase(metaclass=ABCMeta):
 
-
     @staticmethod
     def _parse_id(content: str, split_character: Tuple[str, str] = ("[", "]")) -> Tuple[str, str]:
         """

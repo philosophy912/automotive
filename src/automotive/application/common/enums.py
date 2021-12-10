@@ -29,3 +29,18 @@ class FileTypeEnum(Enum):
                 if file.endswith(extends):
                     return item
         raise ValueError(f"{file} can not be found in FileTypeEnum")
+
+
+@unique
+class GuiButtonTypeEnum(Enum):
+    CHECK_BUTTON = "单选按钮"
+    COMBOX_BUTTON = "下拉框"
+    INPUT_BUTTON = "输入框"
+    EVENT_CHECK_BUTTON = "事件单选框"
+
+    @staticmethod
+    def from_name(type_: str):
+        for key, item in GuiButtonTypeEnum.__members__.items():
+            if type_.strip() == item.value:
+                return item
+        raise ValueError(f"{type_} can not be found in GuiButtonTypeEnum")

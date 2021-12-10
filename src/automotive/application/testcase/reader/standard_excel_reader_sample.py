@@ -9,7 +9,7 @@
 import os
 from typing import Dict, List
 
-from automotive.application.common.constants import Testcase, priority_config, point
+from automotive.application.common.constants import Testcase, priority_config, point, index_list
 from automotive.application.common.interfaces import BaseReader, TestCases
 from automotive.logger.logger import logger
 
@@ -22,7 +22,7 @@ finally:
     from xlwings import Sheet, Book
 
 
-class StandardExcelReader(BaseReader):
+class StandardExcelSampleReader(BaseReader):
 
     def __init__(self, ignore_sheet_name: List[str] = None):
         # 从哪一行开始读取
@@ -77,13 +77,18 @@ class StandardExcelReader(BaseReader):
                 testcase = Testcase()
                 testcase.name = sheet.range(f"C{i}").value
                 testcase.module = sheet.range(f"B{i}").value
-                testcase.pre_condition = self.__parse_pre_condition(sheet.range(f"E{i}").value)
-                testcase.steps = self.__parse_steps(sheet.range(f"F{i}").value, sheet.range(f"G{i}").value)
-                testcase.priority = priority_config[sheet.range(f"I{i}").value]
+                testcase.pre_condition = self.__parse_pre_condition(sheet.range(f"D{i}").value)
+                testcase.actions = self.__parse_actions(sheet.range(f"E{i}").value)
+                testcase.exceptions = self.__parse_exceptions(sheet.range(f"F{i}").value)
+                requirement = sheet.range(f"G{i}").value
+                testcase.requirement = requirement.split("\n") if requirement else None
+                automation_cell = sheet.range(f"H{i}").value
+                testcase.automation = automation_cell == "是" if automation_cell else None
+                priority_cell = sheet.range(f"I{i}").value
+                testcase.priority = priority_config[priority_cell] if priority_cell else None
+                test_result = sheet.range(f"M{i}").value
+                testcase.test_result = test_result.strip().upper() if test_result else None
                 testcase.calc_hash()
-                # 避免空行的存在
-                # if testcase.name and testcase.module and len(testcase.pre_condition) > 0 \
-                #         and testcase.pre_condition and len(testcase.steps) > 0:
                 testcases.append(testcase)
         return testcases
 
@@ -110,57 +115,61 @@ class StandardExcelReader(BaseReader):
                 contents.append(pre)
         return contents
 
-    def __parse_steps(self, steps: str, exception: str) -> Dict[str, List[str]]:
+    def __parse_actions(self, actions: str) -> List[str]:
+        total = []
+        lines = actions.split("\n")
+        temp = []
+        for i, line in enumerate(lines):
+            if line[0] in index_list:
+                temp.append(i)
+        # 没有序号的情况，即只有一个操作步骤
+        if temp:
+            # 列表切片操作 0 2
+            temp.pop(0)
+            start_index = 0
+            for t in temp:
+                content = "\n".join(lines[start_index:t])
+                total.append(content)
+                start_index = t
+            content = "\n".join(lines[start_index:])
+            total.append(content)
+        else:
+            total.append(actions)
+        # 处理掉1.类似的数据
+        new_total = []
+        for t in total:
+            content = self.__handle_prefix_str(t)
+            new_total.append(content)
+        return new_total
+
+    @staticmethod
+    def __handle_prefix_str(content: str) -> str:
         """
-        解析执行步骤
-        :param steps:
-        :param exception:
+        处理1. 2.这种前缀，去掉他们
+        :param content:
         :return:
         """
-        contents = dict()
-        if steps and exception:
-            steps_list = list(filter(lambda x: self.__filter_automotive(x) and x != "", steps.split("\n")))
-            steps_list = list(map(lambda x: x.replace("、", "."), steps_list))
-            exceptions = list(filter(lambda x: self.__filter_automotive(x) and x != "", exception.split("\n")))
-            exceptions = list(map(lambda x: x.replace("、", "."), exceptions))
-            for step in steps_list:
-                # 去掉前后的空格
-                step = step.strip()
-                logger.debug(f"step = [{step}]")
-                # 容错，去掉空行
-                if step != "":
-                    # 找寻序号 固定方式，即第一个字符就是序号， 如： 1.电源ON
-                    step_index = step[0]
-                    content = step[1:]
-                    # 去掉点
-                    if content[0] == point:
-                        content = content[1:]
-                    # 去掉空格，因为格式有可能是 1 电源ON
-                    content = content.strip()
-                    # 处理期望结果
-                    exception_list = []
-                    for exc in exceptions:
-                        logger.debug(f"exc = [{exc}]")
-                        # 找寻序号，固定方式，即第一个字符就是序号
-                        e_index = exc[0]
-                        e_content = exc[1:]
-                        # 去掉点
-                        if e_content[0] == point:
-                            e_content = e_content[1:]
-                        # 表示一个步骤有多个期望结果 如 2.1 动态轨迹线不偏移，与静态轨迹线平行
-                        # 解析后就变成了e_content = 1 动态轨迹线不偏移，与静态轨迹线平行
-                        try:
-                            sub_e_index = int(e_content[0])
-                            logger.debug(f"sub exception index is {sub_e_index}")
-                            e_content = e_content[1:]
-                        except ValueError:
-                            # 没有子节点
-                            logger.trace(f" sub_exception not exist")
-                        finally:
-                            e_content = e_content.strip()
-                        if step_index == e_index:
-                            # 配成一对
-                            exception_list.append(e_content)
-                    contents[content] = exception_list
-        logger.debug(f"steps  = {contents}")
+        if content[0] in index_list:
+            content = content[1:]
+            if content[0] in (".", "。", " "):
+                content = content[1:]
+        return content
+
+    def __parse_exceptions(self, exceptions: str) -> List[str]:
+        contents = []
+        if exceptions:
+            exception_lines = exceptions.split("\n")
+            for line in exception_lines:
+                content = self.__handle_prefix_str(line)
+                contents.append(content)
         return contents
+
+
+if __name__ == '__main__':
+    excel_file = r"C:\Users\lizhe\Desktop\debug\自检APP.xlsx"
+    sample = StandardExcelSampleReader()
+    dicts = sample.read_from_file(excel_file)
+    for key, value in dicts.items():
+        print(key)
+        for v in value:
+            print(v)
