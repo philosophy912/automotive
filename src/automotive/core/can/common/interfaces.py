@@ -134,7 +134,7 @@ class BaseCanBus(metaclass=ABCMeta):
         logger.trace(f"cycle_time = {cycle_time}")
         msg_id = message.msg_id
         while can.is_open and not message.stop_flag and self._need_transmit:
-            logger.info(f"send msg {hex(msg_id)} and cycle time is {message.cycle_time}")
+            logger.debug(f"send msg {hex(msg_id)} and cycle time is {message.cycle_time}")
             try:
                 can.transmit(message)
             except RuntimeError as e:
@@ -164,8 +164,8 @@ class BaseCanBus(metaclass=ABCMeta):
             cycle_time = message.cycle_time / 1000.0
             message.stop_flag = False
             # 周期性发送
-            logger.debug(f"****** Transmit [Cycle] {hex_msg_id} : {list(map(lambda x: hex(x), data))}"
-                         f"Circle time is {message.cycle_time}ms ******")
+            logger.info(f"****** Transmit [Cycle] {hex_msg_id} : {list(map(lambda x: hex(x), data))}"
+                        f"Circle time is {message.cycle_time}ms ******")
             task = self._thread_pool.submit(self.__transmit, can, message, cycle_time)
             self._transmit_thread.append(task)
         else:

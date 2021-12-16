@@ -55,9 +55,9 @@ class ConfigReader(object):
         # 按照按钮类型来分割
         typed_configs = self.__split_type(configs)
         # 处理 buttons
-        result["buttons"] = self.__handle_buttons(typed_configs[GuiButtonTypeEnum.CHECK_BUTTON])
+        result["check_buttons"] = self.__handle_buttons(typed_configs[GuiButtonTypeEnum.CHECK_BUTTON])
         # 处理 flash_buttons
-        result["flash_buttons"] = self.__handle_event_buttons(typed_configs[GuiButtonTypeEnum.EVENT_CHECK_BUTTON])
+        result["thread_buttons"] = self.__handle_event_buttons(typed_configs[GuiButtonTypeEnum.EVENT_CHECK_BUTTON])
         # 处理 comboxs
         result["comboxs"] = self.__handle_combox(typed_configs[GuiButtonTypeEnum.COMBOX_BUTTON])
         # 处理 entries
@@ -89,6 +89,7 @@ class ConfigReader(object):
             content["on"] = item.selected
             content["off"] = item.unselected
             result[item.name] = content
+        logger.debug(f"result = {result}")
         return result
 
     @staticmethod
@@ -110,6 +111,7 @@ class ConfigReader(object):
             function_dict["values"] = values_dict
             function_dict["text"] = button[0].text_name
             result[button[0].name] = function_dict
+        logger.debug(f"result = {result}")
         return result
 
     @staticmethod
@@ -120,6 +122,7 @@ class ConfigReader(object):
             content["text"] = item.text_name
             content["actions"] = item.actions
             result[item.name] = content
+        logger.debug(f"result = {result}")
         return result
 
     def __parse(self, sheet: Sheet) -> List[GuiConfig]:
@@ -138,6 +141,7 @@ class ConfigReader(object):
             column_g = sheet.range(f"G{i}").value
             config.actions = self.__parse_actions(column_g) if column_g else None
             configs.append(config)
+            logger.debug(f"config = {config}")
         return configs
 
     def __parse_actions(self, actions: str) -> List:
@@ -185,7 +189,3 @@ class ConfigReader(object):
         for key, item in GuiButtonTypeEnum.__members__.items():
             typed_configs[item] = list(filter(lambda x: x.button_type == item, configs))
         return typed_configs
-
-# reader = ConfigReader()
-# json_dict = reader.read_from_file(r"C:\Users\lizhe\Desktop\按钮设计.xlsx")
-# print(json_dict)

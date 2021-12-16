@@ -10,7 +10,7 @@ from typing import Union, List, Tuple, Dict
 
 from automotive.logger.logger import logger
 from automotive.utils.utils import Utils, Number
-from .common.typehints import Messages, NameMessage, IdMessage, MessageType, SignalType
+from .common.typehints import Messages, MessageType, SignalType
 from .tools.parser.dbc_parser import DbcParser
 
 """
