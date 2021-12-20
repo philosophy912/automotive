@@ -111,7 +111,7 @@ class StandardExcelSampleWriter(BaseWriter):
                 else:
                     for j, action in enumerate(actions):
                         steps.append(f"{j + 1}.{action}")
-                        exception_list.append(f"{j + 1}.{exceptions[j]}")    
+                        exception_list.append(f"{j + 1}.{exceptions[j]}")
             else:
                 for j, action in enumerate(actions):
                     steps.append(f"{j + 1}.{action}")
@@ -201,14 +201,3 @@ class StandardExcelSampleWriter(BaseWriter):
         exception_str = "\n".join(exception_contents)
         logger.debug(f"exception_str = {exception_str}")
         return steps_str, exception_str
-
-
-if __name__ == '__main__':
-    from automotive.application.testcase.reader.xmind8_reader_sample import Xmind8SampleReader
-
-    xmind_file1 = r"D:\Workspace\chinatsp\develop\python\test_src\test_application\自检APP.xmind"
-    sample = Xmind8SampleReader()
-    testcase_dict = sample.read_from_file(xmind_file1)
-    writer = StandardExcelSampleWriter()
-    excel_file = r"C:\Users\lizhe\Desktop\debug\自检APP.xlsx"
-    writer.write_to_file(excel_file, testcase_dict)

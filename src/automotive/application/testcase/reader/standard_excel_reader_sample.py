@@ -163,13 +163,3 @@ class StandardExcelSampleReader(BaseReader):
                 content = self.__handle_prefix_str(line)
                 contents.append(content)
         return contents
-
-
-if __name__ == '__main__':
-    excel_file = r"C:\Users\lizhe\Desktop\debug\自检APP.xlsx"
-    sample = StandardExcelSampleReader()
-    dicts = sample.read_from_file(excel_file)
-    for key, value in dicts.items():
-        print(key)
-        for v in value:
-            print(v)

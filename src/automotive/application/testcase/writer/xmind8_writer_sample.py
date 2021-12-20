@@ -222,14 +222,3 @@ class Xmind8SampleWriter(BaseWriter):
         sub_topic = TopicElement(ownerWorkbook=workbook)
         sub_topic.setTitle(module)
         return sub_topic
-
-
-if __name__ == '__main__':
-    from automotive.application.testcase.reader.standard_excel_reader_sample import StandardExcelSampleReader
-
-    excel_file = r"C:\Users\lizhe\Desktop\debug\自检APP.xlsx"
-    reader = StandardExcelSampleReader()
-    testcases_dict = reader.read_from_file(excel_file)
-    xmind_file = r"C:\Users\lizhe\Desktop\debug\自检APP.xmind"
-    writer = Xmind8SampleWriter()
-    writer.write_to_file(xmind_file, testcases_dict)

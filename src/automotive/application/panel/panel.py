@@ -10,9 +10,9 @@ import copy
 from concurrent.futures import ThreadPoolExecutor
 from time import sleep
 from tkinter import *
-from tkinter import ttk
-from typing import List
-from automotive.application.gui.reader import ConfigReader
+from tkinter.ttk import *
+from typing import List, Dict, Any
+from .reader import ConfigReader
 from automotive import CANService, logger, CanBoxDeviceEnum
 
 TEXT = "text"
@@ -29,32 +29,26 @@ BUS_LOST = "bus_lost"
 MESSAGE_LOST = "message_lost"
 
 
-class Gui(Frame):
+class TabFrame(Frame):
 
-    def __init__(self, master, config_file: str, dbc: str, can_box_device: CanBoxDeviceEnum,
-                 filter_nodes: List[str] = None, can_fd: bool = False):
+    def __init__(self, master, can_service: CANService, config: Dict[str, Any], filter_nodes: List[str],
+                 thread_pool: ThreadPoolExecutor):
         super().__init__(master)
-        # 初始化 CANService
-        self.can_service = CANService(dbc, can_box_device=can_box_device, can_fd=can_fd)
-        # 默认消息发送要过滤的节点
+        self.can_service = can_service
+        self.thread_pool = thread_pool
         self.__filter_nodes = filter_nodes
-        # 获取按钮
-        reader = ConfigReader()
-        config = reader.read_from_file(config_file)
         # 单选框按钮配置
-        self.__check_buttons = config[CHECK_BUTTONS]
+        self.__check_buttons = config[CHECK_BUTTONS] if config[CHECK_BUTTONS] else dict()
         logger.debug(f"check_buttons = {self.__check_buttons}")
         # 闪烁单选框按钮配置
-        self.__thread_buttons = config[THREAD_BUTTONS]
+        self.__thread_buttons = config[THREAD_BUTTONS] if config[THREAD_BUTTONS] else dict()
         logger.debug(f"thread_buttons = {self.__thread_buttons}")
         # 下拉框按钮配置
-        self.__comboxs = config[COMBOXS]
+        self.__comboxs = config[COMBOXS] if config[COMBOXS] else dict()
         logger.debug(f"comboxs = {self.__comboxs}")
         # 输入框按钮配置
-        self.__entries = config[ENTRIES]
+        self.__entries = config[ENTRIES] if config[ENTRIES] else dict()
         logger.debug(f"entries = {self.__entries}")
-        # 多线程的最大线程数， 按照thread_buttons的数量来算的
-        self.max_workers = len(self.__thread_buttons) + 5
         # 每行能够容纳的数量
         self.__max_line_count = 12  # 36
         # 双行能够容纳的数量
@@ -83,8 +77,6 @@ class Gui(Frame):
         self.column = 0
         # 布局显示
         self.pack()
-        # 初始化线程池
-        self.thread_pool = ThreadPoolExecutor(max_workers=self.max_workers)
         # 创建公共按钮
         self.create_common_widget()
         # 创建单选按钮
@@ -95,8 +87,6 @@ class Gui(Frame):
         self.create_entries()
         # 创建事件单选按钮
         self.create_thread_buttons()
-        # 打开can盒
-        self.can_service.open_can()
 
     def create_common_widget(self):
         # ********** 创建一个发送默认消息的按钮 check_button **********
@@ -194,7 +184,7 @@ class Gui(Frame):
             # 创建Label框
             Label(self, text=text_name).grid(row=self.row, column=self.column, sticky=W)
             # 创建下拉框
-            self.comboxs[function_name] = ttk.Combobox(self, values=values, state="readonly", width=5)
+            self.comboxs[function_name] = Combobox(self, values=values, state="readonly", width=5)
             # 设置下拉框初始值为第一个值
             self.comboxs[function_name].current(0)
             logger.debug(f"row = {self.row}, column = {self.column}, index = {index}")
@@ -245,7 +235,7 @@ class Gui(Frame):
             # 获取输入框的名称
             Label(self, text=text_name).grid(row=self.row, column=self.column, sticky=W)
             # 创建输入框
-            self.entries[function_name] = Entry(self, bd=1, width=5)
+            self.entries[function_name] = Entry(self, width=5)
             logger.debug(f"row = {self.row}, column = {self.column}, index = {index}")
             self.entries[function_name].grid(row=self.row, column=self.column + 1, sticky=W)
             # 绑定事件
@@ -361,3 +351,42 @@ class Gui(Frame):
                 sleep(sleep_time)
             else:
                 raise RuntimeError(f"value[{action}] incorrect")
+
+
+class Gui(object):
+
+    def __init__(self, config_file: str, dbc: str, can_box_device: CanBoxDeviceEnum,
+                 filter_nodes: List[str] = None, can_fd: bool = False):
+        self.tk = Tk()
+        self.tk.title = "CAN面板"
+        # 初始化 CANService
+        self.can_service = CANService(dbc, can_box_device=can_box_device, can_fd=can_fd)
+        # 打开can盒
+        self.can_service.open_can()
+        # 默认消息发送要过滤的节点
+        self.__filter_nodes = filter_nodes
+        # 获取按钮
+        reader = ConfigReader()
+        config = reader.read_from_file(config_file)
+        # 多线程的最大线程数
+        self.max_workers = 600
+        # 初始化线程池
+        self.thread_pool = ThreadPoolExecutor(max_workers=self.max_workers)
+        self.tab_control = Notebook(self.tk)
+        # tab选项框对象字典
+        self.tabs = []
+        for key, value in config.items():
+            logger.debug(f"handle tab {key}")
+            tab = TabFrame(self.tk, can_service=self.can_service, filter_nodes=filter_nodes,
+                           config=value, thread_pool=self.thread_pool)
+            self.tab_control.add(tab, text=key)
+            self.tabs.append(tab)
+        self.tab_control.pack(expand=1, fill="both")
+        # 第一个tab
+        self.tab_control.select(self.tabs[0])
+        self.tk.protocol('WM_DELETE_WINDOW', self.exit_root)
+        self.tk.mainloop()
+
+    def exit_root(self):
+        self.can_service.close_can()
+        self.tk.destroy()

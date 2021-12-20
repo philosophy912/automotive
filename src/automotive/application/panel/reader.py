@@ -31,6 +31,7 @@ class GuiConfig(object):
         self.unselected = None
         self.items = None
         self.actions = None
+        self.tab_name = None
 
     def __str__(self):
         values = []
@@ -44,7 +45,7 @@ class GuiConfig(object):
 
 class ConfigReader(object):
 
-    def read_from_file(self, file: str) -> Dict[str, Any]:
+    def read_from_file(self, file: str) -> Dict[str, Dict[str, Any]]:
         result = dict()
         app = xw.App(visible=False, add_book=False)
         app.display_alerts = False
@@ -52,16 +53,22 @@ class ConfigReader(object):
         wb = app.books.open(file)
         sheet = wb.sheets["sheet"]
         configs = self.__parse(sheet)
-        # 按照按钮类型来分割
-        typed_configs = self.__split_type(configs)
-        # 处理 buttons
-        result["check_buttons"] = self.__handle_buttons(typed_configs[GuiButtonTypeEnum.CHECK_BUTTON])
-        # 处理 flash_buttons
-        result["thread_buttons"] = self.__handle_event_buttons(typed_configs[GuiButtonTypeEnum.EVENT_CHECK_BUTTON])
-        # 处理 comboxs
-        result["comboxs"] = self.__handle_combox(typed_configs[GuiButtonTypeEnum.COMBOX_BUTTON])
-        # 处理 entries
-        result["entries"] = self.__handle_entries(typed_configs[GuiButtonTypeEnum.INPUT_BUTTON])
+        # 先区分tab
+        tabs = self.__split_tabs(configs)
+        for tab, values in tabs.items():
+            tab_config = dict()
+            # 按照按钮类型来分割
+            typed_configs = self.__split_type(values)
+            # 处理 buttons
+            tab_config["check_buttons"] = self.__handle_buttons(typed_configs[GuiButtonTypeEnum.CHECK_BUTTON])
+            # 处理 flash_buttons
+            tab_config["thread_buttons"] = self.__handle_event_buttons(
+                typed_configs[GuiButtonTypeEnum.EVENT_CHECK_BUTTON])
+            # 处理 comboxs
+            tab_config["comboxs"] = self.__handle_combox(typed_configs[GuiButtonTypeEnum.COMBOX_BUTTON])
+            # 处理 entries
+            tab_config["entries"] = self.__handle_entries(typed_configs[GuiButtonTypeEnum.INPUT_BUTTON])
+            result[tab] = tab_config
         wb.close()
         app.quit()
         try:
@@ -69,6 +76,16 @@ class ConfigReader(object):
         except AttributeError:
             logger.debug("app kill fail")
         return result
+
+    @staticmethod
+    def __split_tabs(values: List[GuiConfig]) -> Dict[str, List[GuiConfig]]:
+        tab_values = dict()
+        tab_set = set()
+        for value in values:
+            tab_set.add(value.tab_name)
+        for tab in tab_set:
+            tab_values[tab] = list(filter(lambda x: x.tab_name == tab, values))
+        return tab_values
 
     @staticmethod
     def __handle_event_buttons(values: List[GuiConfig]) -> Dict[str, Any]:
@@ -140,6 +157,7 @@ class ConfigReader(object):
             config.items = sheet.range(f"F{i}").value
             column_g = sheet.range(f"G{i}").value
             config.actions = self.__parse_actions(column_g) if column_g else None
+            config.tab_name = sheet.range(f"H{i}").value
             configs.append(config)
             logger.debug(f"config = {config}")
         return configs

@@ -224,6 +224,7 @@ class Xmind8SampleReader(BaseReader):
     def __handle_actions(self, actions: str):
         total = []
         lines = actions.split("\n")
+        lines = list(filter(lambda x: x != "", lines))
         temp = []
         for i, line in enumerate(lines):
             if line[0] in index_list:
@@ -260,13 +261,3 @@ class Xmind8SampleReader(BaseReader):
             if content[0] in (".", "。", " "):
                 content = content[1:]
         return content
-
-
-if __name__ == '__main__':
-    xmind_file1 = r"D:\Workspace\chinatsp\develop\python\test_src\test_application\自检APP.xmind"
-    sample = Xmind8SampleReader()
-    testcase_dict = sample.read_from_file(xmind_file1)
-    for key, value in testcase_dict.items():
-        # print(key)
-        for v in value:
-            logger.info(v)

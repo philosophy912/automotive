@@ -54,22 +54,6 @@ class TestCaseGenerator(object):
         if not (condition1 or condition2):
             raise RuntimeError("简版输入只支持Excel和xmind互转")
 
-    @staticmethod
-    def __update_testcases(testcases: Dict[str, List[Testcase]]):
-        for key, value in testcases.items():
-            for i, tc in enumerate(value):
-                tc.update(i, key)
-                tc.calc_hash()
-                # logger.debug(tc)
-
-    @staticmethod
-    def __convert_testcases(testcases: Dict[str, List[Testcase]]):
-        for key, value in testcases.items():
-            for i, tc in enumerate(value):
-                tc.convert(key)
-                tc.calc_hash()
-                # logger.debug(tc)
-
     def get_testcases(self, file: str, is_sample: bool = False) -> Dict[str, TestCases]:
         """
         获取测试用例
@@ -77,18 +61,8 @@ class TestCaseGenerator(object):
         :param is_sample: 简版输入，读取的时候会重新组织内容
         :return:
         """
-        if is_sample:
-            self.__check_sample_file(file, file)
-            reader = self.__get_reader(file, is_sample)
-            testcases = reader.read_from_file(file)
-            if FileTypeEnum.from_extends(file) == FileTypeEnum.XMIND8:
-                self.__update_testcases(testcases)
-            if FileTypeEnum.from_extends(file) == FileTypeEnum.STANDARD_EXCEL:
-                self.__convert_testcases(testcases)
-            return testcases
-        else:
-            reader = self.__get_reader(file, is_sample)
-            return reader.read_from_file(file)
+        reader = self.__get_reader(file, is_sample)
+        return reader.read_from_file(file)
 
     def generator(self, in_file: str, out_file: str, is_sample: bool = False):
         """
@@ -102,12 +76,6 @@ class TestCaseGenerator(object):
 
         if is_sample:
             self.__check_sample_file(in_file, out_file)
-            reader = self.__get_reader(in_file, is_sample)
-            writer = self.__get_writer(out_file, is_sample)
-            testcases = reader.read_from_file(in_file)
-            logger.debug(f"testcases is {testcases}")
-            writer.write_to_file(out_file, testcases)
-            logger.info(f"read testcase from [{in_file}] and write to file [{out_file}]")
         else:
             reader = self.__get_reader(in_file, is_sample)
             writer = self.__get_writer(out_file, is_sample)
@@ -116,20 +84,16 @@ class TestCaseGenerator(object):
             writer.write_to_file(out_file, testcases)
             logger.info(f"read testcase from [{in_file}] and write to file [{out_file}]")
 
-    def compare(self, file1: str, file2: str):
+    def __compare(self, file1: str, file2: str):
         """
         找出两个文件之间的差别，仅支持xmind和excel两种格式
         """
         testcase1 = self.__get_testcases(file1)
-        self.__update_testcase(FileTypeEnum.from_extends(file1), testcase1)
-        # self.__print_testcases(testcase1)
-        # print("****************************************************************************")
         testcase2 = self.__get_testcases(file2)
-        # self.__print_testcases(testcase2)
         key = list(testcase1.keys())[0]
         testcases1 = testcase1.get(key)
         testcases2 = testcase2.get(key)
-        testcases = self.__get_different(testcases1, testcases2)
+        self.__get_different(testcases1, testcases2)
 
     @staticmethod
     def __print_testcases(testcases: Dict[str, List[Testcase]]):
@@ -148,10 +112,6 @@ class TestCaseGenerator(object):
             raise RuntimeError(f"{file}有多个模块，目前仅支持一个模块")
         else:
             return testcase
-
-    def __update_testcase(self, file_type: FileTypeEnum, testcase: Dict[str, List[Testcase]]):
-        if file_type == FileTypeEnum.XMIND8:
-            self.__update_testcases(testcase)
 
     @staticmethod
     def __get_different(testcases1: List[Testcase], testcases2: List[Testcase]) -> List[Testcase]:
