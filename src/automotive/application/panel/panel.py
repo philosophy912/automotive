@@ -13,7 +13,9 @@ from tkinter import *
 from tkinter.ttk import *
 from typing import List, Dict, Any
 from .reader import ConfigReader
-from automotive import CANService, logger, CanBoxDeviceEnum
+from automotive.logger.logger import logger
+from automotive.core.can.can_service import CANService
+from automotive.core.can.common.enums import CanBoxDeviceEnum
 
 TEXT = "text"
 ON = "on"
@@ -24,15 +26,18 @@ COMBOXS = "comboxs"
 ENTRIES = "entries"
 VALUES = "values"
 ACTIONS = "actions"
-DEFAULT_MESSAGE = "default_message"
-BUS_LOST = "bus_lost"
-MESSAGE_LOST = "message_lost"
+OPEN_DEVICE = "open_device", "打开设备"
+CLOSE_DEVICE = "close_device", "关闭设备"
+DEFAULT_MESSAGE = "default_message", "发送默认消息"
+BUS_LOST = "bus_lost", "总线丢失"
+MESSAGE_LOST = "message_lost", "要丢失信号"
+COMMON = "公共"
 
 
 class TabFrame(Frame):
 
     def __init__(self, master, can_service: CANService, config: Dict[str, Any], filter_nodes: List[str],
-                 thread_pool: ThreadPoolExecutor):
+                 thread_pool: ThreadPoolExecutor, common_panel: bool = False):
         super().__init__(master)
         self.can_service = can_service
         self.thread_pool = thread_pool
@@ -78,7 +83,8 @@ class TabFrame(Frame):
         # 布局显示
         self.pack()
         # 创建公共按钮
-        self.create_common_widget()
+        if common_panel:
+            self.create_common_widget()
         # 创建单选按钮
         self.create_check_buttons()
         # 创建下拉按钮
@@ -89,25 +95,45 @@ class TabFrame(Frame):
         self.create_thread_buttons()
 
     def create_common_widget(self):
-        # ********** 创建一个发送默认消息的按钮 check_button **********
-        text_name = DEFAULT_MESSAGE
+        # ********** 创建打开设备按钮 check_button **********
+        text_name, show_name = OPEN_DEVICE
         # 创建Button对象
-        self.buttons[text_name] = Button(self, text="发送默认消息", command=lambda x=text_name: self.__button_event(x))
+        self.buttons[text_name] = Button(self, text=show_name, command=lambda x=text_name: self.__button_event(x))
         # 布局button
         self.buttons[text_name].grid(row=self.row, column=self.column, sticky=W)
-        # ********** 创建一个总线丢失的按钮 check_button **********
-        text_name = BUS_LOST
+        self.buttons[text_name]["state"] = NORMAL
+        self.column += 1
+        # ********** 创建关闭设备按钮 **********
+        text_name, show_name = CLOSE_DEVICE
+        # 创建Button对象
+        self.buttons[text_name] = Button(self, text=show_name, command=lambda x=text_name: self.__button_event(x))
+        # 布局button
+        self.buttons[text_name].grid(row=self.row, column=self.column, sticky=W)
+        self.buttons[text_name]["state"] = DISABLED
+        self.column += 1
+        # ********** 创建一个发送默认消息的按钮 button **********
+        text_name, show_name = DEFAULT_MESSAGE
+        # 创建Button对象
+        self.buttons[text_name] = Button(self, text=show_name, command=lambda x=text_name: self.__button_event(x))
+        # 布局button
+        self.buttons[text_name].grid(row=self.row, column=self.column, sticky=W)
+        self.column += 1
+        # ********** 创建一个总线丢失的按钮 button **********
+        text_name, show_name = BUS_LOST
         # 创建CheckButton对象并放到check_buttons中方便调用
-        self.buttons[text_name] = Button(self, text="总线丢失", command=lambda x=text_name: self.__button_event(x))
+        self.buttons[text_name] = Button(self, text=show_name, command=lambda x=text_name: self.__button_event(x))
         # 布局checkbutton
-        self.buttons[text_name].grid(row=self.row, column=self.column + 1, sticky=W)
+        self.buttons[text_name].grid(row=self.row, column=self.column, sticky=W)
+        self.column += 1
         # ********** 创建一个信号丢失的输入框  entry **********
+        text_name, show_name = MESSAGE_LOST
         # 获取输入框的名称
-        Label(self, text="要丢失信号").grid(row=self.row, column=self.column + 2, sticky=W)
-        self.entries[MESSAGE_LOST] = Entry(self, bd=1, width=10)
-        self.entries[MESSAGE_LOST].grid(row=self.row, column=self.column + 3, sticky=W)
-        self.entries[MESSAGE_LOST].bind(self.support_event_keys[0],
-                                        lambda x, y=("", MESSAGE_LOST): self.__entry_event(x, y))
+        Label(self, text=show_name).grid(row=self.row, column=self.column, sticky=W)
+        self.column += 1
+        self.entries[text_name] = Entry(self, width=10)
+        self.entries[text_name].grid(row=self.row, column=self.column, sticky=W)
+        self.entries[text_name].bind(self.support_event_keys[0],
+                                     lambda x, y=("", text_name): self.__entry_event(x, y))
         self.row += 1
 
     def __button_event(self, text_name: str):
@@ -115,11 +141,20 @@ class TabFrame(Frame):
         self.__special_actions(text_name)
 
     def __special_actions(self, text_name: str):
-        if text_name == DEFAULT_MESSAGE:
+        if text_name == DEFAULT_MESSAGE[0]:
             self.can_service.send_default_messages(filter_sender=self.__filter_nodes)
-        elif text_name == BUS_LOST:
+            self.buttons[text_name]["state"] = NORMAL
+        elif text_name == BUS_LOST[0]:
             self.can_service.stop_transmit()
-        self.buttons[text_name]["state"] = NORMAL
+            self.buttons[text_name]["state"] = NORMAL
+        elif text_name == OPEN_DEVICE[0]:
+            self.can_service.open_can()
+            self.buttons[OPEN_DEVICE[0]]["state"] = DISABLED
+            self.buttons[CLOSE_DEVICE[0]]["state"] = NORMAL
+        elif text_name == CLOSE_DEVICE[0]:
+            self.can_service.close_can()
+            self.buttons[OPEN_DEVICE[0]]["state"] = NORMAL
+            self.buttons[CLOSE_DEVICE[0]]["state"] = DISABLED
 
     def create_check_buttons(self):
         # 创建下拉框
@@ -246,10 +281,11 @@ class TabFrame(Frame):
             index += 1
 
     def __entry_event(self, event, params):
+        message_lost = MESSAGE_LOST[0]
         logger.trace(event)
         function_name = params[1]
-        if function_name == MESSAGE_LOST:
-            value = self.entries[MESSAGE_LOST].get()
+        if function_name == message_lost:
+            value = self.entries[function_name].get()
             if value != "":
                 # 0x152,0x153, 0x154
                 value.replace("，", ",")
@@ -303,7 +339,7 @@ class TabFrame(Frame):
             # 创建bool对象接收值
             self.thread_button_bool_vars[text_name] = BooleanVar()
             # 创建CheckButton对象并放到thread_buttons中方便调用
-            button = Checkbutton(self, text=text_name,
+            button = Checkbutton(self, text=f"【{text_name}】",
                                  variable=self.thread_button_bool_vars[text_name],
                                  onvalue=True,
                                  offvalue=False,
@@ -355,19 +391,20 @@ class TabFrame(Frame):
 
 class Gui(object):
 
-    def __init__(self, config_file: str, dbc: str, can_box_device: CanBoxDeviceEnum,
+    def __init__(self, excel_file: str, dbc: str, can_box_device: CanBoxDeviceEnum = None,
                  filter_nodes: List[str] = None, can_fd: bool = False):
         self.tk = Tk()
         self.tk.title = "CAN面板"
         # 初始化 CANService
         self.can_service = CANService(dbc, can_box_device=can_box_device, can_fd=can_fd)
-        # 打开can盒
-        self.can_service.open_can()
+        # # 打开can盒
+        # self.can_service.open_can()
         # 默认消息发送要过滤的节点
         self.__filter_nodes = filter_nodes
         # 获取按钮
         reader = ConfigReader()
-        config = reader.read_from_file(config_file)
+        config = reader.read_from_file(excel_file)
+        config[COMMON] = {CHECK_BUTTONS: {}, THREAD_BUTTONS: {}, COMBOXS: {}, ENTRIES: {}}
         # 多线程的最大线程数
         self.max_workers = 600
         # 初始化线程池
@@ -377,8 +414,12 @@ class Gui(object):
         self.tabs = []
         for key, value in config.items():
             logger.debug(f"handle tab {key}")
+            if key == COMMON:
+                common_panel = True
+            else:
+                common_panel = False
             tab = TabFrame(self.tk, can_service=self.can_service, filter_nodes=filter_nodes,
-                           config=value, thread_pool=self.thread_pool)
+                           config=value, thread_pool=self.thread_pool, common_panel=common_panel)
             self.tab_control.add(tab, text=key)
             self.tabs.append(tab)
         self.tab_control.pack(expand=1, fill="both")
