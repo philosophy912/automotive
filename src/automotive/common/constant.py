@@ -18,7 +18,7 @@ relay_tips = "please call method open_relay_device first"
 battery_tips = "please call method open first"
 
 
-def check_connect(argument: str, tips: str, is_serial: bool = False):
+def check_connect(argument: str, tips: str, is_serial: bool = False, is_bus: bool = False):
     def method(func):
         """
         检查设备是否已经连接
@@ -28,6 +28,13 @@ def check_connect(argument: str, tips: str, is_serial: bool = False):
             if is_serial:
                 serial = self.__dict__[f"_{self.__class__.__name__}{argument}"]
                 if not (serial and serial.isOpen):
+                    raise RuntimeError(tips)
+            elif is_bus:
+                if argument in self.__dict__:
+                    flag = self.__dict__[argument]
+                else:
+                    flag = self.__dict__[f"_{self.__class__.__name__}{argument}"]
+                if not flag.is_open:
                     raise RuntimeError(tips)
             else:
                 if argument in self.__dict__:

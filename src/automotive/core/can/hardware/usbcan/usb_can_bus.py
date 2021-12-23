@@ -6,7 +6,7 @@
 # @Author:      lizhe
 # @Created:     2021/5/1 - 23:44
 # --------------------------------------------------------
-
+from time import sleep
 from automotive.logger.logger import logger
 from .usb_can import UsbCanDevice
 from automotive.core.can.common.interfaces import BaseCanBus
@@ -20,8 +20,8 @@ class UsbCanBus(BaseCanBus):
     """
 
     def __init__(self, can_box_device: CanBoxDeviceEnum, baud_rate: BaudRateEnum = BaudRateEnum.HIGH,
-                 can_fd: bool = False):
-        super().__init__(baud_rate=baud_rate, can_fd=can_fd)
+                 can_fd: bool = False, max_workers: int = 300):
+        super().__init__(baud_rate=baud_rate, can_fd=can_fd, max_workers=max_workers)
         if self._can_fd:
             raise RuntimeError("usb can not support can fd")
         # USB CAN BOX实例化
@@ -103,6 +103,8 @@ class UsbCanBus(BaseCanBus):
             except RuntimeError as e:
                 logger.trace(e)
                 continue
+            finally:
+                sleep(0.001)
 
     def open_can(self):
         """

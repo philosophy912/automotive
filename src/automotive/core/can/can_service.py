@@ -9,6 +9,7 @@
 import time
 import random
 import copy
+from concurrent.futures import ThreadPoolExecutor
 from time import sleep
 from typing import Tuple, Union, List, Any, Dict, Optional
 
@@ -20,39 +21,43 @@ from automotive.common.singleton import Singleton
 from automotive.logger.logger import logger
 
 
-def __get_can_bus(can_box_device: CanBoxDeviceEnum, baud_rate: BaudRateEnum, can_fd: bool) -> BaseCanBus:
+def __get_can_bus(can_box_device: CanBoxDeviceEnum, baud_rate: BaudRateEnum, can_fd: bool,
+                  max_workers: int) -> BaseCanBus:
     if can_box_device == CanBoxDeviceEnum.PEAKCAN:
         logger.info("use pcan")
         from .hardware.peakcan.pcan_bus import PCanBus
-        return PCanBus(baud_rate=baud_rate, can_fd=can_fd)
+        return PCanBus(baud_rate=baud_rate, can_fd=can_fd, max_workers=max_workers)
     elif can_box_device == CanBoxDeviceEnum.TSMASTER:
         logger.info("use tsmaster")
         from .hardware.tscan.tsmaster_bus import TsMasterCanBus
-        return TsMasterCanBus(baud_rate=baud_rate, can_fd=can_fd)
+        return TsMasterCanBus(baud_rate=baud_rate, can_fd=can_fd, max_workers=max_workers)
     elif can_box_device == CanBoxDeviceEnum.CANALYST or can_box_device == CanBoxDeviceEnum.USBCAN:
         from .hardware.usbcan.usb_can_bus import UsbCanBus
-        return UsbCanBus(can_box_device, baud_rate=baud_rate, can_fd=can_fd)
+        return UsbCanBus(can_box_device, baud_rate=baud_rate, can_fd=can_fd, max_workers=max_workers)
+    elif can_box_device == CanBoxDeviceEnum.ITEK:
+        from .hardware.itek.itek_usb_can_bus import ItekUsbCanBus
+        return ItekUsbCanBus(baud_rate=baud_rate, can_fd=can_fd, max_workers=max_workers)
     else:
         raise RuntimeError(f"{can_box_device.value} not support")
 
 
 def get_can_box_device(can_box_device: CanBoxDeviceEnum, baud_rate: BaudRateEnum,
-                       can_fd: bool) -> Tuple[CanBoxDeviceEnum, BaseCanBus]:
+                       can_fd: bool, max_workers: int) -> Tuple[CanBoxDeviceEnum, BaseCanBus]:
     """
     获取can盒子的类型， 依次从PCan找到CANALYST然后到USBCAN
     :return: can盒类型
     """
     if can_box_device:
-        return can_box_device, __get_can_bus(can_box_device, baud_rate, can_fd)
+        return can_box_device, __get_can_bus(can_box_device, baud_rate, can_fd, max_workers)
     else:
         for key, value in CanBoxDeviceEnum.__members__.items():
             logger.info(f"try to open {key}")
-            can = __get_can_bus(value, baud_rate, can_fd)
+            can = __get_can_bus(value, baud_rate, can_fd, max_workers)
             try:
                 can.open_can()
                 sleep(1)
                 can.close_can()
-                return can_box_device, can
+                return value, __get_can_bus(value, baud_rate, can_fd, max_workers)
             except RuntimeError:
                 logger.debug(f"open {value.value} failed")
         raise RuntimeError("No device found, is can box connected")
@@ -66,12 +71,17 @@ class Can(metaclass=Singleton):
     def __init__(self,
                  can_box_device: Optional[CanBoxDeviceEnum] = None,
                  baud_rate: BaudRateEnum = BaudRateEnum.HIGH,
-                 can_fd: bool = False):
-        self._can_box_device, self._can = get_can_box_device(can_box_device, baud_rate, can_fd)
+                 can_fd: bool = False,
+                 max_workers: int = 300):
+        self._can_box_device, self._can = get_can_box_device(can_box_device, baud_rate, can_fd, max_workers)
 
     @property
     def can_box_device(self) -> CanBoxDeviceEnum:
         return self._can_box_device
+
+    @property
+    def can_bus(self) -> BaseCanBus:
+        return self._can
 
     def open_can(self):
         """
@@ -175,17 +185,14 @@ class CANService(Can):
                  encoding: str = "utf-8",
                  can_box_device: Optional[CanBoxDeviceEnum] = None,
                  baud_rate: BaudRateEnum = BaudRateEnum.HIGH,
-                 can_fd: bool = False):
-        super().__init__(can_box_device, baud_rate, can_fd)
+                 can_fd: bool = False,
+                 max_workers: int = 300):
+        super().__init__(can_box_device, baud_rate, can_fd, max_workers)
         logger.debug(f"read message from file {messages}")
         self.__messages, self.__name_messages = get_message(messages, encoding=encoding)
         # 备份message, 可以作为初始值发送
         self.__backup_messages = copy.deepcopy(self.__messages)
         self.__backup_name_messages = copy.deepcopy(self.__name_messages)
-
-    @property
-    def can_bus(self) -> BaseCanBus:
-        return self._can
 
     @property
     def name_messages(self) -> Dict[str, Any]:

@@ -7,6 +7,7 @@
 # @Created:     2021/11/18 - 20:50
 # --------------------------------------------------------
 from enum import Enum, unique
+from automotive.logger.logger import logger
 
 
 @unique
@@ -33,14 +34,29 @@ class FileTypeEnum(Enum):
 
 @unique
 class GuiButtonTypeEnum(Enum):
-    CHECK_BUTTON = "单选按钮"
-    COMBOX_BUTTON = "下拉框"
-    INPUT_BUTTON = "输入框"
-    EVENT_CHECK_BUTTON = "事件单选框"
+    CHECK_BUTTON = "单选按钮", "check_buttons"
+    COMBOX_BUTTON = "下拉框", "thread_buttons"
+    INPUT_BUTTON = "输入框", "comboxs"
+    EVENT_CHECK_BUTTON = "事件单选框", "entries"
+    EVENT_BUTTON = "按钮", "buttons"
 
     @staticmethod
     def from_name(type_: str):
+        logger.debug(f"type_ is {type_}")
         for key, item in GuiButtonTypeEnum.__members__.items():
-            if type_.strip() == item.value:
+            if type_.strip() == item.value[0]:
                 return item
         raise ValueError(f"{type_} can not be found in GuiButtonTypeEnum")
+
+
+class ExcelReadEnum(Enum):
+    XLWINGS = "xlwings"
+    XLRD = "xlrd"
+    OPENPYXL = "openpyxl"
+
+    @staticmethod
+    def from_name(type_: str):
+        for key, item in ExcelReadEnum.__members__.items():
+            if type_.strip() == item.value:
+                return item
+        raise ValueError(f"{type_} can not be found in ExcelReadEnum")

@@ -9,8 +9,10 @@
 import os
 from typing import List, Dict, Any
 
+from automotive.application.common.constants import GuiConfig
+from automotive.application.common.interfaces import BaseConfigReader
 from automotive.logger.logger import logger
-from automotive.application.common.enums import GuiButtonTypeEnum
+from automotive.application.common.enums import GuiButtonTypeEnum, ExcelReadEnum
 
 try:
     import xlwings as xw
@@ -18,32 +20,33 @@ except ModuleNotFoundError:
     os.system("pip install xlwings")
 finally:
     import xlwings as xw
-    from xlwings import Sheet, Book
+    from xlwings import Sheet as xw_Sheet
+    from xlwings import Book
+
+try:
+    import xlrd
+except ModuleNotFoundError:
+    os.system("pip install xlrd")
+finally:
+    import xlrd
+    from xlrd.sheet import Sheet as xlrd_Sheet
+
+try:
+    import openpyxl
+except ModuleNotFoundError:
+    os.system("pip install openpyxl")
+finally:
+    import openpyxl
+    from openpyxl import worksheet
+
+check_buttons = GuiButtonTypeEnum.CHECK_BUTTON.value[1]
+thread_buttons = GuiButtonTypeEnum.EVENT_CHECK_BUTTON.value[1]
+comboxs = GuiButtonTypeEnum.COMBOX_BUTTON.value[1]
+entries = GuiButtonTypeEnum.INPUT_BUTTON.value[1]
+buttons = GuiButtonTypeEnum.EVENT_BUTTON.value[1]
 
 
-class GuiConfig(object):
-
-    def __init__(self):
-        self.name = None
-        self.text_name = None
-        self.button_type = None
-        self.selected = None
-        self.unselected = None
-        self.items = None
-        self.actions = None
-        self.tab_name = None
-
-    def __str__(self):
-        values = []
-        # exclude = "category", "module", "module_id", "requirement_id", "keywords", "test_case_type", "phase", "status"
-        exclude = []
-        for key, value in self.__dict__.items():
-            if key not in exclude:
-                values.append(f"{key}={value}")
-        return ",".join(values)
-
-
-class ConfigReader(object):
+class XlwingsConfigReader(BaseConfigReader):
 
     def read_from_file(self, file: str) -> Dict[str, Dict[str, Any]]:
         result = dict()
@@ -54,20 +57,22 @@ class ConfigReader(object):
         sheet = wb.sheets["sheet"]
         configs = self.__parse(sheet)
         # 先区分tab
-        tabs = self.__split_tabs(configs)
+        tabs = self._split_tabs(configs)
         for tab, values in tabs.items():
             tab_config = dict()
             # 按照按钮类型来分割
-            typed_configs = self.__split_type(values)
+            typed_configs = self._split_type(values)
             # 处理 buttons
-            tab_config["check_buttons"] = self.__handle_buttons(typed_configs[GuiButtonTypeEnum.CHECK_BUTTON])
+            tab_config[check_buttons] = self._handle_check_buttons(typed_configs[GuiButtonTypeEnum.CHECK_BUTTON])
             # 处理 flash_buttons
-            tab_config["thread_buttons"] = self.__handle_event_buttons(
+            tab_config[thread_buttons] = self._handle_event_buttons(
                 typed_configs[GuiButtonTypeEnum.EVENT_CHECK_BUTTON])
             # 处理 comboxs
-            tab_config["comboxs"] = self.__handle_combox(typed_configs[GuiButtonTypeEnum.COMBOX_BUTTON])
+            tab_config[comboxs] = self._handle_combox(typed_configs[GuiButtonTypeEnum.COMBOX_BUTTON])
             # 处理 entries
-            tab_config["entries"] = self.__handle_entries(typed_configs[GuiButtonTypeEnum.INPUT_BUTTON])
+            tab_config[entries] = self._handle_entries(typed_configs[GuiButtonTypeEnum.INPUT_BUTTON])
+            # 处理 buttons
+            tab_config[buttons] = self._handle_buttons(typed_configs[GuiButtonTypeEnum.EVENT_BUTTON])
             result[tab] = tab_config
         wb.close()
         app.quit()
@@ -77,72 +82,7 @@ class ConfigReader(object):
             logger.debug("app kill fail")
         return result
 
-    @staticmethod
-    def __split_tabs(values: List[GuiConfig]) -> Dict[str, List[GuiConfig]]:
-        tab_values = dict()
-        tab_set = set()
-        for value in values:
-            tab_set.add(value.tab_name)
-        for tab in tab_set:
-            tab_values[tab] = list(filter(lambda x: x.tab_name == tab, values))
-        return tab_values
-
-    @staticmethod
-    def __handle_event_buttons(values: List[GuiConfig]) -> Dict[str, Any]:
-        result = dict()
-        for item in values:
-            content = dict()
-            content["text"] = item.text_name
-            content["actions"] = item.actions
-            result[item.name] = content
-        return result
-
-    @staticmethod
-    def __handle_buttons(values: List[GuiConfig]) -> Dict[str, Any]:
-        result = dict()
-        for item in values:
-            content = dict()
-            content["text"] = item.text_name
-            content["on"] = item.selected
-            content["off"] = item.unselected
-            result[item.name] = content
-        logger.debug(f"result = {result}")
-        return result
-
-    @staticmethod
-    def __handle_combox(values: List[GuiConfig]) -> Dict[str, Any]:
-        result = dict()
-        # 当前有多少个按钮
-        button_names = set()
-        for item in values:
-            button_names.add(item.text_name)
-        logger.debug(f"buttons = {button_names}")
-        buttons = []
-        for name in button_names:
-            buttons.append(list(filter(lambda x: x.text_name == name, values)))
-        for button in buttons:
-            values_dict = dict()
-            function_dict = dict()
-            for item in button:
-                values_dict[item.items] = item.actions
-            function_dict["values"] = values_dict
-            function_dict["text"] = button[0].text_name
-            result[button[0].name] = function_dict
-        logger.debug(f"result = {result}")
-        return result
-
-    @staticmethod
-    def __handle_entries(values: List[GuiConfig]) -> Dict[str, Any]:
-        result = dict()
-        for item in values:
-            content = dict()
-            content["text"] = item.text_name
-            content["actions"] = item.actions
-            result[item.name] = content
-        logger.debug(f"result = {result}")
-        return result
-
-    def __parse(self, sheet: Sheet) -> List[GuiConfig]:
+    def __parse(self, sheet: xw_Sheet) -> List[GuiConfig]:
         configs = []
         max_row = sheet.used_range.last_cell.row
         for i in range(2, max_row + 1):
@@ -151,59 +91,123 @@ class ConfigReader(object):
             config.text_name = sheet.range(f"B{i}").value
             config.button_type = GuiButtonTypeEnum.from_name(sheet.range(f"C{i}").value)
             column_d = sheet.range(f"D{i}").value
-            config.selected = self.__parse_actions(column_d) if column_d else None
+            config.selected = self._parse_actions(column_d) if column_d else None
             column_e = sheet.range(f"E{i}").value
-            config.unselected = self.__parse_actions(column_e) if column_e else None
+            config.unselected = self._parse_actions(column_e) if column_e else None
             config.items = sheet.range(f"F{i}").value
             column_g = sheet.range(f"G{i}").value
-            config.actions = self.__parse_actions(column_g) if column_g else None
+            config.actions = self._parse_actions(column_g) if column_g else None
             config.tab_name = sheet.range(f"H{i}").value
             configs.append(config)
             logger.debug(f"config = {config}")
         return configs
 
-    def __parse_actions(self, actions: str) -> List:
-        contents = []
-        lines = actions.split("\n")
-        for line in lines:
-            # 0x152 BCM_LetfligthSt=0x1
-            if line[:2].upper() == "0X":
-                index = line.index(" ")
-                msg_id = int(line[:index].strip(), 16)
-                other = line[index + 1:]
-                signal_dict = dict()
-                # 0x92 WCBS_ESC_WhlSpdFRVd=0x1, WCBS_ESC_WhlFLSpd=None
-                if "," in other:
-                    # 表示有多个信号值
-                    signals = other.split(",")
-                    for signal in signals:
-                        values = signal.split("=")
-                        key = values[0].strip()
-                        value = values[1].strip()
-                        signal_dict[key] = self.__handle_signal_value(value)
-                else:
-                    values = other.split("=")
-                    key = values[0].strip()
-                    value = values[1].strip()
-                    signal_dict[key] = self.__handle_signal_value(value)
-                contents.append((msg_id, signal_dict))
-            else:
-                contents.append(line)
-        return contents
 
-    @staticmethod
-    def __handle_signal_value(value: str):
-        if value.upper() == "NONE":
-            return None
-        else:
-            if "0x" in value or "0X" in value:
-                return int(value, 16)
-            else:
-                return float(value)
+class OpenpyxlConfigReader(BaseConfigReader):
 
-    @staticmethod
-    def __split_type(configs: List[GuiConfig]) -> Dict[GuiButtonTypeEnum, Any]:
-        typed_configs = dict()
-        for key, item in GuiButtonTypeEnum.__members__.items():
-            typed_configs[item] = list(filter(lambda x: x.button_type == item, configs))
-        return typed_configs
+    def read_from_file(self, file: str) -> Dict[str, Dict[str, Any]]:
+        result = dict()
+        wb = openpyxl.load_workbook(file)
+        sheet = wb["sheet"]
+        configs = self.__parse(sheet)
+        # 先区分tab
+        tabs = self._split_tabs(configs)
+        for tab, values in tabs.items():
+            logger.debug(f"tab name is {tab}")
+            tab_config = dict()
+            # 按照按钮类型来分割
+            typed_configs = self._split_type(values)
+            # 处理 buttons
+            tab_config[check_buttons] = self._handle_check_buttons(typed_configs[GuiButtonTypeEnum.CHECK_BUTTON])
+            # 处理 flash_buttons
+            tab_config[thread_buttons] = self._handle_event_buttons(typed_configs[GuiButtonTypeEnum.EVENT_CHECK_BUTTON])
+            # 处理 comboxs
+            tab_config[comboxs] = self._handle_combox(typed_configs[GuiButtonTypeEnum.COMBOX_BUTTON])
+            # 处理 entries
+            tab_config[entries] = self._handle_entries(typed_configs[GuiButtonTypeEnum.INPUT_BUTTON])
+            # 处理 buttons
+            tab_config[buttons] = self._handle_buttons(typed_configs[GuiButtonTypeEnum.EVENT_BUTTON])
+            result[tab] = tab_config
+        return result
+
+    def __parse(self, sheet: worksheet):
+        configs = []
+        max_row = sheet.max_row
+        logger.debug(f"max_row = {max_row}")
+        for i in range(2, max_row + 1):
+            config = GuiConfig()
+            config.name = sheet.cell(i, 1).value
+            config.text_name = sheet.cell(i, 2).value
+            config.button_type = GuiButtonTypeEnum.from_name(sheet.cell(i, 3).value)
+            column_d = sheet.cell(i, 4).value
+            config.selected = self._parse_actions(column_d) if column_d else None
+            column_e = sheet.cell(i, 5).value
+            config.unselected = self._parse_actions(column_e) if column_e else None
+            config.items = sheet.cell(i, 6).value
+            column_g = sheet.cell(i, 7).value
+            config.actions = self._parse_actions(column_g) if column_g else None
+            config.tab_name = sheet.cell(i, 8).value
+            configs.append(config)
+            logger.debug(f"config = {config}")
+        return configs
+
+
+class XlrdConfigReader(BaseConfigReader):
+
+    def read_from_file(self, file: str) -> Dict[str, Dict[str, Any]]:
+        result = dict()
+        data = xlrd.open_workbook(file)
+        sheet = data.sheet_by_name("sheet")
+        configs = self.__parse(sheet)
+        # 先区分tab
+        tabs = self._split_tabs(configs)
+        for tab, values in tabs.items():
+            tab_config = dict()
+            # 按照按钮类型来分割
+            typed_configs = self._split_type(values)
+            # 处理 buttons
+            tab_config[check_buttons] = self._handle_check_buttons(typed_configs[GuiButtonTypeEnum.CHECK_BUTTON])
+            # 处理 flash_buttons
+            tab_config[thread_buttons] = self._handle_event_buttons(typed_configs[GuiButtonTypeEnum.EVENT_CHECK_BUTTON])
+            # 处理 comboxs
+            tab_config[comboxs] = self._handle_combox(typed_configs[GuiButtonTypeEnum.COMBOX_BUTTON])
+            # 处理 entries
+            tab_config[entries] = self._handle_entries(typed_configs[GuiButtonTypeEnum.INPUT_BUTTON])
+            # 处理 buttons
+            tab_config[buttons] = self._handle_buttons(typed_configs[GuiButtonTypeEnum.EVENT_BUTTON])
+            result[tab] = tab_config
+        return result
+
+    def __parse(self, sheet: xlrd_Sheet):
+        configs = []
+        max_row = sheet.nrows
+        for i in range(2, max_row + 1):
+            config = GuiConfig()
+            config.name = sheet.cell_value(i, 0)
+            config.text_name = sheet.cell_value(i, 1)
+            config.button_type = GuiButtonTypeEnum.from_name(sheet.cell_value(i, 2))
+            column_d = sheet.cell_value(i, 3)
+            config.selected = self._parse_actions(column_d) if column_d else None
+            column_e = sheet.cell_value(i, 4)
+            config.unselected = self._parse_actions(column_e) if column_e else None
+            config.items = sheet.cell_value(i, 5)
+            column_g = sheet.cell_value(i, 6).value
+            config.actions = self._parse_actions(column_g) if column_g else None
+            config.tab_name = sheet.cell_value(i, 7).value
+            configs.append(config)
+            logger.debug(f"config = {config}")
+        return configs
+
+
+class ConfigService(object):
+
+    def __init__(self, type_: ExcelReadEnum = ExcelReadEnum.OPENPYXL):
+        if type_ == ExcelReadEnum.XLRD:
+            self.__reader = XlrdConfigReader()
+        elif type_ == ExcelReadEnum.XLWINGS:
+            self.__reader = XlwingsConfigReader()
+        elif type_ == ExcelReadEnum.OPENPYXL:
+            self.__reader = OpenpyxlConfigReader()
+
+    def read_from_file(self, file: str) -> Dict[str, Dict[str, Any]]:
+        return self.__reader.read_from_file(file)

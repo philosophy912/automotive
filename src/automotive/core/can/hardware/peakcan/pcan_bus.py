@@ -6,6 +6,7 @@
 # @Author:      lizhe
 # @Created:     2021/5/1 - 23:39
 # --------------------------------------------------------
+from time import sleep
 from automotive.logger.logger import logger
 from .pcan import PCanDevice
 from automotive.core.can.common.interfaces import BaseCanBus
@@ -18,10 +19,10 @@ class PCanBus(BaseCanBus):
         实现CANBus接口，能够多线程发送和接收can信号
     """
 
-    def __init__(self, baud_rate: BaudRateEnum = BaudRateEnum.HIGH, can_fd: bool = False):
+    def __init__(self, baud_rate: BaudRateEnum = BaudRateEnum.HIGH, can_fd: bool = False, max_workers: int = 300):
         if can_fd:
             raise RuntimeError("pcan not support canfd")
-        super().__init__(baud_rate=baud_rate, can_fd=can_fd)
+        super().__init__(baud_rate=baud_rate, can_fd=can_fd, max_workers=max_workers)
         # PCAN实例化
         self._can = PCanDevice(can_fd)
 
@@ -84,6 +85,8 @@ class PCanBus(BaseCanBus):
             except RuntimeError as e:
                 logger.trace(e)
                 continue
+            finally:
+                sleep(0.001)
 
     def open_can(self):
         """

@@ -10,6 +10,8 @@ from abc import ABCMeta, abstractmethod
 from concurrent.futures import ThreadPoolExecutor, ALL_COMPLETED, wait
 from typing import Tuple, Any, List
 from time import sleep
+
+from automotive.common.constant import check_connect, can_tips
 from automotive.logger.logger import logger
 from .constant import dlc
 from .enums import BaudRateEnum
@@ -75,13 +77,13 @@ class BaseCanDevice(metaclass=ABCMeta):
 
 
 class BaseCanBus(metaclass=ABCMeta):
-    def __init__(self, baud_rate: BaudRateEnum = BaudRateEnum.HIGH, can_fd: bool = False):
+    def __init__(self, baud_rate: BaudRateEnum = BaudRateEnum.HIGH, can_fd: bool = False, max_workers: int = 300):
         # baud_rate波特率，
         self._baud_rate = baud_rate
         # CAN FD
         self._can_fd = can_fd
         # 最大线程数
-        self._max_workers = 300
+        self._max_workers = max_workers
         # 保存接受数据帧的字典，用于接收
         self._receive_messages = dict()
         # 保存发送数据帧的字典，用于发送
@@ -116,6 +118,10 @@ class BaseCanBus(metaclass=ABCMeta):
     @property
     def can_device(self) -> BaseCanDevice:
         return self._can
+
+    @property
+    def thread_pool(self) -> ThreadPoolExecutor:
+        return self._thread_pool
 
     def _get_dlc_length(self, dlc_length: int) -> int:
         for key, value in self._dlc.items():
@@ -262,6 +268,7 @@ class BaseCanBus(metaclass=ABCMeta):
         logger.trace("close_device")
         self._can.close_device()
 
+    @check_connect("_can", can_tips, is_bus=True)
     def transmit(self, message: Message):
         """
         发送CAN帧函数。
@@ -283,6 +290,7 @@ class BaseCanBus(metaclass=ABCMeta):
             # 周期事件信号
             self.__cycle_msg(self._can, message)
 
+    @check_connect("_can", can_tips, is_bus=True)
     def transmit_one(self, message: Message):
         """
         发送CAN帧函数。
@@ -291,6 +299,7 @@ class BaseCanBus(metaclass=ABCMeta):
         """
         self._can.transmit(message)
 
+    @check_connect("_can", can_tips, is_bus=True)
     def stop_transmit(self, message_id: int):
         """
         停止某一帧CAN数据的发送。(当message_id为None时候停止所有发送的CAN数据)
@@ -318,6 +327,7 @@ class BaseCanBus(metaclass=ABCMeta):
                 item.stop_flag = True
                 # item.pause_flag = True
 
+    @check_connect("_can", can_tips, is_bus=True)
     def resume_transmit(self, message_id: int):
         """
        恢复某一帧数据的发送函数。
@@ -342,6 +352,7 @@ class BaseCanBus(metaclass=ABCMeta):
                     # item.stop_flag = False
                     self.transmit(item)
 
+    @check_connect("_can", can_tips, is_bus=True)
     def receive(self, message_id: int) -> Message:
         """
         接收函数。此函数从指定的设备CAN通道的接收缓冲区中读取数据。
@@ -355,12 +366,14 @@ class BaseCanBus(metaclass=ABCMeta):
         else:
             raise RuntimeError(f"message_id {message_id} not receive")
 
+    @check_connect("_can", can_tips, is_bus=True)
     def get_stack(self) -> List[Message]:
         """
         获取CAN的stack
         """
         return self._stack
 
+    @check_connect("_can", can_tips, is_bus=True)
     def clear_stack_data(self):
         """
         清除栈数据

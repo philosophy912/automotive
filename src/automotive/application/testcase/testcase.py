@@ -76,13 +76,12 @@ class TestCaseGenerator(object):
 
         if is_sample:
             self.__check_sample_file(in_file, out_file)
-        else:
-            reader = self.__get_reader(in_file, is_sample)
-            writer = self.__get_writer(out_file, is_sample)
-            testcases = reader.read_from_file(in_file)
-            logger.debug(f"testcases is {testcases}")
-            writer.write_to_file(out_file, testcases)
-            logger.info(f"read testcase from [{in_file}] and write to file [{out_file}]")
+        reader = self.__get_reader(in_file, is_sample)
+        writer = self.__get_writer(out_file, is_sample)
+        testcases = reader.read_from_file(in_file)
+        logger.debug(f"testcases is {testcases}")
+        writer.write_to_file(out_file, testcases)
+        logger.info(f"read testcase from [{in_file}] and write to file [{out_file}]")
 
     def __compare(self, file1: str, file2: str):
         """

@@ -140,5 +140,23 @@ class Testcase(object):
         self.identify = hashlib.md5(total_str.encode(encoding='UTF-8')).hexdigest()
 
 
+class GuiConfig(object):
 
+    def __init__(self):
+        self.name = None
+        self.text_name = None
+        self.button_type = None
+        self.selected = None
+        self.unselected = None
+        self.items = None
+        self.actions = None
+        self.tab_name = None
 
+    def __str__(self):
+        values = []
+        # exclude = "category", "module", "module_id", "requirement_id", "keywords", "test_case_type", "phase", "status"
+        exclude = []
+        for key, value in self.__dict__.items():
+            if key not in exclude:
+                values.append(f"{key}={value}")
+        return ",".join(values)

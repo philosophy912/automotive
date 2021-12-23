@@ -6,10 +6,11 @@
 # @Author:      lizhe
 # @Created:     2021/8/3 - 22:02
 # --------------------------------------------------------
-import hashlib
 from abc import ABCMeta, abstractmethod
-from .constants import Testcase, replace_char
-from typing import Tuple, List, Optional, Dict
+from .constants import Testcase, replace_char, GuiConfig
+from typing import Tuple, List, Optional, Dict, Any
+from automotive.logger.logger import logger
+from .enums import GuiButtonTypeEnum
 
 Position = Tuple[int, int, int, int]
 Voltage_Current = Tuple[float, float]
@@ -345,3 +346,133 @@ class BaseWriter(BaseTestCase):
             raise RuntimeError("testcases is None")
         if len(testcases) == 0:
             raise RuntimeError("no testcase found")
+
+
+class BaseConfigReader(metaclass=ABCMeta):
+
+    @abstractmethod
+    def read_from_file(self, file: str) -> Dict[str, Dict[str, Any]]:
+        pass
+
+    @staticmethod
+    def _split_tabs(values: List[GuiConfig]) -> Dict[str, List[GuiConfig]]:
+        tab_values = dict()
+        tab_set = set()
+        for value in values:
+            tab_set.add(value.tab_name)
+        for tab in tab_set:
+            tab_values[tab] = list(filter(lambda x: x.tab_name == tab, values))
+        return tab_values
+
+    @staticmethod
+    def _handle_event_buttons(values: List[GuiConfig]) -> Dict[str, Any]:
+        result = dict()
+        for item in values:
+            content = dict()
+            content["text"] = item.text_name
+            content["actions"] = item.actions
+            result[item.name] = content
+        return result
+
+    @staticmethod
+    def _handle_check_buttons(values: List[GuiConfig]) -> Dict[str, Any]:
+        result = dict()
+        for item in values:
+            content = dict()
+            content["text"] = item.text_name
+            content["on"] = item.selected
+            content["off"] = item.unselected
+            result[item.name] = content
+        logger.debug(f"result = {result}")
+        return result
+
+    @staticmethod
+    def _handle_buttons(values: List[GuiConfig]) -> Dict[str, Any]:
+        result = dict()
+        for item in values:
+            content = dict()
+            content["text"] = item.text_name
+            content["actions"] = item.actions
+            result[item.name] = content
+        logger.debug(f"result = {result}")
+        return result
+
+    @staticmethod
+    def _handle_combox(values: List[GuiConfig]) -> Dict[str, Any]:
+        result = dict()
+        # 当前有多少个按钮
+        button_names = set()
+        for item in values:
+            button_names.add(item.text_name)
+        logger.debug(f"buttons = {button_names}")
+        buttons = []
+        for name in button_names:
+            buttons.append(list(filter(lambda x: x.text_name == name, values)))
+        for button in buttons:
+            values_dict = dict()
+            function_dict = dict()
+            for item in button:
+                values_dict[item.items] = item.actions
+            function_dict["values"] = values_dict
+            function_dict["text"] = button[0].text_name
+            result[button[0].name] = function_dict
+        logger.debug(f"result = {result}")
+        return result
+
+    @staticmethod
+    def _handle_entries(values: List[GuiConfig]) -> Dict[str, Any]:
+        result = dict()
+        for item in values:
+            content = dict()
+            content["text"] = item.text_name
+            content["actions"] = item.actions
+            result[item.name] = content
+        logger.debug(f"result = {result}")
+        return result
+
+    def _parse_actions(self, actions: str) -> List:
+        contents = []
+        lines = actions.split("\n")
+        lines = list(map(lambda x: x.strip(), lines))
+        for line in lines:
+            # 0x152 BCM_LetfligthSt=0x1
+            if line[:2].upper() == "0X":
+                index = line.index(" ")
+                msg_id = int(line[:index].strip(), 16)
+                other = line[index + 1:]
+                signal_dict = dict()
+                # 0x92 WCBS_ESC_WhlSpdFRVd=0x1, WCBS_ESC_WhlFLSpd=None
+                if "," in other:
+                    # 表示有多个信号值
+                    signals = other.split(",")
+                    for signal in signals:
+                        values = signal.split("=")
+                        key = values[0].strip()
+                        value = values[1].strip()
+                        signal_dict[key] = self.__handle_signal_value(value)
+                else:
+                    values = other.split("=")
+                    key = values[0].strip()
+                    value = values[1].strip()
+                    signal_dict[key] = self.__handle_signal_value(value)
+                contents.append((msg_id, signal_dict))
+            else:
+                contents.append(line)
+        return contents
+
+    @staticmethod
+    def __handle_signal_value(value: str):
+        if value.upper() == "NONE":
+            return None
+        else:
+            if "0x" in value or "0X" in value:
+                return int(value, 16)
+            else:
+                return float(value)
+
+    @staticmethod
+    def _split_type(configs: List[GuiConfig]) -> Dict[GuiButtonTypeEnum, Any]:
+        typed_configs = dict()
+        for key, item in GuiButtonTypeEnum.__members__.items():
+            typed_configs[item] = list(filter(lambda x: x.button_type == item, configs))
+        return typed_configs

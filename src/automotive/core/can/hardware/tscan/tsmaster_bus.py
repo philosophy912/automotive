@@ -6,6 +6,7 @@
 # @Author:      lizhe
 # @Created:     2021/10/27 - 21:26
 # --------------------------------------------------------
+from time import sleep
 from typing import List
 
 from automotive.logger.logger import logger
@@ -17,8 +18,8 @@ from .tsmaster import TSMasterDevice
 
 class TsMasterCanBus(BaseCanBus):
 
-    def __init__(self, baud_rate: BaudRateEnum = BaudRateEnum.HIGH, can_fd: bool = False):
-        super().__init__(baud_rate=baud_rate, can_fd=can_fd)
+    def __init__(self, baud_rate: BaudRateEnum = BaudRateEnum.HIGH, can_fd: bool = False, max_workers: int = 300):
+        super().__init__(baud_rate=baud_rate, can_fd=can_fd, max_workers=max_workers)
         # 实例化同星
         self._can = TSMasterDevice(can_fd)
 
@@ -62,6 +63,8 @@ class TsMasterCanBus(BaseCanBus):
             except RuntimeError as e:
                 logger.trace(e)
                 continue
+            finally:
+                sleep(0.001)
 
     def open_can(self):
         """
