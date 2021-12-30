@@ -44,6 +44,7 @@ thread_buttons = GuiButtonTypeEnum.EVENT_CHECK_BUTTON.value[1]
 comboxs = GuiButtonTypeEnum.COMBOX_BUTTON.value[1]
 entries = GuiButtonTypeEnum.INPUT_BUTTON.value[1]
 buttons = GuiButtonTypeEnum.EVENT_BUTTON.value[1]
+receive_buttons = GuiButtonTypeEnum.RECEIVE_BUTTON.value[1]
 
 
 class XlwingsConfigReader(BaseConfigReader):
@@ -73,6 +74,8 @@ class XlwingsConfigReader(BaseConfigReader):
             tab_config[entries] = self._handle_entries(typed_configs[GuiButtonTypeEnum.INPUT_BUTTON])
             # 处理 buttons
             tab_config[buttons] = self._handle_buttons(typed_configs[GuiButtonTypeEnum.EVENT_BUTTON])
+            # 处理 receive buttons
+            tab_config[receive_buttons] = self._handle_receive_buttons(typed_configs[GuiButtonTypeEnum.RECEIVE_BUTTON])
             result[tab] = tab_config
         wb.close()
         app.quit()
@@ -98,6 +101,8 @@ class XlwingsConfigReader(BaseConfigReader):
             column_g = sheet.range(f"G{i}").value
             config.actions = self._parse_actions(column_g) if column_g else None
             config.tab_name = sheet.range(f"H{i}").value
+            column_i = sheet.range(f"I{i}").value
+            config.check_msgs = self._parse_check_msgs(column_i) if column_i else None
             configs.append(config)
             logger.debug(f"config = {config}")
         return configs
@@ -127,6 +132,8 @@ class OpenpyxlConfigReader(BaseConfigReader):
             tab_config[entries] = self._handle_entries(typed_configs[GuiButtonTypeEnum.INPUT_BUTTON])
             # 处理 buttons
             tab_config[buttons] = self._handle_buttons(typed_configs[GuiButtonTypeEnum.EVENT_BUTTON])
+            # 处理 receive buttons
+            tab_config[receive_buttons] = self._handle_receive_buttons(typed_configs[GuiButtonTypeEnum.RECEIVE_BUTTON])
             result[tab] = tab_config
         return result
 
@@ -147,6 +154,8 @@ class OpenpyxlConfigReader(BaseConfigReader):
             column_g = sheet.cell(i, 7).value
             config.actions = self._parse_actions(column_g) if column_g else None
             config.tab_name = sheet.cell(i, 8).value
+            column_i = sheet.cell(i, 9).value
+            config.check_msgs = self._parse_check_msgs(column_i) if column_i else None
             configs.append(config)
             logger.debug(f"config = {config}")
         return configs
@@ -175,6 +184,8 @@ class XlrdConfigReader(BaseConfigReader):
             tab_config[entries] = self._handle_entries(typed_configs[GuiButtonTypeEnum.INPUT_BUTTON])
             # 处理 buttons
             tab_config[buttons] = self._handle_buttons(typed_configs[GuiButtonTypeEnum.EVENT_BUTTON])
+            # 处理 receive buttons
+            tab_config[receive_buttons] = self._handle_receive_buttons(typed_configs[GuiButtonTypeEnum.RECEIVE_BUTTON])
             result[tab] = tab_config
         return result
 
@@ -194,6 +205,8 @@ class XlrdConfigReader(BaseConfigReader):
             column_g = sheet.cell_value(i, 6).value
             config.actions = self._parse_actions(column_g) if column_g else None
             config.tab_name = sheet.cell_value(i, 7).value
+            column_i = sheet.cell(i, 8).value
+            config.check_msgs = self._parse_check_msgs(column_i) if column_i else None
             configs.append(config)
             logger.debug(f"config = {config}")
         return configs

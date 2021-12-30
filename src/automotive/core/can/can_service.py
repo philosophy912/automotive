@@ -9,7 +9,6 @@
 import time
 import random
 import copy
-from concurrent.futures import ThreadPoolExecutor
 from time import sleep
 from typing import Tuple, Union, List, Any, Dict, Optional
 
@@ -288,12 +287,14 @@ class CANService(Can):
                     value = random.randint(0, max_value)
                     logger.trace(f"value is [{value}]")
                     sig.value = value
-        # 避免错误发生后不再发送数据，容错处理
-        try:
-            logger.trace(f"sender is {message.sender}")
-            self.send_can_message(message)
-        except RuntimeError as e:
-            logger.error(f"transmit message {hex(msg_id)} failed, error is {e}")
+        logger.trace(f"sender is {message.sender}")
+        self.send_can_message(message)
+        # # 避免错误发生后不再发送数据，容错处理
+        # try:
+        #     logger.trace(f"sender is {message.sender}")
+        #     self.send_can_message(message)
+        # except RuntimeError as e:
+        #     logger.error(f"transmit message {hex(msg_id)} failed, error is {e}")
 
     def __send_messages(self,
                         messages: List[Message],

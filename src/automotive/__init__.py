@@ -20,6 +20,7 @@ from automotive.core.can.tools.parser.dbc_parser import DbcParser
 from automotive.common.image_compare import ImageCompare, CompareTypeEnum, CompareProperty
 from automotive.logger.logger import logger
 from automotive.utils.utils import Utils
+from automotive.utils.serial_port import SerialPort
 from automotive.utils.images import Images
 from automotive.utils.player import Player
 from automotive.utils.performance import Performance
@@ -30,4 +31,5 @@ __all__ = ["CameraActions", "CanActions", "It6831Actions", "KonstanterActions", 
            "Curve", "SystemTypeEnum", "ClusterHmi", "HypervisorScreenShot", "AirCondition", "FileTypeEnum",
            "TestCaseGenerator", "Gui", "AndroidService", "ElementAttributeEnum", "SwipeDirectorEnum", "DirectorEnum",
            "ToolTypeEnum", "CANService", "CanBoxDeviceEnum", "BaudRateEnum", "DbcParser", "ImageCompare",
-           "CompareTypeEnum", "logger", "Utils", "Images", "Player", "Performance", "MicroPhone", "Camera", "Message"]
+           "CompareTypeEnum", "CompareProperty", "logger", "Utils", "SerialPort", "Images", "Player", "Performance",
+           "MicroPhone", "Camera", "Message"]

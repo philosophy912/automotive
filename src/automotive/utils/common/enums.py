@@ -108,3 +108,4 @@ class CompareTypeEnum(Enum):
     PIXEL = "pixel"
     # 模糊对比
     VAGUE = "vague"
+

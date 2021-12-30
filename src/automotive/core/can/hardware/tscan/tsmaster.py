@@ -6,10 +6,9 @@
 # @Author:      lizhe
 # @Created:     2021/10/22 - 10:26
 # --------------------------------------------------------
-import copy
 import os
 import platform
-from ctypes import CDLL, addressof, byref, c_size_t, c_int32, c_uint8, c_double, c_uint, c_ubyte, POINTER, cast, c_int
+from ctypes import CDLL, byref, c_size_t, c_int32, c_double, c_ubyte, POINTER, cast, c_int
 from typing import List, Tuple, Any
 from .tsmasterbasic import TRUE, APP_CHANNEL, TLIBCANFDControllerMode, TLIBCANFDControllerType, TLibCAN, TLibCANFD, \
     FALSE

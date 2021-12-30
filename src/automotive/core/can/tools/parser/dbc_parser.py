@@ -101,8 +101,7 @@ class DbcParser(object):
         with open(json_file, "w", encoding="utf-8") as f:
             f.write(json_str)
 
-    @staticmethod
-    def __filter_messages(messages: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    def __filter_messages(self, messages: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         """
         去除掉大于0x7ff的数据
         :param messages:
@@ -115,6 +114,7 @@ class DbcParser(object):
                 msg_ids.append(i)
         for msg_id in msg_ids:
             new_messages.pop(msg_id)
+        self.__set_message_default_value(new_messages)
         return new_messages
 
     @staticmethod
@@ -220,19 +220,29 @@ class DbcParser(object):
         return after_handle_contents
 
     @staticmethod
-    def __set_message_default_value(message: Dict[str, Union[bool, int]]):
+    def __set_message_default_value(messages: List[Dict[str, Any]]):
         """
         设置message默认的值
         """
-        message["diag_request"] = False
-        message["diag_response"] = False
-        message["diag_state"] = False
-        message["gen_msg_nr_of_repetition"] = 0
-        message["is_can_fd"] = False
-        message["is_standard_can"] = False
-        message["msg_cycle_time_fast"] = 0
-        message["msg_delay_time"] = 0
-        message["nm_message"] = False
+        for message in messages:
+            if "diag_request" not in message:
+                message["diag_request"] = False
+            if "diag_response" not in message:
+                message["diag_response"] = False
+            if "diag_state" not in message:
+                message["diag_state"] = False
+            if "gen_msg_nr_of_repetition" not in message:
+                message["gen_msg_nr_of_repetition"] = 0
+            if "is_can_fd" not in message:
+                message["is_can_fd"] = False
+            if "is_standard_can" not in message:
+                message["is_standard_can"] = False
+            if "msg_cycle_time_fast" not in message:
+                message["msg_cycle_time_fast"] = 0
+            if "msg_delay_time" not in message:
+                message["msg_delay_time"] = 0
+            if "nm_message" not in message:
+                message["nm_message"] = False
 
     def __parse_message(self, contents: List[str]) -> List[Dict[str, Any]]:
         attr_dict = dict()

@@ -47,6 +47,27 @@ automation_prefix = "[A]"
 results = "PASS", "FAIL", "BLOCK", "NT"
 index_list = list(map(lambda x: f"{x}", [x + 1 for x in range(9)]))
 
+TEXT = "text"
+ON = "on"
+OFF = "off"
+VALUES = "values"
+ACTIONS = "actions"
+CHECK_MSGS = "check_msgs"
+OPEN_DEVICE = "open_device", "打开设备"
+CLOSE_DEVICE = "close_device", "关闭设备"
+CLEAR_STACK = "clear_stack", "清除数据"
+DEFAULT_MESSAGE = "default_message", "发送默认消息"
+BUS_LOST = "bus_lost", "总线丢失"
+MESSAGE_LOST = "message_lost", "要丢失信号"
+CHECK_MESSAGE = "check_message", "检查发送消息"
+EXACT_SEARCH = "exact_search", "精确查找"
+SEARCH_COUNT = "search_count", "出现次数"
+SIGNAL_VALUE = "signal_value", "信号值"
+SIGNAL_NAME = "signal_name", "信号名称"
+MESSAGE_ID = "message_id", "帧ID"
+COMMON = "公共"
+YES_OR_NO = "是", "否"
+
 
 class Testcase(object):
 
@@ -151,6 +172,7 @@ class GuiConfig(object):
         self.items = None
         self.actions = None
         self.tab_name = None
+        self.check_msgs = None
 
     def __str__(self):
         values = []

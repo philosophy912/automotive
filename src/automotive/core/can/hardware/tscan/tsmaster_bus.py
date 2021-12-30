@@ -49,14 +49,15 @@ class TsMasterCanBus(BaseCanBus):
         """
         CAN接收帧函数，在接收线程中执行
         """
-        logger.debug(
-            f"start receive and tsmaster status = {self._can.is_open} and need_receive = {self._need_receive}")
+        logger.debug(f"start receive and tsmaster status {self._can.is_open} and need_receive {self._need_receive}")
         while self._can.is_open and self._need_receive:
             try:
                 count, p_receive = self._can.receive()
-                logger.debug(f"receive count is {count}")
-                for i in range(count):
-                    message = self.__get_message(p_receive[i])
+                logger.trace(f"receive count is {count}")
+                # todo 同星的dll存在64bit， 标准can消息接收的问题，所以修改为过滤ID不为空的处理方式
+                messages = list(filter(lambda x: x.FIdentifier != 0x00, p_receive))
+                for p_receive in messages:
+                    message = self.__get_message(p_receive)
                     logger.trace(f"message_id = {hex(message.msg_id)}")
                     self._receive_messages[message.msg_id] = message
                     self._stack.append(message)

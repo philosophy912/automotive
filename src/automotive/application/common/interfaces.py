@@ -7,7 +7,7 @@
 # @Created:     2021/8/3 - 22:02
 # --------------------------------------------------------
 from abc import ABCMeta, abstractmethod
-from .constants import Testcase, replace_char, GuiConfig
+from .constants import Testcase, replace_char, GuiConfig, TEXT, ACTIONS, ON, OFF, CHECK_MSGS, VALUES
 from typing import Tuple, List, Optional, Dict, Any
 from automotive.logger.logger import logger
 from .enums import GuiButtonTypeEnum
@@ -369,8 +369,8 @@ class BaseConfigReader(metaclass=ABCMeta):
         result = dict()
         for item in values:
             content = dict()
-            content["text"] = item.text_name
-            content["actions"] = item.actions
+            content[TEXT] = item.text_name
+            content[ACTIONS] = item.actions
             result[item.name] = content
         return result
 
@@ -379,9 +379,9 @@ class BaseConfigReader(metaclass=ABCMeta):
         result = dict()
         for item in values:
             content = dict()
-            content["text"] = item.text_name
-            content["on"] = item.selected
-            content["off"] = item.unselected
+            content[TEXT] = item.text_name
+            content[ON] = item.selected
+            content[OFF] = item.unselected
             result[item.name] = content
         logger.debug(f"result = {result}")
         return result
@@ -391,8 +391,19 @@ class BaseConfigReader(metaclass=ABCMeta):
         result = dict()
         for item in values:
             content = dict()
-            content["text"] = item.text_name
-            content["actions"] = item.actions
+            content[TEXT] = item.text_name
+            content[ACTIONS] = item.actions
+            result[item.name] = content
+        logger.debug(f"result = {result}")
+        return result
+
+    @staticmethod
+    def _handle_receive_buttons(values: List[GuiConfig]) -> Dict[str, Any]:
+        result = dict()
+        for item in values:
+            content = dict()
+            content[TEXT] = item.text_name
+            content[CHECK_MSGS] = item.check_msgs
             result[item.name] = content
         logger.debug(f"result = {result}")
         return result
@@ -413,8 +424,8 @@ class BaseConfigReader(metaclass=ABCMeta):
             function_dict = dict()
             for item in button:
                 values_dict[item.items] = item.actions
-            function_dict["values"] = values_dict
-            function_dict["text"] = button[0].text_name
+            function_dict[VALUES] = values_dict
+            function_dict[TEXT] = button[0].text_name
             result[button[0].name] = function_dict
         logger.debug(f"result = {result}")
         return result
@@ -424,8 +435,8 @@ class BaseConfigReader(metaclass=ABCMeta):
         result = dict()
         for item in values:
             content = dict()
-            content["text"] = item.text_name
-            content["actions"] = item.actions
+            content[TEXT] = item.text_name
+            content[ACTIONS] = item.actions
             result[item.name] = content
         logger.debug(f"result = {result}")
         return result
@@ -461,7 +472,7 @@ class BaseConfigReader(metaclass=ABCMeta):
         return contents
 
     @staticmethod
-    def __handle_signal_value(value: str):
+    def __handle_signal_value(value: str) -> (float, int):
         if value.upper() == "NONE":
             return None
         else:
@@ -476,3 +487,13 @@ class BaseConfigReader(metaclass=ABCMeta):
         for key, item in GuiButtonTypeEnum.__members__.items():
             typed_configs[item] = list(filter(lambda x: x.button_type == item, configs))
         return typed_configs
+
+    def _parse_check_msgs(self, value: str) -> Tuple[int, str, int, Optional[int], bool]:
+        value = value.strip()
+        values = value.split("=")
+        msg_id = self.__handle_signal_value(values[0])
+        signal_name = values[1]
+        signal_value = self.__handle_signal_value(values[2])
+        count = self.__handle_signal_value(values[3])
+        expect_value = values[4].upper() == "TRUE"
+        return msg_id, signal_name, signal_value, count, expect_value

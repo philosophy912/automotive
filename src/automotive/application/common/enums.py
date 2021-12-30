@@ -39,6 +39,7 @@ class GuiButtonTypeEnum(Enum):
     INPUT_BUTTON = "输入框", "comboxs"
     EVENT_CHECK_BUTTON = "事件单选框", "entries"
     EVENT_BUTTON = "按钮", "buttons"
+    RECEIVE_BUTTON = "检查", "receive_buttons"
 
     @staticmethod
     def from_name(type_: str):

@@ -21,7 +21,6 @@ from .tools.parser.dbc_parser import DbcParser
 如需要可以将该类变成私有类
 """
 
-
 # 位长度
 _bit_length = 8
 
@@ -356,6 +355,9 @@ class Message(object):
         self.external_flag = 0
         # 信号保留字
         self.reserved = None
+
+    def __str__(self):
+        return f"{hex(self.msg_id)} = {self.data}"
 
     def __check_msg_id(self):
         """
