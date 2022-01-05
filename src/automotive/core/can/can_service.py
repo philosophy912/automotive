@@ -68,10 +68,12 @@ class Can(metaclass=Singleton):
     """
 
     def __init__(self,
-                 can_box_device: Optional[CanBoxDeviceEnum] = None,
+                 can_box_device: Union[CanBoxDeviceEnum, str, None] = None,
                  baud_rate: BaudRateEnum = BaudRateEnum.HIGH,
                  can_fd: bool = False,
                  max_workers: int = 300):
+        if isinstance(can_box_device, str):
+            can_box_device = CanBoxDeviceEnum.from_name(can_box_device)
         self._can_box_device, self._can = get_can_box_device(can_box_device, baud_rate, can_fd, max_workers)
 
     @property

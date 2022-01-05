@@ -9,7 +9,7 @@
 import copy
 import json
 import re
-from typing import List, Dict, Union, Any
+from typing import List, Dict, Any
 
 from automotive.logger.logger import logger
 
@@ -245,6 +245,7 @@ class DbcParser(object):
                 message["nm_message"] = False
 
     def __parse_message(self, contents: List[str]) -> List[Dict[str, Any]]:
+        cm_flag = True
         attr_dict = dict()
         messages = []
         message = dict()
@@ -271,10 +272,12 @@ class DbcParser(object):
             # 处理CM行
             if content.startswith(self.CM):
                 # 处理剩下的BO
-                if len(signals) != 0:
+                if cm_flag:
                     message["signals"] = signals
                     messages.append(message)
                     signals = []
+                    # message.clear()
+                    cm_flag = False
                 self.__set_comments(messages, content)
             # 处理BA_DEF行 （BA的定义）
             if content.startswith(self.BA_DEF):
@@ -357,7 +360,7 @@ class DbcParser(object):
             logger.trace(f"msg id = [{message_id}] && message is {message}")
             self.__handle_sg(message, name, signal_name, value)
         else:
-            logger.debug(f"not standard ba")
+            logger.trace(f"not standard ba")
 
     def __handle_bo(self, message: Dict[str, Any], name: str, value: str, attr_dict: Dict[str, str]):
         logger.trace(f"attr_dict = {attr_dict}")

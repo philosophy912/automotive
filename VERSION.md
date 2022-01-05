@@ -1,4 +1,8 @@
 ## 版本更新说明
+**V5.3.3**
+- CANService初始化的时候，可以通过字符串方式初始化而不需要用枚举
+- 修复了DBCParser中当BA没有SG的时候的错误
+
 **V5.3.2**
 
 - 增加了SerialPort和CompareProperty的导出

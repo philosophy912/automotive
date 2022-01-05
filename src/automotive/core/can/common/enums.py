@@ -41,8 +41,16 @@ class CanBoxDeviceEnum(Enum):
     TSMASTER = "TSMASTER"
     # 爱泰 CAN FD
     # ITEK = "ITEK"
+
     # CAN LIN Analyser
     # ANALYSER = "ANALYSER"
+
+    @staticmethod
+    def from_name(type_: str):
+        for key, item in CanBoxDeviceEnum.__members__.items():
+            if type_ == item.value.upper():
+                return item
+        raise ValueError(f"{type_} can not be found in CanBoxDeviceEnum")
 
 
 @unique
