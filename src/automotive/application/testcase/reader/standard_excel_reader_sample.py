@@ -105,6 +105,8 @@ class StandardExcelSampleReader(BaseReader):
         logger.debug(f"pre_condition = {pre_condition}")
         contents = []
         if pre_condition:
+            if "\r\n0x" in pre_condition:
+                pre_condition = pre_condition.replace("\r\n", "$")
             pre_conditions = list(filter(lambda x: self.__filter_automotive(x) and x != "", pre_condition.split("\n")))
             pre_conditions = list(map(lambda x: x.replace("、", "."), pre_conditions))
             for pre in pre_conditions:
@@ -112,6 +114,8 @@ class StandardExcelSampleReader(BaseReader):
                     pre = pre.replace(point, " ").strip()
                 pre = pre[2:].strip()
                 logger.debug(f"pre  = {pre}")
+                if "$" in pre:
+                    pre = pre.replace("$", "\r\n")
                 contents.append(pre)
         return contents
 
@@ -120,6 +124,8 @@ class StandardExcelSampleReader(BaseReader):
         lines = actions.split("\n")
         temp = []
         for i, line in enumerate(lines):
+            if line == '':
+                continue
             if line[0] in index_list:
                 temp.append(i)
         # 没有序号的情况，即只有一个操作步骤
