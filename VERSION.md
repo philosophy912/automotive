@@ -1,6 +1,16 @@
 ## 版本更新说明
 
+**V5.3.4**
+
+- 修复了CAN面板中sleep小数的错误
+- 重构了CAN面板读取Excel的方式，通过ExcelUtils来读取
+- 添加了ExcelUtils类，用于Excel的读写
+- SerialPort修改了pop方法直接返回值，去掉了变量接收参数
+- 修复standard_excel_reader_sample.py  前置条件，以\n拆分的时候，把\r\n的也给拆了，导致转成xmind的时候，前提条件中有一条如果有两行，第二行内容会丢失
+- 容错了DBCParser中解析PSA项目错误的情况（PSA项目DBC本身就是错误的)
+
 **V5.3.3**
+
 - CANService初始化的时候，可以通过字符串方式初始化而不需要用枚举
 - 修复了DBCParser中当BA没有SG的时候的错误
 

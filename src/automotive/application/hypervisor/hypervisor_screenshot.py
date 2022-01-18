@@ -35,15 +35,20 @@ class HypervisorScreenShot(BaseScreenShot):
     则把全自动化测试变为半自动化测试
     """
 
-    def __init__(self, save_path: str, device_id: str = None):
+    def __init__(self, save_path: str, device_id: str = None, need_sync_space: bool = True):
         # 图片保存位置
         self.__path = save_path
-        self.adb = ADB()
+        self.__adb = ADB()
+        self.__need_sync_space = need_sync_space
         if device_id:
             # 安卓device_id
             self.__device_id = device_id
         else:
             self.__connect()
+
+    @property
+    def adb(self):
+        return self.__adb
 
     def __connect(self):
         """
@@ -138,7 +143,8 @@ class HypervisorScreenShot(BaseScreenShot):
                 self.__screen_shot(screenshot_image_name, display)
             image_files.append(screenshot_image_name)
             sleep(interval_time)
-        self.__sync_space()
+        if self.__need_sync_space:
+            self.__sync_space()
         return image_files
 
     def screen_shot(self, image_name: str, count: int, interval_time: float, display: int = None) -> List[str]:

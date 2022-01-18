@@ -65,6 +65,8 @@ class DbcParser(object):
     STANDARD_CAN = "StandardCAN"
     STANDARD_CAN_FD = "StandardCAN_FD"
     GEN_SIG_START_VALUE = "GenSigStartValue"
+    MODE_TRANSMISSION = "ModeTransmission"
+    PERIOD = "P茅riode"
     DIAG = "Diag"
     NM = "NM"
     NORMAL = "Normal"
@@ -390,6 +392,17 @@ class DbcParser(object):
             message["diag_response"] = True if self.YES.upper() == diag_value.upper() else False
         elif name == self.V_FRAME_FORMAT:
             message["is_standard_can"] = True if self.STANDARD_CAN.upper() == value.upper() else False
+        # 针对PSA的DBC做的workaround
+        elif name == self.MODE_TRANSMISSION:
+            mode_value = attr_dict[name][int(value)]
+            if mode_value == "P":
+                message["msg_send_type"] = "Cycle"
+            elif mode_value == "E":
+                message["msg_send_type"] = "Event"
+            elif mode_value == "P+E":
+                message["msg_send_type"] = "CE"
+        elif name == self.PERIOD:
+            message["msg_cycle_time"] = int(value)
         else:
             logger.debug(f"type is {name}, so nothing to do")
 

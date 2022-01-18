@@ -48,16 +48,3 @@ class GuiButtonTypeEnum(Enum):
             if type_.strip() == item.value[0]:
                 return item
         raise ValueError(f"{type_} can not be found in GuiButtonTypeEnum")
-
-
-class ExcelReadEnum(Enum):
-    XLWINGS = "xlwings"
-    XLRD = "xlrd"
-    OPENPYXL = "openpyxl"
-
-    @staticmethod
-    def from_name(type_: str):
-        for key, item in ExcelReadEnum.__members__.items():
-            if type_.strip() == item.value:
-                return item
-        raise ValueError(f"{type_} can not be found in ExcelReadEnum")

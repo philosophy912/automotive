@@ -25,11 +25,11 @@ from automotive.utils.images import Images
 from automotive.utils.player import Player
 from automotive.utils.performance import Performance
 from automotive.utils.camera import MicroPhone, Camera
-from automotive.utils.common.enums import SystemTypeEnum
+from automotive.utils.common.enums import SystemTypeEnum, ExcelEnum
 
 __all__ = ["CameraActions", "CanActions", "It6831Actions", "KonstanterActions", "RelayActions", "SerialActions",
            "Curve", "SystemTypeEnum", "ClusterHmi", "HypervisorScreenShot", "AirCondition", "FileTypeEnum",
            "TestCaseGenerator", "Gui", "AndroidService", "ElementAttributeEnum", "SwipeDirectorEnum", "DirectorEnum",
            "ToolTypeEnum", "CANService", "CanBoxDeviceEnum", "BaudRateEnum", "DbcParser", "ImageCompare",
            "CompareTypeEnum", "CompareProperty", "logger", "Utils", "SerialPort", "Images", "Player", "Performance",
-           "MicroPhone", "Camera", "Message"]
+           "MicroPhone", "Camera", "Message", "ExcelEnum"]

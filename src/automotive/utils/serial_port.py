@@ -273,8 +273,8 @@ class SerialPort(object):
         """
         if self._read_flag:
             if len(self._contents) > 0:
-                content = self._contents[0]
-                self._contents.pop(0)
+                # content = self._contents[0]
+                content = self._contents.pop(0)
                 return content
             else:
                 return ""

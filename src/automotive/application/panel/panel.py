@@ -11,16 +11,16 @@ from time import sleep
 from tkinter import Frame, Button, NORMAL, DISABLED, W, BooleanVar, Checkbutton, Entry, Label, Tk, messagebox, \
     HORIZONTAL, E
 from tkinter.ttk import Combobox, Notebook, Separator
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Union
 from automotive.logger.logger import logger
 from automotive.core.can.can_service import CANService
 from automotive.core.can.common.enums import CanBoxDeviceEnum
-from .reader import ConfigService
-from ..common.enums import ExcelReadEnum
+from .reader import ConfigReader
 from .reader import check_buttons, thread_buttons, comboxs, entries, buttons, receive_buttons
 from ..common.constants import OPEN_DEVICE, CLOSE_DEVICE, CLEAR_STACK, DEFAULT_MESSAGE, BUS_LOST, \
     MESSAGE_LOST, TEXT, ON, OFF, VALUES, ACTIONS, COMMON, CHECK_MSGS, CHECK_MESSAGE, MESSAGE_ID, SIGNAL_NAME, \
     SIGNAL_VALUE, SEARCH_COUNT, EXACT_SEARCH, YES_OR_NO
+from ...utils.common.enums import ExcelEnum
 
 
 class TabFrame(Frame):
@@ -643,9 +643,9 @@ class TabFrame(Frame):
 
 class Gui(object):
 
-    def __init__(self, excel_file: str, dbc: str, can_box_device: CanBoxDeviceEnum = None,
+    def __init__(self, excel_file: str, dbc: str, can_box_device: Union[CanBoxDeviceEnum, str, None] = None,
                  filter_nodes: List[str] = None, can_fd: bool = False,
-                 excel_type: ExcelReadEnum = ExcelReadEnum.OPENPYXL, max_workers: int = 500):
+                 excel_type: ExcelEnum = ExcelEnum.OPENPYXL, max_workers: int = 500):
         self.tk = Tk()
         self.tk.title("CAN面板")
         # 初始化 CANService
@@ -653,7 +653,7 @@ class Gui(object):
         # 默认消息发送要过滤的节点
         self.__filter_nodes = filter_nodes
         # 获取按钮
-        service = ConfigService(excel_type)
+        service = ConfigReader(excel_type)
         tab_configs = dict()
         tab_configs[COMMON] = {check_buttons: {}, thread_buttons: {}, comboxs: {},
                                entries: {}, buttons: {}, receive_buttons: {}}

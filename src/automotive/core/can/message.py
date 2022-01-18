@@ -537,7 +537,10 @@ class Signal(object):
         self.maximum = signal["maximum"]
         self.unit = signal["unit"]
         self.receiver = signal["receiver"]
-        self.value = signal["start_value"]
+        if "start_value" in signal:
+            self.value = signal["start_value"]
+        else:
+            self.value = 0
         try:
             self.values = signal["values"]
         except KeyError:

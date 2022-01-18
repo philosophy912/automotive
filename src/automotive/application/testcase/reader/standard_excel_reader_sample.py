@@ -127,6 +127,7 @@ class StandardExcelSampleReader(BaseReader):
             if line == '':
                 continue
             if line[0] in index_list:
+                # temp里装的是，每行带序号的索引（比如有四行：第一行和第三行，带操作步骤序号，temp=[0,2]
                 temp.append(i)
         # 没有序号的情况，即只有一个操作步骤
         if temp:
@@ -137,6 +138,7 @@ class StandardExcelSampleReader(BaseReader):
                 content = "\n".join(lines[start_index:t])
                 total.append(content)
                 start_index = t
+            # 把最后一个步骤序号所在行，到最后一行都用\n拼接
             content = "\n".join(lines[start_index:])
             total.append(content)
         else:

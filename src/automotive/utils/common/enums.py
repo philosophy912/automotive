@@ -10,6 +10,19 @@ from enum import Enum, unique
 
 
 @unique
+class ExcelEnum(Enum):
+    XLWINGS = "xlwings"
+    OPENPYXL = "openpyxl"
+
+    @staticmethod
+    def from_name(type_: str):
+        for key, item in ExcelEnum.__members__.items():
+            if type_.strip() == item.value:
+                return item
+        raise ValueError(f"{type_} can not be found in ExcelReadEnum")
+
+
+@unique
 class SystemTypeEnum(Enum):
     """
     系统类型
@@ -108,4 +121,3 @@ class CompareTypeEnum(Enum):
     PIXEL = "pixel"
     # 模糊对比
     VAGUE = "vague"
-
