@@ -15,6 +15,7 @@ from automotive.utils.common.interfaces import sht
 from automotive.utils.excel_utils import ExcelUtils
 from automotive.utils.common.enums import ExcelEnum
 
+
 check_buttons = GuiButtonTypeEnum.CHECK_BUTTON.value[1]
 thread_buttons = GuiButtonTypeEnum.EVENT_CHECK_BUTTON.value[1]
 comboxs = GuiButtonTypeEnum.COMBOX_BUTTON.value[1]
@@ -80,9 +81,12 @@ class ConfigReader(object):
     @staticmethod
     def _split_tabs(values: List[GuiConfig]) -> Dict[str, List[GuiConfig]]:
         tab_values = dict()
-        tab_set = set()
+        tab_set = []#将获取的Tab按照顺序填写
         for value in values:
-            tab_set.add(value.tab_name)
+
+            if value.tab_name not in tab_set:
+                tab_set.append(value.tab_name)
+
         for tab in tab_set:
             tab_values[tab] = list(filter(lambda x: x.tab_name == tab, values))
         return tab_values
@@ -135,9 +139,12 @@ class ConfigReader(object):
     def _handle_combox(values: List[GuiConfig]) -> Dict[str, Any]:
         result = dict()
         # 当前有多少个按钮
-        button_names = set()
+
+        button_names = []
         for item in values:
-            button_names.add(item.text_name)
+            if item.text_name not in button_names:
+                button_names.append(item.text_name)
+
         logger.debug(f"buttons = {button_names}")
         button_objects = []
         for name in button_names:

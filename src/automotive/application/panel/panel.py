@@ -22,11 +22,10 @@ from ..common.constants import OPEN_DEVICE, CLOSE_DEVICE, CLEAR_STACK, DEFAULT_M
     SIGNAL_VALUE, SEARCH_COUNT, EXACT_SEARCH, YES_OR_NO
 from ...utils.common.enums import ExcelEnum
 
-
 class TabFrame(Frame):
 
     def __init__(self, master, can_service: CANService, config: Dict[str, Any], filter_nodes: List[str],
-                 common_panel: bool = False):
+                 common_panel: bool = False,max_line_count:int = None):
         super().__init__(master)
         self.can_service = can_service
         self.thread_pool = can_service.can_bus.thread_pool
@@ -50,7 +49,7 @@ class TabFrame(Frame):
         self.__receive_buttons = config[receive_buttons] if config[receive_buttons] else dict()
         logger.debug(f"receive_buttons = {self.__receive_buttons}")
         # 每行能够容纳的数量
-        self.__max_line_count = 12  # 36
+        self.__max_line_count = max_line_count  # 36
         # 双行能够容纳的数量
         self.__max_double_line_count = int(self.__max_line_count / 2)
         # 输入框支持的事件列表
@@ -92,6 +91,18 @@ class TabFrame(Frame):
         self.create_buttons()
         # 创建接收检查按钮
         self.create_receive_buttons()
+        # 设置标签（label）默认宽度
+        self.__label_width = 25
+        # 设置下拉框（comboxs）默认宽度
+        self.__comboxs_width = 20
+        # 设置单选按钮（checkBut）默认宽度
+        self.__checkBut_width = 25
+        # 设置多线程按钮框（thread_buttons）默认宽度
+        self.__thread_buttons_width=20
+        # 设置按钮（button）默认宽度
+        self.__buttons_width = 20
+        # 设置输入框（entrie)默认宽度
+        self.__entrie_width = 10
 
     def create_common_widget(self):
         """
@@ -295,7 +306,10 @@ class TabFrame(Frame):
                                  variable=self.check_button_bool_vars[function_name],
                                  onvalue=True,
                                  offvalue=False,
-                                 command=lambda x=function_name: self.__check_button_event(x))
+                                 command=lambda x=function_name: self.__check_button_event(x),
+                                 width=self.__checkBut_width,
+                                 anchor="w"
+                                 )
             self.check_buttons[function_name] = button
             logger.debug(f"row = {self.row}, column = {self.column}, index = {index}")
             # 布局checkbutton
@@ -341,9 +355,9 @@ class TabFrame(Frame):
             values = list(value[VALUES].keys())
             logger.debug(f"row = {self.row}, column = {self.column}, index = {index}")
             # 创建Label框
-            Label(self, text=text_name).grid(row=self.row, column=self.column, sticky=W)
+            Label(self, text=text_name,width=self.__label_width,anchor="w").grid(row=self.row, column=self.column, sticky=W)
             # 创建下拉框
-            self.comboxs[function_name] = Combobox(self, values=values, state="readonly", width=5)
+            self.comboxs[function_name] = Combobox(self, values=values, state="readonly", width=self.__comboxs_width)
             # 设置下拉框初始值为第一个值
             self.comboxs[function_name].current(0)
             logger.debug(f"row = {self.row}, column = {self.column}, index = {index}")
@@ -400,9 +414,9 @@ class TabFrame(Frame):
                 self.column += 1
             logger.debug(f"row = {self.row}, column = {self.column}, index = {index}")
             # 获取输入框的名称
-            Label(self, text=text_name).grid(row=self.row, column=self.column, sticky=W)
+            Label(self, text=text_name,width=self.__label_width,anchor="w").grid(row=self.row, column=self.column, sticky=W)
             # 创建输入框
-            self.entries[function_name] = Entry(self, width=5)
+            self.entries[function_name] = Entry(self, width=self.__entrie_width)
             logger.debug(f"row = {self.row}, column = {self.column}, index = {index}")
             self.entries[function_name].grid(row=self.row, column=self.column + 1, sticky=W)
             # 绑定事件
@@ -489,7 +503,11 @@ class TabFrame(Frame):
                                  variable=self.thread_button_bool_vars[text_name],
                                  onvalue=True,
                                  offvalue=False,
-                                 command=lambda x=function_name: self.__thread_check_button_event(x))
+                                 command=lambda x=function_name: self.__thread_check_button_event(x),
+                                 width=self.__thread_buttons_width,
+                                 anchor="w"
+
+                                 )
             self.thread_buttons[function_name] = button
             logger.debug(f"row = {self.row}, column = {self.column}, index = {index}")
             self.thread_buttons[function_name].grid(row=self.row, column=self.column, sticky=W)
@@ -562,7 +580,7 @@ class TabFrame(Frame):
                 self.column += 1
             # 创建CheckButton对象并放到thread_buttons中方便调用
             self.buttons[function_name] = Button(self, text=text_name,
-                                                 command=lambda x=function_name: self.__thread_button_event(x))
+                                                 command=lambda x=function_name: self.__thread_button_event(x),width=self.__buttons_width)
             logger.debug(f"row = {self.row}, column = {self.column}, index = {index}")
             self.buttons[function_name].grid(row=self.row, column=self.column, sticky=W)
             index += 1
@@ -645,7 +663,18 @@ class Gui(object):
 
     def __init__(self, excel_file: str, dbc: str, can_box_device: Union[CanBoxDeviceEnum, str, None] = None,
                  filter_nodes: List[str] = None, can_fd: bool = False,
-                 excel_type: ExcelEnum = ExcelEnum.OPENPYXL, max_workers: int = 500):
+                 excel_type: ExcelEnum = ExcelEnum.OPENPYXL, max_workers: int = 500, max_line_count:int = 8):
+        """
+
+        :param excel_file: Excel文件路径 （必填项）
+        :param dbc: 项目dbc文件路径 （必填项）
+        :param can_box_device:（选填）
+        :param filter_nodes:发送默认信号筛选器（默认值）
+        :param can_fd:（选填）
+        :param excel_type: （选填）
+        :param max_workers:默认值就行（选填）
+        :param max_line_count:面板一行中显示的最大数量，默认值为8，如果显示不全可以自己修改
+        """
         self.tk = Tk()
         self.tk.title("CAN面板")
         # 初始化 CANService
@@ -669,7 +698,7 @@ class Gui(object):
             else:
                 common_panel = False
             tab = TabFrame(self.tk, can_service=self.can_service, filter_nodes=filter_nodes,
-                           config=value, common_panel=common_panel)
+                           config=value, common_panel=common_panel,max_line_count = max_line_count)
             self.tab_control.add(tab, text=key)
             self.tabs.append(tab)
         self.tab_control.pack(expand=1, fill="both")
