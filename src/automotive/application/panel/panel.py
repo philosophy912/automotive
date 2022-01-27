@@ -19,13 +19,13 @@ from .reader import ConfigReader
 from .reader import check_buttons, thread_buttons, comboxs, entries, buttons, receive_buttons
 from ..common.constants import OPEN_DEVICE, CLOSE_DEVICE, CLEAR_STACK, DEFAULT_MESSAGE, BUS_LOST, \
     MESSAGE_LOST, TEXT, ON, OFF, VALUES, ACTIONS, COMMON, CHECK_MSGS, CHECK_MESSAGE, MESSAGE_ID, SIGNAL_NAME, \
-    SIGNAL_VALUE, SEARCH_COUNT, EXACT_SEARCH, YES_OR_NO
+    SIGNAL_VALUE,SIGNAL_VALUES, SEARCH_COUNT, EXACT_SEARCH, YES_OR_NO, CHECK_SIGNAL
 from ...utils.common.enums import ExcelEnum
 
 class TabFrame(Frame):
 
     def __init__(self, master, can_service: CANService, config: Dict[str, Any], filter_nodes: List[str],
-                 common_panel: bool = False,max_line_count:int = None):
+                 common_panel: bool = False, max_line_count: int = None):
         super().__init__(master)
         self.can_service = can_service
         self.thread_pool = can_service.can_bus.thread_pool
@@ -52,6 +52,18 @@ class TabFrame(Frame):
         self.__max_line_count = max_line_count  # 36
         # 双行能够容纳的数量
         self.__max_double_line_count = int(self.__max_line_count / 2)
+        # 设置标签（label）默认宽度
+        self.__label_width = 25
+        # 设置下拉框（comboxs）默认宽度
+        self.__comboxs_width = 20
+        # 设置单选按钮（checkBut）默认宽度
+        self.__checkBut_width = 25
+        # 设置多线程按钮框（thread_buttons）默认宽度
+        self.__thread_buttons_width = 20
+        # 设置按钮（button）默认宽度
+        self.__buttons_width = 20
+        # 设置输入框（entrie)默认宽度
+        self.__entrie_width = 10
         # 输入框支持的事件列表
         self.support_event_keys = "<Return>",
         # 单选框值
@@ -91,18 +103,7 @@ class TabFrame(Frame):
         self.create_buttons()
         # 创建接收检查按钮
         self.create_receive_buttons()
-        # 设置标签（label）默认宽度
-        self.__label_width = 25
-        # 设置下拉框（comboxs）默认宽度
-        self.__comboxs_width = 20
-        # 设置单选按钮（checkBut）默认宽度
-        self.__checkBut_width = 25
-        # 设置多线程按钮框（thread_buttons）默认宽度
-        self.__thread_buttons_width=20
-        # 设置按钮（button）默认宽度
-        self.__buttons_width = 20
-        # 设置输入框（entrie)默认宽度
-        self.__entrie_width = 10
+
 
     def create_common_widget(self):
         """
@@ -165,6 +166,12 @@ class TabFrame(Frame):
         self.row += 1
         # ********** 创建信号检查部分 **********
         self.__create_message_check()
+        # ********** 创建检测信号是否之前发送值部分 *******
+        self.row += 1
+        Separator(self, orient=HORIZONTAL).grid(row=self.row, column=0, pady=5, sticky=E + W,
+                                                columnspan=self.__max_line_count)
+        self.row += 1
+        self.__create_message_signal_check()
 
     def __create_message_check(self):
         """
@@ -175,19 +182,19 @@ class TabFrame(Frame):
         text_name, show_name = MESSAGE_ID
         Label(self, text=show_name).grid(row=self.row, column=self.column, sticky=W)
         self.column += 1
-        self.entries[text_name] = Entry(self, width=8)
+        self.entries[text_name] = Entry(self, width=8)  # 等同于 message_id = Entry
         self.entries[text_name].grid(row=self.row, column=self.column, sticky=W)
         self.column += 1
         text_name, show_name = SIGNAL_NAME
         Label(self, text=show_name).grid(row=self.row, column=self.column, sticky=W)
         self.column += 1
-        self.entries[text_name] = Entry(self, width=20)
+        self.entries[text_name] = Entry(self, width=20)  # 等同于signal_name = Entry
         self.entries[text_name].grid(row=self.row, column=self.column, sticky=W, columnspan=2)
         self.column += 2
         text_name, show_name = SIGNAL_VALUE
         Label(self, text=show_name).grid(row=self.row, column=self.column, sticky=W)
         self.column += 1
-        self.entries[text_name] = Entry(self, width=8)
+        self.entries[text_name] = Entry(self, width=8)  # 等同于signal_value = Entry
         self.entries[text_name].grid(row=self.row, column=self.column, sticky=W)
         self.column += 1
         text_name, show_name = SEARCH_COUNT
@@ -214,6 +221,40 @@ class TabFrame(Frame):
         self.buttons[text_name].grid(row=self.row, column=self.column, sticky=W)
         self.buttons[text_name]["state"] = NORMAL
 
+    def __create_message_signal_check(self):
+        """
+        创建信号之前发送过那些值检测
+        帧ID，信号名称 精确查找的等选择
+        :return:
+        """
+        self.column = 0
+        text_name, show_name = MESSAGE_ID
+        Label(self, text=show_name).grid(row=self.row, column=self.column, sticky=W)
+        self.column += 1
+        self.entries[text_name] = Entry(self, width=8)  # 等同于 message_id = Entry
+        self.entries[text_name].grid(row=self.row, column=self.column, sticky=W)
+        self.column += 1
+        text_name, show_name = SIGNAL_NAME
+        Label(self, text=show_name).grid(row=self.row, column=self.column, sticky=W)
+        self.column += 1
+        self.entries[text_name] = Entry(self, width=20)  # 等同于signal_name = Entry
+        self.entries[text_name].grid(row=self.row, column=self.column, sticky=W, columnspan=2)
+        self.column += 2
+        text_name, show_name = SIGNAL_VALUES
+        Label(self, text=show_name).grid(row=self.row, column=self.column, sticky=W)
+        self.column += 1
+        self.entries[text_name] = Entry(self, width=40, state=DISABLED)  # 等同于signal_value = Entry
+        self.entries[text_name].grid(row=self.row, column=self.column, sticky=W, columnspan=5)
+        self.column += 5
+        text_name, show_name = CHECK_SIGNAL
+        # 创建Button对象
+        self.buttons[text_name] = Button(self, text=show_name,
+                                         command=lambda x=CHECK_SIGNAL: self.__special_button_event(x))
+        # 布局button
+        self.buttons[text_name].grid(row=self.row, column=self.column, sticky=W)
+        self.buttons[text_name]["state"] = NORMAL
+        logger.info(f"entries are {entries}")
+
     def __special_button_event(self, button_type: tuple):
         text_name, show_name = button_type
         self.buttons[text_name]["state"] = DISABLED
@@ -230,6 +271,7 @@ class TabFrame(Frame):
         message_id_text_name = MESSAGE_ID[0]
         signal_name_text_name = SIGNAL_NAME[0]
         signal_value_text_name = SIGNAL_VALUE[0]
+        signal_values_text_name = SIGNAL_VALUES[0]
         search_count_text_name = SEARCH_COUNT[0]
         exact_search_text_name = EXACT_SEARCH[0]
         text_name, show_name = button_type
@@ -251,33 +293,61 @@ class TabFrame(Frame):
             self.can_service.clear_stack_data()
             self.buttons[text_name]["state"] = NORMAL
         elif button_type == CHECK_MESSAGE:
-            # 获取message id
-            message_id = int(self.entries[message_id_text_name].get(), 16)
+            # 获取message id,如果未填写message_id,则设置message_id 为默认值None
+            message_id = None
+            if self.entries[message_id_text_name].get() != "":
+                message_id = int(self.entries[message_id_text_name].get(), 16)
             # 获取signal name
             signal_name = self.entries[signal_name_text_name].get().strip()
             # 获取signal value
-            signal_value = int(self.entries[signal_value_text_name].get())
-            # 获取次数
-            search_count_text = self.entries[search_count_text_name].get()
-            if search_count_text != "":
-                search_count = int(search_count_text)
+            signal_value_text = self.entries[signal_value_text_name].get()
+            if signal_value_text != "":
+                signal_value = int(signal_value_text)
+                # 获取次数
+                search_count_text = self.entries[search_count_text_name].get()
+                if search_count_text != "":
+                    search_count = int(search_count_text)
+                else:
+                    search_count = None
+                # 获取是否精确查找
+                index = self.comboxs[exact_search_text_name].current()
+                # 选中第一个则表示是True
+                exact_search = (index == 0)
+                stack = self.can_service.get_stack()
+                result = self.can_service.check_signal_value(stack, message_id, signal_name, signal_value, search_count,
+                                                             exact_search)
+                show_message = "成功" if result else "失败"
+                exact_message = "精确" if exact_search else "不精确"
+                message = f"检查信号【{signal_name}】值为【{signal_value}】收到次数" \
+                          f"为【{search_count}】，匹配方式是【{exact_message}】检查结果是【{show_message}】"
+                if result:
+                    messagebox.showinfo(title=show_message, message=message)
+                else:
+                    messagebox.showerror(title=show_message, message=message)
+                self.buttons[text_name]["state"] = NORMAL
             else:
-                search_count = None
-            # 获取是否精确查找
-            index = self.comboxs[exact_search_text_name].current()
-            # 选中第一个则表示是True
-            exact_search = (index == 0)
+                messagebox.showerror(title="失败", message="请填写需要查询的信号值")
+            self.buttons[text_name]["state"] = NORMAL
+        elif button_type == CHECK_SIGNAL:
+            # 获取message_id 并设置默认值为None
+            message_id = None
+            if self.entries[message_id_text_name].get() != "":
+                message_id = int(self.entries[message_id_text_name].get(), 16)
+            # 获取signal name
+            signal_name = self.entries[signal_name_text_name].get().strip()
+            # 检测信号值是否已经发送过，并返回检测到的信号值 result
             stack = self.can_service.get_stack()
-            result = self.can_service.check_signal_value(stack, message_id, signal_name, signal_value, search_count,
-                                                         exact_search)
-            show_message = "成功" if result else "失败"
-            exact_message = "精确" if exact_search else "不精确"
-            message = f"检查【{hex(message_id)}】中信号【{signal_name}】值为【{signal_value}】收到次数" \
-                      f"为【{search_count}】，匹配方式是【{exact_message}】检查结果是【{show_message}】"
-            if result:
-                messagebox.showinfo(title=show_message, message=message)
+            result = self.can_service.get_receive_signal_values(stack, signal_name, message_id)
+            if len(result) > 0:
+                self.entries[signal_values_text_name]["state"] = NORMAL
+                # 将之前的值先清空
+                self.entries[signal_values_text_name].delete(0, "end")
+                # 将返回的值插入到输入框中
+                self.entries[signal_values_text_name].insert(0, result)
+                self.entries[signal_values_text_name]["state"] = DISABLED
             else:
-                messagebox.showerror(title=show_message, message=message)
+                messagebox.showerror(title="失败", message=f"{signal_name} is not received")
+
             self.buttons[text_name]["state"] = NORMAL
 
     def create_check_buttons(self):
@@ -355,7 +425,8 @@ class TabFrame(Frame):
             values = list(value[VALUES].keys())
             logger.debug(f"row = {self.row}, column = {self.column}, index = {index}")
             # 创建Label框
-            Label(self, text=text_name,width=self.__label_width,anchor="w").grid(row=self.row, column=self.column, sticky=W)
+            Label(self, text=text_name, width=self.__label_width, anchor="w").grid(row=self.row, column=self.column,
+                                                                                   sticky=W)
             # 创建下拉框
             self.comboxs[function_name] = Combobox(self, values=values, state="readonly", width=self.__comboxs_width)
             # 设置下拉框初始值为第一个值
@@ -414,7 +485,8 @@ class TabFrame(Frame):
                 self.column += 1
             logger.debug(f"row = {self.row}, column = {self.column}, index = {index}")
             # 获取输入框的名称
-            Label(self, text=text_name,width=self.__label_width,anchor="w").grid(row=self.row, column=self.column, sticky=W)
+            Label(self, text=text_name, width=self.__label_width, anchor="w").grid(row=self.row, column=self.column,
+                                                                                   sticky=W)
             # 创建输入框
             self.entries[function_name] = Entry(self, width=self.__entrie_width)
             logger.debug(f"row = {self.row}, column = {self.column}, index = {index}")
@@ -580,7 +652,8 @@ class TabFrame(Frame):
                 self.column += 1
             # 创建CheckButton对象并放到thread_buttons中方便调用
             self.buttons[function_name] = Button(self, text=text_name,
-                                                 command=lambda x=function_name: self.__thread_button_event(x),width=self.__buttons_width)
+                                                 command=lambda x=function_name: self.__thread_button_event(x),
+                                                 width=self.__buttons_width)
             logger.debug(f"row = {self.row}, column = {self.column}, index = {index}")
             self.buttons[function_name].grid(row=self.row, column=self.column, sticky=W)
             index += 1
@@ -663,7 +736,7 @@ class Gui(object):
 
     def __init__(self, excel_file: str, dbc: str, can_box_device: Union[CanBoxDeviceEnum, str, None] = None,
                  filter_nodes: List[str] = None, can_fd: bool = False,
-                 excel_type: ExcelEnum = ExcelEnum.OPENPYXL, max_workers: int = 500, max_line_count:int = 8):
+                 excel_type: ExcelEnum = ExcelEnum.OPENPYXL, max_workers: int = 500, max_line_count: int = 8):
         """
 
         :param excel_file: Excel文件路径 （必填项）
@@ -698,7 +771,7 @@ class Gui(object):
             else:
                 common_panel = False
             tab = TabFrame(self.tk, can_service=self.can_service, filter_nodes=filter_nodes,
-                           config=value, common_panel=common_panel,max_line_count = max_line_count)
+                           config=value, common_panel=common_panel, max_line_count=max_line_count)
             self.tab_control.add(tab, text=key)
             self.tabs.append(tab)
         self.tab_control.pack(expand=1, fill="both")
