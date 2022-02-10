@@ -11,16 +11,17 @@ from time import sleep
 from tkinter import Frame, Button, NORMAL, DISABLED, W, BooleanVar, Checkbutton, Entry, Label, Tk, messagebox, \
     HORIZONTAL, E
 from tkinter.ttk import Combobox, Notebook, Separator
-from typing import List, Dict, Any, Union
+from typing import List, Dict, Any, Union, Optional
 from automotive.logger.logger import logger
 from automotive.core.can.can_service import CANService
-from automotive.core.can.common.enums import CanBoxDeviceEnum
+from automotive.core.can.common.enums import CanBoxDeviceEnum, BaudRateEnum
 from .reader import ConfigReader
 from .reader import check_buttons, thread_buttons, comboxs, entries, buttons, receive_buttons
 from ..common.constants import OPEN_DEVICE, CLOSE_DEVICE, CLEAR_STACK, DEFAULT_MESSAGE, BUS_LOST, \
-    MESSAGE_LOST, TEXT, ON, OFF, VALUES, ACTIONS, COMMON, CHECK_MSGS, CHECK_MESSAGE, MESSAGE_ID, SIGNAL_NAME, \
-    SIGNAL_VALUE,SIGNAL_VALUES, SEARCH_COUNT, EXACT_SEARCH, YES_OR_NO, CHECK_SIGNAL
+    MESSAGE_LOST, TEXT, ON, OFF, VALUES, ACTIONS, COMMON, CHECK_MSGS, CHECK_MESSAGE, SIGNAL_NAME, \
+    SIGNAL_VALUE, SIGNAL_VALUES, SEARCH_COUNT, EXACT_SEARCH, YES_OR_NO, CHECK_SIGNAL
 from ...utils.common.enums import ExcelEnum
+
 
 class TabFrame(Frame):
 
@@ -104,7 +105,6 @@ class TabFrame(Frame):
         # 创建接收检查按钮
         self.create_receive_buttons()
 
-
     def create_common_widget(self):
         """
         创建 打开设备、关闭设备、清除数据（清除接收到的数据)、发送默认消息（通过初始化的filter_node过滤消息), 总线丢失、丢失部分信号等按键
@@ -179,12 +179,6 @@ class TabFrame(Frame):
         帧ID， 信号名称 信号值， 出现次数 精确查找等选中，用于在主机操作后的检查
         """
         self.column = 0
-        text_name, show_name = MESSAGE_ID
-        Label(self, text=show_name).grid(row=self.row, column=self.column, sticky=W)
-        self.column += 1
-        self.entries[text_name] = Entry(self, width=8)  # 等同于 message_id = Entry
-        self.entries[text_name].grid(row=self.row, column=self.column, sticky=W)
-        self.column += 1
         text_name, show_name = SIGNAL_NAME
         Label(self, text=show_name).grid(row=self.row, column=self.column, sticky=W)
         self.column += 1
@@ -228,12 +222,6 @@ class TabFrame(Frame):
         :return:
         """
         self.column = 0
-        text_name, show_name = MESSAGE_ID
-        Label(self, text=show_name).grid(row=self.row, column=self.column, sticky=W)
-        self.column += 1
-        self.entries[text_name] = Entry(self, width=8)  # 等同于 message_id = Entry
-        self.entries[text_name].grid(row=self.row, column=self.column, sticky=W)
-        self.column += 1
         text_name, show_name = SIGNAL_NAME
         Label(self, text=show_name).grid(row=self.row, column=self.column, sticky=W)
         self.column += 1
@@ -253,7 +241,7 @@ class TabFrame(Frame):
         # 布局button
         self.buttons[text_name].grid(row=self.row, column=self.column, sticky=W)
         self.buttons[text_name]["state"] = NORMAL
-        logger.info(f"entries are {entries}")
+        logger.debug(f"entries are {entries}")
 
     def __special_button_event(self, button_type: tuple):
         text_name, show_name = button_type
@@ -268,7 +256,6 @@ class TabFrame(Frame):
     def __special_actions(self, button_type: tuple):
         open_text_name = OPEN_DEVICE[0]
         close_text_name = CLOSE_DEVICE[0]
-        message_id_text_name = MESSAGE_ID[0]
         signal_name_text_name = SIGNAL_NAME[0]
         signal_value_text_name = SIGNAL_VALUE[0]
         signal_values_text_name = SIGNAL_VALUES[0]
@@ -293,10 +280,6 @@ class TabFrame(Frame):
             self.can_service.clear_stack_data()
             self.buttons[text_name]["state"] = NORMAL
         elif button_type == CHECK_MESSAGE:
-            # 获取message id,如果未填写message_id,则设置message_id 为默认值None
-            message_id = None
-            if self.entries[message_id_text_name].get() != "":
-                message_id = int(self.entries[message_id_text_name].get(), 16)
             # 获取signal name
             signal_name = self.entries[signal_name_text_name].get().strip()
             # 获取signal value
@@ -314,7 +297,7 @@ class TabFrame(Frame):
                 # 选中第一个则表示是True
                 exact_search = (index == 0)
                 stack = self.can_service.get_stack()
-                result = self.can_service.check_signal_value(stack, message_id, signal_name, signal_value, search_count,
+                result = self.can_service.check_signal_value(stack, signal_name, signal_value, search_count,
                                                              exact_search)
                 show_message = "成功" if result else "失败"
                 exact_message = "精确" if exact_search else "不精确"
@@ -329,15 +312,12 @@ class TabFrame(Frame):
                 messagebox.showerror(title="失败", message="请填写需要查询的信号值")
             self.buttons[text_name]["state"] = NORMAL
         elif button_type == CHECK_SIGNAL:
-            # 获取message_id 并设置默认值为None
-            message_id = None
-            if self.entries[message_id_text_name].get() != "":
-                message_id = int(self.entries[message_id_text_name].get(), 16)
             # 获取signal name
             signal_name = self.entries[signal_name_text_name].get().strip()
             # 检测信号值是否已经发送过，并返回检测到的信号值 result
             stack = self.can_service.get_stack()
-            result = self.can_service.get_receive_signal_values(stack, signal_name, message_id)
+
+            result = self.can_service.get_receive_signal_values(stack, signal_name)
             if len(result) > 0:
                 self.entries[signal_values_text_name]["state"] = NORMAL
                 # 将之前的值先清空
@@ -735,7 +715,10 @@ class TabFrame(Frame):
 class Gui(object):
 
     def __init__(self, excel_file: str, dbc: str, can_box_device: Union[CanBoxDeviceEnum, str, None] = None,
-                 filter_nodes: List[str] = None, can_fd: bool = False,
+                 baud_rate: Union[BaudRateEnum, int] = BaudRateEnum.HIGH,
+                 data_rate: Union[BaudRateEnum, int] = BaudRateEnum.DATA,
+                 channel_index: int = 1,
+                 filter_nodes: Optional[List[str]] = None, can_fd: bool = False,
                  excel_type: ExcelEnum = ExcelEnum.OPENPYXL, max_workers: int = 500, max_line_count: int = 8):
         """
 
@@ -751,7 +734,8 @@ class Gui(object):
         self.tk = Tk()
         self.tk.title("CAN面板")
         # 初始化 CANService
-        self.can_service = CANService(dbc, can_box_device=can_box_device, can_fd=can_fd, max_workers=max_workers)
+        self.can_service = CANService(dbc, can_box_device=can_box_device, baud_rate=baud_rate, data_rate=data_rate,
+                                      channel_index=channel_index, can_fd=can_fd, max_workers=max_workers)
         # 默认消息发送要过滤的节点
         self.__filter_nodes = filter_nodes
         # 获取按钮
