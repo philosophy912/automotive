@@ -18,8 +18,10 @@ from .tsmaster import TSMasterDevice
 
 class TsMasterCanBus(BaseCanBus):
 
-    def __init__(self, baud_rate: BaudRateEnum = BaudRateEnum.HIGH, can_fd: bool = False, max_workers: int = 300):
-        super().__init__(baud_rate=baud_rate, can_fd=can_fd, max_workers=max_workers)
+    def __init__(self, baud_rate: BaudRateEnum = BaudRateEnum.HIGH, data_rate: BaudRateEnum = BaudRateEnum.DATA,
+                 channel_index: int = 1, can_fd: bool = False, max_workers: int = 300):
+        super().__init__(baud_rate=baud_rate, data_rate=data_rate, channel_index=channel_index, can_fd=can_fd,
+                         max_workers=max_workers)
         # 实例化同星
         self._can = TSMasterDevice(can_fd)
 

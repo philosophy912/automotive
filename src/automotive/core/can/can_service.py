@@ -20,45 +20,63 @@ from automotive.common.singleton import Singleton
 from automotive.logger.logger import logger
 
 
-def __get_can_bus(can_box_device: CanBoxDeviceEnum, baud_rate: BaudRateEnum, can_fd: bool,
-                  max_workers: int) -> BaseCanBus:
+def __get_can_bus(can_box_device: CanBoxDeviceEnum, baud_rate: BaudRateEnum, data_rate: BaudRateEnum,
+                  channel_index: int, can_fd: bool, max_workers: int) -> BaseCanBus:
     if can_box_device == CanBoxDeviceEnum.PEAKCAN:
-        logger.info("use pcan")
+        logger.debug("use pcan")
         from .hardware.peakcan.pcan_bus import PCanBus
-        return PCanBus(baud_rate=baud_rate, can_fd=can_fd, max_workers=max_workers)
+        return PCanBus(baud_rate=baud_rate, data_rate=data_rate, channel_index=channel_index, can_fd=can_fd,
+                       max_workers=max_workers)
     elif can_box_device == CanBoxDeviceEnum.TSMASTER:
-        logger.info("use tsmaster")
+        logger.debug("use tsmaster")
         from .hardware.tscan.tsmaster_bus import TsMasterCanBus
-        return TsMasterCanBus(baud_rate=baud_rate, can_fd=can_fd, max_workers=max_workers)
+        return TsMasterCanBus(baud_rate=baud_rate, data_rate=data_rate, channel_index=channel_index, can_fd=can_fd,
+                              max_workers=max_workers)
+    elif can_box_device == CanBoxDeviceEnum.ZLGUSBCAN:
+        logger.debug("use zlg")
+        from .hardware.zlg.zlg_can_bus import ZlgCanBus
+        return ZlgCanBus(baud_rate=baud_rate, data_rate=data_rate, channel_index=channel_index, can_fd=can_fd,
+                         max_workers=max_workers)
     elif can_box_device == CanBoxDeviceEnum.CANALYST or can_box_device == CanBoxDeviceEnum.USBCAN:
+        logger.debug("use usbcan")
         from .hardware.usbcan.usb_can_bus import UsbCanBus
-        return UsbCanBus(can_box_device, baud_rate=baud_rate, can_fd=can_fd, max_workers=max_workers)
-    elif can_box_device == CanBoxDeviceEnum.ITEK:
-        from .hardware.itek.itek_usb_can_bus import ItekUsbCanBus
-        return ItekUsbCanBus(baud_rate=baud_rate, can_fd=can_fd, max_workers=max_workers)
+        return UsbCanBus(can_box_device, baud_rate=baud_rate, data_rate=data_rate, channel_index=channel_index,
+                         can_fd=can_fd, max_workers=max_workers)
     else:
         raise RuntimeError(f"{can_box_device.value} not support")
 
 
-def get_can_box_device(can_box_device: CanBoxDeviceEnum, baud_rate: BaudRateEnum,
-                       can_fd: bool, max_workers: int) -> Tuple[CanBoxDeviceEnum, BaseCanBus]:
+def get_can_box_device(can_box_device: CanBoxDeviceEnum, baud_rate: BaudRateEnum, data_rate: BaudRateEnum,
+                       channel_index: int, can_fd: bool, max_workers: int) -> Tuple[CanBoxDeviceEnum, BaseCanBus]:
     """
     获取can盒子的类型， 依次从PCan找到CANALYST然后到USBCAN
     :return: can盒类型
     """
     if can_box_device:
-        return can_box_device, __get_can_bus(can_box_device, baud_rate, can_fd, max_workers)
+        return can_box_device, __get_can_bus(can_box_device, baud_rate, data_rate, channel_index, can_fd, max_workers)
     else:
         for key, value in CanBoxDeviceEnum.__members__.items():
-            logger.info(f"try to open {key}")
-            can = __get_can_bus(value, baud_rate, can_fd, max_workers)
-            try:
-                can.open_can()
-                sleep(1)
-                can.close_can()
-                return value, __get_can_bus(value, baud_rate, can_fd, max_workers)
-            except RuntimeError:
-                logger.debug(f"open {value.value} failed")
+            name, type_ = value.value
+            if can_fd is True and type_ is True:
+                logger.info(f"try to open {key}")
+                can = __get_can_bus(value, baud_rate, data_rate, channel_index, can_fd, max_workers)
+                try:
+                    can.open_can()
+                    sleep(1)
+                    can.close_can()
+                    return value, __get_can_bus(value, baud_rate, data_rate, channel_index, can_fd, max_workers)
+                except RuntimeError:
+                    logger.debug(f"open {name} failed")
+            elif can_fd is False:
+                logger.info(f"try to open {key}")
+                can = __get_can_bus(value, baud_rate, data_rate, channel_index, can_fd, max_workers)
+                try:
+                    can.open_can()
+                    sleep(1)
+                    can.close_can()
+                    return value, __get_can_bus(value, baud_rate, data_rate, channel_index, can_fd, max_workers)
+                except RuntimeError:
+                    logger.debug(f"open {name} failed")
         raise RuntimeError("No device found, is can box connected")
 
 
@@ -69,12 +87,19 @@ class Can(metaclass=Singleton):
 
     def __init__(self,
                  can_box_device: Union[CanBoxDeviceEnum, str, None] = None,
-                 baud_rate: BaudRateEnum = BaudRateEnum.HIGH,
+                 baud_rate: Union[BaudRateEnum, int] = BaudRateEnum.HIGH,
+                 data_rate: Union[BaudRateEnum, int] = BaudRateEnum.DATA,
+                 channel_index: int = 1,
                  can_fd: bool = False,
                  max_workers: int = 300):
         if isinstance(can_box_device, str):
             can_box_device = CanBoxDeviceEnum.from_name(can_box_device)
-        self._can_box_device, self._can = get_can_box_device(can_box_device, baud_rate, can_fd, max_workers)
+        if isinstance(baud_rate, int):
+            baud_rate = BaudRateEnum.from_value(baud_rate)
+        if isinstance(data_rate, int):
+            data_rate = BaudRateEnum.from_value(data_rate)
+        self._can_box_device, self._can = get_can_box_device(can_box_device, baud_rate, data_rate, channel_index,
+                                                             can_fd, max_workers)
 
     @property
     def can_box_device(self) -> CanBoxDeviceEnum:
@@ -184,11 +209,13 @@ class CANService(Can):
     def __init__(self,
                  messages: Union[str, MessageType],
                  encoding: str = "utf-8",
-                 can_box_device: Optional[CanBoxDeviceEnum] = None,
-                 baud_rate: BaudRateEnum = BaudRateEnum.HIGH,
+                 can_box_device: Union[CanBoxDeviceEnum, str, None] = None,
+                 baud_rate: Union[BaudRateEnum, int] = BaudRateEnum.HIGH,
+                 data_rate: Union[BaudRateEnum, int] = BaudRateEnum.DATA,
+                 channel_index: int = 1,
                  can_fd: bool = False,
                  max_workers: int = 300):
-        super().__init__(can_box_device, baud_rate, can_fd, max_workers)
+        super().__init__(can_box_device, baud_rate, data_rate, channel_index, can_fd, max_workers)
         logger.debug(f"read message from file {messages}")
         self.__messages, self.__name_messages = get_message(messages, encoding=encoding)
         # 备份message, 可以作为初始值发送
@@ -307,6 +334,12 @@ class CANService(Can):
             self.__send_message(message, default_message, is_random_value)
         if interval > 0:
             sleep(interval)
+
+    def __get_msg_id_from_signal_name(self, signal_name: str) -> int:
+        for msg_name, msg in self.messages.items():
+            if signal_name in msg.signals:
+                return msg.msg_id
+        raise RuntimeError(f"{signal_name} can not be found in messages")
 
     def send_can_message_by_id_or_name(self, msg: MessageIdentity):
         """
@@ -515,11 +548,36 @@ class CANService(Can):
             duplicate.add(signal.value)
         return len(duplicate) > 1
 
+    def get_receive_signal_values(self,
+                                  stack: List[Message],
+                                  signal_name: str,
+                                  msg_id: Optional[str] = None) -> List[int]:
+        """
+        所有曾经出现的信号值
+        :param stack:
+        :param msg_id:
+        :param signal_name:
+        :return:
+        """
+        if msg_id is None:
+            msg_id = self.__get_msg_id_from_signal_name(signal_name)
+        result = []
+        filter_messages = list(filter(lambda x: x.msg_id == msg_id, stack))
+        for msg in filter_messages:
+            message = self.__set_message(msg.msg_id, msg.data)
+            if signal_name not in message.signals:
+                raise RuntimeError(f"{signal_name} is not in {msg_id}")
+            else:
+                signal = message.signals[signal_name]
+                if signal.physical_value not in result:
+                    result.append(signal.physical_value)
+        return result
+
     def check_signal_value(self,
                            stack: List[Message],
-                           msg_id: int,
                            signal_name: str,
                            expect_value: int,
+                           msg_id: Optional[int] = None,
                            count: Optional[int] = None,
                            exact: bool = True):
         """
@@ -537,6 +595,8 @@ class CANService(Can):
 
         :param stack: 栈中消息
         """
+        if msg_id is None:
+            msg_id = self.__get_msg_id_from_signal_name(signal_name)
         if count:
             # 过滤需要的msg
             filter_messages = list(filter(lambda x: x.msg_id == msg_id, stack))

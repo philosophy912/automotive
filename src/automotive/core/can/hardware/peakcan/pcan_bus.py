@@ -19,10 +19,12 @@ class PCanBus(BaseCanBus):
         实现CANBus接口，能够多线程发送和接收can信号
     """
 
-    def __init__(self, baud_rate: BaudRateEnum = BaudRateEnum.HIGH, can_fd: bool = False, max_workers: int = 300):
+    def __init__(self, baud_rate: BaudRateEnum = BaudRateEnum.HIGH, data_rate: BaudRateEnum = BaudRateEnum.DATA,
+                 channel_index: int = 1, can_fd: bool = False, max_workers: int = 300):
         if can_fd:
             raise RuntimeError("pcan not support canfd")
-        super().__init__(baud_rate=baud_rate, can_fd=can_fd, max_workers=max_workers)
+        super().__init__(baud_rate=baud_rate, data_rate=data_rate, channel_index=channel_index,
+                         can_fd=can_fd, max_workers=max_workers)
         # PCAN实例化
         self._can = PCanDevice(can_fd)
 

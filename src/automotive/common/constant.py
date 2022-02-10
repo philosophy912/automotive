@@ -26,7 +26,7 @@ def check_connect(argument: str, tips: str, is_serial: bool = False, is_bus: boo
 
         def wrapper(self, *args, **kwargs):
             if is_serial:
-                serial = self.__dict__[f"_{self.__class__.__name__}{argument}"]
+                serial = self.__dict__[f"{argument}"]
                 if not (serial and serial.isOpen):
                     raise RuntimeError(tips)
             elif is_bus:

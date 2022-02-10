@@ -28,7 +28,6 @@ class TSMasterDevice(BaseCanDevice):
         self.__channel = None
         # 需要在硬件文档中查询获取
         self.__dll_path = self.__get_dll_path()
-        self.__data_rate = BaudRateEnum.DATA.value
         logger.debug(f"use dll path is {self.__dll_path}")
         if platform.system() == "Windows":
             self.__lib_can = CDLL(self.__dll_path)
@@ -95,10 +94,10 @@ class TSMasterDevice(BaseCanDevice):
                                                              TLIBCANFDControllerMode[can_fd_controller_mode],
                                                              TRUE)
 
-    def __set_baud_rate(self, baud_rate: float, channel: int):
+    def __set_baud_rate(self, baud_rate: float, data_rate: float, channel: int):
         # 设置波特率
         logger.debug(f"baud_rate is {baud_rate}, channel is {channel}")
-        self.__configure_can(baud_rate, self.__data_rate, channel, self.__is_fd)
+        self.__configure_can(baud_rate, data_rate, channel, self.__is_fd)
 
     def __open_device(self):
         self.__init_device()
@@ -131,7 +130,8 @@ class TSMasterDevice(BaseCanDevice):
             lib_can_fd.FData[j] = data
         return lib_can_fd
 
-    def open_device(self, baud_rate: BaudRateEnum = BaudRateEnum.HIGH, channel: int = 1):
+    def open_device(self, baud_rate: BaudRateEnum = BaudRateEnum.HIGH, data_rate: BaudRateEnum = BaudRateEnum.DATA,
+                    channel: int = 1):
         self.__channel = channel
         if not self._is_open:
             self.__open_device()
@@ -144,7 +144,7 @@ class TSMasterDevice(BaseCanDevice):
             if result == 0:
                 logger.info("ts master connect")
                 self._is_open = True
-                self.__set_baud_rate(baud_rate.value, channel)
+                self.__set_baud_rate(baud_rate.value, data_rate.value, channel)
             else:
                 self._is_open = False
                 raise RuntimeError(f"open tsmaster failed, result is {result}")

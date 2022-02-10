@@ -172,10 +172,12 @@ class PCanDevice(BaseCanDevice):
             memmove(send_data[i].data, a_data, 8)
         return send_data
 
-    def open_device(self, baud_rate: BaudRateEnum = BaudRateEnum.HIGH, channel: int = 1):
+    def open_device(self, baud_rate: BaudRateEnum = BaudRateEnum.HIGH, data_rate: BaudRateEnum = BaudRateEnum.DATA,
+                    channel: int = 1):
         """
         打开Pcan设备
 
+        :param data_rate: DATA速率，对于目前的PCAN没有用
         :param baud_rate: CAN速率，HIGH表示高速，LOW表示低速
 
         :param channel:
@@ -184,7 +186,7 @@ class PCanDevice(BaseCanDevice):
         :return: A TPCANStatus error code
         """
         baud_rate = baud_rate.value
-        logger.info(f"baud_rate is {baud_rate}")
+        logger.debug(f"baud_rate is {baud_rate}")
         if channel != 1:
             raise RuntimeError("pcan channel only support 1")
         self.__init_device(baud_rate, channel)

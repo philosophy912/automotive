@@ -20,8 +20,10 @@ class UsbCanBus(BaseCanBus):
     """
 
     def __init__(self, can_box_device: CanBoxDeviceEnum, baud_rate: BaudRateEnum = BaudRateEnum.HIGH,
-                 can_fd: bool = False, max_workers: int = 300):
-        super().__init__(baud_rate=baud_rate, can_fd=can_fd, max_workers=max_workers)
+                 data_rate: BaudRateEnum = BaudRateEnum.DATA, channel_index: int = 1, can_fd: bool = False,
+                 max_workers: int = 300):
+        super().__init__(baud_rate=baud_rate, data_rate=data_rate, channel_index=channel_index, can_fd=can_fd,
+                         max_workers=max_workers)
         if self._can_fd:
             raise RuntimeError("usb can not support can fd")
         # USB CAN BOX实例化

@@ -23,6 +23,12 @@ class BaudRateEnum(Enum):
     # 数据仲裁速率
     DATA = 2000
 
+    @staticmethod
+    def from_value(type_: int):
+        for key, item in BaudRateEnum.__members__.items():
+            if type_ == item.value:
+                return item
+        raise ValueError(f"{type_} can not be found in BaudRateEnum")
 
 @unique
 class CanBoxDeviceEnum(Enum):
@@ -32,13 +38,16 @@ class CanBoxDeviceEnum(Enum):
     PEAKCAN、USBCAN、CANALYST
     """
     # PCAN
-    PEAKCAN = "PEAKCAN"
+    PEAKCAN = "PEAKCAN", False
     # USB CAN
-    USBCAN = "USBCAN"
+    USBCAN = "USBCAN", False
     # CAN分析仪
-    CANALYST = "CANALYST"
+    CANALYST = "CANALYST", False
     # 同星
-    TSMASTER = "TSMASTER"
+    TSMASTER = "TSMASTER", True
+    # 周立功
+    ZLGUSBCAN = "ZLGUSBCAN", True
+
     # 爱泰 CAN FD
     # ITEK = "ITEK"
 
@@ -48,7 +57,7 @@ class CanBoxDeviceEnum(Enum):
     @staticmethod
     def from_name(type_: str):
         for key, item in CanBoxDeviceEnum.__members__.items():
-            if type_ == item.value.upper():
+            if type_.upper() == item.value[0]:
                 return item
         raise ValueError(f"{type_} can not be found in CanBoxDeviceEnum")
 

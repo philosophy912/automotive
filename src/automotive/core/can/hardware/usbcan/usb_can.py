@@ -16,7 +16,6 @@ from platform import architecture
 from inspect import stack
 from typing import Tuple, Any, List
 
-
 from automotive.core.can.hardware.usbcan.usb_can_basic import band_rate_list, VciInitConfig, UCHAR, DWORD, UINT, BYTE, \
     VciCanObj, VciBoardInfo
 from automotive.logger.logger import logger
@@ -299,11 +298,14 @@ class UsbCanDevice(BaseCanDevice):
         """
         return self.__lib_can.VCI_StartCAN(self.__device_type, self.__device_index, self.__can_index)
 
-    def open_device(self, baud_rate: BaudRateEnum = BaudRateEnum.HIGH, channel: int = 1, reserved: int = 0):
+    def open_device(self, baud_rate: BaudRateEnum = BaudRateEnum.HIGH, data_rate: BaudRateEnum = BaudRateEnum.DATA,
+                    channel: int = 1, reserved: int = 0):
         """
         打开USB CAN设备，注意一个设备只能打开一次，测试前必须先调用该接口。
 
         :param channel: 通道，默认选择为1
+
+        :param data_rate: 数据速率，对于USBCAN无用
 
         :param baud_rate: CAN速率，HIGH表示高速，LOW表示低速
 

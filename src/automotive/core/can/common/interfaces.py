@@ -29,10 +29,13 @@ class BaseCanDevice(metaclass=ABCMeta):
         return self._is_open
 
     @abstractmethod
-    def open_device(self, baud_rate: BaudRateEnum = BaudRateEnum.HIGH, channel: int = 1):
+    def open_device(self, baud_rate: BaudRateEnum = BaudRateEnum.HIGH, data_rate: BaudRateEnum = BaudRateEnum.DATA,
+                    channel: int = 1):
         """
         打开CAN设备
         :param channel: 通道，默认选择为1
+
+        :param data_rate: 速率， 默认2M， 仅CANFD有用
 
         :param baud_rate: 速率，目前只支持500Kbps的高速CAN和125Kbps的低速CAN
         """
@@ -77,9 +80,14 @@ class BaseCanDevice(metaclass=ABCMeta):
 
 
 class BaseCanBus(metaclass=ABCMeta):
-    def __init__(self, baud_rate: BaudRateEnum = BaudRateEnum.HIGH, can_fd: bool = False, max_workers: int = 300):
+    def __init__(self, baud_rate: BaudRateEnum = BaudRateEnum.HIGH, data_rate: BaudRateEnum = BaudRateEnum.DATA,
+                 channel_index: int = 1, can_fd: bool = False, max_workers: int = 300):
         # baud_rate波特率，
         self._baud_rate = baud_rate
+        # data_rate波特率， 仅canfd有用
+        self._data_rate = data_rate
+        # 通道
+        self._channel_index = channel_index
         # CAN FD
         self._can_fd = can_fd
         # 最大线程数
@@ -238,7 +246,7 @@ class BaseCanBus(metaclass=ABCMeta):
         # 开启设备的发送线程
         self._need_transmit = True
         # 打开设备，并初始化设备
-        self._can.open_device(baud_rate=self._baud_rate)
+        self._can.open_device(baud_rate=self._baud_rate, data_rate=self._data_rate, channel=self._channel_index)
 
     @abstractmethod
     def open_can(self):
