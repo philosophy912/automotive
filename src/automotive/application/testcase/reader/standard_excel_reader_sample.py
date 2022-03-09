@@ -105,14 +105,17 @@ class StandardExcelSampleReader(BaseReader):
         logger.debug(f"pre_condition = {pre_condition}")
         contents = []
         if pre_condition:
-            if "\r\n0x" in pre_condition:
+            if "\r\n" in pre_condition:
                 pre_condition = pre_condition.replace("\r\n", "$")
-            pre_conditions = list(filter(lambda x: self.__filter_automotive(x) and x != "", pre_condition.split("\n")))
+            # pre_conditions = list(filter(lambda x: self.__filter_automotive(x) and x != "", pre_condition.split("\n")))
+            pre_conditions = list(filter(lambda x: x != "", pre_condition.split("\n")))
             pre_conditions = list(map(lambda x: x.replace("、", "."), pre_conditions))
             for pre in pre_conditions:
-                if point in pre:
-                    pre = pre.replace(point, " ").strip()
-                pre = pre[2:].strip()
+                # if point in pre:
+                #     pre = pre.replace(point, " ").strip()
+                # 为了不去掉不带序号的前两个字符
+                if pre[0].isdecimal() and pre[:2] != '0x':
+                    pre = pre[2:].strip()
                 logger.debug(f"pre  = {pre}")
                 if "$" in pre:
                     pre = pre.replace("$", "\r\n")
