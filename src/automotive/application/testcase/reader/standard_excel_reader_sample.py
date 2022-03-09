@@ -166,7 +166,7 @@ class StandardExcelSampleReader(BaseReader):
     def __parse_exceptions(self, exceptions: str) -> List[str]:
         contents = []
         if exceptions:
-            exception_lines = exceptions.split("\n")
+            exception_lines = exceptions.split("\r\n")
             for line in exception_lines:
                 content = self.__handle_prefix_str(line)
                 contents.append(content)

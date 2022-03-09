@@ -47,7 +47,7 @@ class Xmind8SampleReader(BaseReader):
                 modules = module_list
                 testcase.module = split_char.join(modules)
             module_str = replace_char.join(modules)
-            testcase.name = f"{category}{replace_char}{module_str}{replace_char}{i + 1}"
+            testcase.name = f"{category}{replace_char}{module_str}"
 
     @staticmethod
     def _read_root_topic_data_from_file(xmind_file: str) -> TopicElement:
@@ -147,6 +147,8 @@ class Xmind8SampleReader(BaseReader):
         """
         testcases = []
         # test_cat 类型是 TopicElement
+        # 设置一个存放testcaseID的列表
+        template = []
         for test_case in test_cases:
             # 这个地方的模块是所有模块的集合
             module, tc = test_case
@@ -166,12 +168,33 @@ class Xmind8SampleReader(BaseReader):
             testcase.pre_condition = pre_conditions
             testcase.module = split_char.join(modules)
             title = tc.getTitle()
-            title = title[2:]
-            if title.startswith(automation_prefix):
+            # testcaseID inter(判断有没有加case-ID）
+            # 去掉TC
+            ts_title = title[2:]
+            # 如果[A]在title里面，去掉[A],并加自动化标签
+            if ts_title.startswith(automation_prefix):
                 testcase.automation = True
-                name = title.replace(automation_prefix, "")
+                ts_title = ts_title.replace(automation_prefix, "")
+
+            # testcaseID inter(判断有没有加case-ID）
+            if ts_title[0] is '<' and int(ts_title[1:ts_title.find('>')]):
+                # 为TC添加testcase-id
+                start_n = ts_title.find('<')
+                end_n = ts_title.find('>')
+                inter = ts_title[start_n + 1:end_n]
+                # 去掉<ID>
+                title = ts_title[end_n + 1:]
+                # 存放ID值，用于判断查重
+                template.append(inter)
+
             else:
-                name = title
+                raise RuntimeError(f"{title}: 该模块没有加<ID>，请检查")
+
+            # testcase.module = ACC状态显示（模块名M）
+            # 给testcase加ID号
+            testcase.module = split_char.join(modules) + '_' + inter
+            # 去掉TC和ID
+            name = title
             # 考虑TC后有异常符号，做替换处理
             if name.startswith(" ") or name.startswith(",") or name.startswith("_") or name.startswith("-"):
                 name = name[1:]
@@ -188,6 +211,8 @@ class Xmind8SampleReader(BaseReader):
             testcases.append(testcase)
             # 解析优先级
             markers = tc.getMarkers()
+            # 解析修改记录
+            fix = None
             if len(markers) > 0:
                 # 可能存在优先级
                 for marker in markers:
@@ -199,7 +224,18 @@ class Xmind8SampleReader(BaseReader):
                         if priority > 4:
                             priority = 4
                         testcase.priority = priority
-            testcase.calc_hash()
+                    # 解析修改项
+                    if marker_id == ModifyTypeEnum.ADD.value[1]:
+                        fix = ModifyTypeEnum.ADD.value[0]
+                    if marker_id == ModifyTypeEnum.DELETE.value[1]:
+                        fix = ModifyTypeEnum.DELETE.value[0]
+                    if marker_id == ModifyTypeEnum.FIX.value[1]:
+                        fix = ModifyTypeEnum.FIX.value[0]
+                    testcase.fix = fix
+        # 判断ID是否为空
+        for tem in template:
+            if template.count(tem) > 1:
+                raise RuntimeError(f"{tem} : 此ID有重复值，请检查: ")
         return testcases
 
     @staticmethod

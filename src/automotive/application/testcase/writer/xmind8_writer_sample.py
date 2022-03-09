@@ -78,6 +78,7 @@ class Xmind8SampleWriter(BaseWriter):
             logger.debug(f"now write the {index + 1} testcase")
             # print(testcase.name)
             modules = testcase.name.split(replace_char)
+            inter = modules[-1]
             modules.pop(-1)
             for module in main_module_name:
                 modules.remove(module)
@@ -108,9 +109,12 @@ class Xmind8SampleWriter(BaseWriter):
                 current_topic = self.__add_subtopic(root_topic, modules, workbook)
             # 当前节点下面就需要创建测试用例节点了
             logger.debug(f"current topic = {current_topic.getTitle()} and module is {modules[-1]}")
-            self.__create_test_case_node(testcase, current_topic, workbook)
+            # ……新增一个id参数
+           
+            self.__create_test_case_node(inter, testcase, current_topic, workbook)
 
     def __create_test_case_node(self,
+                                inter: int,
                                 testcase: Testcase,
                                 testcase_topic: TopicElement,
                                 workbook: WorkbookDocument):
@@ -123,6 +127,7 @@ class Xmind8SampleWriter(BaseWriter):
         """
         # 添加了测试用例节点, 判断了是否关联了需求ID
         topic_titles = ["TC"]
+        topic_titles.append(f"<{inter}>")
         if testcase.automation:
             topic_titles.append(automation_prefix)
         actions = []

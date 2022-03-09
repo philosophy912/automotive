@@ -48,3 +48,10 @@ class GuiButtonTypeEnum(Enum):
             if type_.strip() == item.value[0]:
                 return item
         raise ValueError(f"{type_} can not be found in GuiButtonTypeEnum")
+
+
+@unique
+class ModifyTypeEnum(Enum):
+    FIX = "修改", "arrow-refresh"
+    ADD = "增加", "symbol-plus"
+    DELETE = "删除", "symbol-wrong"

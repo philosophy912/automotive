@@ -7,7 +7,7 @@
 # @Created:     2021/11/18 - 20:51
 # --------------------------------------------------------
 import hashlib
-
+from enum import Enum
 from automotive.logger.logger import logger
 
 column_config = {"A": "序号",
@@ -109,6 +109,8 @@ class Testcase(object):
         self.automation = None
         # 测试结果
         self.test_result = None
+        # 修改记录
+        self.fix = None
 
     def __str__(self):
         values = []

@@ -84,9 +84,9 @@ class StandardExcelSampleWriter(BaseWriter):
         """
         根据模板文件生成相关的内容
         :param testcases: 测试用例列表
-        :return: 多维数组  (序号	所属模块  用例名称	子模块名	前置条件	执行步骤	预期结果	需求ID  优先级)
+        :return: 多维数组  (序号 所属模块 用例名称  前置条件	执行步骤	预期结果  对应需求 是否自动化 优先级 修改记录 测试时间 测试人员 测试版本 测试结果 备注 )
         """
-        # 序号 所属模块 用例名称	子模块名	前置条件	执行步骤	预期结果  需求ID	优先级
+        # 序号 所属模块 用例名称  前置条件	执行步骤	预期结果  对应需求 是否自动化 优先级 修改记录 测试时间 测试人员 测试版本 测试结果 备注
         result = []
         for i, testcase in enumerate(testcases):
             index = i + 1
@@ -95,6 +95,7 @@ class StandardExcelSampleWriter(BaseWriter):
             pre_condition = self.__convert_pre_condition(testcase.pre_condition)
             actions = testcase.actions
             exceptions = testcase.exceptions
+            fix = testcase.fix
             steps = []
             exception_list = []
             # 只支持两种情况， actions有多个，exceptions只有一个，则表示exceptions对应actions的最后一个步骤
@@ -104,6 +105,11 @@ class StandardExcelSampleWriter(BaseWriter):
                 if len(actions) != len(exceptions):
                     if len(actions) > 1 and len(exceptions) != 1:
                         raise RuntimeError("多操作步骤必须一一对应期望结果或者仅对应一个期望结果")
+                    # 一个操作步骤对应多个期望结果
+                    elif len(actions) == 1 and len(exceptions) != 1:
+                        steps.append(f"{1}.{actions[0]}")
+                        for j, action in enumerate(exceptions):
+                            exception_list.append(f"{len(actions)}.{exceptions[j]}")
                     else:
                         for j, action in enumerate(actions):
                             steps.append(f"{j + 1}.{action}")
@@ -122,13 +128,13 @@ class StandardExcelSampleWriter(BaseWriter):
             priority = priority_config[int(testcase.priority)] if testcase.priority else ""
             requirement = "\n".join(testcase.requirement) if testcase.requirement else ""
             if testcase.automation is not None:
-                automation = "是" if testcase.automation else "否"
+                automation = "是"
             else:
-                automation = ""
+                automation = "否"
             test_result = testcase.test_result
             # *********************** 如果excel变化，需要修改这里 ***********************
             line = (index, testcase.category, test_case_name, pre_condition, steps_str, exceptions_str, requirement,
-                    automation, priority, "", "", "", test_result)
+                    automation, priority, fix, "", "", "", test_result, "")
             logger.debug(f"{index} line value is {line}")
             result.append(line)
         return result
