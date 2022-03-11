@@ -52,6 +52,43 @@ class GuiButtonTypeEnum(Enum):
 
 @unique
 class ModifyTypeEnum(Enum):
+    """
+    用于xmind转excel的判断fix类型
+    """
     FIX = "修改", "arrow-refresh"
     ADD = "增加", "symbol-plus"
     DELETE = "删除", "symbol-wrong"
+
+    @staticmethod
+    def from_name(flag_: str):
+        logger.debug(f"flag_ is {flag_}")
+        try:
+            for key, item in ModifyTypeEnum.__members__.items():
+                if flag_ is None:
+                    return None
+                if flag_.strip() == item.value[1]:
+                    return item.value[0]
+        except OSError:
+            return None
+
+
+@unique
+class ExcelXmindModifyTypeEnum(Enum):
+    """
+    用于excel转xmind的判断fix类型
+    """
+    FIX = "修改", "arrow-refresh"
+    ADD = "增加", "symbol-plus"
+    DELETE = "删除", "symbol-wrong"
+
+    @staticmethod
+    def from_name(flag_: str):
+        logger.debug(f"flag_ is {flag_}")
+        for key, item in ExcelXmindModifyTypeEnum.__members__.items():
+            try:
+                if flag_ is None:
+                    return None
+                if flag_.strip() == item.value[0]:
+                    return item.value[1]
+            except IOError:
+                return None

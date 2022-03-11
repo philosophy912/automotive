@@ -12,6 +12,7 @@ from typing import Dict, List
 from automotive.application.common.constants import Testcase, priority_config, point, index_list
 from automotive.application.common.interfaces import BaseReader, TestCases
 from automotive.logger.logger import logger
+from automotive.application.common.enums import ExcelXmindModifyTypeEnum
 
 try:
     import xlwings as xw
@@ -71,18 +72,27 @@ class StandardExcelSampleReader(BaseReader):
         :return: 测试用例
         """
         testcases = []
+        # 存放用例ID
+        tem = []
         max_row = sheet.used_range.last_cell.row
         for i in range(max_row + 1):
             if i > (self.__start_row - 1):
                 testcase = Testcase()
                 testcase.name = sheet.range(f"C{i}").value
+                index = testcase.name.split('_')[-1]
+                if not index.isdigit():
+                    raise RuntimeError(f"此条用例名称： {testcase.name} 缺少ID号，请添加")
+                tem.append(index)
                 testcase.module = sheet.range(f"B{i}").value
                 testcase.pre_condition = self.__parse_pre_condition(sheet.range(f"D{i}").value)
                 testcase.actions = self.__parse_actions(sheet.range(f"E{i}").value)
                 testcase.exceptions = self.__parse_exceptions(sheet.range(f"F{i}").value)
                 requirement = sheet.range(f"G{i}").value
                 testcase.requirement = requirement.split("\n") if requirement else None
+                fix_cell = sheet.range(f"J{i}").value
+                testcase.fix = ExcelXmindModifyTypeEnum.from_name(fix_cell)
                 automation_cell = sheet.range(f"H{i}").value
+                # automation_cell=空“”，automation=None； =是，automation=True；=other，automation=False,只有是，xmind才写入[A]
                 testcase.automation = automation_cell == "是" if automation_cell else None
                 priority_cell = sheet.range(f"I{i}").value
                 testcase.priority = priority_config[priority_cell] if priority_cell else None
@@ -90,6 +100,9 @@ class StandardExcelSampleReader(BaseReader):
                 testcase.test_result = test_result.strip().upper() if test_result else None
                 testcase.calc_hash()
                 testcases.append(testcase)
+        for i in tem:
+            if tem.count(i) > 1:
+                raise RuntimeError(f"此ID： {i} 有重复，请检查")
         return testcases
 
     @staticmethod
@@ -116,6 +129,8 @@ class StandardExcelSampleReader(BaseReader):
                 # 为了不去掉不带序号的前两个字符
                 if pre[0].isdecimal() and pre[:2] != '0x':
                     pre = pre[2:].strip()
+                if pre[:2] == "0x":
+                    pre = pre
                 logger.debug(f"pre  = {pre}")
                 if "$" in pre:
                     pre = pre.replace("$", "\r\n")

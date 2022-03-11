@@ -12,6 +12,7 @@ from automotive.application.common.constants import replace_char, split_char, Te
     module_prefix, automation_prefix, index_list
 from automotive.logger.logger import logger
 from automotive.application.common.interfaces import BaseReader, TestCases
+from automotive.application.common.enums import ModifyTypeEnum
 
 try:
     import xmind
@@ -211,8 +212,7 @@ class Xmind8SampleReader(BaseReader):
             testcases.append(testcase)
             # 解析优先级
             markers = tc.getMarkers()
-            # 解析修改记录
-            fix = None
+
             if len(markers) > 0:
                 # 可能存在优先级
                 for marker in markers:
@@ -224,14 +224,8 @@ class Xmind8SampleReader(BaseReader):
                         if priority > 4:
                             priority = 4
                         testcase.priority = priority
-                    # 解析修改项
-                    if marker_id == ModifyTypeEnum.ADD.value[1]:
-                        fix = ModifyTypeEnum.ADD.value[0]
-                    if marker_id == ModifyTypeEnum.DELETE.value[1]:
-                        fix = ModifyTypeEnum.DELETE.value[0]
-                    if marker_id == ModifyTypeEnum.FIX.value[1]:
-                        fix = ModifyTypeEnum.FIX.value[0]
-                    testcase.fix = fix
+                    fix_cell = ModifyTypeEnum.from_name(marker_id)
+                    testcase.fix = fix_cell
         # 判断ID是否为空
         for tem in template:
             if template.count(tem) > 1:
