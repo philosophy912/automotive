@@ -171,7 +171,8 @@ class StandardExcelSampleWriter(BaseWriter):
         if len(pre_conditions) > 0:
             contents = []
             for i, pre_condition in enumerate(pre_conditions):
-                contents.append(f"{i + 1} {pre_condition}")
+                # 解决excel中前提条件1 1的序号问题
+                contents.append(f"{pre_condition}")
             return "\n".join(contents)
         else:
             return ""

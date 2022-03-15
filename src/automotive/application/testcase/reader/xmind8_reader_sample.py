@@ -248,7 +248,11 @@ class Xmind8SampleReader(BaseReader):
             elif title.upper() in results:
                 result = title.upper()
             else:
-                exceptions.append(title)
+                # 为了解决，后面遇到sleep，前面带1的序号问题
+                if "sleep" in title:
+                    exceptions[-1] = exceptions[-1] + '\n' + title
+                else:
+                    exceptions.append(title)
         return requirements, exceptions, result
 
     def __handle_actions(self, actions: str):
