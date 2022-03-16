@@ -60,35 +60,18 @@ class ModifyTypeEnum(Enum):
     DELETE = "删除", "symbol-wrong"
 
     @staticmethod
-    def from_name(flag_: str):
+    def read_xmind_from_name(flag_: str):
         logger.debug(f"flag_ is {flag_}")
-        try:
-            for key, item in ModifyTypeEnum.__members__.items():
-                if flag_ is None:
-                    return None
-                if flag_.strip() == item.value[1]:
-                    return item.value[0]
-        except OSError:
-            return None
-
-
-@unique
-class ExcelXmindModifyTypeEnum(Enum):
-    """
-    用于excel转xmind的判断fix类型
-    """
-    FIX = "修改", "arrow-refresh"
-    ADD = "增加", "symbol-plus"
-    DELETE = "删除", "symbol-wrong"
+        for key, item in ModifyTypeEnum.__members__.items():
+            if flag_.strip() == item.value[1]:
+                return item.value[0]
+        raise ValueError(f"{flag_} can not be found in ModifyTypeEnum")
 
     @staticmethod
-    def from_name(flag_: str):
+    def read_excel_from_name(flag_: str):
         logger.debug(f"flag_ is {flag_}")
-        for key, item in ExcelXmindModifyTypeEnum.__members__.items():
-            try:
-                if flag_ is None:
-                    return None
-                if flag_.strip() == item.value[0]:
-                    return item.value[1]
-            except IOError:
-                return None
+        for key, item in ModifyTypeEnum.__members__.items():
+            if flag_.strip() == item.value[0]:
+                return item.value[1]
+        raise ValueError(f"{flag_} can not be found in ModifyTypeEnum")
+

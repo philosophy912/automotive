@@ -224,8 +224,12 @@ class Xmind8SampleReader(BaseReader):
                         if priority > 4:
                             priority = 4
                         testcase.priority = priority
-                    fix_cell = ModifyTypeEnum.from_name(marker_id)
-                    testcase.fix = fix_cell
+                    if marker_id is not None:
+                        try:
+                            fix_cell = ModifyTypeEnum.read_xmind_from_name(marker_id)
+                            testcase.fix = fix_cell
+                        except ValueError:
+                            logger.debug(f"{marker_id} is not ModifyTypeEnum")
         # 判断ID是否为空
         for tem in template:
             if template.count(tem) > 1:

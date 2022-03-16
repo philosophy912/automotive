@@ -90,7 +90,11 @@ class StandardExcelSampleReader(BaseReader):
                 requirement = sheet.range(f"G{i}").value
                 testcase.requirement = requirement.split("\n") if requirement else None
                 fix_cell = sheet.range(f"J{i}").value
-                testcase.fix = ExcelXmindModifyTypeEnum.from_name(fix_cell)
+                if fix_cell is not None:
+                    try:
+                        testcase.fix = ExcelXmindModifyTypeEnum.from_name(fix_cell)
+                    except ValueError:
+                        logger.debug(f"{fix_cell} is not ModifyTypeEnum")
                 automation_cell = sheet.range(f"H{i}").value
                 # automation_cell=空“”，automation=None； =是，automation=True；=other，automation=False,只有是，xmind才写入[A]
                 testcase.automation = automation_cell == "是" if automation_cell else None
