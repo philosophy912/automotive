@@ -173,13 +173,13 @@ class Xmind8SampleReader(BaseReader):
             # 去掉TC
             ts_title = title[2:]
             # 如果[A]在title里面，去掉[A],并加自动化标签
-            if ts_title.startswith(automation_prefix):
+            if automation_prefix in ts_title:
                 testcase.automation = True
                 ts_title = ts_title.replace(automation_prefix, "")
 
             # testcaseID inter(判断有没有加case-ID）
             if ts_title[0] is '<' and int(ts_title[1:ts_title.find('>')]):
-                # 为TC添加testcase-id
+                # 取出testcase-id
                 start_n = ts_title.find('<')
                 end_n = ts_title.find('>')
                 inter = ts_title[start_n + 1:end_n]
