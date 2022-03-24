@@ -12,7 +12,7 @@ from typing import Dict, List
 from automotive.application.common.constants import Testcase, priority_config, point, index_list
 from automotive.application.common.interfaces import BaseReader, TestCases
 from automotive.logger.logger import logger
-from automotive.application.common.enums import ExcelXmindModifyTypeEnum
+from automotive.application.common.enums import ModifyTypeEnum
 
 try:
     import xlwings as xw
@@ -92,7 +92,7 @@ class StandardExcelSampleReader(BaseReader):
                 fix_cell = sheet.range(f"J{i}").value
                 if fix_cell is not None:
                     try:
-                        testcase.fix = ExcelXmindModifyTypeEnum.from_name(fix_cell)
+                        testcase.fix = ModifyTypeEnum.read_excel_from_name(fix_cell)
                     except ValueError:
                         logger.debug(f"{fix_cell} is not ModifyTypeEnum")
                 automation_cell = sheet.range(f"H{i}").value
