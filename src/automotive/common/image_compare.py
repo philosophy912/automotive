@@ -178,6 +178,7 @@ class ImageCompare(object):
                          gray: bool,
                          threshold: int,
                          similarity: float,
+                         light_or_dark: bool = True,
                          is_break: bool = False,
                          is_area: bool = False):
         """
@@ -210,12 +211,16 @@ class ImageCompare(object):
         for image in target_images:
             logger.debug(f"now compare template_image[{template_image}] and target_image [{image}]")
             if self.__compare_image(template_image, image, positions, gray, threshold, similarity, is_area):
-                if is_break:
-                    logger.debug(f"break compare and return True")
-                    return True
+                if light_or_dark:
+                    if is_break:
+                        logger.debug(f"break compare and return True")
+                        return True
+                    else:
+                        logger.debug(f"compare success")
+                        count += 1
                 else:
-                    logger.debug(f"compre success")
-                    count += 1
+                    # 有一张图片对比相同，则表示对比有问题
+                    return False
         return count == len(target_images)
 
     def __compare_normal(self, compare_property: CompareProperty) -> bool:
@@ -240,12 +245,36 @@ class ImageCompare(object):
         threshold = compare_property.gray_threshold
         similarity = compare_property.similarity
         logger.debug(f"similarity is {similarity}")
-        if compare_property.type == CompareTypeEnum.LIGHT:
-            logger.trace("compare light template file")
-            return self.__compare_images(light_template, screen_shot_images, positions, gray, threshold, similarity)
-        else:
-            logger.trace("compare dark template file")
-            return self.__compare_images(dark_template, screen_shot_images, positions, gray, threshold, similarity)
+        logger.trace("compare light template file")
+        light_or_dark = (compare_property.type == CompareTypeEnum.LIGHT)
+        return self.__compare_images(template_image=light_template, target_images=screen_shot_images,
+                                     positions=positions, gray=gray, threshold=threshold, similarity=similarity,
+                                     light_or_dark=light_or_dark)
+
+    def __compare_dark(self, compare_property: CompareProperty) -> bool:
+        """
+        对比暗图
+
+        :param compare_property: 图像对比参数
+
+        :return:
+            True: 相同
+
+            False: 不同
+        """
+        screen_shot_images = compare_property.screen_shot_images
+        logger.debug(f"screen_shot_images = [{screen_shot_images}]")
+        light_template = compare_property.light_template
+        dark_template = compare_property.dark_template
+        positions = compare_property.positions
+        logger.debug(
+            f"light_template = {light_template} and dark_template = {dark_template} and positions = {positions}")
+        gray = compare_property.gray
+        threshold = compare_property.gray_threshold
+        similarity = compare_property.similarity
+        logger.debug(f"similarity is {similarity}")
+        logger.trace("compare dark template file")
+        return self.__compare_images(dark_template, screen_shot_images, positions, gray, threshold, similarity)
 
     def __compare_blink(self, compare_property: CompareProperty) -> bool:
         """

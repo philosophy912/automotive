@@ -9,11 +9,12 @@
 import os
 import re
 from time import sleep
-from typing import Tuple, List
+from typing import Tuple, List, Union
 
 from automotive.core.android.adb import ADB
 from automotive.logger.logger import logger
 from ..common.interfaces import BaseScreenShot
+from ..common.enums import ProjectEnum
 
 
 class HypervisorScreenShot(BaseScreenShot):
@@ -35,11 +36,18 @@ class HypervisorScreenShot(BaseScreenShot):
     则把全自动化测试变为半自动化测试
     """
 
-    def __init__(self, save_path: str, device_id: str = None, need_sync_space: bool = True):
+    def __init__(self, save_path: str, device_id: str = None,
+                 project: Union[ProjectEnum, str] = ProjectEnum.GSE_3J2):
         # 图片保存位置
         self.__path = save_path
         self.__adb = ADB()
-        self.__need_sync_space = need_sync_space
+        if isinstance(project, str):
+            for project_value in ProjectEnum:
+                if project_value.value[0] == project:
+                    self.__project = project_value
+        else:
+            self.__project = project
+        self.__need_sync_space = self.__project.value[1]
         if device_id:
             # 安卓device_id
             self.__device_id = device_id
@@ -84,10 +92,17 @@ class HypervisorScreenShot(BaseScreenShot):
 
         :param display 屏幕序号
         """
-        command = f"shell htalk shell 'screenshot -file=/{self.__path}/{image_name}'"
-        if display:
-            command = f"{command} -display={display}"
-        self.__adb_command(command)
+        if self.__need_sync_space:
+            command = f"shell htalk shell 'screenshot -file=/{self.__path}/{image_name}'"
+            if display:
+                command = f"{command} -display={display}"
+            self.__adb_command(command)
+            self.__sync_space()
+        else:
+            command = f"shell htalk shell 'screen_capture -file=/{self.__path}/{image_name}'"
+            if display:
+                command = f"{command} -display={display}"
+            self.__adb_command(command)
 
     def __screen_shot_area(self, image_name: str, position: Tuple[int, int, int, int], display: int = None):
         """

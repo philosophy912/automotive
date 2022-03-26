@@ -579,7 +579,7 @@ class CANService(Can):
                            expect_value: int,
                            msg_id: Optional[int] = None,
                            count: Optional[int] = None,
-                           exact: bool = True):
+                           exact: bool = True) -> bool:
         """
         检查signal的值是否符合要求
 
@@ -623,8 +623,9 @@ class CANService(Can):
 
     def send_random(self,
                     filter_sender: Optional[FilterNode] = None,
-                    cycle_time: Optional[int] = None, interval: float = 0.1,
-                    default_message: Optional[Dict[str, str]] = None,
+                    cycle_time: Optional[int] = None,
+                    interval: float = 0.1,
+                    default_message: Optional[Dict] = None,
                     filter_nm: bool = True,
                     filter_diag: bool = True):
         """

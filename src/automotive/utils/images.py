@@ -11,7 +11,7 @@ import numpy as np
 import imagehash
 from PIL import Image
 from airtest.aircv import NoModuleError
-from typing import List, Optional
+from typing import List, Optional, Union
 
 # 2960*1440设备 内存耗费： kaze (2GB) >> sift > akaze >> surf > brisk > brief > orb > tpl
 # 单纯效果,推荐程度： tpl > surf ≈ sift > kaze > brisk > akaze> brief > orb
@@ -20,7 +20,7 @@ from airtest.aircv.keypoint_matching import KAZEMatching, BRISKMatching, AKAZEMa
 from airtest.aircv.keypoint_matching_contrib import SIFTMatching, SURFMatching, BRIEFMatching, \
     NoMatchPointError
 from airtest.aircv.template_matching import TemplateMatching
-from .common.enums import FindTypeEnum, HammingCompareTypeEnum, CompareTypeEnum
+from .common.enums import FindTypeEnum, HammingCompareTypeEnum, ImageCompareTypeEnum
 from ..common.typehints import NumpyArray, Position, ImageFile, CompareResult, RGB, AirTestResult
 from ..logger.logger import logger
 
@@ -823,7 +823,7 @@ class Images(object):
         cv2.waitKey(time * 1000)
 
     def compare(self,
-                compare_type: CompareTypeEnum,
+                compare_type: Union[ImageCompareTypeEnum, str],
                 image1: ImageFile,
                 image2: ImageFile,
                 position1: Position,
@@ -843,11 +843,13 @@ class Images(object):
         :param is_convert: 当is_convert为True的时候，会把w,h转换成end_x, end_y
         :return: 对比的结果
         """
-        if compare_type == CompareTypeEnum.HAMMING:
+        if isinstance(compare_type, str):
+            compare_type = ImageCompareTypeEnum.from_value(compare_type)
+        if compare_type == ImageCompareTypeEnum.HAMMING:
             if threshold is None:
                 threshold = 10
             return self.compare_by_hamming_distance(img1=image1, img2=image2, threshold=threshold)
-        elif compare_type == CompareTypeEnum.PIXEL:
+        elif compare_type == ImageCompareTypeEnum.PIXEL:
             if threshold is None:
                 threshold = 70
             # same_percent: 相同像素点的百分比
@@ -860,7 +862,7 @@ class Images(object):
                                                                                   is_convert=is_convert)
             logger.info(f"compare {compare_type.value} same_percent is {same_percent}")
             return int(same_percent * 100) > threshold
-        elif compare_type == CompareTypeEnum.VAGUE:
+        elif compare_type == ImageCompareTypeEnum.VAGUE:
             compare_threshold = float(threshold / 100) if threshold else 0.7
             result = self.find_best_result_by_position(image1=image1, image2=image2, position1=position1,
                                                        position2=position2, threshold=compare_threshold, rgb=rgb,

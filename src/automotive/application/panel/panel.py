@@ -9,7 +9,7 @@
 import copy
 from time import sleep
 from tkinter import Frame, Button, NORMAL, DISABLED, W, BooleanVar, Checkbutton, Entry, Label, Tk, messagebox, \
-    HORIZONTAL, E
+    HORIZONTAL, E, PhotoImage, LEFT
 from tkinter.ttk import Combobox, Notebook, Separator
 from typing import List, Dict, Any, Union, Optional
 from automotive.logger.logger import logger
@@ -89,6 +89,8 @@ class TabFrame(Frame):
         self.column = 0
         # 布局显示
         self.pack()
+        # todo  64*64  3 3比较合适
+        # self.open_image = PhotoImage(file=rf"D:\Download\Chrome\打开 (1).png").subsample(3, 3)
         # 创建公共按钮
         if common_panel:
             self.create_common_widget()

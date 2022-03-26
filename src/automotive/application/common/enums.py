@@ -11,6 +11,24 @@ from automotive.logger.logger import logger
 
 
 @unique
+class ProjectEnum(Enum):
+    """
+    项目名称
+    """
+    # 项目名称   是否执行同步(sync)动作
+    GSE_3J2 = "3J2", True
+    GSE_3J320 = "3J320", True
+    CHANGAN_75A121 = "75A121", False
+
+    @staticmethod
+    def from_value(file: str):
+        for key, item in ProjectEnum.__members__.items():
+            if item.value[0].upper in key:
+                return item
+        raise ValueError(f"{file} can not be found in ProjectEnum")
+
+
+@unique
 class FileTypeEnum(Enum):
     """
     读文件的类型
@@ -74,4 +92,3 @@ class ModifyTypeEnum(Enum):
             if flag_.strip() == item.value[0]:
                 return item.value[1]
         raise ValueError(f"{flag_} can not be found in ModifyTypeEnum")
-

@@ -114,10 +114,17 @@ class HammingCompareTypeEnum(Enum):
 
 
 @unique
-class CompareTypeEnum(Enum):
+class ImageCompareTypeEnum(Enum):
     # 汉明距对比
     HAMMING = "hamming"
     # 像素对比
     PIXEL = "pixel"
     # 模糊对比
     VAGUE = "vague"
+
+    @staticmethod
+    def from_value(value: str):
+        for key, item in ImageCompareTypeEnum.__members__.items():
+            if value.upper() == item.value.upper():
+                return item
+        raise ValueError(f"{value} can not be found in {ImageCompareTypeEnum.__name__}")

@@ -61,12 +61,15 @@ class AndroidService(metaclass=Singleton):
     """
     _DEFAULT_TIME_OUT = 3
 
-    def __init__(self, tool_type: ToolTypeEnum):
+    def __init__(self, tool_type: Union[ToolTypeEnum, str]):
         self.adb = ADB()
-        self.__type = tool_type
-        if tool_type == ToolTypeEnum.APPIUM:
+        if isinstance(tool_type, str):
+            self.__type = ToolTypeEnum.from_value(tool_type)
+        else:
+            self.__type = tool_type
+        if self.__type == ToolTypeEnum.APPIUM:
             self.__client = AppiumClient()
-        elif tool_type == ToolTypeEnum.UIAUTOMATOR2:
+        elif self.__type == ToolTypeEnum.UIAUTOMATOR2:
             self.__client = UiAutomator2Client()
         else:
             raise TypeError(f"{tool_type} not support, only support APPIUM and UIAUTOMATOR2")
