@@ -229,7 +229,10 @@ pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
   其中这部分是新增的模块
 
   ```rst
-  CAN盒======================================.. automodule:: automotive.can   :members:
+  CAN盒
+  ======================================
+  .. automodule:: automotive.can
+     :members:
   ```
 
   

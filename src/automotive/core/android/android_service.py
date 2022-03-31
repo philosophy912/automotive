@@ -345,7 +345,7 @@ class AndroidService(metaclass=Singleton):
                            text: str,
                            exact_match: bool = False,
                            duration: Optional[float] = None,
-                           direct: SwipeDirectorEnum = SwipeDirectorEnum.UP,
+                           direct: Union[SwipeDirectorEnum, str] = SwipeDirectorEnum.UP,
                            swipe_time: Optional[int] = None,
                            swipe_percent: float = 0.8,
                            timeout: float = _DEFAULT_TIME_OUT,
@@ -379,6 +379,8 @@ class AndroidService(metaclass=Singleton):
 
             u2: 获取的是UiObject对象列表
         """
+        if isinstance(direct, str):
+            direct = SwipeDirectorEnum.from_value(direct)
         return self.__client.scroll_get_element(element=element, locator=locator, text=text, exact_match=exact_match,
                                                 duration=duration, direct=direct, swipe_time=swipe_time,
                                                 swipe_percent=swipe_percent, timeout=timeout, wait_time=wait_time)
@@ -389,7 +391,7 @@ class AndroidService(metaclass=Singleton):
                                      text: str,
                                      exact_match: bool = False,
                                      duration: Optional[float] = None,
-                                     direct: SwipeDirectorEnum = SwipeDirectorEnum.UP,
+                                     direct: Union[SwipeDirectorEnum, str] = SwipeDirectorEnum.UP,
                                      swipe_time: Optional[int] = None,
                                      swipe_percent: float = 0.8,
                                      timeout: float = _DEFAULT_TIME_OUT,
@@ -1052,7 +1054,7 @@ class AndroidService(metaclass=Singleton):
               swipe_element: LocatorElement,
               locator: Locator,
               duration: Optional[float] = None,
-              direction: SwipeDirectorEnum = SwipeDirectorEnum.UP,
+              direction: Union[SwipeDirectorEnum, str] = SwipeDirectorEnum.UP,
               swipe_time: Optional[int] = None,
               wait_time: Optional[float] = None,
               timeout: float = _DEFAULT_TIME_OUT,
@@ -1083,6 +1085,8 @@ class AndroidService(metaclass=Singleton):
         :param direction: 方向，只支持UP/DOWN/LEFT/RIGHT四个方向
 
         """
+        if isinstance(direction, str):
+            direction = SwipeDirectorEnum.from_name(direction)
         self.__client.swipe(swipe_element=swipe_element, locator=locator, duration=duration, direction=direction,
                             swipe_time=swipe_time, wait_time=wait_time, timeout=timeout, swipe_percent=swipe_percent)
 

@@ -157,11 +157,14 @@ class UiAutomator2Client(BaseAndroid):
             # display不支持，所以暂时要抛弃这个，貌似appium支持
             if key.lower() == ElementAttributeEnum.DISPLAYED.value:
                 attributes[item] = True
+                attributes[item.value] = True
             elif key.lower() == ElementAttributeEnum.TEXT.value:
                 attributes[item] = element.get_text()
+                attributes[item.value] = element.get_text()
             else:
                 logger.debug(f"key is {key} and item is {item} and value is {info[item.value]}")
                 attributes[item] = info[item.value]
+                attributes[item.value] = info[item.value]
         return attributes
 
     def scroll_get_element(self,

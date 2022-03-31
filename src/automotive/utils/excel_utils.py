@@ -232,7 +232,9 @@ class XlwingsExcelUtils(BaseExcelUtils):
 
 class ExcelUtils(BaseExcelUtils):
 
-    def __init__(self, type_: ExcelEnum = ExcelEnum.OPENPYXL):
+    def __init__(self, type_: Union[ExcelEnum, str] = ExcelEnum.OPENPYXL):
+        if isinstance(type_, str):
+            type_ = ExcelEnum.from_name(type_)
         if type_ == ExcelEnum.XLWINGS:
             self.__utils = XlwingsExcelUtils()
         elif type_ == ExcelEnum.OPENPYXL:
@@ -258,7 +260,7 @@ class ExcelUtils(BaseExcelUtils):
     def copy_sheet(self, workbook: wb, origin_sheet: str, target_sheet: str) -> sht:
         return self.__utils.copy_sheet(workbook, origin_sheet, target_sheet)
 
-    def delete_sheet(self, workbook: wb, sheet: Optional[str]):
+    def delete_sheet(self, workbook: wb, sheet: str):
         self.__utils.delete_sheet(workbook, sheet)
 
     def get_sheet_contents(self, sheet: sht, start_row: int = 1) -> List:

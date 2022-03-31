@@ -17,7 +17,7 @@ class ExcelEnum(Enum):
     @staticmethod
     def from_name(type_: str):
         for key, item in ExcelEnum.__members__.items():
-            if type_.strip() == item.value:
+            if type_.strip().upper() == item.value.upper():
                 return item
         raise ValueError(f"{type_} can not be found in ExcelReadEnum")
 
@@ -33,7 +33,7 @@ class SystemTypeEnum(Enum):
     @staticmethod
     def from_value(value: str):
         for key, item in SystemTypeEnum.__members__.items():
-            if value.upper() == item.value.upper():
+            if value.strip().upper() == item.value.upper():
                 return item
         raise ValueError(f"{value} can not be found in {SystemTypeEnum.__name__}")
 
@@ -59,7 +59,7 @@ class PinyinEnum(Enum):
     @staticmethod
     def from_value(value: str):
         for key, item in PinyinEnum.__members__.items():
-            if value.upper() == item.value.upper():
+            if value.strip().upper() == item.value.upper():
                 return item
         raise ValueError(f"{value} can not be found in {PinyinEnum.__name__}")
 
@@ -73,6 +73,13 @@ class EmailTypeEnum(Enum):
     SMTP = "smtp"
     # EXCHANGE模式
     EXCHANGE = "exchange"
+
+    @staticmethod
+    def from_value(value: str):
+        for key, item in EmailTypeEnum.__members__.items():
+            if value.strip().upper() == item.value.upper():
+                return item
+        raise ValueError(f"{value} can not be found in {EmailTypeEnum.__name__}")
 
 
 @unique
@@ -98,6 +105,13 @@ class FindTypeEnum(Enum):
     # 很快,效果垃圾
     ORB = "orb"
 
+    @staticmethod
+    def from_value(value: str):
+        for key, item in FindTypeEnum.__members__.items():
+            if value.strip().upper() == item.value.upper():
+                return item
+        raise ValueError(f"{value} can not be found in {FindTypeEnum.__name__}")
+
 
 @unique
 class HammingCompareTypeEnum(Enum):
@@ -112,6 +126,13 @@ class HammingCompareTypeEnum(Enum):
     # 感知哈希对比
     DEFAULT = "default"
 
+    @staticmethod
+    def from_value(value: str):
+        for key, item in HammingCompareTypeEnum.__members__.items():
+            if value.strip().upper() == item.value.upper():
+                return item
+        raise ValueError(f"{value} can not be found in {HammingCompareTypeEnum.__name__}")
+
 
 @unique
 class ImageCompareTypeEnum(Enum):
@@ -125,6 +146,6 @@ class ImageCompareTypeEnum(Enum):
     @staticmethod
     def from_value(value: str):
         for key, item in ImageCompareTypeEnum.__members__.items():
-            if value.upper() == item.value.upper():
+            if value.strip().upper() == item.value.upper():
                 return item
         raise ValueError(f"{value} can not be found in {ImageCompareTypeEnum.__name__}")

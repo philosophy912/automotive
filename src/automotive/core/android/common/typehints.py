@@ -20,7 +20,7 @@ Locator = Dict[str, str]
 #  str 文本定位， LocatorBy 属性定位
 LocatorElement = Union[str, Locator, WebElement, UiObject]
 ClickPosition = Tuple[int, int]
-Attributes = Dict[ElementAttributeEnum, bool]
+Attributes = Dict[Union[ElementAttributeEnum, str], bool]
 SwipeParam = Tuple[int, int, int, int, float]
 AppiumLocatorElement = Union[str, Locator, WebElement]
 U2LocatorElement = Union[str, Locator, UiObject]

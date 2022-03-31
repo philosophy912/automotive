@@ -311,23 +311,25 @@ class DbcParser(object):
         # BCU_BalnFlg105_RM 1 "Balance Closed" 0 "Balance Open"
         other = val[blank_index + 1:]
         logger.trace(f"parse blank_index other = [{other}]")
-        blank_index = other.index(self.BLANK)
-        signal_name = other[:blank_index]
-        # 1 "Balance Closed" 0 "Balance Open"
-        other = other[blank_index + 1:]
-        logger.trace(f"parse blank_index other = [{other}]")
-        values = dict()
-        while len(other) > 0:
-            quotation_index = other.index(self.QUOTATION)
-            key = other[:quotation_index].strip()
-            other = other[quotation_index + 1:].strip()
-            quotation_index = other.index(self.QUOTATION)
-            value = other[:quotation_index].strip()
-            other = other[quotation_index + 1:].strip()
-            values[key] = re.sub(self.TRIM_BLANK, self.BLANK, value)
-        message = self.__get_message_by_id(messages, message_id)
-        signal = self.__get_signal_by_name(message["signals"], signal_name)
-        signal["values"] = values
+        # 容错 这种情况  VAL_ 1059 AMP_NotSleep ;
+        if self.BLANK in other:
+            blank_index = other.index(self.BLANK)
+            signal_name = other[:blank_index]
+            # 1 "Balance Closed" 0 "Balance Open"
+            other = other[blank_index + 1:]
+            logger.trace(f"parse blank_index other = [{other}]")
+            values = dict()
+            while len(other) > 0:
+                quotation_index = other.index(self.QUOTATION)
+                key = other[:quotation_index].strip()
+                other = other[quotation_index + 1:].strip()
+                quotation_index = other.index(self.QUOTATION)
+                value = other[:quotation_index].strip()
+                other = other[quotation_index + 1:].strip()
+                values[key] = re.sub(self.TRIM_BLANK, self.BLANK, value)
+            message = self.__get_message_by_id(messages, message_id)
+            signal = self.__get_signal_by_name(message["signals"], signal_name)
+            signal["values"] = values
 
     def __set_ba_values(self, messages: List[Dict[str, Any]], attr_dict: Dict[str, Any], content: str):
         """

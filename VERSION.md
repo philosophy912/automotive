@@ -1,5 +1,13 @@
 ## 版本更新说明
 
+**V5.3.7**
+
+- 所有的枚举对象都增加了from_value方法
+- android service中涉及到枚举对象的都可以支持字符串输入
+- excel utils增加了枚举对象的字符串输入
+- image类修改图像对比枚举类为ImageCompareTypeEnum
+- 删除了doc相关的说明，只留下了DEVELOP.md文件
+
 **V5.3.6**
 
 - 修复了xmind转excel是否自动化的bug

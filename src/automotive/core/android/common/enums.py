@@ -16,10 +16,17 @@ class SwipeDirectorEnum(Enum):
 
     支持四个方向
     """
-    LEFT = 1
-    RIGHT = 2
-    UP = 3
-    DOWN = 4
+    LEFT = "LEFT"
+    RIGHT = "RIGHT"
+    UP = "UP"
+    DOWN = "DOWN"
+
+    @staticmethod
+    def from_name(type_: str):
+        for key, item in SwipeDirectorEnum.__members__.items():
+            if type_.strip().upper() == item.value.upper():
+                return item
+        raise ValueError(f"{type_} can not be found in SwipeDirectorEnum")
 
 
 @unique
@@ -29,15 +36,22 @@ class DirectorEnum(Enum):
 
     支持9个点的点击
     """
-    CENTER = 0
-    LEFT = 1
-    RIGHT = 2
-    TOP = 3
-    BOTTOM = 4
-    LEFT_TOP = 5
-    LEFT_BOTTOM = 6
-    RIGHT_TOP = 7
-    RIGHT_BOTTOM = 8
+    CENTER = "CENTER"
+    LEFT = "LEFT"
+    RIGHT = "RIGHT"
+    TOP = "TOP"
+    BOTTOM = "BOTTOM"
+    LEFT_TOP = "LEFT_TOP"
+    LEFT_BOTTOM = "LEFT_BOTTOM"
+    RIGHT_TOP = "RIGHT_TOP"
+    RIGHT_BOTTOM = "RIGHT_BOTTOM"
+
+    @staticmethod
+    def from_name(type_: str):
+        for key, item in DirectorEnum.__members__.items():
+            if type_.strip().upper() == item.value.upper():
+                return item
+        raise ValueError(f"{type_} can not be found in DirectorEnum")
 
 
 @unique
@@ -69,7 +83,7 @@ class ElementAttributeEnum(Enum):
         :return: 枚举对象本身
         """
         for key, item in ElementAttributeEnum.__members__.items():
-            if value.lower() == item.value.lower():
+            if value.strip().upper() == item.value.upper():
                 return item
         raise ValueError(f"{value} can not be found in ElementAttributeEnum")
 
@@ -94,7 +108,7 @@ class ToolTypeEnum(Enum):
         :return: 枚举对象本身
         """
         for key, item in ToolTypeEnum.__members__.items():
-            if value.lower() == item.value.lower():
+            if type_.strip().upper() == item.value.upper():
                 return item
         raise ValueError(f"{value} can not be found in ToolTypeEnum")
 

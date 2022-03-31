@@ -68,7 +68,7 @@ class Utils(metaclass=Singleton):
         return week
 
     @staticmethod
-    def convert_datetime_string(date_time: datetime, fmt: str = '%Y%m%d_%H%M%S'):
+    def convert_datetime_string(date_time: datetime, fmt: str = '%Y%m%d_%H%M%S') -> str:
         """
         转换时间为字符串
 
@@ -81,7 +81,7 @@ class Utils(metaclass=Singleton):
         return date_time.strftime(fmt)
 
     @staticmethod
-    def convert_string_datetime(date_time: str, fmt: str = '%Y%m%d_%H%M%S'):
+    def convert_string_datetime(date_time: str, fmt: str = '%Y%m%d_%H%M%S') -> datetime:
         """
         转换字符串为时间
 

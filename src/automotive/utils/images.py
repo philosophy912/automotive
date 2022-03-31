@@ -115,7 +115,8 @@ class Images(object):
             raise ValueError(f"start_y[{start_y}] >= end_y[{end_y}]")
 
     @staticmethod
-    def __check_cut_area(cut_start_x: int, cut_start_y: int, cut_end_x: int, cut_end_y: int, origin_width: int, origin_height: int):
+    def __check_cut_area(cut_start_x: int, cut_start_y: int, cut_end_x: int, cut_end_y: int, origin_width: int,
+                         origin_height: int):
         if cut_start_x < 0:
             raise ValueError(f"cut_start_x[{cut_start_x}] need > 0")
         if cut_start_y < 0:
@@ -490,7 +491,7 @@ class Images(object):
     def compare_by_hamming_distance(self,
                                     img1: Image,
                                     img2: Image,
-                                    compare_type: HammingCompareTypeEnum = HammingCompareTypeEnum.DEFAULT,
+                                    compare_type: Union[HammingCompareTypeEnum, str] = HammingCompareTypeEnum.DEFAULT,
                                     threshold: int = 10) -> bool:
         """
         比较两张图标(汉明距比较），并返回phash（感知哈希算法）， ahash（平均哈希算法），dhash（差异值哈希算法）
@@ -505,6 +506,8 @@ class Images(object):
 
         :return: a_hash p_hash d_hash
         """
+        if isinstance(compare_type, str):
+            compare_type = HammingCompareTypeEnum.from_value(compare_type)
         logger.debug(f"img1 = {img1} and img2 = {img2}")
         image1 = self.__get_image_nd_array(img1)
         image2 = self.__get_image_nd_array(img2)
@@ -682,7 +685,7 @@ class Images(object):
                          big_image: ImageFile,
                          threshold: float = 0.7,
                          rgb: bool = True,
-                         find_type: FindTypeEnum = FindTypeEnum.TEMPLATE) -> AirTestResult:
+                         find_type: Union[FindTypeEnum, str] = FindTypeEnum.TEMPLATE) -> AirTestResult:
         """
         查找小图是否在大图中匹配, 当小图在大图中无法找到，则返回None
 
@@ -718,6 +721,8 @@ class Images(object):
 
             }
         """
+        if isinstance(find_type, str):
+            find_type = FindTypeEnum.from_value(find_type)
         small_image = self.__get_image_nd_array(small_image)
         big_image = self.__get_image_nd_array(big_image)
         return self.__find_by_template(small_image, big_image, threshold=threshold, rgb=rgb, find_type=find_type)
@@ -826,7 +831,7 @@ class Images(object):
                 compare_type: Union[ImageCompareTypeEnum, str],
                 image1: ImageFile,
                 image2: ImageFile,
-                position1: Position,
+                position1: Optional[Position] = None,
                 position2: Optional[Position] = None,
                 threshold: Optional[int] = None,
                 rgb: bool = True,

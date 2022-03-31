@@ -375,6 +375,7 @@ class AppiumClient(BaseAndroid):
                 value = element.get_attribute(attr)
             logger.trace(f"The {attr} attribute is {value}")
             attributes[ElementAttributeEnum.from_value(attr)] = True if value == "true" else False
+            attributes[attr] = True if value == "true" else False
         return attributes
 
     def scroll_get_element(self,
