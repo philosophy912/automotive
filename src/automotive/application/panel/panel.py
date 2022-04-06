@@ -9,7 +9,7 @@
 import copy
 from time import sleep
 from tkinter import Frame, Button, NORMAL, DISABLED, W, BooleanVar, Checkbutton, Entry, Label, Tk, messagebox, \
-    HORIZONTAL, E, PhotoImage, LEFT
+    HORIZONTAL, E , PhotoImage, LEFT
 from tkinter.ttk import Combobox, Notebook, Separator
 from typing import List, Dict, Any, Union, Optional
 from automotive.logger.logger import logger
@@ -19,7 +19,7 @@ from .reader import ConfigReader
 from .reader import check_buttons, thread_buttons, comboxs, entries, buttons, receive_buttons
 from ..common.constants import OPEN_DEVICE, CLOSE_DEVICE, CLEAR_STACK, DEFAULT_MESSAGE, BUS_LOST, \
     MESSAGE_LOST, TEXT, ON, OFF, VALUES, ACTIONS, COMMON, CHECK_MSGS, CHECK_MESSAGE, SIGNAL_NAME, \
-    SIGNAL_VALUE, SIGNAL_VALUES, SEARCH_COUNT, EXACT_SEARCH, YES_OR_NO, CHECK_SIGNAL
+    SIGNAL_VALUE, SIGNAL_VALUES, SEARCH_COUNT, EXACT_SEARCH, YES_OR_NO, CHECK_SIGNAL, A_SIGNAL_NAME
 from ...utils.common.enums import ExcelEnum
 
 
@@ -62,7 +62,7 @@ class TabFrame(Frame):
         # 设置多线程按钮框（thread_buttons）默认宽度
         self.__thread_buttons_width = 20
         # 设置按钮（button）默认宽度
-        self.__buttons_width = 20
+        self.__buttons_width = 24
         # 设置输入框（entrie)默认宽度
         self.__entrie_width = 10
         # 输入框支持的事件列表
@@ -224,7 +224,7 @@ class TabFrame(Frame):
         :return:
         """
         self.column = 0
-        text_name, show_name = SIGNAL_NAME
+        text_name, show_name = A_SIGNAL_NAME
         Label(self, text=show_name).grid(row=self.row, column=self.column, sticky=W)
         self.column += 1
         self.entries[text_name] = Entry(self, width=20)  # 等同于signal_name = Entry
@@ -259,6 +259,7 @@ class TabFrame(Frame):
         open_text_name = OPEN_DEVICE[0]
         close_text_name = CLOSE_DEVICE[0]
         signal_name_text_name = SIGNAL_NAME[0]
+        a_signal_name_text_name = A_SIGNAL_NAME[0]
         signal_value_text_name = SIGNAL_VALUE[0]
         signal_values_text_name = SIGNAL_VALUES[0]
         search_count_text_name = SEARCH_COUNT[0]
@@ -299,8 +300,8 @@ class TabFrame(Frame):
                 # 选中第一个则表示是True
                 exact_search = (index == 0)
                 stack = self.can_service.get_stack()
-                result = self.can_service.check_signal_value(stack, signal_name, signal_value, search_count,
-                                                             exact_search)
+                result = self.can_service.check_signal_value(stack=stack, signal_name =signal_name, expect_value=signal_value, count=search_count,
+                                                             exact=exact_search)
                 show_message = "成功" if result else "失败"
                 exact_message = "精确" if exact_search else "不精确"
                 message = f"检查信号【{signal_name}】值为【{signal_value}】收到次数" \
@@ -315,7 +316,7 @@ class TabFrame(Frame):
             self.buttons[text_name]["state"] = NORMAL
         elif button_type == CHECK_SIGNAL:
             # 获取signal name
-            signal_name = self.entries[signal_name_text_name].get().strip()
+            signal_name = self.entries[a_signal_name_text_name].get().strip()
             # 检测信号值是否已经发送过，并返回检测到的信号值 result
             stack = self.can_service.get_stack()
 
@@ -360,7 +361,8 @@ class TabFrame(Frame):
                                  offvalue=False,
                                  command=lambda x=function_name: self.__check_button_event(x),
                                  width=self.__checkBut_width,
-                                 anchor="w"
+                                 anchor="w",wraplength=150,justify="left"
+
                                  )
             self.check_buttons[function_name] = button
             logger.debug(f"row = {self.row}, column = {self.column}, index = {index}")
@@ -407,7 +409,7 @@ class TabFrame(Frame):
             values = list(value[VALUES].keys())
             logger.debug(f"row = {self.row}, column = {self.column}, index = {index}")
             # 创建Label框
-            Label(self, text=text_name, width=self.__label_width, anchor="w").grid(row=self.row, column=self.column,
+            Label(self, text=text_name, width=self.__label_width, anchor="w",wraplength=180,justify="left").grid(row=self.row, column=self.column,
                                                                                    sticky=W)
             # 创建下拉框
             self.comboxs[function_name] = Combobox(self, values=values, state="readonly", width=self.__comboxs_width)
@@ -467,7 +469,7 @@ class TabFrame(Frame):
                 self.column += 1
             logger.debug(f"row = {self.row}, column = {self.column}, index = {index}")
             # 获取输入框的名称
-            Label(self, text=text_name, width=self.__label_width, anchor="w").grid(row=self.row, column=self.column,
+            Label(self, text=text_name, width=self.__label_width, anchor="w",wraplength=180,justify="left").grid(row=self.row, column=self.column,
                                                                                    sticky=W)
             # 创建输入框
             self.entries[function_name] = Entry(self, width=self.__entrie_width)
@@ -559,7 +561,7 @@ class TabFrame(Frame):
                                  offvalue=False,
                                  command=lambda x=function_name: self.__thread_check_button_event(x),
                                  width=self.__thread_buttons_width,
-                                 anchor="w"
+                                 anchor="w",wraplength=180,justify="left"
 
                                  )
             self.thread_buttons[function_name] = button
@@ -635,7 +637,7 @@ class TabFrame(Frame):
             # 创建CheckButton对象并放到thread_buttons中方便调用
             self.buttons[function_name] = Button(self, text=text_name,
                                                  command=lambda x=function_name: self.__thread_button_event(x),
-                                                 width=self.__buttons_width)
+                                                 width=self.__buttons_width,wraplength=170,justify="left",anchor="w")
             logger.debug(f"row = {self.row}, column = {self.column}, index = {index}")
             self.buttons[function_name].grid(row=self.row, column=self.column, sticky=W)
             index += 1
@@ -698,7 +700,7 @@ class TabFrame(Frame):
         msg_id, signal_name, signal_value, count, expect_value = check_msgs
         try:
             stack = self.can_service.get_stack()
-            result = self.can_service.check_signal_value(stack, msg_id, signal_name, signal_value, count, expect_value)
+            result = self.can_service.check_signal_value(stack=stack, msg_id=msg_id, signal_name=signal_name, expect_value=signal_value, count=count, exact=expect_value)
             show_message = "成功" if result else "失败"
             exact_message = "精确" if expect_value else "不精确"
             message = f"检查【{hex(msg_id)}】中信号【{signal_name}】值为【{signal_value}】收到次数" \
@@ -711,6 +713,7 @@ class TabFrame(Frame):
             logger.error(e)
             messagebox.showerror(title="出错了", message=f"【{e}】")
         finally:
+            self.can_service.clear_stack_data()
             self.buttons[function_name]["state"] = NORMAL
 
 
@@ -721,7 +724,9 @@ class Gui(object):
                  data_rate: Union[BaudRateEnum, int] = BaudRateEnum.DATA,
                  channel_index: int = 1,
                  filter_nodes: Optional[List[str]] = None, can_fd: bool = False,
-                 excel_type: ExcelEnum = ExcelEnum.OPENPYXL, max_workers: int = 500, max_line_count: int = 8):
+                 excel_type: ExcelEnum = ExcelEnum.OPENPYXL,
+                 max_workers: int = 500,
+                 max_line_count: int = 8):
         """
 
         :param excel_file: Excel文件路径 （必填项）
@@ -739,6 +744,7 @@ class Gui(object):
         self.can_service = CANService(dbc, can_box_device=can_box_device, baud_rate=baud_rate, data_rate=data_rate,
                                       channel_index=channel_index, can_fd=can_fd, max_workers=max_workers)
         # 默认消息发送要过滤的节点
+        
         self.__filter_nodes = filter_nodes
         # 获取按钮
         service = ConfigReader(excel_type)

@@ -66,6 +66,7 @@ SEARCH_COUNT = "search_count", "出现次数"
 SIGNAL_VALUE = "signal_value", "信号值"
 SIGNAL_VALUES = "signal_values", "信号值"
 SIGNAL_NAME = "signal_name", "信号名称"
+A_SIGNAL_NAME = "a_signal_name", "信号名称"
 COMMON = "公共"
 YES_OR_NO = "是", "否"
 

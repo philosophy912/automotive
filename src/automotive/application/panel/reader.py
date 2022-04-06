@@ -32,7 +32,8 @@ class ConfigReader(object):
     def read_from_file(self, file: str) -> Dict[str, Dict[str, Any]]:
         result = dict()
         wb = self.__utils.open_workbook(file)
-        sheet = self.__utils.get_sheet(wb, "sheet")
+        sheets = self.__utils.get_sheets(wb)
+        sheet = sheets[0]
         configs = self.__parse(sheet)
         # 先区分tab
         tabs = self._split_tabs(configs)
