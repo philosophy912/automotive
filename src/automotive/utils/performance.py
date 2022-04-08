@@ -257,6 +257,31 @@ class Performance(object):
         else:
             raise RuntimeError("get memory failed")
 
+    @staticmethod
+    def __get_android_app_memory(app_name: str) -> Tuple[str, str]:
+        keyword1 = "TOTAL PSS:"
+        keyword2 = "TOTAL RSS:"
+        keyword3 = "TOTAL SWAP (KB):"
+        command = f"adb shell dumpsys meminfo {app_name}"
+        pss = None
+        rss = None
+        stdout, stderr = Utils.exec_command_with_output(command)
+        contents = list(map(lambda x: x.replace("\r\n", "").replace("\r", "").strip(), stdout.split("\n")))
+        # TODO 测试代码
+        # contents.append("TOTAL PSS:    10447            TOTAL RSS:    92168      TOTAL SWAP (KB):        0")
+        for content in contents:
+            if keyword1 in content and keyword2 in content and keyword3 in content:
+                logger.debug(content)
+                pss = content[len(keyword1) + 1:].strip().split(keyword2)[0].strip()
+                rss = content[len(keyword1) + 1:].strip().split(keyword2)[1].strip().split(keyword3)[0].strip()
+        if pss and rss:
+            return pss, rss
+        else:
+            # return -1表示没有获取到数据，避免出错
+            logger.warning("get memory failed")
+            return "-1", "-1"
+            # raise RuntimeError("get memory failed")
+
     def __get_android_cpu(self) -> str:
         command = "adb shell top -n 1"
         stdout, stderr = Utils.exec_command_with_output(command)
@@ -267,10 +292,39 @@ class Performance(object):
         logger.debug(f"cpu value is {cpu}")
         return f"{cpu}"
 
-    def __get_android_data(self) -> Tuple[float, int, int]:
-        cpu_use = self.__get_android_cpu()
-        total, used = self.__get_android_memory()
-        return float(cpu_use), self.__get_mb(used), self.__get_mb(total)
+    @staticmethod
+    def __get_android_app_cpu(app_name: str) -> str:
+        command = f"adb shell COLUMNS=512 top -b -n 1 | grep \"{app_name}\""
+        stdout, stderr = Utils.exec_command_with_output(command)
+        cpu_use = None
+        contents = list(map(lambda x: x.replace("\r\n", "").replace("\r", "").strip(), stdout.split("\n")))
+        # TODO 测试代码
+        # contents.append(f"5777 u10_system   20   0  15G  84M  47M S  0.0   1.3   0:00.12 {app_name}")
+        # contents.append(f"5752 u10_system   20   0  15G 114M  71M S  0.0   1.7   0:00.48 {app_name}:111")
+        for content in contents:
+            if content.endswith(app_name):
+                content = content[:-len(app_name)].strip()
+                locator = "0:00.48"
+                content = content[:-len(locator)].strip()
+                cpu_use = content.split(" ")[-1]
+                logger.debug(f"cpu_use is {cpu_use}")
+        if cpu_use:
+            return cpu_use
+        else:
+            # return -1表示没有获取到数据，避免出错
+            logger.warning("get cpu failed")
+            return "-1"
+            # raise RuntimeError("get cpu failed")
+
+    def __get_android_data(self, app_name: str = None) -> Tuple[float, int, int]:
+        if app_name:
+            cpu_use = self.__get_android_app_cpu(app_name)
+            total, used = self.__get_android_app_memory(app_name)
+            return float(cpu_use), int(total), int(used)
+        else:
+            cpu_use = self.__get_android_cpu()
+            total, used = self.__get_android_memory()
+            return float(cpu_use), self.__get_mb(used), self.__get_mb(total)
 
     def __get_linux_data(self) -> Tuple[float, int, int]:
         """
@@ -352,7 +406,7 @@ class Performance(object):
 
     def get_hypervisor_android_performance(self, count: int) -> str:
         """
-        后取安卓的相关性能
+        获取安卓的相关性能
 
         :param count: 测试次数
 
@@ -406,3 +460,24 @@ class Performance(object):
         cpu_use, memory_percent, use_memory, total_memory = self.__calc_datum(datum)
         pre = "单QNX的性能"
         return self.__show_data(pre, cpu_use, memory_percent, use_memory, total_memory)
+
+    def get_hypervisor_android_memory_by_app(self, app_name: str, count: int) -> Tuple[float, int, int]:
+        """
+        获取安卓的相关性能（针对APP）
+        :param app_name:  app的包名
+        :param count: 测试次数
+        :return:
+        """
+        total_rss = 0
+        total_pss = 0
+        total_cpu = 0
+        for i in range(count):
+            logger.debug(f"第{i + 1}次获取数据")
+            cpu_use, rss, pss = self.__get_android_data(app_name)
+            total_rss += rss
+            total_pss += pss
+            total_cpu += cpu_use
+        average_rss = int(total_rss / count)
+        average_pss = int(total_pss / count)
+        average_cpu = float(total_cpu / count)
+        return average_cpu, average_rss, average_pss
