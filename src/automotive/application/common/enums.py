@@ -92,3 +92,17 @@ class ModifyTypeEnum(Enum):
             if flag_.strip() == item.value[0]:
                 return item.value[1]
         raise ValueError(f"{flag_} can not be found in ModifyTypeEnum")
+
+
+@unique
+class RelayTypeEnum(Enum):
+    USB = "USB"
+    SERIAL = "SERIAL"
+
+    @staticmethod
+    def from_name(type_: str):
+        logger.debug(f"type_ is {type_}")
+        for key, item in RelayTypeEnum.__members__.items():
+            if type_.strip().upper() == item.value.upper():
+                return item
+        raise ValueError(f"{type_} can not be found in RelayTypeEnum")

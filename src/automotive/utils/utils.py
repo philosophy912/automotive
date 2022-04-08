@@ -541,3 +541,18 @@ class Utils(metaclass=Singleton):
         else:
             cmd = f"rm -rvf {folder_name}"
         self.exec_command(cmd, sub_process=flag)
+
+    @staticmethod
+    def to_hex_list(number_list: List[int]) -> List[str]:
+        """
+        把int列表转换成十六进制字符串列表
+        :param number_list: 数字列表， 当十六进制数字小于16的时候，即1位数的时候，自动补零
+        :return:
+        """
+        commands = []
+        for command_value in number_list:
+            hex_value = hex(command_value)[2:]
+            if len(hex_value) != 2:
+                hex_value = f"0{hex_value}"
+            commands.append(hex_value)
+        return commands
