@@ -8,7 +8,7 @@
 # --------------------------------------------------------
 import os
 from abc import ABCMeta, abstractmethod
-from typing import List, Union
+from typing import List, Union, Dict
 
 try:
     import xlwings as xw
@@ -68,6 +68,15 @@ class BaseExcelUtils(metaclass=ABCMeta):
         获取所有的sheet
         :param workbook workbook
         :return: sheet对象集合
+        """
+        pass
+
+    @abstractmethod
+    def get_sheet_dict(self, workbook: wb) -> Dict[str, sht]:
+        """
+        字典类型获取sheet
+        :param workbook: workbook
+        :return: sheet对象字典对象， [sheet的名字， sheet本身]
         """
         pass
 

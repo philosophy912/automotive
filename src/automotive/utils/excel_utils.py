@@ -6,7 +6,7 @@
 # @Author:      lizhe
 # @Created:     2021/12/25 - 22:18
 # --------------------------------------------------------
-from typing import List, Optional, Union
+from typing import List, Optional, Union, Dict
 from automotive.utils.common.interfaces import BaseExcelUtils, wb, sht, cell_range
 import xlwings as xw
 import openpyxl
@@ -34,6 +34,13 @@ class OpenpyxlExcelUtils(BaseExcelUtils):
 
     def get_sheets(self, workbook: Workbook) -> List:
         return workbook.worksheets
+
+    def get_sheet_dict(self, workbook: wb) -> Dict[str, sht]:
+        sheet_dict = dict()
+        sheets = self.get_sheets(workbook)
+        for sheet in sheets:
+            sheet_dict[sheet.title] = sheet
+        return sheet_dict
 
     def get_sheet(self, workbook: Workbook, sheet_name: str) -> Worksheet:
         return workbook.get_sheet_by_name(sheet_name)
@@ -86,7 +93,7 @@ class OpenpyxlExcelUtils(BaseExcelUtils):
         if isinstance(column_index, str):
             column_index = self._get_column_index(column_index)
         value = sheet.cell(row_index, column_index).value
-        logger.debug(f"cell[{row_index}, {column_index}] = {value}")
+        logger.trace(f"cell[{row_index}, {column_index}] = {value}")
         return value
 
     def set_cell_value(self, sheet: Worksheet, row_index: int, column_index: Union[str, int], value: str,
@@ -144,6 +151,13 @@ class XlwingsExcelUtils(BaseExcelUtils):
 
     def close_workbook(self, workbook: Book):
         self.__app.kill()
+
+    def get_sheet_dict(self, workbook: wb) -> Dict[str, sht]:
+        sheet_dict = dict()
+        worksheets = self.get_sheets(workbook)
+        for worksheet in worksheets:
+            sheet_dict[worksheet.name] = worksheet
+        return sheet_dict
 
     def get_sheets(self, workbook: Book) -> List[Sheet]:
         return workbook.sheets
@@ -250,6 +264,9 @@ class ExcelUtils(BaseExcelUtils):
 
     def open_workbook(self, file: str) -> wb:
         return self.__utils.open_workbook(file)
+
+    def get_sheet_dict(self, workbook: wb) -> Dict[str, sht]:
+        return self.__utils.get_sheet_dict(workbook)
 
     def get_sheets(self, workbook: wb) -> List[sht]:
         return self.__utils.get_sheets(workbook)
