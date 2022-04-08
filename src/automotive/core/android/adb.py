@@ -6,6 +6,7 @@
 # @Author:      lizhe
 # @Created:     2021/5/1 - 23:47
 # --------------------------------------------------------
+import os
 import platform
 import subprocess as sp
 from time import sleep
@@ -180,6 +181,32 @@ class ADB(object):
         """
         self.__adb_command(f"shell input keyevent {key_code.value}", device_id)
         sleep(0.1)
+
+    def screen_cap(self, file_name: str, android_folder: str = "sdcard", device_id: Optional[str] = None):
+        """
+        截图并拉取到本地
+        :param file_name: 文件名，全路径
+        :param android_folder: 安卓系统内部路径
+        :param device_id: 设备变好
+        """
+        logger.debug("目前不支持拉取文件到window根目录")
+        folder, image_name = os.path.split(file_name)
+        if folder == "":
+            folder = os.getcwd()
+        else:
+            if folder.count("\\") == 1:
+                folder = os.getcwd()
+        if not image_name.endswith("jpg"):
+            if "." in image_name:
+                image_name = image_name.split(".")[0] + ".jpg"
+            else:
+                image_name = f"{image_name}.jpg"
+        remote_path = f"/{android_folder}/{image_name}"
+        logger.info(f"remote_path is {remote_path}")
+        self.__adb_command(f"shell screencap -p {remote_path}", device_id)
+        sleep(1)
+        logger.info(f"file{image_name} will be pull in {folder}")
+        self.pull(remote_path, folder, device_id)
 
     def screen_shot(self, image_name: str, count: int, interval_time: float = 0.1, display: Optional[int] = None,
                     device_id: Optional[str] = None):
