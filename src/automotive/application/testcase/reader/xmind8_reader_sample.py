@@ -167,7 +167,6 @@ class Xmind8SampleReader(BaseReader):
                 else:
                     pre_conditions.append(module_str)
             testcase.pre_condition = pre_conditions
-            testcase.module = split_char.join(modules)
             title = tc.getTitle()
             # testcaseID inter(判断有没有加case-ID）
             # 去掉TC

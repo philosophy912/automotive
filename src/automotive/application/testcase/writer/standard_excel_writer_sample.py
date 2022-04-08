@@ -109,7 +109,7 @@ class StandardExcelSampleWriter(BaseWriter):
                     elif len(actions) == 1 and len(exceptions) != 1:
                         steps.append(f"{1}.{actions[0]}")
                         for j, action in enumerate(exceptions):
-                            exception_list.append(f"{len(actions)}.{exceptions[j]}")
+                            exception_list.append(f"{len(actions)}.{j+1} {exceptions[j]}")
                     else:
                         for j, action in enumerate(actions):
                             steps.append(f"{j + 1}.{action}")
