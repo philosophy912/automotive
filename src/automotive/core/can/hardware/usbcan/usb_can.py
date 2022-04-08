@@ -14,7 +14,7 @@ from ctypes import c_int, byref, POINTER, memmove, c_long, CDLL
 from time import time
 from platform import architecture
 from inspect import stack
-from typing import Tuple, Any, List
+from typing import Tuple, Any, List, Optional
 
 from automotive.core.can.hardware.usbcan.usb_can_basic import band_rate_list, VciInitConfig, UCHAR, DWORD, UINT, BYTE, \
     VciCanObj, VciBoardInfo
@@ -187,7 +187,7 @@ class UsbCanDevice(BaseCanDevice):
         return self.__lib_can.VCI_InitCAN(self.__device_type, self.__device_index, self.__can_index, byref(init_config))
 
     def __data_package(self, frame_length: int, message_id: int, time_flag: int, send_type: int, remote_flag: int,
-                       external_flag: int, data_length: int, data: list, reserve: List[Any]):
+                       external_flag: int, data_length: int, data: list, reserve: Optional[List]):
         """
         组包CAN发送数据，供VCI_Transmit函数使用。
 
@@ -440,9 +440,20 @@ class UsbCanDevice(BaseCanDevice):
         :param message: Message
 
         """
-        p_send = self.__data_package(message.frame_length, message.msg_id, message.time_flag, message.usb_can_send_type,
-                                     message.remote_flag, message.external_flag, message.data_length, message.data,
-                                     message.reserved)
+        #################################################################################
+        # USB MESSAGE独特的部分
+        usb_can_send_type = 1
+        # USB CAN特有的属性
+        time_flag = 1
+        # USB CAN特有的属性
+        remote_flag = 0
+        # USB CAN特有的属性
+        external_flag = 0
+        # 信号保留字
+        reserved = None
+        p_send = self.__data_package(message.frame_length, message.msg_id, time_flag, usb_can_send_type,
+                                     remote_flag, external_flag, message.data_length, message.data,
+                                     reserved)
         self.__lib_can.VCI_Transmit.restype = DWORD
         try:
             ret = self.__lib_can.VCI_Transmit(self.__device_type, self.__device_index, self.__can_index, byref(p_send),
