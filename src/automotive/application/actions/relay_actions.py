@@ -7,16 +7,25 @@
 # @Created:     2021/5/2 - 0:02
 # --------------------------------------------------------
 from time import sleep
+from typing import Union
+
 from automotive.logger.logger import logger
-from automotive.utils.usb_relay import USBRelay
+from automotive.utils.usb_relay import USBRelay, SerialRelay
+from ..common.enums import RelayTypeEnum
 from ..common.interfaces import BasePowerActions
 
 
 class RelayActions(BasePowerActions):
 
-    def __init__(self):
+    def __init__(self, relay_type: Union[RelayTypeEnum, str] = RelayTypeEnum.USB, port: str = None,
+                 baud_rate: int = 9600):
         super().__init__()
         self.__relay = None
+        if isinstance(relay_type, str):
+            relay_type = RelayTypeEnum.from_name(relay_type)
+        self.__relay_type = relay_type
+        self.__port = port
+        self.__baud_rate = baud_rate
 
     @property
     def relay(self):
@@ -27,7 +36,13 @@ class RelayActions(BasePowerActions):
         打开继电器
         """
         logger.info(f"初始化继电器模块")
-        self.__relay = USBRelay()
+        if self.__relay_type == RelayTypeEnum.USB:
+            self.__relay = USBRelay()
+        else:
+            if self.__port:
+                self.__relay = SerialRelay(port=self.__port, baud_rate=self.__baud_rate)
+            else:
+                raise RuntimeError("使用串口式继电器请初始化的时候填写串口端口号")
         self.__relay.open_relay_device()
         logger.info(f"*************继电器模块初始化成功*************")
 

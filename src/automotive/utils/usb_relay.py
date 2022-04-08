@@ -10,9 +10,13 @@ import sys
 import os
 import platform
 from ctypes import c_char_p, c_int, byref, c_uint64, Structure, POINTER, CDLL
+from functools import reduce
+from typing import List
 
 from ..common.constant import check_connect, relay_tips
 from ..logger.logger import logger
+from .serial_port import SerialPort
+from .utils import Utils
 
 # C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\amd64> cl /LD needforspeed.c /o nfs.dll
 
@@ -32,111 +36,6 @@ UsbRelayDeviceInfo._fields_ = [('serial_number', c_char_p),
                                ('device_path', c_char_p),
                                ('type', c_int),
                                ('next', POINTER(UsbRelayDeviceInfo))]
-
-
-class USBRelay(object):
-    """
-    USB继电器基础类，利用ctypes操作dll文件
-
-    使用方法：
-
-    1、使用open_relay_device打开继电器，
-
-    2、并根据通道使用one_relay_channel_on/off选择某一个通道进行开关操作，或者使用all_relay_channel_on/off进行全部的开关操作
-
-    3、完成后调用close_relay_device关闭继电器
-
-    特别注意：
-
-    进行第二步即打开继电器的时候，需要一定的时间，建议的延时时间为1s，否则继电器可能没有实际打开
-    """
-
-    def __init__(self):
-        self.__lib = _LibUsbRelay()
-        self.__handle = None
-        self.__is_open = False
-        self.__channel_count = 0
-
-    def open_relay_device(self):
-        """
-        初始化继电器，并通过继电器的serial号打开该继电器。
-        在需要使用继电器时，必须先调用该接口。
-        """
-        if not self.__is_open:
-            ret = self.__lib.usb_relay_init()
-            logger.debug(f"ret = [{ret}]")
-            if not ret:
-                try:
-                    dev = self.__lib.usb_relay_device_enumerate()
-                    logger.debug(f"dev = [{dev}]")
-                    if dev:
-                        self.__channel_count = dev[0]["type"]
-                        serial_number = dev[0]['serial_number']
-                        self.__handle = self.__lib.usb_relay_device_open_with_serial_number(serial_number)
-                        logger.debug(f"handler: {self.__handle}, type is {type(self.__handle)}")
-                        self.__is_open = True
-                except Exception:
-                    raise RuntimeError("usb relay init failed")
-
-    def close_relay_device(self):
-        """
-        关闭继电器，测试完毕调用该接口。
-        """
-        if self.__handle:
-            self.__lib.usb_relay_device_close(self.__handle)
-            exit_result = self.__lib.usb_relay_exit()
-            if exit_result == 0:
-                self.__is_open = False
-            else:
-                self.__is_open = True
-
-    @check_connect("__is_open", relay_tips)
-    def one_relay_channel_on(self, channel_index: int):
-        """
-        闭合继电器的某一个开关。
-
-        :param channel_index: 继电器的开关编号。(从1开始)
-        """
-        if not self.__is_open:
-            raise RuntimeError("please open relay device first")
-        if not 1 <= channel_index <= self.__channel_count:
-            raise RuntimeError(
-                f"current relay device only support channel {self.__channel_count} but input {channel_index}")
-        if self.__handle:
-            if self.__lib.usb_relay_device_open_one_relay_channel(self.__handle, channel_index) != 0:
-                raise RuntimeError(f"open channel [{channel_index}] failed")
-
-    @check_connect("__is_open", relay_tips)
-    def one_relay_channel_off(self, channel_index: int):
-        """
-        打开继电器的某一个开关。
-
-        :param channel_index: 继电器的开关编号。(从1开始)
-        """
-        if not 1 <= channel_index <= self.__channel_count:
-            raise RuntimeError(
-                f"current relay device only support channel {self.__channel_count} but input {channel_index}")
-        if self.__handle:
-            if self.__lib.usb_relay_device_close_one_relay_channel(self.__handle, channel_index) != 0:
-                raise RuntimeError(f"close channel [{channel_index}] failed")
-
-    @check_connect("__is_open", relay_tips)
-    def all_relay_channel_on(self):
-        """
-        闭合继电器的所有开关。
-        """
-        if self.__handle:
-            if self.__lib.usb_relay_device_open_all_relay_channel(self.__handle) != 0:
-                raise RuntimeError(f"open all channel failed")
-
-    @check_connect("__is_open", relay_tips)
-    def all_relay_channel_off(self):
-        """
-        关闭继电器的所有开关。
-        """
-        if self.__handle:
-            if self.__lib.usb_relay_device_close_all_relay_channel(self.__handle) != 0:
-                raise RuntimeError(f"close all channel failed")
 
 
 class _LibUsbRelay(object):
@@ -363,3 +262,172 @@ class _LibUsbRelay(object):
         """
         self.usbRelayDll.usb_relay_device_get_status.argtypes = [c_uint64, c_uint64]
         self.usbRelayDll.usb_relay_device_get_status(h_handle, status)
+
+
+class USBRelay(object):
+    """
+    USB继电器基础类，利用ctypes操作dll文件
+
+    使用方法：
+
+    1、使用open_relay_device打开继电器，
+
+    2、并根据通道使用one_relay_channel_on/off选择某一个通道进行开关操作，或者使用all_relay_channel_on/off进行全部的开关操作
+
+    3、完成后调用close_relay_device关闭继电器
+
+    特别注意：
+
+    进行第二步即打开继电器的时候，需要一定的时间，建议的延时时间为1s，否则继电器可能没有实际打开
+    """
+
+    def __init__(self):
+        self.__lib = _LibUsbRelay()
+        self.__handle = None
+        self.__is_open = False
+        self.__channel_count = 0
+
+    def open_relay_device(self):
+        """
+        初始化继电器，并通过继电器的serial号打开该继电器。
+        在需要使用继电器时，必须先调用该接口。
+        """
+        if not self.__is_open:
+            ret = self.__lib.usb_relay_init()
+            logger.debug(f"ret = [{ret}]")
+            if not ret:
+                try:
+                    dev = self.__lib.usb_relay_device_enumerate()
+                    logger.debug(f"dev = [{dev}]")
+                    if dev:
+                        self.__channel_count = dev[0]["type"]
+                        serial_number = dev[0]['serial_number']
+                        self.__handle = self.__lib.usb_relay_device_open_with_serial_number(serial_number)
+                        logger.debug(f"handler: {self.__handle}, type is {type(self.__handle)}")
+                        self.__is_open = True
+                except Exception:
+                    raise RuntimeError("usb relay init failed")
+
+    def close_relay_device(self):
+        """
+        关闭继电器，测试完毕调用该接口。
+        """
+        if self.__handle:
+            self.__lib.usb_relay_device_close(self.__handle)
+            exit_result = self.__lib.usb_relay_exit()
+            if exit_result == 0:
+                self.__is_open = False
+            else:
+                self.__is_open = True
+
+    @check_connect("__is_open", relay_tips)
+    def one_relay_channel_on(self, channel_index: int):
+        """
+        闭合继电器的某一个开关。
+
+        :param channel_index: 继电器的开关编号。(从1开始)
+        """
+        if not self.__is_open:
+            raise RuntimeError("please open relay device first")
+        if not 1 <= channel_index <= self.__channel_count:
+            raise RuntimeError(
+                f"current relay device only support channel {self.__channel_count} but input {channel_index}")
+        if self.__handle:
+            if self.__lib.usb_relay_device_open_one_relay_channel(self.__handle, channel_index) != 0:
+                raise RuntimeError(f"open channel [{channel_index}] failed")
+
+    @check_connect("__is_open", relay_tips)
+    def one_relay_channel_off(self, channel_index: int):
+        """
+        打开继电器的某一个开关。
+
+        :param channel_index: 继电器的开关编号。(从1开始)
+        """
+        if not 1 <= channel_index <= self.__channel_count:
+            raise RuntimeError(
+                f"current relay device only support channel {self.__channel_count} but input {channel_index}")
+        if self.__handle:
+            if self.__lib.usb_relay_device_close_one_relay_channel(self.__handle, channel_index) != 0:
+                raise RuntimeError(f"close channel [{channel_index}] failed")
+
+    @check_connect("__is_open", relay_tips)
+    def all_relay_channel_on(self):
+        """
+        闭合继电器的所有开关。
+        """
+        if self.__handle:
+            if self.__lib.usb_relay_device_open_all_relay_channel(self.__handle) != 0:
+                raise RuntimeError(f"open all channel failed")
+
+    @check_connect("__is_open", relay_tips)
+    def all_relay_channel_off(self):
+        """
+        关闭继电器的所有开关。
+        """
+        if self.__handle:
+            if self.__lib.usb_relay_device_close_all_relay_channel(self.__handle) != 0:
+                raise RuntimeError(f"close all channel failed")
+
+
+class SerialRelay(object):
+    """
+    串口命令式的继电器
+    吸合（通）的设置， 根据通道计算，首先是01代表 通道， 最后一位是计算出来的校验值，所有的值相加的结果
+    RELAY_01_SUCTION = "55 01 32 00 00 00 01 89"
+    断开的设置
+    RELAY_01_OPEN = "55 01 31 00 00 00 01 88"
+    """
+
+    def __init__(self, port: str, baud_rate: int = 9600, max_channel: int = 32):
+        self.__utils = SerialPort()
+        self.__port = port
+        self.__baud_rate = baud_rate
+        self.__max_channel = max_channel
+
+    def __channel_calc(self, channel_index: int, type_: bool = False) -> List[int]:
+        """
+        :param channel_index:
+        :param type_: 真表示接通，值为32， 假表示断开， 值为31
+        :return:
+        """
+        if channel_index < 0 or channel_index > self.__max_channel:
+            raise RuntimeError(f"{channel_index} only support [0, {self.__max_channel}]")
+        status_value = 0x32 if type_ else 0x31
+        command_list = [0x55, 0x01, status_value, 0x00, 0x00, 0x00, channel_index]
+        value = reduce(lambda x, y: x + y, command_list)
+        command_list.append(value)
+        return command_list
+
+    def __send_command(self, command_list: List[int]):
+        """
+        TODO 需要吹转换错误
+        :param command_list:
+        :return:
+        """
+        commands = Utils.to_hex_list(command_list)
+        command_line = " ".join(commands)
+        logger.debug(f"command_line is {command_line}")
+        command = bytes.fromhex(command_line)
+        self.__utils.send(command, False)
+
+    def open_relay_device(self):
+        self.__utils.connect(self.__port, self.__baud_rate)
+
+    def close_relay_device(self):
+        self.__utils.disconnect()
+
+    def one_relay_channel_on(self, channel_index: int):
+        command_list = self.__channel_calc(channel_index, True)
+        self.__send_command(command_list)
+
+    def one_relay_channel_off(self, channel_index: int):
+        command_list = self.__channel_calc(channel_index, False)
+        self.__send_command(command_list)
+
+    def all_relay_channel_on(self):
+        command_list = [0x55, 0x01, 0x33, 0xff, 0xff, 0xff, 0xff, 0x85]
+        self.__send_command(command_list)
+
+    def all_relay_channel_off(self):
+        command_list = [0x55, 0x01, 0x33, 0x00, 0x00, 0x00, 0x00, 0x89]
+        self.__send_command(command_list)
