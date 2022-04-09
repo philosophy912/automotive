@@ -573,6 +573,34 @@ class CANService(Can):
                     result.append(signal.physical_value)
         return result
 
+    def count_signal_value(self,
+                           stack: List[Message],
+                           signal_name: str,
+                           expect_value: int) -> int:
+        """
+       检查signal的值是否符合要求
+
+       :param signal_name:  sig name
+
+       :param expect_value: expect value
+
+       :param stack: 栈中消息
+       """
+        msg_id = self.__get_msg_id_from_signal_name(signal_name)
+        # 过滤需要的msg
+        filter_messages = list(filter(lambda x: x.msg_id == msg_id, stack))
+        logger.debug(f"filter messages length is {len(filter_messages)}")
+        msg_count = 0
+        for msg in filter_messages:
+            logger.debug(f"msg data = {msg.data}")
+            # 此时的msg只有data，需要调用方法更新内容
+            message = self.__set_message(msg.msg_id, msg.data)
+            actual_value = message.signals[signal_name].physical_value
+            logger.debug(f"actual_value = {actual_value}")
+            if actual_value == expect_value:
+                msg_count += 1
+        return msg_count
+
     def check_signal_value(self,
                            stack: List[Message],
                            signal_name: str,
@@ -598,18 +626,7 @@ class CANService(Can):
         if msg_id is None:
             msg_id = self.__get_msg_id_from_signal_name(signal_name)
         if count:
-            # 过滤需要的msg
-            filter_messages = list(filter(lambda x: x.msg_id == msg_id, stack))
-            logger.debug(f"filter messages length is {len(filter_messages)}")
-            msg_count = 0
-            for msg in filter_messages:
-                logger.debug(f"msg data = {msg.data}")
-                # 此时的msg只有data，需要调用方法更新内容
-                message = self.__set_message(msg.msg_id, msg.data)
-                actual_value = message.signals[signal_name].physical_value
-                logger.debug(f"actual_value = {actual_value}")
-                if actual_value == expect_value:
-                    msg_count += 1
+            msg_count = self.count_signal_value(stack, signal_name, expect_value)
             logger.info(f"except count is {count}, actual count = {msg_count}")
             if exact:
                 return msg_count == count
