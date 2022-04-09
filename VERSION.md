@@ -2,6 +2,18 @@
 
 **V5.3.7**
 
+- can service中增加了计算指定signal出现在stack中的次数
+- 修复了xmind转excel的小缺陷
+- 优化了message中只适用于usbcan的部分到device中
+- 增加了adb中的截屏并拉取到本地的功能
+- 新增了基于串口的USB继电器代码
+- 增加了excel utils中以字典方式获取excel sheet的功能
+- 新增了performance中统计高通平台单个app内存和cpu占用率
+- 修改了面板控制
+  - 设置默认宽度以及自动换行功能
+  - 修改默认读取excel表格中的第一张表格
+  - 修复检查信号值读取不成功的缺陷
+
 - 所有的枚举对象都增加了from_value方法
 - android service中涉及到枚举对象的都可以支持字符串输入
 - excel utils增加了枚举对象的字符串输入
