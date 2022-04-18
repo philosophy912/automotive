@@ -100,7 +100,7 @@ class StandardExcelSampleReader(BaseReader):
                 testcase.automation = automation_cell == "是" if automation_cell else None
                 priority_cell = sheet.range(f"I{i}").value
                 testcase.priority = priority_config[priority_cell] if priority_cell else None
-                test_result = sheet.range(f"M{i}").value
+                test_result = sheet.range(f"N{i}").value
                 testcase.test_result = test_result.strip().upper() if test_result else None
                 testcase.calc_hash()
                 testcases.append(testcase)

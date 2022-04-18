@@ -117,7 +117,8 @@ class Xmind8SampleWriter(BaseWriter):
                                 inter: int,
                                 testcase: Testcase,
                                 testcase_topic: TopicElement,
-                                workbook: WorkbookDocument):
+                                workbook: WorkbookDocument,
+                                result_flag: bool = False,):
         """
         创建测试用例子节点
 
@@ -156,6 +157,10 @@ class Xmind8SampleWriter(BaseWriter):
             for requirement in testcase.requirement:
                 req_topic = self.__create_topic(f"{requirement_prefix}{requirement}", workbook)
                 tc_topic.addSubTopic(req_topic)
+        if result_flag:
+            if testcase.test_result:
+                res_topic = self.__create_topic(testcase.test_result, workbook)
+                tc_topic.addSubTopic(res_topic)
 
     def __handle_steps(self, s_topic: TopicElement, steps: Dict[str, List[str]], workbook: WorkbookDocument):
         """
