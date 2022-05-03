@@ -8,10 +8,12 @@
 # --------------------------------------------------------
 import copy
 import json
+import os
 import re
 from typing import List, Dict, Any
 
 from automotive.logger.logger import logger
+from automotive.utils.excel_utils import ExcelUtils
 
 
 class DbcParser(object):
@@ -92,12 +94,138 @@ class DbcParser(object):
         messages = self.__parse_message(contents)
         return self.__filter_messages(messages)
 
-    def parse_to_file(self, dbc_file: str, json_file: str):
+    def parse_to_file(self, dbc_file: str, output_file: str):
         """
         解析DBC文件并以json方式写入到文件中
         :param dbc_file:  DBC文件
-        :param json_file: 输出的json文件
+        :param output_file: 输出的json文件
         """
+        if output_file.endswith("json"):
+            self.__parse_to_json(dbc_file, output_file)
+        elif output_file.endswith("xlsx") or output_file.endswith("xls"):
+            self.__parse_to_excel(dbc_file, output_file)
+        else:
+            raise RuntimeError("only support json or excel file")
+
+    def __parse_to_excel(self, dbc_file: str, excel_file: str):
+        """
+        把DBC解析出来的结果写入到excel中，
+        TODO 缺少节点信息的描述
+        :param dbc_file:
+        :param excel_file:
+        :return:
+        """
+        messages = self.parse(dbc_file)
+        logger.info("read dbc file success")
+        folder, file = os.path.split(__file__)
+        matrix_file = os.path.join(folder, "matrix.xlsx")
+        excel_utils = ExcelUtils()
+        workbook = excel_utils.open_workbook(matrix_file)
+        sheet = excel_utils.get_sheet(workbook, "Matrix")
+        border = True
+        contents = self.__get_lines(messages)
+        logger.info("organize excel contents success")
+        # 把内容写入到文件中
+        for line_index, line in enumerate(contents):
+            logger.debug(f"start write line {line_index + 2}")
+            for column_index, cell in enumerate(line):
+                excel_utils.set_cell_value(sheet, line_index + 2, column_index + 1, cell, border)
+        logger.info("write excel contents success")
+        excel_utils.save_workbook(excel_file, workbook)
+        excel_utils.close_workbook(workbook)
+
+    @staticmethod
+    def __get_lines(messages: List[Dict[str, Any]]) -> List[List[str]]:
+        """
+        设置每一行的值
+        :param messages:
+        :return:
+        """
+        contents = []
+        for message in messages:
+            line = []
+            for signal in message["signals"]:
+                # 1 : Msg Name - 报文名称
+                line.append(message["name"])
+                # 2 : Msg Type - 报文类型
+                if message["nm_message"]:
+                    msg_type = "NM"
+                elif message["diag_state"]:
+                    msg_type = "Diag"
+                else:
+                    msg_type = "Normal"
+                line.append(msg_type)
+                # 3 : Msg ID - 报文标识符
+                line.append(hex(message["id"]))
+                # 4 : Msg Send Type - 报文发送类型
+                line.append(message["msg_send_type"])
+                # 5 : Msg Cycle Time (ms) - 报文周期时间
+                msg_cycle_time = message["msg_cycle_time"]
+                msg_cycle_time = msg_cycle_time if msg_cycle_time > 0 else ""
+                line.append(msg_cycle_time)
+                # 6 : Msg Length (Byte) - 报文长度
+                line.append(message["length"])
+                # 7 : Signal Name - 信号名称
+                line.append(signal["name"])
+                # 8 : Signal Description - 信号描述
+                comment = signal["comment"] if "comment" in signal else ""
+                line.append(comment)
+                # 9 : Byte Order - 排列格式(Intel/Motorola)
+                byte_type = "Intel" if signal["byte_type"] else "Motorola MSB"
+                line.append(byte_type)
+                # 10 : Start Byte - 起始字节
+                line.append("")
+                # 11 : Start Bit - 起始位
+                line.append(signal["start_bit"])
+                # 12 : Signal Send Type - 信号发送类型
+                line.append("")
+                # 13 : Bit Length (Bit) - 信号长度
+                line.append(signal["signal_size"])
+                # 14 : Date Type - 数据类型
+                data_type = "Unsigned" if signal["is_sign"] else "Signed"
+                line.append(data_type)
+                # 15 : Resolution - 精度
+                line.append(signal["factor"])
+                # 16 : Offset - 偏移量
+                line.append(signal["offset"])
+                # 17 : Signal Min. Value (phys) - 物理最小值
+                line.append(signal["minimum"])
+                # 18 : Signal Max. Value (phys) - 物理最大值
+                line.append(signal["maximum"])
+                # 19 : Signal Min. Value (Hex) - 总线最小值
+                line.append(0x0)
+                # 20 : Signal Max. Value (Hex) - 总线最大值
+                line.append(hex(signal["signal_size"] ** 2 - 1))
+                # 21 : Initial Value (Hex) - 初始值
+                line.append(signal["start_value"])
+                # 22 : Invalid Value(Hex) - 无效值
+                line.append("")
+                # 23 : Inactive Value (Hex) - 非使能值
+                line.append("")
+                # 24 : Unit - 单位
+                line.append(signal["unit"])
+                # 25 : Signal Value Description - 信号值描述
+                if 'values' in signal:
+                    values = signal["values"]
+                    value_contents = []
+                    for key, value in values.items():
+                        value_contents.append(f"{hex(int(key))}:{value}")
+                    value_description = "\n".join(value_contents)
+                else:
+                    value_description = ""
+                line.append(value_description)
+                # 26 : Msg Cycle Time Fast(ms) - 报文发送的快速周期(ms)
+                line.append(message["msg_cycle_time_fast"])
+                # 27 : Msg Nr. Of Reption - 报文快速发送的次数
+                line.append(message["gen_msg_nr_of_repetition"])
+                # 28 : Msg Delay Time(ms) - 报文延时时间(ms)
+                line.append(message["msg_delay_time"])
+                logger.debug(f"line = {line}")
+                contents.append(copy.deepcopy(line))
+                line.clear()
+        return contents
+
+    def __parse_to_json(self, dbc_file: str, json_file: str):
         messages = self.parse(dbc_file)
         json_str = json.dumps(messages, ensure_ascii=False, indent=4)
         with open(json_file, "w", encoding="utf-8") as f:
