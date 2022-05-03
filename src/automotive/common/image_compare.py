@@ -126,12 +126,12 @@ class ImageCompare(object):
         result = self.__images.find_best_result_by_position(template_image, target_image, template_position,
                                                             target_position, threshold=float(similarity / 100),
                                                             rgb=True)
-        if not result:
-            result = self.__images.compare_by_matrix_in_same_area(template_image, target_image, template_position,
-                                                                  target_position, gray=gray, threshold=threshold)
-            return result[0] >= similarity
-        else:
-            return True
+        # 像素对比，暂时没有用
+        result1 = self.__images.compare_by_matrix_in_same_area(template_image, target_image, template_position,
+                                                               target_position, gray=gray, threshold=threshold)
+        matrix_result = result1[0] >= similarity
+        logger.debug(f"matrix compare result is {matrix_result}")
+        return result is not None
 
     def __compare_image(self,
                         template_image: str,
@@ -339,6 +339,6 @@ class ImageCompare(object):
             temp_image = "\\".join([temp_folder, f"{self.__utils.get_time_as_string()}_{index}.bmp"])
             shutil.copy(image, temp_image)
             # 处理temp_image图片，在上面画框
-            self.__images.rectangle_image(temp_image, compare_property.positions, color)
+            self.__images.rectangle_image(temp_image, compare_property.positions, color, is_convert=True)
             copied_files.append(temp_image)
         return copied_files
