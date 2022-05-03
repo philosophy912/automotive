@@ -213,8 +213,8 @@ class XlwingsExcelUtils(BaseExcelUtils):
 
     def get_cell_value(self, sheet: Sheet, row_index: int, column_index: Union[str, int]) -> str:
         # 传递的是序号则获取列名
-        if isinstance(row_index, int):
-            column_index = self._get_column_name(column_index)
+        if isinstance(column_index, str):
+            column_index = self._get_column_index(column_index)
         logger.debug(f"column_name = {column_index}, row_index = {row_index}")
         value = sheet.range(f"{column_index}{row_index}").value
         logger.debug(f"cell[{row_index}, {column_index}] = {value}")
