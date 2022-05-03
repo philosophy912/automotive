@@ -176,7 +176,7 @@ class KonstanterControl(object):
                     flag = True
         logger.debug(f"voltage operator finished")
 
-    def set_user_voltages(self, voltages: (list, tuple), times: int = 0.01, current: float = 5,
+    def set_user_voltages(self, voltages: (list, tuple), times: float = 0.01, current: float = 5,
                           repeat: int = 1) -> tuple:
         """
         设置用户自定义的或从文件读取到的电压序列，模拟用户自定义的电压曲线
