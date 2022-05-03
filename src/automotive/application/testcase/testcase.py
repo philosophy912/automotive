@@ -13,6 +13,7 @@ from automotive.application.common.constants import Testcase
 from automotive.application.common.enums import FileTypeEnum
 from automotive.application.common.interfaces import BaseReader, BaseWriter, TestCases
 from automotive.logger.logger import logger
+from .writer.testcase_writer import write_to_template_file
 
 
 class TestCaseGenerator(object):
@@ -53,35 +54,6 @@ class TestCaseGenerator(object):
         condition2 = file_type1 == FileTypeEnum.STANDARD_EXCEL and file_type2 == FileTypeEnum.XMIND8
         if not (condition1 or condition2):
             raise RuntimeError("简版输入只支持Excel和xmind互转")
-
-    def get_testcases(self, file: str, is_sample: bool = False) -> Dict[str, TestCases]:
-        """
-        获取测试用例
-        :param file: 输入文件
-        :param is_sample: 简版输入，读取的时候会重新组织内容
-        :return:
-        """
-        reader = self.__get_reader(file, is_sample)
-        return reader.read_from_file(file)
-
-    def generator(self, in_file: str, out_file: str, is_sample: bool = False):
-        """
-
-        :param in_file: 输入的文件
-
-        :param out_file: 输出的文件
-
-        :param is_sample: 简版输入，读取的时候会重新组织内容
-        """
-
-        if is_sample:
-            self.__check_sample_file(in_file, out_file)
-        reader = self.__get_reader(in_file, is_sample)
-        writer = self.__get_writer(out_file, is_sample)
-        testcases = reader.read_from_file(in_file)
-        logger.debug(f"testcases is {testcases}")
-        writer.write_to_file(out_file, testcases)
-        logger.info(f"read testcase from [{in_file}] and write to file [{out_file}]")
 
     def __compare(self, file1: str, file2: str):
         """
@@ -137,3 +109,45 @@ class TestCaseGenerator(object):
             if not flag:
                 result.append(diff)
         return result
+
+    def get_testcases(self, file: str, is_sample: bool = True) -> Dict[str, TestCases]:
+        """
+        获取测试用例
+        :param file: 输入文件
+        :param is_sample: 简版输入，读取的时候会重新组织内容
+        :return:
+        """
+        reader = self.__get_reader(file, is_sample)
+        return reader.read_from_file(file)
+
+    def generator(self, in_file: str, out_file: str, is_sample: bool = True):
+        """
+
+        :param in_file: 输入的文件
+
+        :param out_file: 输出的文件
+
+        :param is_sample: 简版输入，读取的时候会重新组织内容
+        """
+
+        if is_sample:
+            self.__check_sample_file(in_file, out_file)
+        reader = self.__get_reader(in_file, is_sample)
+        writer = self.__get_writer(out_file, is_sample)
+        testcases = reader.read_from_file(in_file)
+        logger.debug(f"testcases is {testcases}")
+        writer.write_to_file(out_file, testcases)
+        logger.info(f"read testcase from [{in_file}] and write to file [{out_file}]")
+
+    def write_template(self, in_file: str, output_file: str = None, is_sample: bool = True):
+        """
+        测试用例直接写入到java版本测试用例生成器中
+
+        :param in_file: xmind文件或者excel文件
+
+        :param output_file: 生成的template文件
+
+        :param is_sample: 简版输入，读取的时候会重新组织内容
+        """
+        testcases = self.get_testcases(in_file, is_sample=is_sample)
+        write_to_template_file(testcases, output_file)
