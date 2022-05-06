@@ -14,7 +14,7 @@ from automotive.application.common.enums import GuiButtonTypeEnum
 from automotive.utils.common.interfaces import sht
 from automotive.utils.excel_utils import ExcelUtils
 from automotive.utils.common.enums import ExcelEnum
-
+from automotive.core.can.can_service import CANService
 
 check_buttons = GuiButtonTypeEnum.CHECK_BUTTON.value[1]
 thread_buttons = GuiButtonTypeEnum.EVENT_CHECK_BUTTON.value[1]
@@ -26,9 +26,9 @@ receive_buttons = GuiButtonTypeEnum.RECEIVE_BUTTON.value[1]
 
 class ConfigReader(object):
 
-    def __init__(self, type_: ExcelEnum = ExcelEnum.OPENPYXL):
+    def __init__(self, can_service: CANService, type_: ExcelEnum = ExcelEnum.OPENPYXL):
         self.__utils = ExcelUtils(type_)
-
+        self.can_service = can_service
     def read_from_file(self, file: str) -> Dict[str, Dict[str, Any]]:
         result = dict()
         wb = self.__utils.open_workbook(file)
@@ -198,6 +198,19 @@ class ConfigReader(object):
                     value = values[1].strip()
                     signal_dict[key] = self.__handle_signal_value(value)
                 contents.append((msg_id, signal_dict))
+            elif "=" in line:
+                signal_dict = dict()
+                values=line.split("=")
+                key = values[0].strip()
+                value = values[1].strip()
+                signal_dict[key] = self.__handle_signal_value(value)
+                msg_id = None
+                for msg_name, msg in self.can_service.messages.items():
+                    if key in msg.signals:
+                        msg_id = msg.msg_id
+                        contents.append((msg_id, signal_dict))
+                if msg_id is None:
+                    logger.info(f"当前信号[ {key} ]在dbc文件中未找到msg_id，请检查信号值书写或dbc文件")
             else:
                 contents.append((line,))
         return contents
@@ -220,11 +233,29 @@ class ConfigReader(object):
         return typed_configs
 
     def _parse_check_msgs(self, value: str) -> Tuple[int, str, int, Optional[int], bool]:
-        value = value.strip()
-        values = value.split("=")
-        msg_id = self.__handle_signal_value(values[0])
-        signal_name = values[1]
-        signal_value = self.__handle_signal_value(values[2])
-        count = self.__handle_signal_value(values[3])
-        expect_value = values[4].upper() == "TRUE"
-        return msg_id, signal_name, signal_value, count, expect_value
+            value = value.strip()
+            if value[:2].upper() == "0X":
+                # 0x152=BCM_RightligthSt=0x1=1=True
+                values = value.split("=")
+                msg_id = self.__handle_signal_value(values[0])
+                signal_name = values[1]
+                signal_value = self.__handle_signal_value(values[2])
+                count = self.__handle_signal_value(values[3])
+                expect_value = values[4].upper() == "TRUE"
+                return msg_id, signal_name, signal_value, count, expect_value
+            else:
+                # BCM_RightligthSt = 0x1 = 1 = True
+                values = value.split("=")
+                signal_name = values[0]
+                signal_value = self.__handle_signal_value(values[1])
+                count = self.__handle_signal_value(values[2])
+                expect_value = values[3].upper() == "TRUE"
+                msg_id = None
+                for msg_name, msg in self.can_service.messages.items():
+                    if signal_name in msg.signals:
+                        msg_id = msg.msg_id
+                if msg_id is None:
+                    logger.info(f"当前信号[ {signal_name} ]在dbc文件中未找到msg_id，请检查信号值书写或dbc文件")
+                return msg_id, signal_name, signal_value, count, expect_value
+
+

@@ -19,7 +19,7 @@ from .reader import ConfigReader
 from .reader import check_buttons, thread_buttons, comboxs, entries, buttons, receive_buttons
 from ..common.constants import OPEN_DEVICE, CLOSE_DEVICE, CLEAR_STACK, DEFAULT_MESSAGE, BUS_LOST, \
     MESSAGE_LOST, TEXT, ON, OFF, VALUES, ACTIONS, COMMON, CHECK_MSGS, CHECK_MESSAGE, SIGNAL_NAME, \
-    SIGNAL_VALUE, SIGNAL_VALUES, SEARCH_COUNT, EXACT_SEARCH, YES_OR_NO, CHECK_SIGNAL, A_SIGNAL_NAME
+    SIGNAL_VALUE, SIGNAL_VALUES, SEARCH_COUNT, EXACT_SEARCH, YES_OR_NO, CHECK_SIGNAL, CHECK_SIGNAL_NAME
 from ...utils.common.enums import ExcelEnum
 
 
@@ -224,7 +224,7 @@ class TabFrame(Frame):
         :return:
         """
         self.column = 0
-        text_name, show_name = A_SIGNAL_NAME
+        text_name, show_name = CHECK_SIGNAL_NAME
         Label(self, text=show_name).grid(row=self.row, column=self.column, sticky=W)
         self.column += 1
         self.entries[text_name] = Entry(self, width=20)  # 等同于signal_name = Entry
@@ -259,7 +259,7 @@ class TabFrame(Frame):
         open_text_name = OPEN_DEVICE[0]
         close_text_name = CLOSE_DEVICE[0]
         signal_name_text_name = SIGNAL_NAME[0]
-        a_signal_name_text_name = A_SIGNAL_NAME[0]
+        check_signal_name_text_name = CHECK_SIGNAL_NAME[0]
         signal_value_text_name = SIGNAL_VALUE[0]
         signal_values_text_name = SIGNAL_VALUES[0]
         search_count_text_name = SEARCH_COUNT[0]
@@ -316,7 +316,7 @@ class TabFrame(Frame):
             self.buttons[text_name]["state"] = NORMAL
         elif button_type == CHECK_SIGNAL:
             # 获取signal name
-            signal_name = self.entries[a_signal_name_text_name].get().strip()
+            signal_name = self.entries[check_signal_name_text_name].get().strip()
             # 检测信号值是否已经发送过，并返回检测到的信号值 result
             stack = self.can_service.get_stack()
 
@@ -599,7 +599,7 @@ class TabFrame(Frame):
         logger.debug(actions)
         while self.thread_button_bool_vars[name].get():
             self.__send_actions(actions)
-
+            
     def __send_actions(self, actions: List):
         for action in actions:
             if len(action) == 2:
@@ -747,7 +747,7 @@ class Gui(object):
         
         self.__filter_nodes = filter_nodes
         # 获取按钮
-        service = ConfigReader(excel_type)
+        service = ConfigReader(can_service=self.can_service,type_=excel_type)
         tab_configs = dict()
         tab_configs[COMMON] = {check_buttons: {}, thread_buttons: {}, comboxs: {},
                                entries: {}, buttons: {}, receive_buttons: {}}
