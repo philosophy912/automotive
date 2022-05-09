@@ -56,6 +56,9 @@ class OpenpyxlExcelUtils(BaseExcelUtils):
         workbook.remove(sheet)
 
     def get_max_rows(self, sheet: sht) -> int:
+        return sheet.max_row
+
+    def get_valid_max_rows(self, sheet: sht):
         i = sheet.max_row
         real_max_row = 0
         while i > 0:
@@ -65,9 +68,7 @@ class OpenpyxlExcelUtils(BaseExcelUtils):
             else:
                 real_max_row = i
                 break
-
         return real_max_row
-        # return sheet.max_row
 
     def get_max_columns(self, sheet: sht) -> int:
         return sheet.max_column
@@ -266,6 +267,9 @@ class ExcelUtils(BaseExcelUtils):
             self.__utils = OpenpyxlExcelUtils()
         else:
             raise RuntimeError(f"{type_.value} not support")
+
+    def utils(self):
+        return self.__utils
 
     def create_workbook(self) -> wb:
         return self.__utils.create_workbook()
