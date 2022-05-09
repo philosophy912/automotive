@@ -120,7 +120,7 @@ class TestCaseGenerator(object):
         reader = self.__get_reader(file, is_sample)
         return reader.read_from_file(file)
 
-    def generator(self, in_file: str, out_file: str, is_sample: bool = True):
+    def generator(self, in_file: str, out_file: str, is_sample: bool = True, tempfile: str = None):
         """
 
         :param in_file: 输入的文件
@@ -128,6 +128,8 @@ class TestCaseGenerator(object):
         :param out_file: 输出的文件
 
         :param is_sample: 简版输入，读取的时候会重新组织内容
+
+        :param tempfile: excel模板文件地址
         """
 
         if is_sample:
@@ -136,7 +138,7 @@ class TestCaseGenerator(object):
         writer = self.__get_writer(out_file, is_sample)
         testcases = reader.read_from_file(in_file)
         logger.debug(f"testcases is {testcases}")
-        writer.write_to_file(out_file, testcases)
+        writer.write_to_file(out_file, testcases, tempfile=tempfile)
         logger.info(f"read testcase from [{in_file}] and write to file [{out_file}]")
 
     def write_template(self, in_file: str, output_file: str = None, is_sample: bool = True):

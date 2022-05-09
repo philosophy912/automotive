@@ -56,7 +56,18 @@ class OpenpyxlExcelUtils(BaseExcelUtils):
         workbook.remove(sheet)
 
     def get_max_rows(self, sheet: sht) -> int:
-        return sheet.max_row
+        i = sheet.max_row
+        real_max_row = 0
+        while i > 0:
+            row_dict = {i.value for i in sheet[i]}
+            if row_dict == {None}:
+                i = i - 1
+            else:
+                real_max_row = i
+                break
+
+        return real_max_row
+        # return sheet.max_row
 
     def get_max_columns(self, sheet: sht) -> int:
         return sheet.max_column

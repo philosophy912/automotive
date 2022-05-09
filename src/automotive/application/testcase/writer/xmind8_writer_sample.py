@@ -34,7 +34,7 @@ finally:
 
 class Xmind8SampleWriter(BaseWriter):
 
-    def write_to_file(self, file: str, testcases: Dict[str, TestCases]):
+    def write_to_file(self, file: str, testcases: Dict[str, TestCases], tempfile: str):
         """
         把测试用例写xmind
         :param testcases: 测试用例

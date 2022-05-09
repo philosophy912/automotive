@@ -28,15 +28,16 @@ class StandardExcelSampleWriter(BaseWriter):
     def __init__(self):
         self.__start_row = 3
 
-    def write_to_file(self, file: str, testcases: Dict[str, TestCases]):
+    def write_to_file(self, file: str, testcases: Dict[str, TestCases], tempfile: str):
         """
         把测试用例写入到excel文件中去
         :param file:  输出的excel文件
         :param testcases:  测试用例集合，字典类型
+        :param tempfile: 读取的excel模板文件
         """
         self._check_testcases(testcases)
         logger.debug(f"testcases is {testcases}")
-        template = self.__get_template_file()
+        template = self.__get_template_file(template=tempfile)
         app = xw.App(visible=False, add_book=False)
         app.display_alerts = False
         app.screen_updating = False
@@ -72,12 +73,17 @@ class StandardExcelSampleWriter(BaseWriter):
         logger.info(f"write to file [{file}] done")
 
     @staticmethod
-    def __get_template_file(template: str = None):
+    def __get_template_file(template: str):
         if not template:
             logger.debug(__file__)
             # 只考虑windows的情况, 找寻当前文件的文件夹所在路径
             directory, file = os.path.split(__file__)
             template = fr"{directory}\template_sample.xlsx"
+        else:
+            if os.path.exists(template):
+                template = template
+            else:
+                raise RuntimeError("传入的excel模板文件：template不存在，请检查")
         return template
 
     def __convert_testcases(self, testcases: TestCases) -> List[Tuple]:

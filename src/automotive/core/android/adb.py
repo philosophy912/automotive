@@ -21,9 +21,12 @@ class ADB(object):
     Android ADB相关的命令python化， 对于实际的测试活动中，更多的使用了click/screen_shot两个操作
     """
 
+    def command(self, command: str, device_id: Optional[str] = None):
+        return  self.__adb_command(command=command,device_id=device_id)
+
     @staticmethod
     def __execute(command: str) -> List[str]:
-        logger.debug(f"execute command {command}")
+        logger.debug(f"execute command [{command}]")
         pi = sp.Popen(command, shell=True, stdout=sp.PIPE, stderr=sp.PIPE)
         stdout, stderr = pi.communicate()
         return stdout.decode("utf-8").split("\r\n")
@@ -34,8 +37,9 @@ class ADB(object):
         :param command: adb命令
         :param device_id: 设备编号
         """
-        if "adb" in command:
-            command = command.split("adb")[1]
+        if command[:3] == "adb":
+            command = command[4:]
+            # command = command.split("adb")[1]
         if device_id:
             return self.__execute(f"adb -s {device_id} {command}")
         else:

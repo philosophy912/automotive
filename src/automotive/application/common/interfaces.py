@@ -332,11 +332,12 @@ class BaseReader(BaseTestCase):
 
 class BaseWriter(BaseTestCase):
     @abstractmethod
-    def write_to_file(self, file: str, testcases: Dict[str, TestCases]):
+    def write_to_file(self, file: str, testcases: Dict[str, TestCases], tempfile: str):
         """
         把测试用例集合写入到文件中
         :param file:  文件
         :param testcases: 测试用例集合
+        :param tempfile:excel模板文件地址
         """
         pass
 
