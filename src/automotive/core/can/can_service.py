@@ -177,6 +177,17 @@ class Can(metaclass=Singleton):
         """
         return self._can.get_stack()
 
+    def is_can_bus_lost(self, continue_time: int = 5) -> bool:
+        """
+        can总线是否数据丢失，如果检测周期内有一帧can信号表示can网络没有中断
+
+        :param continue_time: 清空数据，10s内收不到任何的CAN消息表示CAN总线丢失
+        """
+        # 清空栈数据
+        self.clear_stack_data()
+        time.sleep(continue_time)
+        return len(self._can.get_stack()) == 0
+
 
 class CANService(Can):
     """
@@ -317,6 +328,7 @@ class CANService(Can):
                     logger.trace(f"value is [{value}]")
                     sig.value = value
         logger.trace(f"sender is {message.sender}")
+        logger.debug(f"{hex(message.msg_id)} = {message.data}")
         self.send_can_message(message)
         # # 避免错误发生后不再发送数据，容错处理
         # try:
@@ -431,6 +443,28 @@ class CANService(Can):
         """
         return self.receive_can_message(message_id).signals[signal_name].physical_value
 
+    @staticmethod
+    def is_msg_value_changed(stack: List[Message], msg_id: int) -> bool:
+        """
+        检测某个msg是否有变化，只能检测到整个8byte数据是否有变化
+
+        :param stack: 记录下来的CAN消息
+
+        :param msg_id: 信号ID
+
+        :return:
+            True: 有变化
+
+            False: 没有变化
+        """
+        # 过滤掉没有用的数据
+        data_list = list(filter(lambda x: x.msg_id == msg_id, stack))
+        duplicate = set()
+        for message in data_list:
+            data = message.data
+            duplicate.add(data)
+        return len(duplicate) > 1
+
     def is_lost_message(self,
                         msg_id: int,
                         cycle_time: int,
@@ -490,39 +524,6 @@ class CANService(Can):
         else:
             logger.info(f"need receive msg size [{receive_msg_size}] and actual receive size is [{msg_stack_size}]")
             return msg_stack_size < receive_msg_size
-
-    def is_can_bus_lost(self, continue_time: int = 5) -> bool:
-        """
-        can总线是否数据丢失，如果检测周期内有一帧can信号表示can网络没有中断
-
-        :param continue_time: 清空数据，10s内收不到任何的CAN消息表示CAN总线丢失
-        """
-        # 清空栈数据
-        self.clear_stack_data()
-        time.sleep(continue_time)
-        return len(self._can.get_stack()) == 0
-
-    @staticmethod
-    def is_msg_value_changed(stack: List[Message], msg_id: int) -> bool:
-        """
-        检测某个msg是否有变化，只能检测到整个8byte数据是否有变化
-
-        :param stack: 记录下来的CAN消息
-
-        :param msg_id: 信号ID
-
-        :return:
-            True: 有变化
-
-            False: 没有变化
-        """
-        # 过滤掉没有用的数据
-        data_list = list(filter(lambda x: x.msg_id == msg_id, stack))
-        duplicate = set()
-        for message in data_list:
-            data = message.data
-            duplicate.add(data)
-        return len(duplicate) > 1
 
     @staticmethod
     def is_signal_value_changed(stack: List[Message], msg_id: int, signal_name: str) -> bool:

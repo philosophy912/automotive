@@ -121,7 +121,23 @@ def check_value(value: Number, min_: Number, max_: Number) -> bool:
     return min_ <= value <= max_
 
 
-def set_data(data: List[int], start_bit: int, byte_type: bool, value: int, bit_length: int, byte_length: int = 8):
+def __calc_singed_set_value(value: int, size: int) -> int:
+    value = abs(value)
+    value = __completion_byte(bin(value)[2:], size - 1)
+    # 原码，带符号位
+    true_code = f"1{value}"
+    logger.debug(f"true code is {true_code}")
+    # 除符号位的反码
+    no_sign_ones_complement_code = "".join(map(lambda x: "1" if x == "0" else "0", value))
+    ones_complement_code = f"1{no_sign_ones_complement_code}"
+    logger.debug(f"ones-complement code is {ones_complement_code}")
+    complemental_code = int(ones_complement_code, 2) + 1
+    logger.debug(f"complemental code = {bin(complemental_code)[2:]}")
+    return complemental_code
+
+
+def set_data(data: List[int], start_bit: int, byte_type: bool, value: int, bit_length: int, is_sign: bool,
+             byte_length: int = 8):
     """
     用于设置每个Signal后，计算出8Byte的值
 
@@ -137,8 +153,12 @@ def set_data(data: List[int], start_bit: int, byte_type: bool, value: int, bit_l
 
     :param data: 总线8Byte数据
 
+    :param is_sign: 有符号位或者无符号位
+
     :param byte_length: 字段长度，默认值为8，CAN FD可调整
     """
+    if value < 0 and is_sign:
+        value = __calc_singed_set_value(value, bit_length)
     logger.trace(f"data = {list(map(lambda x: hex(x), data))}), start_bit = [{start_bit}], "
                  f"byte_type = [{byte_type}], value = [{value}], bit_length = [{bit_length}]")
     byte_index, bit_index = __get_position(start_bit, byte_length)
@@ -185,7 +205,19 @@ def set_data(data: List[int], start_bit: int, byte_type: bool, value: int, bit_l
     logger.trace(f"parser data is = {list(map(lambda x: hex(x), data))}")
 
 
-def get_data(data: List[int], start_bit: int, byte_type: bool, bit_length: int, byte_length: int = 8) -> int:
+def __calc_singed_get_value(value: str) -> int:
+    value = int(value, 2) - 1
+    value = bin(value)[2:]
+    # 去掉了符号位
+    value1 = value[1:]
+    # 取反码
+    value = "".join(map(lambda x: "1" if x == "0" else "0", value1))
+    value = int(value, 2)
+    return 0 - value
+
+
+def get_data(data: List[int], start_bit: int, byte_type: bool, bit_length: int, is_sign: bool,
+             byte_length: int = 8) -> int:
     """
     根据data计算出来每个signal的值
 
@@ -198,6 +230,8 @@ def get_data(data: List[int], start_bit: int, byte_type: bool, bit_length: int, 
     :param start_bit: 起始位
 
     :param data: 8 byte数据
+
+    :param is_sign: 有符号位或者无符号位
 
     :param byte_length: 字段长度，默认值为8，CAN FD可调整
 
@@ -255,8 +289,11 @@ def get_data(data: List[int], start_bit: int, byte_type: bool, bit_length: int, 
             logger.trace(f"motorola last signal_value = {signal_value}")
         else:
             signal_value = byte_value[bit_index:bit_index + bit_length]
-    # 字符串转换成数字
-    return int(signal_value, 2)
+    if is_sign and signal_value[0] == "1":
+        return __calc_singed_get_value(signal_value)
+    else:
+        # 字符串转换成数字
+        return int(signal_value, 2)
 
 
 def get_message(messages: Union[str, Messages], encoding: str = "utf-8") -> Tuple[Dict, Dict]:
@@ -403,14 +440,15 @@ class Message(object):
                 logger.trace(f"signal name = {signal.signal_name} and signal value = {signal.value}")
                 # 根据原来的数据message_data，替换某一部分的内容
                 set_data(self.data, signal.start_bit, signal.byte_type, signal.value, signal.bit_length,
-                         self.data_length)
+                         signal.is_sign, self.data_length)
             logger.trace(f"msg id {hex(self.msg_id)} and data is {list(map(lambda x: hex(x), self.data))}")
         # 收到数据
         else:
             logger.trace("receive message")
             for name, signal in self.signals.items():
                 logger.trace(f"signal name = {signal.signal_name} and signal value = {signal.value}")
-                value = get_data(self.data, signal.start_bit, signal.byte_type, signal.bit_length, self.data_length)
+                value = get_data(self.data, signal.start_bit, signal.byte_type, signal.bit_length, signal.is_sign,
+                                 self.data_length)
                 logger.trace(f"value is {value}")
                 signal.value = value
 
@@ -592,6 +630,7 @@ class Signal(object):
     def physical_value(self, physical_value: Number):
         self.__physical_value = physical_value
         self.__value = int((float(physical_value) - float(self.offset)) / float(self.factor))
-        if self.__value < 0 or self.__value > (2 ** self.bit_length - 1):
-            raise RuntimeError("it need input physical value not bus value")
+        if not self.is_sign:
+            if self.__value < 0 or self.__value > (2 ** self.bit_length - 1):
+                raise RuntimeError("it need input physical value not bus value")
         logger.debug(f"physical value is {self.__physical_value} and value is {self.__value}")
