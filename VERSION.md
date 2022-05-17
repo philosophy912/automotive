@@ -1,23 +1,63 @@
 ## 版本更新说明
 
+**V5.3.8**
+
+- xmind8_writer_sample中， __create_test_case_node新增参数result_flag，默认False，excel转xmind时，默认不加测试结果
+
+- standard_excel_reader_sample中，——parse_test_case中修改测试结果所在列，因为之>前多加了一列修改记录，所以测试结果目前在N列
+
+- 增加了xmind转换成仪表测试用例生成器的代码
+
+- 修复了konstanter中参数类型提示错误
+
+- 修复了excelutils中根据列名获取单元格的问题
+
+- 增加了dbc转换成excel的文档（完成主要部分，缺节点部分)
+
+- 去掉了图片对比中的多重对比，改用单一方式即airtest对比错误
+
+- 修复了图片对比中的位置错误
+
+- 面板功能中添加读取Excel文件时，自动检测msg_id ，不用手动填写（兼容之前的写法）
+
+- 修改读取excel模板文件的方法：通过增加参数temple file的地址，默认为None，调用时自己查找文件。传了参数后，就按照传入的地址找文件。
+
+- 修改excel-utils中获取最大行的方法，解决删掉的行也会算入最大行计算中
+
+- 修改adb，拆分adb时，解决命令中“***adb***"时，会破坏命令
+
+- 修复有符号的signal负数的总线值计算错误
+
 **V5.3.7**
 
 - can service中增加了计算指定signal出现在stack中的次数
+
 - 修复了xmind转excel的小缺陷
+
 - 优化了message中只适用于usbcan的部分到device中
+
 - 增加了adb中的截屏并拉取到本地的功能
+
 - 新增了基于串口的USB继电器代码
+
 - 增加了excel utils中以字典方式获取excel sheet的功能
+
 - 新增了performance中统计高通平台单个app内存和cpu占用率
+
 - 修改了面板控制
+  
   - 设置默认宽度以及自动换行功能
   - 修改默认读取excel表格中的第一张表格
   - 修复检查信号值读取不成功的缺陷
 
 - 所有的枚举对象都增加了from_value方法
+
 - android service中涉及到枚举对象的都可以支持字符串输入
+
 - excel utils增加了枚举对象的字符串输入
+
 - image类修改图像对比枚举类为ImageCompareTypeEnum
+
 - 删除了doc相关的说明，只留下了DEVELOP.md文件
 
 **V5.3.6**
@@ -71,7 +111,6 @@
 - 重构了测试用例生成器
 - 增加了GUI生成器从Excel文件中读取的方法
 
-
 **V5.0.0**
 
 - 适配了同星的CAN盒
@@ -90,19 +129,23 @@
 - 实现了之前没有实现的uiautomator2的drag方法
 
 **V4.2.6**
+
 - 增加了座舱QNX删除单个文件、多个文件
 - camera_test中增加了摄像头选择的参数
 - 修改了performance中的调用方法， 计算座舱的性能需要hogs输出
 
 **V4.2.5**
+
 - 修改了android service， 使得可以根据属性值判断是否点击
 
 **V4.2.4**
+
 - 修改了android service中
 - 打包增加了*.lib的库
 - 修改了Images中的获取文件的numpy值的方式
 
 **V4.2.3**
+
 - 修改下载文件夹时，文件夹中包含文件夹无法下载的情况，调用download_file_tree方法
 - 修改cluster_hmi，一些slay的内容
 - 修改了message中is_standard_can不存在的时候默认为标准can
@@ -117,16 +160,19 @@
 - 增加了RelayAction的on off方法
 
 **V4.2.2**
+
 - 重构了actions的代码
 - 重构了actions的api，在抽象类上面都增加了Base
 - 修改了Utils的get_json_object中的log等级
 
 **V4.2.1**
+
 - 修复了Hyupervisor截图的路径依赖错误
 - 修复了Image的汉明距对比ONE的错误
 - 修复了Serial_Port如果传入bytes数据的时候命令错误
 
 **V4.2.0**
+
 - 修改了image的图片汉明距对比的代码，读取视频的时候不用写入文件，只需要从内存里面读取每一帧
 - 修改了类型提示，符合python规则
 - 更新了relay_actions的channel_on传递参数的问题
@@ -138,8 +184,8 @@
 - 修改了ADB截图的时候放到本地路径可能失败的问题
 - 修复了CanService中发送默认信号变成随机信号的问题
 
-
 **V4.1.7**-
+
 - 解决了xmind转换器中excel的writer和reader之间数据缺失的问题
 - 修改了hypervisor截图中默认地址，可以通过传递参数的方式实现
 - 修改了ADB截图的时候放到本地路径可能失败的问题
@@ -268,9 +314,9 @@
 使用方法：
 
     1、 from automotive import logger
-    
+
     2、 在运行代码目录及父目录到根目录的任意目录放置config.yml文件，其中yml中包含level和log_folder用于定义log等级及log存放文件路径
-    
+
     3、 如果找不到配置文件，默认使用info级别输出log，并且不保存log内容到文件
 """
 ```
@@ -278,10 +324,10 @@
 - 调整了代码结构（若上层代码非使用全路径方式，不影响上层代码使用)
 
 - 新增了hypervisor和qnx两个模块，主要实现功能
-
-    - 相应的QNX系统中的截图（Hypervisor是通过ADB htalk方式截图, qnx则通过串口截图)
-
-    - 相应的QNX系统的点击操作（仅空调屏)
+  
+  - 相应的QNX系统中的截图（Hypervisor是通过ADB htalk方式截图, qnx则通过串口截图)
+  
+  - 相应的QNX系统的点击操作（仅空调屏)
 
 - 修复了文档错误
 
@@ -304,7 +350,7 @@
 - 优化了CAN消息的CAN Bus接口，提取了重复代码
 
 - 增加了trace发送的代码
-
+  
   ```python
   from automotive import TraceService, TraceType
   file = r"d:\a.asc"
@@ -391,18 +437,13 @@
 **V1.0.1**
 
 - base_image_compare.py
-
+  
   初始化的时候调整了传入对象可以为实例化后的BaseScreenShot对象（即可以是他的实现后得子类)，也可以是模块名. 方便在没有模块的情况下引用该对象。
 
 - image_compare.py
-
+  
   根据base_image_compare的修改调整了初始化传入的对象
 
 - utils.py
-
+  
   修改了**get_folder_path**方法， 添加了current_path，方便在不同位置查找文件夹，修正了之前在模块中引用的路径错误。
-
-
-
-
-
