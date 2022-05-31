@@ -117,6 +117,8 @@ class Xmind8SampleReader(BaseReader):
         """
         title = topic.getTitle()
         logger.debug(f"title = {title}, modules = {modules}")
+        if title is None:
+            raise RuntimeError(fr"{modules}后面是空节点，请检查")
         # 过滤掉#号开头的内容
         if title and not title.startswith("#"):
             if title.lower().startswith("tc"):
