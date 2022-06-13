@@ -59,7 +59,8 @@ def set_logger(level: str = "debug", folder: Optional[str] = None):
             file_path = os.getcwd() + "\\logs"
             if not os.path.exists(file_path):
                 os.makedirs(file_path)
-        _logger.add(os.path.join(file_path, "log_{time}.log"), level=level.upper(), format=formats, rotation=rotation)
+        _logger.add(os.path.join(file_path, "log_{time}.log"), level=level.upper(), format=formats, rotation=rotation,
+                    encoding="utf-8")
 
 
 def get_files(folder: str) -> List[str]:
