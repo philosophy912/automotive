@@ -129,6 +129,9 @@ class OpenpyxlExcelUtils(BaseExcelUtils):
         # 居中显示 + 自动换行
         cell.alignment = Alignment(horizontal='center', vertical='center', wrapText=True)
 
+    def del_row(self, sheet: Sheet, row_index: int):
+        sheet.delete_rows(row_index)
+
 
 class XlwingsExcelUtils(BaseExcelUtils):
 
@@ -255,6 +258,9 @@ class XlwingsExcelUtils(BaseExcelUtils):
         # 自动换行
         cell.api.WrapText = True
 
+    def del_row(self, sheet: Sheet, row_index: int):
+        sheet.api.Rows(row_index).Delete()
+
 
 class ExcelUtils(BaseExcelUtils):
 
@@ -322,3 +328,6 @@ class ExcelUtils(BaseExcelUtils):
 
     def set_border(self, cell: cell_range):
         self.__utils.set_border(cell)
+
+    def del_row(self, sheet: Sheet, row_index: int):
+        self.__utils.del_row(sheet=sheet, row_index=row_index)

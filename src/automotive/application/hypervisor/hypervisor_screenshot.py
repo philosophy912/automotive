@@ -93,15 +93,17 @@ class HypervisorScreenShot(BaseScreenShot):
         :param display 屏幕序号
         """
         if self.__need_sync_space:
-            command = f"shell htalk shell 'screenshot -file=/{self.__path}/{image_name}'"
             if display:
-                command = f"{command} -display={display}"
+                command = f"shell htalk shell 'screenshot -display={display} -file=/{self.__path}/{image_name}'"
+            else:
+                command = f"shell htalk shell 'screenshot -file=/{self.__path}/{image_name}'"
             self.__adb_command(command)
             self.__sync_space()
         else:
-            command = f"shell htalk shell 'screen_capture -file=/{self.__path}/{image_name}'"
             if display:
-                command = f"{command} -display={display}"
+                command = f"shell htalk shell 'screen_capture -display={display} -file=/{self.__path}/{image_name}'"
+            else:
+                command = f"shell htalk shell 'screen_capture -file=/{self.__path}/{image_name}'"
             self.__adb_command(command)
 
     def __screen_shot_area(self, image_name: str, position: Tuple[int, int, int, int], display: int = None):
@@ -163,7 +165,7 @@ class HypervisorScreenShot(BaseScreenShot):
         return image_files
 
     def screen_shot(self, image_name: str, count: int, interval_time: float, display: int = None) -> List[str]:
-        return self.__screen_shot_image(image_name, count, interval_time)
+        return self.__screen_shot_image(image_name, count, interval_time, display=display)
 
     def screen_shot_area(self, position: Tuple[int, int, int, int], image_name: str, count: int, interval_time: float,
                          display: int = None) -> List[str]:
