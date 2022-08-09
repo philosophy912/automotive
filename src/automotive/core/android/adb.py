@@ -314,3 +314,14 @@ class ADB(object):
         """
         cmd = f"uninstall {package_name}" if keep_data else f"uninstall -k {package_name}"
         self.__adb_command(cmd, device_id)
+
+    @staticmethod
+    def check_adb_connect(device_id: str):
+        """
+        检查adb是否连接成功, 连接True， 没连接False
+        :param device_id: adb的设备序列号
+        """
+        result = os.popen('adb devices')
+        res = result.read()
+        logger.debug(fr"命令行: {res}")
+        return device_id in res
