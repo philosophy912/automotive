@@ -6,11 +6,12 @@
 # @Author:      lizhe
 # @Created:     2021/5/1 - 23:47
 # --------------------------------------------------------
-import os
+import os.path
 import platform
-import subprocess as sp
 from time import sleep
-from typing import List, Tuple, Optional
+from typing import Sequence, Tuple, Optional
+
+from automotive.utils.utils import Utils
 
 from automotive.logger.logger import logger
 from .common.enums import KeyCodeEnum
@@ -21,17 +22,13 @@ class ADB(object):
     Android ADB相关的命令python化， 对于实际的测试活动中，更多的使用了click/screen_shot两个操作
     """
 
-    def command(self, command: str, device_id: Optional[str] = None):
-        return  self.__adb_command(command=command,device_id=device_id)
-
     @staticmethod
-    def __execute(command: str) -> List[str]:
+    def __execute(command: str) -> Sequence[str]:
         logger.debug(f"execute command [{command}]")
-        pi = sp.Popen(command, shell=True, stdout=sp.PIPE, stderr=sp.PIPE)
-        stdout, stderr = pi.communicate()
-        return stdout.decode("utf-8").split("\r\n")
+        stdout, stderr = Utils.exec_command_with_output(command, is_shell=True)
+        return stdout.split("\r\n")
 
-    def __adb_command(self, command: str, device_id: Optional[str] = None) -> List[str]:
+    def __adb_command(self, command: str, device_id: Optional[str] = None) -> Sequence[str]:
         """
         执行ADB命令，可以传入如 adb shell dumpsys window，如果传入了device_id则会加上-s参数
         :param command: adb命令
@@ -39,13 +36,12 @@ class ADB(object):
         """
         if command[:3] == "adb":
             command = command[4:]
-            # command = command.split("adb")[1]
         if device_id:
             return self.__execute(f"adb -s {device_id} {command}")
         else:
             return self.__execute(f"adb {command}")
 
-    def devices(self) -> List[str]:
+    def devices(self) -> Sequence[str]:
         """
         列出当前ADB连接的设备
         """
@@ -69,7 +65,7 @@ class ADB(object):
         """
         self.__execute("adb kill-server")
 
-    def version(self) -> List[str]:
+    def version(self) -> Sequence[str]:
         """
         查看ADB的版本号
         """
@@ -80,6 +76,9 @@ class ADB(object):
         ADB ROOT
         """
         self.__execute("adb root")
+
+    def command(self, command: str, device_id: Optional[str] = None):
+        return self.__adb_command(command=command, device_id=device_id)
 
     def push(self, local: str, remote: str, device_id: Optional[str] = None):
         """
@@ -115,7 +114,7 @@ class ADB(object):
         """
         self.__adb_command(f"shell rm {remote}", device_id)
 
-    def pull_files(self, files: List[str], local: str, device_id: Optional[str] = None):
+    def pull_files(self, files: Sequence[str], local: str, device_id: Optional[str] = None):
         """
         拉取所有文件到本地电脑
 
@@ -130,7 +129,7 @@ class ADB(object):
             sleep(1)
         sleep(1)
 
-    def remove_files(self, files: List[str], device_id: Optional[str] = None):
+    def remove_files(self, files: Sequence[str], device_id: Optional[str] = None):
         for file in files:
             self.remove(file, device_id)
             sleep(1)

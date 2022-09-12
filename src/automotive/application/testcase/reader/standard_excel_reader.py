@@ -7,9 +7,9 @@
 # @Created:     2021/7/3 - 22:14
 # --------------------------------------------------------
 import os
-from typing import Dict, List
+from typing import Dict, Sequence
 
-from automotive.application.common.constants import Testcase, priority_config, point
+from automotive.application.common.constants import Testcase, PRIORITY_CONFIG, POINT
 from automotive.application.common.interfaces import BaseReader, TestCases
 from automotive.logger.logger import logger
 
@@ -24,7 +24,7 @@ finally:
 
 class StandardExcelReader(BaseReader):
 
-    def __init__(self, ignore_sheet_name: List[str] = None):
+    def __init__(self, ignore_sheet_name: Sequence[str] = None):
         # 从哪一行开始读取
         if ignore_sheet_name is None:
             ignore_sheet_name = ["Summary"]
@@ -79,7 +79,7 @@ class StandardExcelReader(BaseReader):
                 testcase.module = sheet.range(f"B{i}").value
                 testcase.pre_condition = self.__parse_pre_condition(sheet.range(f"E{i}").value)
                 testcase.steps = self.__parse_steps(sheet.range(f"F{i}").value, sheet.range(f"G{i}").value)
-                testcase.priority = priority_config[sheet.range(f"I{i}").value]
+                testcase.priority = PRIORITY_CONFIG[sheet.range(f"I{i}").value]
                 testcase.calc_hash()
                 # 避免空行的存在
                 # if testcase.name and testcase.module and len(testcase.pre_condition) > 0 \
@@ -91,7 +91,7 @@ class StandardExcelReader(BaseReader):
     def __filter_automotive(content: str) -> bool:
         return not (content.startswith("0x") or content.startswith("0X"))
 
-    def __parse_pre_condition(self, pre_condition: str) -> List[str]:
+    def __parse_pre_condition(self, pre_condition: str) -> Sequence[str]:
         """
         解析前置条件
         :param pre_condition: 前置条件的字符串
@@ -103,14 +103,14 @@ class StandardExcelReader(BaseReader):
             pre_conditions = list(filter(lambda x: self.__filter_automotive(x) and x != "", pre_condition.split("\n")))
             pre_conditions = list(map(lambda x: x.replace("、", "."), pre_conditions))
             for pre in pre_conditions:
-                if point in pre:
-                    pre = pre.replace(point, " ").strip()
+                if POINT in pre:
+                    pre = pre.replace(POINT, " ").strip()
                 pre = pre[2:].strip()
                 logger.debug(f"pre  = {pre}")
                 contents.append(pre)
         return contents
 
-    def __parse_steps(self, steps: str, exception: str) -> Dict[str, List[str]]:
+    def __parse_steps(self, steps: str, exception: str) -> Dict[str, Sequence[str]]:
         """
         解析执行步骤
         :param steps:
@@ -133,7 +133,7 @@ class StandardExcelReader(BaseReader):
                     step_index = step[0]
                     content = step[1:]
                     # 去掉点
-                    if content[0] == point:
+                    if content[0] == POINT:
                         content = content[1:]
                     # 去掉空格，因为格式有可能是 1 电源ON
                     content = content.strip()
@@ -145,7 +145,7 @@ class StandardExcelReader(BaseReader):
                         e_index = exc[0]
                         e_content = exc[1:]
                         # 去掉点
-                        if e_content[0] == point:
+                        if e_content[0] == POINT:
                             e_content = e_content[1:]
                         # 表示一个步骤有多个期望结果 如 2.1 动态轨迹线不偏移，与静态轨迹线平行
                         # 解析后就变成了e_content = 1 动态轨迹线不偏移，与静态轨迹线平行

@@ -25,7 +25,7 @@ class SerialPort(object):
     串口类，用于基础的串口操作
     """
 
-    def __init__(self):
+    def __init__(self, line_count: int = 10):
         self._serial = None
         # 端口号，用于写文件
         self._port = None
@@ -35,6 +35,7 @@ class SerialPort(object):
         self._thread_pool = ThreadPoolExecutor(max_workers=1)
         # 读取的数据来源标识符，当False的时候表示从缓存中读取，此时没有写入文件， True的时候则从contents中读取，表示写入了文件
         self._read_flag = False
+        self._line_count = line_count
         # 读到的数据
         self._contents = []
 
@@ -117,7 +118,7 @@ class SerialPort(object):
                     logger.debug(f"line = {line}")
                     f.write(line)
                 # 100行内容写入一次
-                if count % 100 == 0:
+                if count % self._line_count == 0:
                     logger.debug("flush to file")
                     f.flush()
                 count += 1

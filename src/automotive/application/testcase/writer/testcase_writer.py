@@ -7,7 +7,7 @@
 # @Created:     2022/5/3 - 11:40
 # --------------------------------------------------------
 import os
-from typing import Dict, List, Optional
+from typing import Dict, Sequence, Optional
 
 from automotive.application.common.interfaces import TestCases
 from automotive.application.common.constants import Testcase
@@ -76,7 +76,7 @@ class __Testcase(object):
         self.expect_description = ""
         self.expect = ""
 
-    def convert(self) -> List:
+    def convert(self) -> Sequence:
         return [self.name, self.comments, self.description, self.testcase_type, self.module_name,
                 self.pre_condition_description, self.pre_condition, self.steps_description, self.steps,
                 self.expect_description, self.expect]
@@ -99,7 +99,7 @@ class __ImageCompare(object):
         self.is_gray = "否"
         self.threshold = "240"
 
-    def convert(self) -> List:
+    def convert(self) -> Sequence:
         return [self.name, self.comments, self.device_type, self.compare_type, self.image_name, self.template_light,
                 self.template_dark, self.positions, self.similarity, self.is_gray, self.threshold]
 
@@ -115,7 +115,7 @@ class __Common(object):
         self.function_name = ""
         self.params = ""
 
-    def convert(self) -> List:
+    def convert(self) -> Sequence:
         return [self.name, self.comments, self.module_name, self.function_name, self.params]
 
 
@@ -131,7 +131,7 @@ class __ScreenshotAction(object):
         self.count = "1"
         self.image_name = ""
 
-    def convert(self) -> List:
+    def convert(self) -> Sequence:
         return [self.name, self.comments, self.screenshot_type, self.display_id, self.count, self.image_name]
 
 
@@ -144,7 +144,7 @@ class __CanAction(object):
         self.comments = ""
         self.signals = ""
 
-    def convert(self) -> List:
+    def convert(self) -> Sequence:
         return [self.name, self.comments, self.signals]
 
 
@@ -167,7 +167,7 @@ def write_to_template_file(testcase_dict: Dict[str, TestCases], output_file: str
     excel_utils.close_workbook(workbook)
 
 
-def __write_sheet(sheet: sht, clazz_list: List):
+def __write_sheet(sheet: sht, clazz_list: Sequence):
     """
     转化每个sheet对应的class对象为contents二维数组，并添加了序号，写入到对应的sheet中
     """
@@ -217,7 +217,7 @@ def __parse_testcase(testcase: Testcase):
     test_case_list.append(test_case)
 
 
-def __handle_expect(testcase_name: str) -> List:
+def __handle_expect(testcase_name: str) -> Sequence:
     """
         处理期望结果， 主要是生成期望结果对象，以及testcase sheet页中expect填的内容
     """
@@ -232,7 +232,7 @@ def __handle_expect(testcase_name: str) -> List:
     return expect_actions
 
 
-def __handle_steps(actions: List, testcase_name: str) -> List:
+def __handle_steps(actions: Sequence, testcase_name: str) -> Sequence:
     """
         处理steps的部分，即读出来的TestCase类中的actions属性
     """
@@ -257,7 +257,7 @@ def __handle_steps(actions: List, testcase_name: str) -> List:
     return actions_actions
 
 
-def __handle_pre_conditions(pre_conditions: List, testcase_name: str) -> List:
+def __handle_pre_conditions(pre_conditions: Sequence, testcase_name: str) -> Sequence:
     """
         处理 pre_conditions的部分，即读出来的TestCase类中的pre_condition属性
     """

@@ -7,11 +7,11 @@
 # @Created:     2021/5/1 - 23:55
 # --------------------------------------------------------
 from time import sleep
-from typing import Tuple, List
+from typing import Sequence
 
 from .qnx_device import QnxDevice
 from automotive.logger.logger import logger
-from ..common.interfaces import BaseScreenShot
+from ..common.interfaces import BaseScreenShot, Position
 
 
 class QnxLocalScreenShot(BaseScreenShot):
@@ -24,11 +24,11 @@ class QnxLocalScreenShot(BaseScreenShot):
         self.__path = save_path
         self.__device = device
 
-    def screen_shot(self, image_name: str, count: int, interval_time: float, display: int = None) -> list:
+    def screen_shot(self, image_name: str, count: int, interval_time: float, display: int = None) -> Sequence:
         return self.__screen_shot_image(image_name, count, interval_time, display=display)
 
-    def screen_shot_area(self, position: Tuple[int, int, int, int], image_name: str, count: int, interval_time: float,
-                         display: int = None) -> list:
+    def screen_shot_area(self, position: Position, image_name: str, count: int, interval_time: float,
+                         display: int = None) -> Sequence:
         return self.__screen_shot_image(image_name, count, interval_time, position, display=display)
 
     def __screen_shot(self, image_name: str, display: int = None):
@@ -42,7 +42,7 @@ class QnxLocalScreenShot(BaseScreenShot):
             command = f"{command} -display={display}"
         self.__device.send_command(command)
 
-    def __screen_shot_area(self, image_name: str, position: Tuple[int, int, int, int], display: int = None):
+    def __screen_shot_area(self, image_name: str, position: Position, display: int = None):
         """
         执行截图命令(TODO， 目前QNX系统下不支持区域截图)
 
@@ -56,8 +56,7 @@ class QnxLocalScreenShot(BaseScreenShot):
         raise RuntimeError("not support area screenshot")
 
     def __screen_shot_image(self, image_name: str, count: int, interval_time: float,
-                            position: Tuple[int, int, int, int] = None,
-                            display: int = None) -> List[str]:
+                            position: Position = None, display: int = None) -> Sequence[str]:
         """
         截图操作，当position为None的时候为全屏截图
 

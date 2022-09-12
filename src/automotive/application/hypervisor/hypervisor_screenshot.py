@@ -6,14 +6,13 @@
 # @Author:      lizhe
 # @Created:     2021/5/1 - 23:55
 # --------------------------------------------------------
-import os
 import re
 from time import sleep
-from typing import Tuple, List, Union
+from typing import Union, Sequence
 
 from automotive.core.android.adb import ADB
 from automotive.logger.logger import logger
-from ..common.interfaces import BaseScreenShot
+from ..common.interfaces import BaseScreenShot, Position
 from ..common.enums import ProjectEnum
 
 
@@ -48,11 +47,7 @@ class HypervisorScreenShot(BaseScreenShot):
         else:
             self.__project = project
         self.__need_sync_space = self.__project.value[1]
-        if device_id:
-            # 安卓device_id
-            self.__device_id = device_id
-        else:
-            self.__connect()
+        self.__device_id = device_id
 
     @property
     def adb(self):
@@ -81,8 +76,7 @@ class HypervisorScreenShot(BaseScreenShot):
 
         :param command: adb命令
         """
-        command = f"adb -s {self.__device_id} {command}"
-        os.system(command)
+        self.__adb.command(command=command, device_id=self.__device_id)
 
     def __screen_shot(self, image_name: str, display: int = None):
         """
@@ -93,20 +87,18 @@ class HypervisorScreenShot(BaseScreenShot):
         :param display 屏幕序号
         """
         if self.__need_sync_space:
+            command = f"shell htalk shell 'screenshot -file=/{self.__path}/{image_name}'"
             if display:
-                command = f"shell htalk shell 'screenshot -display={display} -file=/{self.__path}/{image_name}'"
-            else:
-                command = f"shell htalk shell 'screenshot -file=/{self.__path}/{image_name}'"
+                command = f"{command} -display={display}"
             self.__adb_command(command)
             self.__sync_space()
         else:
+            command = f"shell htalk shell 'screen_capture -file=/{self.__path}/{image_name}'"
             if display:
-                command = f"shell htalk shell 'screen_capture -display={display} -file=/{self.__path}/{image_name}'"
-            else:
-                command = f"shell htalk shell 'screen_capture -file=/{self.__path}/{image_name}'"
+                command = f"{command} -display={display}"
             self.__adb_command(command)
 
-    def __screen_shot_area(self, image_name: str, position: Tuple[int, int, int, int], display: int = None):
+    def __screen_shot_area(self, image_name: str, position: Position, display: int = None):
         """
         执行截图命令
 
@@ -133,8 +125,7 @@ class HypervisorScreenShot(BaseScreenShot):
             self.__adb_command(command)
 
     def __screen_shot_image(self, image_name: str, count: int, interval_time: float,
-                            position: Tuple[int, int, int, int] = None,
-                            display: int = None) -> List[str]:
+                            position: Position = None, display: int = None) -> Sequence[str]:
         """
         截图操作，当position为None的时候为全屏截图
 
@@ -164,11 +155,11 @@ class HypervisorScreenShot(BaseScreenShot):
             self.__sync_space()
         return image_files
 
-    def screen_shot(self, image_name: str, count: int, interval_time: float, display: int = None) -> List[str]:
-        return self.__screen_shot_image(image_name, count, interval_time, display=display)
+    def screen_shot(self, image_name: str, count: int, interval_time: float, display: int = None) -> Sequence[str]:
+        return self.__screen_shot_image(image_name, count, interval_time)
 
-    def screen_shot_area(self, position: Tuple[int, int, int, int], image_name: str, count: int, interval_time: float,
-                         display: int = None) -> List[str]:
+    def screen_shot_area(self, position: Position, image_name: str, count: int, interval_time: float,
+                         display: int = None) -> Sequence[str]:
         return self.__screen_shot_image(image_name, count, interval_time, position)
 
     def remove_file(self, remote: str):
@@ -179,7 +170,7 @@ class HypervisorScreenShot(BaseScreenShot):
         """
         self.__adb_command(f"shell htalk shell 'rm {remote}'")
 
-    def remove_files(self, files: List[str]):
+    def remove_files(self, files: Sequence[str]):
         """
         htalk命令，删除多个文件
         :param files: 存放文件地址的列表

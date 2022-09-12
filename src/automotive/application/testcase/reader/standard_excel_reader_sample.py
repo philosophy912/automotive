@@ -7,9 +7,9 @@
 # @Created:     2021/7/3 - 22:14
 # --------------------------------------------------------
 import os
-from typing import Dict, List
+from typing import Dict, Sequence
 
-from automotive.application.common.constants import Testcase, priority_config, point, index_list
+from automotive.application.common.constants import Testcase, PRIORITY_CONFIG, INDEX_LIST
 from automotive.application.common.interfaces import BaseReader, TestCases
 from automotive.logger.logger import logger
 from automotive.application.common.enums import ModifyTypeEnum
@@ -25,7 +25,7 @@ finally:
 
 class StandardExcelSampleReader(BaseReader):
 
-    def __init__(self, ignore_sheet_name: List[str] = None):
+    def __init__(self, ignore_sheet_name: Sequence[str] = None):
         # 从哪一行开始读取
         if ignore_sheet_name is None:
             ignore_sheet_name = ["Summary"]
@@ -99,7 +99,7 @@ class StandardExcelSampleReader(BaseReader):
                 # automation_cell=空“”，automation=None； =是，automation=True；=other，automation=False,只有是，xmind才写入[A]
                 testcase.automation = automation_cell == "是" if automation_cell else None
                 priority_cell = sheet.range(f"I{i}").value
-                testcase.priority = priority_config[priority_cell] if priority_cell else None
+                testcase.priority = PRIORITY_CONFIG[priority_cell] if priority_cell else None
                 test_result = sheet.range(f"N{i}").value
                 testcase.test_result = test_result.strip().upper() if test_result else None
                 testcase.calc_hash()
@@ -113,7 +113,8 @@ class StandardExcelSampleReader(BaseReader):
     def __filter_automotive(content: str) -> bool:
         return not (content.startswith("0x") or content.startswith("0X"))
 
-    def __parse_pre_condition(self, pre_condition: str) -> List[str]:
+    @staticmethod
+    def __parse_pre_condition(pre_condition: str) -> Sequence[str]:
         """
         解析前置条件
         :param pre_condition: 前置条件的字符串
@@ -141,14 +142,14 @@ class StandardExcelSampleReader(BaseReader):
                 contents.append(pre)
         return contents
 
-    def __parse_actions(self, actions: str) -> List[str]:
+    def __parse_actions(self, actions: str) -> Sequence[str]:
         total = []
         lines = actions.split("\n")
         temp = []
         for i, line in enumerate(lines):
             if line == '':
                 continue
-            if line[0] in index_list:
+            if line[0] in INDEX_LIST:
                 # temp里装的是，每行带序号的索引（比如有四行：第一行和第三行，带操作步骤序号，temp=[0,2]
                 temp.append(i)
         # 没有序号的情况，即只有一个操作步骤
@@ -179,13 +180,13 @@ class StandardExcelSampleReader(BaseReader):
         :param content:
         :return:
         """
-        if content[0] in index_list:
+        if content[0] in INDEX_LIST:
             content = content[1:]
             if content[0] in (".", "。", " "):
                 content = content[1:]
         return content
 
-    def __parse_exceptions(self, exceptions: str) -> List[str]:
+    def __parse_exceptions(self, exceptions: str) -> Sequence[str]:
         contents = []
         if exceptions:
             exception_lines = exceptions.split("\r\n")

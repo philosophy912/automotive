@@ -11,7 +11,7 @@ import cv2
 import time
 import threading
 from concurrent.futures.thread import ThreadPoolExecutor
-from typing import Union, Dict, Any, Optional
+from typing import Union, Dict, Optional
 
 from ..common.typehints import NumpyArray
 from ..logger.logger import logger
@@ -404,7 +404,7 @@ class Camera(object):
             self.__capture.set(key, item)
 
     @check_connect("__capture", camera_tips)
-    def get_property(self, property_name: str = '') -> Union[str, Dict[str, Any]]:
+    def get_property(self, property_name: str = '') -> Union[str, Dict]:
         """
         获取摄像头当前参数设置
 

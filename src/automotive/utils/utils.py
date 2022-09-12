@@ -18,7 +18,7 @@ import inspect
 import zipfile
 import yaml
 from datetime import datetime
-from typing import Union, List, Any, Dict, Tuple, Optional
+from typing import Union, Dict, Tuple, Optional, Sequence, NoReturn
 
 from ..common.typehints import Number
 from ..logger.logger import logger
@@ -154,7 +154,7 @@ class Utils(metaclass=Singleton):
         return pinyin.get_initial(text, delimiter) if is_first else pinyin.get(text, delimiter, format_.value)
 
     @staticmethod
-    def is_type_correct(actual_: Any, except_: Any) -> bool:
+    def is_type_correct(actual_, except_) -> bool:
         """
         判断类型是否属于期望类型
 
@@ -179,7 +179,7 @@ class Utils(metaclass=Singleton):
         return inspect.stack()[1][3]
 
     @staticmethod
-    def sleep(sleep_time: float, text: Optional[str] = None):
+    def sleep(sleep_time: float, text: Optional[str] = None) -> NoReturn:
         """
         带文字版的sleep，其中logger为loguru输出，级别为info
 
@@ -202,7 +202,7 @@ class Utils(metaclass=Singleton):
             time.sleep(sleep_time)
         time.sleep(decimal)
 
-    def random_sleep(self, start: Number, end: Number):
+    def random_sleep(self, start: Number, end: Number) -> NoReturn:
         """
         随机sleep
 
@@ -222,7 +222,7 @@ class Utils(metaclass=Singleton):
             time.sleep(sleep_time)
 
     @staticmethod
-    def text(content: str, level: Optional[str] = None):
+    def text(content: str, level: Optional[str] = None) -> NoReturn:
         """
         输出文字，方便调用
 
@@ -262,7 +262,7 @@ class Utils(metaclass=Singleton):
         raise RuntimeError(f"can not found {top_folder_name} in {current_path} ")
 
     @staticmethod
-    def zip_file(zip_folder: str, zip_file_name: str):
+    def zip_file(zip_folder: str, zip_file_name: str) -> NoReturn:
         """
         压缩文件夹到文件中
 
@@ -277,7 +277,7 @@ class Utils(metaclass=Singleton):
             zip_file.close()
 
     @staticmethod
-    def get_json_obj(file: str, encoding: str = "utf-8") -> Dict[Any, Any]:
+    def get_json_obj(file: str, encoding: str = "utf-8") -> Dict:
         """
         获取json文件中object对象
 
@@ -294,7 +294,7 @@ class Utils(metaclass=Singleton):
             return content
 
     @staticmethod
-    def read_yml_full(file: str, encoding: str = "UTF-8") -> Dict[str, str]:
+    def read_yml_full(file: str, encoding: str = "UTF-8") -> Dict:
         """
         读取yml文件中的内容(full_load方法)
 
@@ -311,7 +311,7 @@ class Utils(metaclass=Singleton):
             return content
 
     @staticmethod
-    def read_yml_safe(file: str, encoding: str = "UTF-8") -> Dict[str, str]:
+    def read_yml_safe(file: str, encoding: str = "UTF-8") -> Dict:
         """
         读取yml文件中的内容（safe_load方法)
 
@@ -328,7 +328,7 @@ class Utils(metaclass=Singleton):
             return content
 
     @staticmethod
-    def read_yml_un_safe(file: str, encoding: str = "UTF-8") -> Dict[str, str]:
+    def read_yml_un_safe(file: str, encoding: str = "UTF-8") -> Dict:
         """
         读取yml文件中的内容(unsafe_load方法)
 
@@ -345,7 +345,7 @@ class Utils(metaclass=Singleton):
             return content
 
     @staticmethod
-    def filter_images(folder: str, image_name: str) -> List[str]:
+    def filter_images(folder: str, image_name: str) -> Sequence[str]:
         """
         遍历文件夹取出名字是测试用例名字的图片
 
@@ -365,7 +365,8 @@ class Utils(metaclass=Singleton):
         return filter_images
 
     @staticmethod
-    def exec_command_with_output(command: str, workspace: Optional[str] = None, encoding: str = "utf-8") -> Tuple:
+    def exec_command_with_output(command: str, workspace: Optional[str] = None, encoding: str = "utf-8",
+                                 is_shell: Optional[bool] = None) -> Tuple:
         """
         有输出的执行
 
@@ -375,9 +376,13 @@ class Utils(metaclass=Singleton):
 
         :param encoding: 编码格式
 
+        :param is_shell: 是否以shell方式执行
+
         :return: 输出的值
         """
-        is_shell = False if platform.system() == "Windows" else True
+        logger.debug(f"command is {command}")
+        if is_shell is None:
+            is_shell = False if platform.system() == "Windows" else True
         if workspace:
             logger.debug(f"cwd is [{workspace}]")
             p = sp.Popen(command, shell=is_shell, cwd=workspace, stdout=sp.PIPE, stderr=sp.PIPE)
@@ -386,7 +391,7 @@ class Utils(metaclass=Singleton):
         stdout, stderr = p.communicate()
         return stdout.decode(encoding), stderr.decode(encoding)
 
-    def exec_command_must_success(self, command: str, workspace: Optional[str] = None):
+    def exec_command_must_success(self, command: str, workspace: Optional[str] = None) -> NoReturn:
         """
         有输出的执行必须成功
 
@@ -400,7 +405,7 @@ class Utils(metaclass=Singleton):
             logger.error(f"execute command [{command}] failed, please check it again")
             sys.exit(1)
 
-    def exec_commands_must_success(self, commands: List, workspace: Optional[str] = None):
+    def exec_commands_must_success(self, commands: Sequence, workspace: Optional[str] = None) -> NoReturn:
         """
         有输出的执行必须成功
 
@@ -413,7 +418,7 @@ class Utils(metaclass=Singleton):
         for command in commands:
             self.exec_command_must_success(command, workspace)
 
-    def exec_commands(self, commands: List, workspace: Optional[str] = None, sub_process: bool = True):
+    def exec_commands(self, commands: Sequence, workspace: Optional[str] = None, sub_process: bool = True) -> NoReturn:
         """
         执行命令集
 
@@ -460,7 +465,7 @@ class Utils(metaclass=Singleton):
             return 0
 
     @staticmethod
-    def remove_tree(folder: str):
+    def remove_tree(folder: str) -> NoReturn:
         """
         删除文件夹 可能存在权限问题导致无法删除
 
@@ -473,7 +478,7 @@ class Utils(metaclass=Singleton):
             logger.info(f"[{folder}] is not exist or not folder")
 
     @staticmethod
-    def check_file_exist(file: str):
+    def check_file_exist(file: str) -> NoReturn:
         """
         检查文件是否存在
         :param file: w文件
@@ -482,7 +487,7 @@ class Utils(metaclass=Singleton):
             raise RuntimeError(f"file[{file}] is not exist or not a file")
 
     @staticmethod
-    def check_folder_exist(folder: str):
+    def check_folder_exist(folder: str) -> NoReturn:
         """
         检查路径是否存在
 
@@ -491,7 +496,7 @@ class Utils(metaclass=Singleton):
         if not (os.path.exists(folder) and os.path.isdir(folder)):
             raise RuntimeError(f"folder[{folder}] is not exist or not a folder")
 
-    def check_git_repository(self, folder: str):
+    def check_git_repository(self, folder: str) -> NoReturn:
         """
         检查路径是否为git仓库
 
@@ -502,7 +507,7 @@ class Utils(metaclass=Singleton):
         if not (os.path.exists(git_folder) and os.path.isdir(git_folder)):
             raise RuntimeError(f"folder[{folder}] is not a git repository, please check it.")
 
-    def check_repo_repository(self, folder: str):
+    def check_repo_repository(self, folder: str) -> NoReturn:
         """
         检查路径是否为git仓库
 
@@ -513,7 +518,7 @@ class Utils(metaclass=Singleton):
         if not (os.path.exists(git_folder) and os.path.isdir(git_folder)):
             raise RuntimeError(f"folder[{folder}] is not a repo repository, please check it.")
 
-    def delete_file(self, file_name: str):
+    def delete_file(self, file_name: str) -> NoReturn:
         """
         删除文件
         :param file_name: 文件名称
@@ -527,7 +532,7 @@ class Utils(metaclass=Singleton):
             cmd = f"rm -rvf {file_name}"
         self.exec_command(cmd, sub_process=flag)
 
-    def delete_folder(self, folder_name: str):
+    def delete_folder(self, folder_name: str) -> NoReturn:
         """
         删除文件夹
 
@@ -543,7 +548,7 @@ class Utils(metaclass=Singleton):
         self.exec_command(cmd, sub_process=flag)
 
     @staticmethod
-    def to_hex_list(number_list: List[int]) -> List[str]:
+    def to_hex_list(number_list: Sequence[int]) -> Sequence[str]:
         """
         把int列表转换成十六进制字符串列表
         :param number_list: 数字列表， 当十六进制数字小于16的时候，即1位数的时候，自动补零
@@ -556,3 +561,42 @@ class Utils(metaclass=Singleton):
                 hex_value = f"0{hex_value}"
             commands.append(hex_value)
         return commands
+
+    @staticmethod
+    def get_class_from_name(class_name: str) -> type:
+        automotive_module = __import__("automotive", fromlist=[])
+        # 获取类对象
+        return getattr(automotive_module, class_name)
+
+    def get_param_from_class_name(self, class_name: Union[str, type],
+                                  default_filter: Optional[Sequence] = None) -> Dict:
+        """
+        根据类名获取不包含wrapper的方法以及对应的参数, 仅支持automotive库
+        :param class_name: 类名，大小写敏感
+        :param default_filter: 默认过滤的方法，包含装饰器的方法名
+        :return:
+        """
+        methods = dict()
+        if default_filter is None:
+            default_filter = ["wrapper"]
+        # 获取类对象
+        if isinstance(class_name, str):
+            clazz = self.get_class_from_name(class_name)
+        else:
+            clazz = class_name
+        # 获取类中没有装饰器的函数
+        clazz_methods = inspect.getmembers(clazz, inspect.isfunction)
+        clazz_methods = list(filter(lambda x: not x[0].startswith("_") or x[0] == "__init__", clazz_methods))
+        for filter_name in default_filter:
+            clazz_methods = list(filter(lambda x: filter_name not in str(x[1]).lower(), clazz_methods))
+        for clazz_method in clazz_methods:
+            method_name = clazz_method[0]
+            logger.debug(f"method_name is {method_name}")
+            # 获取类中的方法
+            function = getattr(clazz, method_name)
+            # 获取类中的参数个数
+            params = function.__code__.co_varnames[0:function.__code__.co_argcount]
+            # 过滤self
+            params = list(filter(lambda x: x != "self", params))
+            methods[method_name] = params
+        return methods

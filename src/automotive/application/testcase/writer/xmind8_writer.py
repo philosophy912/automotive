@@ -7,9 +7,9 @@
 # @Created:     2021/7/3 - 22:31
 # --------------------------------------------------------
 import os
-from typing import Dict, List
+from typing import Dict, Sequence
 
-from automotive.application.common.constants import split_char, Testcase, automation_prefix
+from automotive.application.common.constants import SPLIT_CHAR, Testcase, AUTOMATION_PREFIX
 from automotive.application.common.interfaces import BaseWriter, TestCases
 from automotive.logger.logger import logger
 
@@ -79,7 +79,7 @@ class Xmind8Writer(BaseWriter):
             logger.debug(f"now write the {index + 1} testcase")
             module_str = testcase.module
             logger.debug(f"module is {module_str}")
-            modules = module_str.split(split_char)
+            modules = module_str.split(SPLIT_CHAR)
             logger.debug(f"modules = [{modules}]")
             subtopics = root_topic.getSubTopics()
             if len(subtopics) > 0:
@@ -118,7 +118,7 @@ class Xmind8Writer(BaseWriter):
         # 添加了测试用例节点, 判断了是否关联了需求ID
         topic_titles = ["TC"]
         if testcase.automation:
-            topic_titles.append(automation_prefix)
+            topic_titles.append(AUTOMATION_PREFIX)
         topic_titles.append(testcase.name)
         if testcase.requirement_id != "":
             topic_titles.append(f"[{testcase.requirement_id}]")
@@ -147,7 +147,7 @@ class Xmind8Writer(BaseWriter):
                 steps = testcase.steps
                 self.__handle_steps(s_topic, steps, workbook)
 
-    def __handle_steps(self, s_topic: TopicElement, steps: Dict[str, List[str]], workbook: WorkbookDocument):
+    def __handle_steps(self, s_topic: TopicElement, steps: Dict[str, Sequence[str]], workbook: WorkbookDocument):
         """
         写入执行步骤
         :param s_topic: TC下面的s节点
@@ -163,7 +163,7 @@ class Xmind8Writer(BaseWriter):
                     value_topic = self.__create_topic(value, workbook)
                     step_topic.addSubTopic(value_topic)
 
-    def __handle_pre_condition(self, p_topic: TopicElement, pre_condition: List[str], workbook: WorkbookDocument):
+    def __handle_pre_condition(self, p_topic: TopicElement, pre_condition: Sequence[str], workbook: WorkbookDocument):
         """
         写入前置条件
         :param p_topic:  TC下面的p节点
@@ -191,7 +191,7 @@ class Xmind8Writer(BaseWriter):
                 return sub_topic
         raise RuntimeError(f"no subtopic[{module}] found ")
 
-    def __add_subtopic(self, topic: TopicElement, modules: List[str], workbook: WorkbookDocument) -> TopicElement:
+    def __add_subtopic(self, topic: TopicElement, modules: Sequence[str], workbook: WorkbookDocument) -> TopicElement:
         """
         新文件的时候新增子节点
         :param topic: 根节点

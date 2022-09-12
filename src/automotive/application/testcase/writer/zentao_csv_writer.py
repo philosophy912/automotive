@@ -7,16 +7,18 @@
 # @Created:     2021/7/3 - 22:51
 # --------------------------------------------------------
 import csv
-from typing import Dict, List, Tuple
+from typing import Dict, Sequence, Tuple
 
 from automotive.application.common.interfaces import BaseWriter, TestCases
 from automotive.logger.logger import logger
 
 
 class ZentaoCsvWriter(BaseWriter):
-    def write_to_file(self, file: str, testcases: Dict[str, TestCases]):
+    def write_to_file(self, file: str, testcases: Dict[str, TestCases], temp_file: str = None):
         """
         把测试用例写入到excel文件中去
+
+        :param temp_file: 模板文件
 
         :param file:  输出的csv文件所在的路径
 
@@ -33,7 +35,7 @@ class ZentaoCsvWriter(BaseWriter):
                 f_csv.writerow(file_header)
                 f_csv.writerows(contents)
 
-    def __convert_csv_testcases(self, module: str, testcases: TestCases) -> List[List[str]]:
+    def __convert_csv_testcases(self, module: str, testcases: TestCases) -> Sequence[Sequence[str]]:
         """
         根据模板文件生成相关的内容
         :param testcases: 测试用例列表
@@ -74,7 +76,7 @@ class ZentaoCsvWriter(BaseWriter):
         return result
 
     @staticmethod
-    def __convert_pre_condition(pre_conditions: List[str]) -> str:
+    def __convert_pre_condition(pre_conditions: Sequence[str]) -> str:
         """
         先把列表加上序号来进行相关的处理
         :param pre_conditions:前置条件列表
@@ -89,7 +91,7 @@ class ZentaoCsvWriter(BaseWriter):
             return ""
 
     @staticmethod
-    def __convert_steps_condition(steps: Dict[str, List[str]]) -> Tuple[str, str]:
+    def __convert_steps_condition(steps: Dict[str, Sequence[str]]) -> Tuple[str, str]:
         """
         转换执行步骤和期望结果
         :param steps:

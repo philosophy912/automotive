@@ -8,7 +8,7 @@
 # --------------------------------------------------------
 import os
 import sys
-from typing import List, Tuple, Any, Optional
+from typing import Sequence, Tuple, Optional
 
 import yaml
 
@@ -63,7 +63,7 @@ def set_logger(level: str = "debug", folder: Optional[str] = None):
                     encoding="utf-8")
 
 
-def get_files(folder: str) -> List[str]:
+def get_files(folder: str) -> Sequence[str]:
     """
     获取当前文件夹下面的所有文件
 
@@ -101,7 +101,7 @@ def get_config(config_file: str) -> Tuple[str, str]:
         return level, log_folder
 
 
-def find_config_file(folder: str, config_yml_file: str) -> Tuple[str, Any]:
+def find_config_file(folder: str, config_yml_file: str) -> Tuple[str, Optional[str]]:
     """
     查找指定的配置文件
 

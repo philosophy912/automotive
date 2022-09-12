@@ -21,11 +21,11 @@ class ProjectEnum(Enum):
     CHANGAN_75A121 = "75A121", False
 
     @staticmethod
-    def from_value(file: str):
+    def from_value(project_name: str):
         for key, item in ProjectEnum.__members__.items():
-            if item.value[0].upper in key:
+            if item.value[0].upper() == project_name:
                 return item
-        raise ValueError(f"{file} can not be found in ProjectEnum")
+        raise ValueError(f"{project_name} can not be found in ProjectEnum")
 
 
 @unique

@@ -108,7 +108,7 @@ class ToolTypeEnum(Enum):
         :return: 枚举对象本身
         """
         for key, item in ToolTypeEnum.__members__.items():
-            if type_.strip().upper() == item.value.upper():
+            if value.strip().upper() == item.value.upper():
                 return item
         raise ValueError(f"{value} can not be found in ToolTypeEnum")
 

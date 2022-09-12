@@ -6,7 +6,7 @@
 # @Author:      lizhe
 # @Created:     2021/11/18 - 22:27
 # --------------------------------------------------------
-from typing import Union, Dict, List, Tuple
+from typing import Union, Dict, List, Tuple, Sequence
 
 # 数字类型
 Number = Union[int, float]
@@ -16,5 +16,5 @@ MessageType = Dict[str, Union[str, int, float, bool, List[SignalType]]]
 Messages = List[MessageType]
 IdMessage = Dict[int, MessageType]
 NameMessage = Dict[str, MessageType]
-FilterNode = Union[str, Union[Tuple[str, ...], List[str]]]
+FilterNode = Union[str, Union[Tuple[str, ...], Sequence[str]]]
 MessageIdentity = Union[int, str]

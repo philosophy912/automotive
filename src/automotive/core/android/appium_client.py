@@ -7,7 +7,7 @@
 # @Created:     2021/5/1 - 23:48
 # --------------------------------------------------------
 import time
-from typing import Dict, Union, Tuple, List, Optional
+from typing import Dict, Tuple, Sequence, Optional, Union
 
 from appium import webdriver
 from appium.webdriver import WebElement
@@ -116,7 +116,7 @@ class AppiumClient(BaseAndroid):
     def __wait_until(element: Union[WebDriver, WebElement],
                      locator: Union[str, Tuple[str, str]],
                      function_name: str,
-                     timeout: Optional[float]) -> Union[WebElement, List[WebElement]]:
+                     timeout: Optional[float]) -> Union[WebElement, Sequence[WebElement]]:
         """
         等待元素出现
 
@@ -174,7 +174,7 @@ class AppiumClient(BaseAndroid):
     def __find_elements_by_ui_selector(self,
                                        element: Union[WebDriver, WebElement],
                                        locator: str,
-                                       timeout: Optional[float]) -> List[WebElement]:
+                                       timeout: Optional[float]) -> Sequence[WebElement]:
         """
         通过uiselector方式查找elements
 
@@ -222,7 +222,7 @@ class AppiumClient(BaseAndroid):
                 raise TypeError(f"key[{key}] is not support and only support {UISELECTORS} and {LOCATORS}")
 
     def __get_elements(self, element: Union[WebDriver, WebElement], locator: Dict[str, str],
-                       timeout: Optional[float]) -> List[WebElement]:
+                       timeout: Optional[float]) -> Sequence[WebElement]:
         """
         查找element下面的locator定位所在的元素列表, 只支持一种定位方式，即len(locator) = 1
 
@@ -331,7 +331,7 @@ class AppiumClient(BaseAndroid):
                 locator = self.__get_ui_selector(locator)
                 return self.__find_element_by_ui_selector(self._driver, locator, timeout)
 
-    def get_elements(self, locator: Locator, timeout: float = DEFAULT_TIME_OUT) -> List[WebElement]:
+    def get_elements(self, locator: Locator, timeout: float = DEFAULT_TIME_OUT) -> Sequence[WebElement]:
         if len(locator) == 1:
             locator = self._convert_locator(locator)
             key, value = self.__get_key_value(locator)
@@ -359,7 +359,7 @@ class AppiumClient(BaseAndroid):
     def get_child_elements(self,
                            parent: AppiumLocatorElement,
                            locator: Locator,
-                           timeout: float = DEFAULT_TIME_OUT) -> List[WebElement]:
+                           timeout: float = DEFAULT_TIME_OUT) -> Sequence[WebElement]:
         element = self.get_element(parent, timeout)
         return self.__get_elements(element, locator, timeout)
 

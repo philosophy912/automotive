@@ -7,9 +7,9 @@
 # @Created:     2021/7/3 - 22:03
 # --------------------------------------------------------
 import os
-from typing import Dict, List, Tuple, Optional
+from typing import Dict, Sequence, Tuple, Optional, List
 
-from automotive.application.common.constants import replace_char, split_char, Testcase
+from automotive.application.common.constants import REPLACE_CHAR, SPLIT_CHAR, Testcase
 from automotive.application.common.interfaces import BaseReader, TestCases
 from automotive.logger.logger import logger
 
@@ -83,7 +83,7 @@ class Xmind8Reader(BaseReader):
             module_name, module_id = self._parse_id(root_topic.getTitle())
             if module_id != "":
                 self.__module_id = module_id
-                dict_name = f"{module_name}{replace_char}{module_id}"
+                dict_name = f"{module_name}{REPLACE_CHAR}{module_id}"
             else:
                 dict_name = module_name
             testcases = self.__filter_test_case_topic(root_topic)
@@ -129,11 +129,11 @@ class Xmind8Reader(BaseReader):
             if title.lower().startswith("tc"):
                 # 去掉了根模块
                 # ["多媒体","显示","中文"] split_char = '-'  "显示 - 中文"
-                module = split_char.join(modules[1:])
+                module = SPLIT_CHAR.join(modules[1:])
                 testcases.append((module, topic))
             else:
                 # 需要去掉self.__split_char定义的字符串连接符为空字符或者指定支付
-                title = title.replace(split_char, replace_char)
+                title = title.replace(SPLIT_CHAR, REPLACE_CHAR)
                 logger.debug(f"modules = {modules} it will append {title}")
                 modules.append(title)
                 logger.debug(f"after appends modules = {modules}")
@@ -148,7 +148,7 @@ class Xmind8Reader(BaseReader):
                     modules.pop(-1)
 
     @staticmethod
-    def __convert_steps_condition(steps: Dict[str, List[str]]) -> Tuple[str, str]:
+    def __convert_steps_condition(steps: Dict[str, Sequence[str]]) -> Tuple[str, str]:
         """
 
         :param steps:
@@ -175,7 +175,7 @@ class Xmind8Reader(BaseReader):
         exception_str = "\n".join(exception_contents)
         return steps_str, exception_str
 
-    def __convert_testcase(self, test_cases: List[TopicElement]) -> TestCases:
+    def __convert_testcase(self, test_cases: Sequence[TopicElement]) -> TestCases:
         """
         解析测试用例
         :param test_cases: 测试用例对象（字典结构）
@@ -218,14 +218,14 @@ class Xmind8Reader(BaseReader):
                     logger.debug(f"marker_id = {marker_id}")
                     if marker_id.startswith("priority"):
                         # 该用例存在优先级
-                        priority = int(marker_id.split(split_char)[1])
+                        priority = int(marker_id.split(SPLIT_CHAR)[1])
                         if priority > 4:
                             priority = 4
                         testcase.priority = priority
             testcase.calc_hash()
         return testcases
 
-    def __parse_testcase(self, testcase: TopicElement) -> Tuple[Optional[List[str]], Optional[Dict[str, List[str]]]]:
+    def __parse_testcase(self, testcase: TopicElement) -> Tuple[Optional[Sequence[str]], Optional[Dict[str, Sequence[str]]]]:
         """
         解析单个测试用例中的测试用例部分
 
@@ -266,7 +266,7 @@ class Xmind8Reader(BaseReader):
                 return None, None
 
     @staticmethod
-    def __parse_pre_condition(pre_condition: TopicElement) -> List[str]:
+    def __parse_pre_condition(pre_condition: TopicElement) -> Sequence[str]:
         """
         解析precondition， 允许前置条件为空
         :param pre_condition: 前置条件
@@ -285,7 +285,7 @@ class Xmind8Reader(BaseReader):
         return pre_conditions
 
     @staticmethod
-    def _convert_pre_condition(pre_conditions: List[str]) -> str:
+    def _convert_pre_condition(pre_conditions: Sequence[str]) -> str:
         """
         先把列表加上序号来进行相关的处理
         :param pre_conditions:前置条件列表
@@ -299,7 +299,7 @@ class Xmind8Reader(BaseReader):
         else:
             return ""
 
-    def __parse_steps(self, steps: TopicElement) -> Dict[str, List[str]]:
+    def __parse_steps(self, steps: TopicElement) -> Dict[str, Sequence[str]]:
         """
         解析steps
         :param steps: 步骤

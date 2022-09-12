@@ -7,7 +7,7 @@
 # @Created:     2021/5/1 - 23:44
 # --------------------------------------------------------
 import re
-from typing import Tuple, List
+from typing import Tuple, Sequence
 
 from automotive.core.can.message import Message
 from .trace_reader import TraceReader
@@ -16,7 +16,7 @@ from automotive.logger.logger import logger
 
 class PCanReader(TraceReader):
 
-    def read(self, file: str) -> List[Tuple[float, Message]]:
+    def read(self, file: str) -> Sequence[Tuple[float, Message]]:
         contents = self.__filter_content(file)
         logger.debug(f"trace size = {len(contents)}")
         return self.__convert(contents)
@@ -28,7 +28,7 @@ class PCanReader(TraceReader):
             return list(filter(lambda x: "Rx" in x, lines))
 
     @staticmethod
-    def __convert(contents: List[str]) -> List[Tuple[float, Message]]:
+    def __convert(contents: Sequence[str]) -> Sequence[Tuple[float, Message]]:
         """
         解析content，并生成message对象
              3)    216628.2  Rx         0406  8  06 01 00 00 00 00 00 00

@@ -7,9 +7,9 @@
 # @Created:     2021/7/3 - 22:37
 # --------------------------------------------------------
 import os
-from typing import Dict, List, Tuple
+from typing import Dict, Sequence, Tuple
 
-from automotive.application.common.constants import priority_config
+from automotive.application.common.constants import PRIORITY_CONFIG
 from automotive.application.common.interfaces import BaseWriter, TestCases
 from automotive.logger.logger import logger
 
@@ -28,16 +28,16 @@ class StandardExcelSampleWriter(BaseWriter):
     def __init__(self):
         self.__start_row = 3
 
-    def write_to_file(self, file: str, testcases: Dict[str, TestCases], tempfile: str):
+    def write_to_file(self, file: str, testcases: Dict[str, TestCases], temp_file: str = None):
         """
         把测试用例写入到excel文件中去
         :param file:  输出的excel文件
         :param testcases:  测试用例集合，字典类型
-        :param tempfile: 读取的excel模板文件
+        :param temp_file: 读取的excel模板文件
         """
         self._check_testcases(testcases)
         logger.debug(f"testcases is {testcases}")
-        template = self.__get_template_file(template=tempfile)
+        template = self.__get_template_file(template=temp_file)
         app = xw.App(visible=False, add_book=False)
         app.display_alerts = False
         app.screen_updating = False
@@ -86,7 +86,7 @@ class StandardExcelSampleWriter(BaseWriter):
                 raise RuntimeError("传入的excel模板文件：template不存在，请检查")
         return template
 
-    def __convert_testcases(self, testcases: TestCases) -> List[Tuple]:
+    def __convert_testcases(self, testcases: TestCases) -> Sequence[Tuple]:
         """
         根据模板文件生成相关的内容
         :param testcases: 测试用例列表
@@ -131,7 +131,7 @@ class StandardExcelSampleWriter(BaseWriter):
             # 两种情况，一种是step有多个操作步骤，一种情况是step只有一个操作步骤
             steps_str = "\n".join(steps)
             exceptions_str = "\n".join(exception_list)
-            priority = priority_config[int(testcase.priority)] if testcase.priority else ""
+            priority = PRIORITY_CONFIG[int(testcase.priority)] if testcase.priority else ""
             requirement = "\n".join(testcase.requirement) if testcase.requirement else ""
             if testcase.automation is not None:
                 automation = "是"
@@ -145,7 +145,7 @@ class StandardExcelSampleWriter(BaseWriter):
             result.append(line)
         return result
 
-    def __write_content_to_cell(self, sheet: Sheet, contents: List[Tuple]):
+    def __write_content_to_cell(self, sheet: Sheet, contents: Sequence[Tuple]):
         """
         一行一行写入数据
         :param sheet: sheet
@@ -168,7 +168,7 @@ class StandardExcelSampleWriter(BaseWriter):
         cell_range.api.Validation.Add(Type=DVType.xlValidateList, Formula1=formula)
 
     @staticmethod
-    def __convert_pre_condition(pre_conditions: List[str]) -> str:
+    def __convert_pre_condition(pre_conditions: Sequence[str]) -> str:
         """
         先把列表加上序号来进行相关的处理
         :param pre_conditions:前置条件列表
@@ -184,7 +184,7 @@ class StandardExcelSampleWriter(BaseWriter):
             return ""
 
     @staticmethod
-    def __convert_steps_condition(steps: Dict[str, List[str]]) -> Tuple[str, str]:
+    def __convert_steps_condition(steps: Dict[str, Sequence[str]]) -> Tuple[str, str]:
         """
 
         :param steps:

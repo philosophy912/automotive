@@ -6,11 +6,10 @@
 # @Author:      lizhe
 # @Created:     2021/11/18 - 22:56
 # --------------------------------------------------------
-
 import time
 from abc import ABCMeta, abstractmethod
 
-from typing import List, Tuple, Optional, Union
+from typing import Tuple, Optional, Sequence, Union
 
 from appium.webdriver import WebElement
 from appium.webdriver.common.touch_action import TouchAction
@@ -166,7 +165,7 @@ class BaseAndroid(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def get_elements(self, locator: LocatorElement, timeout: float = DEFAULT_TIME_OUT) -> List[Element]:
+    def get_elements(self, locator: LocatorElement, timeout: float = DEFAULT_TIME_OUT) -> Sequence[Element]:
         """
         根据定位符获取元素列表
 
@@ -222,7 +221,7 @@ class BaseAndroid(metaclass=ABCMeta):
     def get_child_elements(self,
                            parent: LocatorElement,
                            locator: Locator,
-                           timeout: float = DEFAULT_TIME_OUT) -> List[Element]:
+                           timeout: float = DEFAULT_TIME_OUT) -> Sequence[Element]:
         """
         在父元素中查找子元素列表
 
@@ -801,7 +800,7 @@ class BaseAndroid(metaclass=ABCMeta):
         return int(x), int(y)
 
     def __get_last_element_text(self,
-                                elements: List[Element],
+                                elements: Sequence[Element],
                                 direct: SwipeDirectorEnum,
                                 timeout: float) -> str:
         """
@@ -820,7 +819,7 @@ class BaseAndroid(metaclass=ABCMeta):
             return last_text
 
     @staticmethod
-    def _get_edge_element(elements: List[Element], direct: SwipeDirectorEnum, second: bool = False) -> Element:
+    def _get_edge_element(elements: Sequence[Element], direct: SwipeDirectorEnum, second: bool = False) -> Element:
         """
         根据方向获取边缘的element
 
@@ -964,7 +963,7 @@ class BaseAndroid(metaclass=ABCMeta):
             return element_text
 
     def _find_text_in_elements(self,
-                               elements: List[Element],
+                               elements: Sequence[Element],
                                text: str,
                                exact_match: bool,
                                timeout: float) -> Element:

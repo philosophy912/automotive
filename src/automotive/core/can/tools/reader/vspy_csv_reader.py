@@ -6,7 +6,7 @@
 # @Author:      lizhe
 # @Created:     2021/5/1 - 23:45
 # --------------------------------------------------------
-from typing import List, Tuple
+from typing import Sequence, Tuple
 
 from automotive.core.can.message import Message
 from .trace_reader import TraceReader
@@ -15,7 +15,7 @@ from automotive.logger.logger import logger
 
 class VspyCsvReader(TraceReader):
 
-    def read(self, file: str) -> List[Tuple[float, Message]]:
+    def read(self, file: str) -> Sequence[Tuple[float, Message]]:
         contents = self.__filter_content(file)
         logger.debug(f"trace size = {len(contents)}")
         return self.__convert(contents)
@@ -27,7 +27,7 @@ class VspyCsvReader(TraceReader):
             return list(filter(lambda x: len(x.split(",")) >= 23, lines))
 
     @staticmethod
-    def __convert(contents: list) -> List[Tuple[float, Message]]:
+    def __convert(contents: Sequence) -> Sequence[Tuple[float, Message]]:
         """
         解析content，并生成message对象
         2,0.281,0,67108866,F,T,PDC_1,HS CAN,BCM1,25C,F,F,00,00,00,00,00,00,00,00,,,SysSt_PDC,Off,

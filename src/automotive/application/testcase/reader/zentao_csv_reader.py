@@ -7,9 +7,9 @@
 # @Created:     2021/7/3 - 22:31
 # --------------------------------------------------------
 import csv
-from typing import Dict, List
+from typing import Dict, Sequence
 
-from automotive.application.common.constants import standard_header, Testcase, split_char, point
+from automotive.application.common.constants import STANDARD_HEADER, Testcase, SPLIT_CHAR, POINT
 from automotive.application.common.interfaces import BaseReader, TestCases
 from automotive.logger.logger import logger
 
@@ -37,40 +37,40 @@ class ZentaoCsvReader(BaseReader):
         return {self.__module: testcases}
 
     @staticmethod
-    def __convert_headers(headers: List[str]):
+    def __convert_headers(headers: Sequence[str]):
         """
         转换header为标准headers方便灵活读取
         :param headers:  表头
         """
-        for header_name, column_id in standard_header.items():
+        for header_name, column_id in STANDARD_HEADER.items():
             for index, header in enumerate(headers):
                 if header_name == header:
-                    standard_header[header_name] = index
+                    STANDARD_HEADER[header_name] = index
 
-    def __parse_line(self, row: List[str]) -> Testcase:
+    def __parse_line(self, row: Sequence[str]) -> Testcase:
         """
         每一行解析
         :param row:
         :return:
         """
-        module = row[standard_header["所属模块"]]
+        module = row[STANDARD_HEADER["所属模块"]]
         # U盘音乐-USB音乐进入方式
-        name = row[standard_header["用例标题"]]
-        steps = row[standard_header["步骤"]]
-        exception = row[standard_header["预期"]]
-        keywords = row[standard_header["关键词"]]
-        test_case_type = row[standard_header["用例类型"]]
-        priority = row[standard_header["优先级"]]
-        status = row[standard_header["用例状态"]]
-        phase = row[standard_header["适用阶段"]]
-        pre_condition = row[standard_header["前置条件"]]
-        requirement_id = row[standard_header["相关需求"]]
+        name = row[STANDARD_HEADER["用例标题"]]
+        steps = row[STANDARD_HEADER["步骤"]]
+        exception = row[STANDARD_HEADER["预期"]]
+        keywords = row[STANDARD_HEADER["关键词"]]
+        test_case_type = row[STANDARD_HEADER["用例类型"]]
+        priority = row[STANDARD_HEADER["优先级"]]
+        status = row[STANDARD_HEADER["用例状态"]]
+        phase = row[STANDARD_HEADER["适用阶段"]]
+        pre_condition = row[STANDARD_HEADER["前置条件"]]
+        requirement_id = row[STANDARD_HEADER["相关需求"]]
         testcase = Testcase()
         module, module_id = self._parse_id(module, ("(", ")"))
         self.__module = module
         # 此处的模块是需要name去做拆分的
-        name_list = name.split(split_char)
-        testcase.module = split_char.join(name_list[:-1])
+        name_list = name.split(SPLIT_CHAR)
+        testcase.module = SPLIT_CHAR.join(name_list[:-1])
         testcase.module_id = module_id
         # U盘音乐-USB音乐进入方式
         testcase.name = name_list[-1]
@@ -85,7 +85,7 @@ class ZentaoCsvReader(BaseReader):
         testcase.steps = self.__parse_steps(steps, exception)
         return testcase
 
-    def __parse_steps(self, steps: str, exception: str) -> Dict[str, List[str]]:
+    def __parse_steps(self, steps: str, exception: str) -> Dict[str, Sequence[str]]:
         """
         解析执行步骤
         :param steps:
@@ -108,7 +108,7 @@ class ZentaoCsvReader(BaseReader):
                     step_index = step[0]
                     content = step[1:]
                     # 去掉点
-                    if content[0] == point:
+                    if content[0] == POINT:
                         content = content[1:]
                     # 去掉空格，因为格式有可能是 1 电源ON
                     content = content.strip()
@@ -119,7 +119,7 @@ class ZentaoCsvReader(BaseReader):
                         e_index = exc[0]
                         e_content = exc[1:]
                         # 去掉点
-                        if e_content[0] == point:
+                        if e_content[0] == POINT:
                             e_content = e_content[1:]
                         # 表示一个步骤有多个期望结果 如 2.1 动态轨迹线不偏移，与静态轨迹线平行
                         # 解析后就变成了e_content = 1 动态轨迹线不偏移，与静态轨迹线平行

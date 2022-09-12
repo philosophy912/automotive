@@ -10,7 +10,7 @@ import time
 import random
 import copy
 from time import sleep
-from typing import Tuple, Union, List, Any, Dict, Optional
+from typing import Tuple, Union, Dict, Optional, Sequence
 
 from .common.typehints import MessageType, FilterNode, MessageIdentity
 from .message import Message, get_message
@@ -169,7 +169,7 @@ class Can(metaclass=Singleton):
         """
         self._can.clear_stack_data()
 
-    def get_stack(self) -> List[Message]:
+    def get_stack(self) -> Sequence[Message]:
         """
         获取当前栈中所收到的消息
 
@@ -234,11 +234,11 @@ class CANService(Can):
         self.__backup_name_messages = copy.deepcopy(self.__name_messages)
 
     @property
-    def name_messages(self) -> Dict[str, Any]:
+    def name_messages(self) -> Dict[str, Message]:
         return self.__name_messages
 
     @property
-    def messages(self) -> Dict[int, Any]:
+    def messages(self) -> Dict[int, Message]:
         return self.__messages
 
     def __restore_default_message(self):
@@ -275,7 +275,7 @@ class CANService(Can):
     def __filter_messages(self,
                           filter_sender: Optional[FilterNode] = None,
                           filter_nm: bool = True,
-                          filter_diag: bool = True) -> List[Message]:
+                          filter_diag: bool = True) -> Sequence[Message]:
         """
         根据条件过滤相应的消息帧
 
@@ -338,7 +338,7 @@ class CANService(Can):
         #     logger.error(f"transmit message {hex(msg_id)} failed, error is {e}")
 
     def __send_messages(self,
-                        messages: List[Message],
+                        messages: Sequence[Message],
                         interval: float = 0,
                         default_message: Optional[Dict[str, str]] = None,
                         is_random_value: bool = False):
@@ -369,7 +369,7 @@ class CANService(Can):
             raise RuntimeError(f"msg only support str or int, but now is {msg}")
         self.send_can_message(send_msg, False)
 
-    def send_can_signal_message(self, msg: MessageIdentity, signal: Dict[str, int]):
+    def send_can_signal_message(self, msg: MessageIdentity, signal: Dict[str, float]):
         """
         根据矩阵表中定义的Messages，来设置并发送message。
 
@@ -444,7 +444,7 @@ class CANService(Can):
         return self.receive_can_message(message_id).signals[signal_name].physical_value
 
     @staticmethod
-    def is_msg_value_changed(stack: List[Message], msg_id: int) -> bool:
+    def is_msg_value_changed(stack: Sequence[Message], msg_id: int) -> bool:
         """
         检测某个msg是否有变化，只能检测到整个8byte数据是否有变化
 
@@ -526,7 +526,7 @@ class CANService(Can):
             return msg_stack_size < receive_msg_size
 
     @staticmethod
-    def is_signal_value_changed(stack: List[Message], msg_id: int, signal_name: str) -> bool:
+    def is_signal_value_changed(stack: Sequence[Message], msg_id: int, signal_name: str) -> bool:
         """
         检测某个msg中某个signal是否有变化
 
@@ -550,9 +550,9 @@ class CANService(Can):
         return len(duplicate) > 1
 
     def get_receive_signal_values(self,
-                                  stack: List[Message],
+                                  stack: Sequence[Message],
                                   signal_name: str,
-                                  msg_id: Optional[str] = None) -> List[int]:
+                                  msg_id: Optional[str] = None) -> Sequence[int]:
         """
         所有曾经出现的信号值
         :param stack:
@@ -575,7 +575,7 @@ class CANService(Can):
         return result
 
     def count_signal_value(self,
-                           stack: List[Message],
+                           stack: Sequence[Message],
                            signal_name: str,
                            expect_value: int) -> int:
         """
@@ -603,7 +603,7 @@ class CANService(Can):
         return msg_count
 
     def check_signal_value(self,
-                           stack: List[Message],
+                           stack: Sequence[Message],
                            signal_name: str,
                            expect_value: int,
                            msg_id: Optional[int] = None,

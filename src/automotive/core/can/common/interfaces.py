@@ -8,7 +8,7 @@
 # --------------------------------------------------------
 from abc import ABCMeta, abstractmethod
 from concurrent.futures import ThreadPoolExecutor, ALL_COMPLETED, wait
-from typing import Tuple, Any, List
+from typing import Tuple, Sequence
 from time import sleep
 
 from automotive.common.constant import check_connect, can_tips
@@ -71,7 +71,7 @@ class BaseCanDevice(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def receive(self) -> Tuple[int, Any]:
+    def receive(self) -> Tuple:
         """
         接收CAN消息
         :return: message CAN消息
@@ -375,7 +375,7 @@ class BaseCanBus(metaclass=ABCMeta):
             raise RuntimeError(f"message_id {message_id} not receive")
 
     @check_connect("_can", can_tips, is_bus=True)
-    def get_stack(self) -> List[Message]:
+    def get_stack(self) -> Sequence[Message]:
         """
         获取CAN的stack
         """

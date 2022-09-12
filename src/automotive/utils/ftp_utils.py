@@ -9,7 +9,7 @@
 import os
 from time import sleep
 from ftplib import FTP
-from typing import List, Optional
+from typing import Sequence, Optional
 
 from ..common.constant import check_connect, connect_tips
 from ..logger.logger import logger
@@ -99,7 +99,7 @@ class FtpUtils(object):
         return local_files
 
     @check_connect("__flag", connect_tips)
-    def download_files(self, remote_files: List[str], local_folder: str) -> List[str]:
+    def download_files(self, remote_files: Sequence[str], local_folder: str) -> Sequence[str]:
         """
         下载文件列表到本地
 
@@ -160,7 +160,7 @@ class FtpUtils(object):
             raise RuntimeError(f"{local_file} is not exist or not file")
 
     @check_connect("__flag", connect_tips)
-    def upload_files(self, remote_folder: str, local_files: List[str]):
+    def upload_files(self, remote_folder: str, local_files: Sequence[str]):
         """
         上传本地文件列表到ftp服务器位置
 

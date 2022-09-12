@@ -11,7 +11,7 @@ import numpy as np
 import imagehash
 from PIL import Image
 from airtest.aircv import NoModuleError
-from typing import List, Optional, Union
+from typing import Sequence, Optional, Union
 
 # 2960*1440设备 内存耗费： kaze (2GB) >> sift > akaze >> surf > brisk > brief > orb > tpl
 # 单纯效果,推荐程度： tpl > surf ≈ sift > kaze > brisk > akaze> brief > orb
@@ -632,7 +632,7 @@ class Images(object):
 
     def rectangle_image_matrix(self,
                                image: Image,
-                               positions: List[Position],
+                               positions: Sequence[Position],
                                color: tuple,
                                is_convert: bool = False) -> NumpyArray:
         """
@@ -657,7 +657,7 @@ class Images(object):
 
     def rectangle_image(self,
                         image: Image,
-                        positions: List[Position],
+                        positions: Sequence[Position],
                         color: RGB,
                         target_image: Optional[str] = None,
                         is_convert: bool = False):

@@ -7,9 +7,10 @@
 # @Created:     2021/12/9 - 22:23
 # --------------------------------------------------------
 import os
-from typing import Dict, Tuple, List
-from automotive.application.common.constants import replace_char, split_char, Testcase, requirement_prefix, results, \
-    module_prefix, automation_prefix, index_list
+import random
+from typing import Dict, Tuple, Sequence, List
+from automotive.application.common.constants import REPLACE_CHAR, SPLIT_CHAR, Testcase, REQUIREMENT_PREFIX, RESULTS, \
+    MODULE_PREFIX, AUTOMATION_PREFIX, INDEX_LIST
 from automotive.logger.logger import logger
 from automotive.application.common.interfaces import BaseReader, TestCases
 from automotive.application.common.enums import ModifyTypeEnum
@@ -30,25 +31,73 @@ class Xmind8SampleReader(BaseReader):
         self.__handle_category(module, testcase)
         return {module: testcase}
 
+    def __duplicate(self, modules: list, temple: list) -> int:
+        """
+        产生随机数字random_id，直到random_id不等于列表（temple）中的元素
+        :param modules:模块列表  例如：”冷却液温度"
+        :param temple:存放testcase-id的列表
+        :return:testcase-ID值
+        """
+        # second
+        random_id = random.randint(1, len(modules) + 200)
+        if random_id in temple:
+            return self.__duplicate(modules, temple)
+        else:
+            return random_id
+
+    def __removal_duplicate(self, modules: list, temple: list) -> list:
+        """
+        补全ID
+        :param modules: testcase里面的module值，例如：“冷却液温度”
+        :param temple: 存放原始xmind文件中testcase-id值的列表
+        :return: 去重后的modules
+        """
+
+        for i in range(len(modules) - len(temple)):
+            random_id = self.__duplicate(modules, temple)
+            temple.append(random_id)
+        if len(temple) == len(modules):
+            for i in range(len(temple)):
+                modules[i] = modules[i] + "_" + str(temple[i])
+        else:
+            raise RuntimeError(f"id length is error")
+        return modules
+
+    def __check_modules(self, testcases: TestCases, template: list) -> TestCases:
+        """
+        重写testcase.module     加了ID
+        :param testcases: 用例类，例如：“冷却液温度”
+        :param template: 存放原始xmind文件中testcase-id值的列表
+        :return: 去重后的modules
+        """
+        # 把去重后的module，重新写入testcase.module中
+        # temple_modules = []
+        temple_modules = list(map(lambda x: x.module, testcases))
+        # 去重
+        modules = self.__removal_duplicate(temple_modules, template)
+        for i in range(len(testcases)):
+            testcases[i].module = modules[i]
+        return testcases
+
     @staticmethod
     def __handle_category(module: str, testcases: TestCases):
         for i, testcase in enumerate(testcases):
-            if split_char in module:
-                module_list = module.split(split_char)
-            elif replace_char in module:
-                module_list = module.split(replace_char)
+            if SPLIT_CHAR in module:
+                module_list = module.split(SPLIT_CHAR)
+            elif REPLACE_CHAR in module:
+                module_list = module.split(REPLACE_CHAR)
             else:
                 module_list = [module]
             category = module_list.pop(0)
             testcase.category = category
-            modules = testcase.module.split(split_char)
+            modules = testcase.module.split(SPLIT_CHAR)
             if module_list:
                 module_list.extend(modules)
                 # 重置模块名，方便后续统一调用
                 modules = module_list
-                testcase.module = split_char.join(modules)
-            module_str = replace_char.join(modules)
-            testcase.name = f"{category}{replace_char}{module_str}"
+                testcase.module = SPLIT_CHAR.join(modules)
+            module_str = REPLACE_CHAR.join(modules)
+            testcase.name = f"{category}{REPLACE_CHAR}{module_str}"
 
     @staticmethod
     def _read_root_topic_data_from_file(xmind_file: str) -> TopicElement:
@@ -86,7 +135,7 @@ class Xmind8SampleReader(BaseReader):
             module_name, module_id = self._parse_id(root_topic.getTitle())
             if module_id != "":
                 self.__module_id = module_id
-                dict_name = f"{module_name}{replace_char}{module_id}"
+                dict_name = f"{module_name}{REPLACE_CHAR}{module_id}"
             else:
                 dict_name = module_name
             testcases = self.__filter_test_case_topic(root_topic)
@@ -124,11 +173,11 @@ class Xmind8SampleReader(BaseReader):
             if title.lower().startswith("tc"):
                 # 去掉了根模块
                 # ["多媒体","显示","中文"] split_char = '-'  "显示 - 中文"
-                module = split_char.join(modules[1:])
+                module = SPLIT_CHAR.join(modules[1:])
                 testcases.append((module, topic))
             else:
                 # 需要去掉self.__split_char定义的字符串连接符为空字符或者指定支付
-                title = title.replace(split_char, replace_char)
+                title = title.replace(SPLIT_CHAR, REPLACE_CHAR)
                 logger.debug(f"modules = {modules} it will append {title}")
                 modules.append(title)
                 logger.debug(f"after appends modules = {modules}")
@@ -142,7 +191,7 @@ class Xmind8SampleReader(BaseReader):
                 else:
                     modules.pop(-1)
 
-    def __convert_testcase(self, test_cases: List[TopicElement]) -> TestCases:
+    def __convert_testcase(self, test_cases: Sequence[TopicElement]) -> TestCases:
         """
             解析测试用例
             :param test_cases: 测试用例对象（字典结构）
@@ -162,10 +211,10 @@ class Xmind8SampleReader(BaseReader):
             # 前置条件
             pre_conditions = []
             # module = [M]初始化界面-HU处于工作状态-初始化APP中
-            module_list = module.split(split_char)
+            module_list = module.split(SPLIT_CHAR)
             for module_str in module_list:
-                if module_str.startswith(module_prefix):
-                    modules.append(module_str.replace(module_prefix, ""))
+                if module_str.startswith(MODULE_PREFIX):
+                    modules.append(module_str.replace(MODULE_PREFIX, ""))
                 else:
                     pre_conditions.append(module_str)
             testcase.pre_condition = pre_conditions
@@ -174,17 +223,39 @@ class Xmind8SampleReader(BaseReader):
             # 去掉TC
             ts_title = title[2:]
             # 如果[A]在title里面，去掉[A],并加自动化标签
-            if automation_prefix in ts_title:
+            if AUTOMATION_PREFIX in ts_title:
                 testcase.automation = True
-                ts_title = ts_title.replace(automation_prefix, "")
+                ts_title = ts_title.replace(AUTOMATION_PREFIX, "")
 
+            # # 确定有testcase-id的条件是：第一个元素<; && <a>  type(a)=int
+            # if ts_title[0] is '<' and isinstance(ts_title[1:ts_title.find('>')], int):
+            #     # 取ID号
+            #     start_n = ts_title.find('<')
+            #     end_n = ts_title.find('>')
+            #     # 取到的ID号  inter
+            #     inter = ts_title[start_n + 1:end_n]
+            #     title = ts_title[end_n + 1:]
+            #     # 把ID值放到列表中
+            #     template.append(inter)
+            # else:
+            #     title = title[2:]
             # testcaseID inter(判断有没有加case-ID）
-            if ts_title[0] is '<' and int(ts_title[1:ts_title.find('>')]):
-                # 取出testcase-id
-                start_n = ts_title.find('<')
-                end_n = ts_title.find('>')
-                inter = ts_title[start_n + 1:end_n]
-                # 去掉<ID>
+            # if ts_title[0] is '<' and int(ts_title[1:ts_title.find('>')]):
+            # 为TC添加testcase-id
+            start_n = ts_title.find('<')
+            end_n = ts_title.find('>')
+            inter = ts_title[start_n + 1:end_n]
+            if '_' in inter:
+                # if isinstance(inter.split('_')[0], int) and isinstance(inter.split('_')[1], int):
+                if inter.split('_')[0].isdigit() and inter.split('_')[1].isdigit():
+                    # 去掉<ID>
+                    title = ts_title[end_n + 1:]
+                    # 存放ID值，用于判断查重
+                    template.append(inter)
+                else:
+                    raise RuntimeError(f"{title}: 该模块没有加<ID>，请检查")
+
+            elif inter.isdigit():
                 title = ts_title[end_n + 1:]
                 # 存放ID值，用于判断查重
                 template.append(inter)
@@ -193,8 +264,9 @@ class Xmind8SampleReader(BaseReader):
                 raise RuntimeError(f"{title}: 该模块没有加<ID>，请检查")
 
             # testcase.module = ACC状态显示（模块名M）
+            # testcase.module = split_char.join(modules)
             # 给testcase加ID号
-            testcase.module = split_char.join(modules) + '_' + inter
+            testcase.module = SPLIT_CHAR.join(modules) + '_' + inter
             # 去掉TC和ID
             name = title
             # 考虑TC后有异常符号，做替换处理
@@ -213,7 +285,6 @@ class Xmind8SampleReader(BaseReader):
             testcases.append(testcase)
             # 解析优先级
             markers = tc.getMarkers()
-
             if len(markers) > 0:
                 # 可能存在优先级
                 for marker in markers:
@@ -221,7 +292,7 @@ class Xmind8SampleReader(BaseReader):
                     logger.debug(f"marker_id = {marker_id}")
                     if marker_id.startswith("priority"):
                         # 该用例存在优先级
-                        priority = int(marker_id.split(split_char)[1])
+                        priority = int(marker_id.split(SPLIT_CHAR)[1])
                         if priority > 4:
                             priority = 4
                         testcase.priority = priority
@@ -231,14 +302,16 @@ class Xmind8SampleReader(BaseReader):
                             testcase.fix = fix_cell
                         except ValueError:
                             logger.debug(f"{marker_id} is not ModifyTypeEnum")
+
         # 判断ID是否为空
+        logger.info(fr"总用例数量{len(template)}")
         for tem in template:
             if template.count(tem) > 1:
                 raise RuntimeError(f"{tem} : 此ID有重复值，请检查: ")
         return testcases
 
     @staticmethod
-    def __parse_testcase(testcase: TopicElement) -> Tuple[List[str], List[str], str]:
+    def __parse_testcase(testcase: TopicElement) -> Tuple[Sequence[str], Sequence[str], str]:
         requirements = []
         exceptions = []
         result = None
@@ -248,9 +321,9 @@ class Xmind8SampleReader(BaseReader):
         for topic in topics:
             title = topic.getTitle()
             title = title.strip()
-            if title.startswith(requirement_prefix):
-                requirements.append(title.replace(requirement_prefix, ""))
-            elif title.upper() in results:
+            if title.startswith(REQUIREMENT_PREFIX):
+                requirements.append(title.replace(REQUIREMENT_PREFIX, ""))
+            elif title.upper() in RESULTS:
                 result = title.upper()
             else:
                 exceptions.append(title)
@@ -262,7 +335,7 @@ class Xmind8SampleReader(BaseReader):
         lines = list(filter(lambda x: x != "", lines))
         temp = []
         for i, line in enumerate(lines):
-            if line[0] in index_list:
+            if line[0] in INDEX_LIST:
                 temp.append(i)
         # 没有序号的情况，即只有一个操作步骤
         if temp:

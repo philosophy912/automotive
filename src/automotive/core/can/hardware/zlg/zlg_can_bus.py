@@ -7,7 +7,7 @@
 # @Created:     2022/1/28 - 12:31
 # --------------------------------------------------------
 from time import sleep
-from typing import List
+from typing import Sequence
 
 from automotive.logger.logger import logger
 from automotive.core.can.common.interfaces import BaseCanBus
@@ -27,7 +27,7 @@ class ZlgCanBus(BaseCanBus):
         self._can = ZlgUsbCanDevice(can_fd)
 
     @staticmethod
-    def __get_data(data, length: int) -> List:
+    def __get_data(data, length: int) -> Sequence:
         msg_data = []
         for i in range(length):
             msg_data.append(data[i])

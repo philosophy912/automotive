@@ -9,7 +9,7 @@
 # 导入所需模块
 from inspect import stack
 from ctypes import memmove, c_uint
-from typing import List, Any, Tuple
+from typing import Sequence, Tuple
 
 from . import pcanbasic
 from automotive.logger.logger import logger
@@ -97,7 +97,7 @@ class PCanDevice(BaseCanDevice):
                 raise RuntimeError(f"Method <{stack()[0][3]}> Init PEAK CAN channel_{hex(channel.value)} Failed.")
 
     @staticmethod
-    def __data_package_fd(frame_length: int, message_id: int, send_type: int, data_length: int, data: List[Any]):
+    def __data_package_fd(frame_length: int, message_id: int, send_type: int, data_length: int, data: Sequence):
         """
         组包CAN FD发送数据，供VCI_Transmit函数使用。
 
@@ -135,7 +135,7 @@ class PCanDevice(BaseCanDevice):
         return send_data
 
     @staticmethod
-    def __data_package(frame_length: int, message_id: int, send_type: int, data_length: int, data: List[Any]):
+    def __data_package(frame_length: int, message_id: int, send_type: int, data_length: int, data: Sequence):
         """
         组包CAN发送数据，供VCI_Transmit函数使用。
 
@@ -310,7 +310,7 @@ class PCanDevice(BaseCanDevice):
             raise RuntimeError(f'PEAK CAN transmit failed. error info is {e}')
 
     @check_connect("_is_open", can_tips)
-    def receive(self, channel: int = None) -> Tuple[Any, Any]:
+    def receive(self, channel: int = None) -> Tuple:
         """
         Reads a CAN message from the receive queue of a PEAK CAN Channel
 

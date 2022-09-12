@@ -9,9 +9,9 @@
 import copy
 from time import sleep
 from tkinter import Frame, Button, NORMAL, DISABLED, W, BooleanVar, Checkbutton, Entry, Label, Tk, messagebox, \
-    HORIZONTAL, E , PhotoImage, LEFT
+    HORIZONTAL, E
 from tkinter.ttk import Combobox, Notebook, Separator
-from typing import List, Dict, Any, Union, Optional
+from typing import Sequence, Dict, Any, Union, Optional, Tuple
 from automotive.logger.logger import logger
 from automotive.core.can.can_service import CANService
 from automotive.core.can.common.enums import CanBoxDeviceEnum, BaudRateEnum
@@ -25,7 +25,7 @@ from ...utils.common.enums import ExcelEnum
 
 class TabFrame(Frame):
 
-    def __init__(self, master, can_service: CANService, config: Dict[str, Any], filter_nodes: List[str],
+    def __init__(self, master, can_service: CANService, config: Dict[str, Any], filter_nodes: Sequence[str],
                  common_panel: bool = False, max_line_count: int = None):
         super().__init__(master)
         self.can_service = can_service
@@ -255,7 +255,7 @@ class TabFrame(Frame):
             logger.error(e)
             self.buttons[text_name]["state"] = NORMAL
 
-    def __special_actions(self, button_type: tuple):
+    def __special_actions(self, button_type: Tuple):
         open_text_name = OPEN_DEVICE[0]
         close_text_name = CLOSE_DEVICE[0]
         signal_name_text_name = SIGNAL_NAME[0]
@@ -300,7 +300,8 @@ class TabFrame(Frame):
                 # 选中第一个则表示是True
                 exact_search = (index == 0)
                 stack = self.can_service.get_stack()
-                result = self.can_service.check_signal_value(stack=stack, signal_name =signal_name, expect_value=signal_value, count=search_count,
+                result = self.can_service.check_signal_value(stack=stack, signal_name=signal_name,
+                                                             expect_value=signal_value, count=search_count,
                                                              exact=exact_search)
                 show_message = "成功" if result else "失败"
                 exact_message = "精确" if exact_search else "不精确"
@@ -361,7 +362,7 @@ class TabFrame(Frame):
                                  offvalue=False,
                                  command=lambda x=function_name: self.__check_button_event(x),
                                  width=self.__checkBut_width,
-                                 anchor="w",wraplength=150,justify="left"
+                                 anchor="w", wraplength=150, justify="left"
 
                                  )
             self.check_buttons[function_name] = button
@@ -409,8 +410,9 @@ class TabFrame(Frame):
             values = list(value[VALUES].keys())
             logger.debug(f"row = {self.row}, column = {self.column}, index = {index}")
             # 创建Label框
-            Label(self, text=text_name, width=self.__label_width, anchor="w",wraplength=180,justify="left").grid(row=self.row, column=self.column,
-                                                                                   sticky=W)
+            Label(self, text=text_name, width=self.__label_width, anchor="w", wraplength=180, justify="left").grid(
+                row=self.row, column=self.column,
+                sticky=W)
             # 创建下拉框
             self.comboxs[function_name] = Combobox(self, values=values, state="readonly", width=self.__comboxs_width)
             # 设置下拉框初始值为第一个值
@@ -469,8 +471,9 @@ class TabFrame(Frame):
                 self.column += 1
             logger.debug(f"row = {self.row}, column = {self.column}, index = {index}")
             # 获取输入框的名称
-            Label(self, text=text_name, width=self.__label_width, anchor="w",wraplength=180,justify="left").grid(row=self.row, column=self.column,
-                                                                                   sticky=W)
+            Label(self, text=text_name, width=self.__label_width, anchor="w", wraplength=180, justify="left").grid(
+                row=self.row, column=self.column,
+                sticky=W)
             # 创建输入框
             self.entries[function_name] = Entry(self, width=self.__entrie_width)
             logger.debug(f"row = {self.row}, column = {self.column}, index = {index}")
@@ -561,7 +564,7 @@ class TabFrame(Frame):
                                  offvalue=False,
                                  command=lambda x=function_name: self.__thread_check_button_event(x),
                                  width=self.__thread_buttons_width,
-                                 anchor="w",wraplength=180,justify="left"
+                                 anchor="w", wraplength=180, justify="left"
 
                                  )
             self.thread_buttons[function_name] = button
@@ -599,8 +602,8 @@ class TabFrame(Frame):
         logger.debug(actions)
         while self.thread_button_bool_vars[name].get():
             self.__send_actions(actions)
-            
-    def __send_actions(self, actions: List):
+
+    def __send_actions(self, actions: Sequence):
         for action in actions:
             if len(action) == 2:
                 msg_id, signals = action
@@ -637,7 +640,7 @@ class TabFrame(Frame):
             # 创建CheckButton对象并放到thread_buttons中方便调用
             self.buttons[function_name] = Button(self, text=text_name,
                                                  command=lambda x=function_name: self.__thread_button_event(x),
-                                                 width=self.__buttons_width,wraplength=170,justify="left",anchor="w")
+                                                 width=self.__buttons_width, wraplength=170, justify="left", anchor="w")
             logger.debug(f"row = {self.row}, column = {self.column}, index = {index}")
             self.buttons[function_name].grid(row=self.row, column=self.column, sticky=W)
             index += 1
@@ -700,7 +703,8 @@ class TabFrame(Frame):
         msg_id, signal_name, signal_value, count, expect_value = check_msgs
         try:
             stack = self.can_service.get_stack()
-            result = self.can_service.check_signal_value(stack=stack, msg_id=msg_id, signal_name=signal_name, expect_value=signal_value, count=count, exact=expect_value)
+            result = self.can_service.check_signal_value(stack=stack, msg_id=msg_id, signal_name=signal_name,
+                                                         expect_value=signal_value, count=count, exact=expect_value)
             show_message = "成功" if result else "失败"
             exact_message = "精确" if expect_value else "不精确"
             message = f"检查【{hex(msg_id)}】中信号【{signal_name}】值为【{signal_value}】收到次数" \
@@ -722,11 +726,8 @@ class Gui(object):
     def __init__(self, excel_file: str, dbc: str, can_box_device: Union[CanBoxDeviceEnum, str, None] = None,
                  baud_rate: Union[BaudRateEnum, int] = BaudRateEnum.HIGH,
                  data_rate: Union[BaudRateEnum, int] = BaudRateEnum.DATA,
-                 channel_index: int = 1,
-                 filter_nodes: Optional[List[str]] = None, can_fd: bool = False,
-                 excel_type: ExcelEnum = ExcelEnum.OPENPYXL,
-                 max_workers: int = 500,
-                 max_line_count: int = 8):
+                 channel_index: int = 1, filter_nodes: Optional[Sequence[str]] = None, can_fd: bool = False,
+                 excel_type: ExcelEnum = ExcelEnum.OPENPYXL, max_workers: int = 500, max_line_count: int = 8):
         """
 
         :param excel_file: Excel文件路径 （必填项）
@@ -744,10 +745,10 @@ class Gui(object):
         self.can_service = CANService(dbc, can_box_device=can_box_device, baud_rate=baud_rate, data_rate=data_rate,
                                       channel_index=channel_index, can_fd=can_fd, max_workers=max_workers)
         # 默认消息发送要过滤的节点
-        
+
         self.__filter_nodes = filter_nodes
         # 获取按钮
-        service = ConfigReader(can_service=self.can_service,type_=excel_type)
+        service = ConfigReader(can_service=self.can_service, type_=excel_type)
         tab_configs = dict()
         tab_configs[COMMON] = {check_buttons: {}, thread_buttons: {}, comboxs: {},
                                entries: {}, buttons: {}, receive_buttons: {}}

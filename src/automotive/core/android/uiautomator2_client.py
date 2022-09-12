@@ -6,7 +6,7 @@
 # @Author:      lizhe
 # @Created:     2021/5/1 - 23:49
 # --------------------------------------------------------
-from typing import Union, List, Optional
+from typing import Union, Sequence, Optional
 
 import uiautomator2 as u2
 import time
@@ -120,7 +120,7 @@ class UiAutomator2Client(BaseAndroid):
                 locator = self._convert_locator(locator)
             return self.__wait_until(self._driver, locator, timeout)
 
-    def get_elements(self, locator: Locator, timeout: float = DEFAULT_TIME_OUT) -> List[UiObject]:
+    def get_elements(self, locator: Locator, timeout: float = DEFAULT_TIME_OUT) -> Sequence[UiObject]:
         elements = []
         element = self.get_element(locator, timeout)
         for i in range(element.count):
@@ -139,7 +139,7 @@ class UiAutomator2Client(BaseAndroid):
     def get_child_elements(self,
                            parent: U2LocatorElement,
                            locator: Locator,
-                           timeout: float = DEFAULT_TIME_OUT) -> List[UiObject]:
+                           timeout: float = DEFAULT_TIME_OUT) -> Sequence[UiObject]:
         elements = []
         element = self.get_child_element(parent, locator, timeout)
         for i in range(element.count):

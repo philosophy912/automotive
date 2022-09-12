@@ -13,7 +13,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.application import MIMEApplication
 from email.header import Header
 from email.mime.text import MIMEText
-from typing import List, Any, Optional
+from typing import Sequence, Optional, List
 
 from ..logger.logger import logger
 from .common.enums import EmailTypeEnum
@@ -87,8 +87,8 @@ class EmailUtils(object):
         return Account(primary_smtp_address=email_address, credentials=credentials,
                        autodiscover=True, access_type=DELEGATE)
 
-    def __send_exchange_email(self, email_to: List[str], subject: str, content: str,
-                              attachments: Optional[List[str]] = None, email_cc: Optional[List[str]] = None):
+    def __send_exchange_email(self, email_to: Sequence[str], subject: str, content: str,
+                              attachments: Optional[Sequence[str]] = None, email_cc: Optional[Sequence[str]] = None):
         from exchangelib import Message, Mailbox, HTMLBody, FileAttachment
         to_recipients = []
         for to in email_to:
@@ -110,8 +110,8 @@ class EmailUtils(object):
                 message.attach(attachment_file)
         message.send()
 
-    def send_email(self, email_to: List[str], subject: str, content: str, attachments: Optional[List[str]] = None,
-                   email_cc: Optional[List[str]] = None):
+    def send_email(self, email_to: List[str], subject: str, content: str,
+                   attachments: Optional[Sequence[str]] = None, email_cc: Optional[List[str]] = None):
         """
         发送邮件
         :param email_to:  邮件要发到哪里去
@@ -122,9 +122,9 @@ class EmailUtils(object):
         :return:
         """
         if email_cc is None:
-            email_cc = List[str]()
+            email_cc = []
         if attachments is None:
-            attachments = List[str]()
+            attachments = []
         if self.__type == EmailTypeEnum.SMTP:
             message = MIMEMultipart()
             message.attach(MIMEText(content, "html", "utf-8"))
@@ -132,7 +132,7 @@ class EmailUtils(object):
             message["To"] = ",".join(email_to)
             message["Cc"] = ",".join(email_cc)
             message["Subject"] = Header(subject, "utf-8").encode()
-            to_address = ",".join(email_to + email_cc)
+            to_address = ",".join((email_to + email_cc))
             for attachment in attachments:
                 with open(attachment, "rb") as f:
                     file_name = os.path.basename(attachment)
@@ -149,7 +149,7 @@ class EmailUtils(object):
         else:
             self.__send_exchange_email(email_to, subject, content, attachments, email_cc)
 
-    def receive_email(self, email_size: int = 10, folder: Optional[str] = None) -> List[Any]:
+    def receive_email(self, email_size: int = 10, folder: Optional[str] = None) -> Sequence:
         """
         TODO 暂时未完成测试
         接收邮件

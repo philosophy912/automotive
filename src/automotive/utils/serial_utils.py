@@ -8,7 +8,7 @@
 # --------------------------------------------------------
 import time
 from time import sleep
-from typing import List, Optional
+from typing import Sequence, Optional
 
 from .serial_port import SerialPort
 from .common.enums import SystemTypeEnum
@@ -67,7 +67,7 @@ class SerialUtils(object):
         """
         return self.__serial_port.read_all()
 
-    def read_lines(self) -> List[str]:
+    def read_lines(self) -> Sequence[str]:
         """
         读取内容
         """

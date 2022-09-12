@@ -7,14 +7,21 @@
 # @Created:     2021/8/3 - 22:02
 # --------------------------------------------------------
 from abc import ABCMeta, abstractmethod
-from .constants import Testcase, replace_char, GuiConfig, TEXT, ACTIONS, ON, OFF, CHECK_MSGS, VALUES
-from typing import Tuple, List, Optional, Dict, Any
+from queue import Queue
+from time import sleep
+
+from .constants import Testcase, REPLACE_CHAR, get_yml_config, CLASS_INSTANCE, FUNCTION_OPEN, FUNCTION_CLOSE
+from typing import Tuple, Sequence, Optional, Dict
+
+from automotive.utils.excel_utils import ExcelUtils
+from automotive.utils.player import Player
+from automotive.utils.images import Images
+from automotive.utils.utils import Utils
 from automotive.logger.logger import logger
-from .enums import GuiButtonTypeEnum
 
 Position = Tuple[int, int, int, int]
 Voltage_Current = Tuple[float, float]
-TestCases = List[Testcase]
+TestCases = Sequence[Testcase]
 
 
 class BaseDevice(metaclass=ABCMeta):
@@ -69,7 +76,7 @@ class BaseScreenShot(metaclass=ABCMeta):
                     image_name: str,
                     count: int,
                     interval_time: float,
-                    display: Optional[int] = None) -> List[str]:
+                    display: Optional[int] = None) -> Sequence[str]:
         """
         截图操作, 当截图有多张的时候，以__下划线分割并加编号
 
@@ -89,7 +96,7 @@ class BaseScreenShot(metaclass=ABCMeta):
                          image_name: str,
                          count: int,
                          interval_time: float,
-                         display: Optional[int] = None) -> List[str]:
+                         display: Optional[int] = None) -> Sequence[str]:
         """
         区域截图, 当截图有多张的时候，以__下划线分割并加编号
 
@@ -312,8 +319,8 @@ class BaseTestCase(metaclass=ABCMeta):
         :param module:
         :return: module和module_id
         """
-        if replace_char in module:
-            module_list = module.split(replace_char)
+        if REPLACE_CHAR in module:
+            module_list = module.split(REPLACE_CHAR)
             return module_list[0], module_list[1]
         else:
             return module, ""
@@ -332,12 +339,12 @@ class BaseReader(BaseTestCase):
 
 class BaseWriter(BaseTestCase):
     @abstractmethod
-    def write_to_file(self, file: str, testcases: Dict[str, TestCases], tempfile: str):
+    def write_to_file(self, file: str, testcases: Dict[str, TestCases], temp_file: str = None):
         """
         把测试用例集合写入到文件中
         :param file:  文件
         :param testcases: 测试用例集合
-        :param tempfile:excel模板文件地址
+        :param temp_file:excel模板文件地址
         """
         pass
 
@@ -347,3 +354,77 @@ class BaseWriter(BaseTestCase):
             raise RuntimeError("testcases is None")
         if len(testcases) == 0:
             raise RuntimeError("no testcase found")
+
+
+class BaseAction(metaclass=ABCMeta):
+
+    def __init__(self, yml_file: str, open_methods: Sequence = None, close_methods: Sequence = None):
+        """
+        :param open_methods: yml配置文件中类支持的打开方法
+        :param close_methods: yml配置文件中类支持的关闭方法
+        :param yml_file: YML文件所在路径
+        """
+        self.__utils = Utils()
+        # 配置open和close用到的方法
+        self.__open_methods = open_methods if open_methods else ("connect", "open")
+        self.__close_methods = close_methods if close_methods else ("close", "disconnect")
+        # 这一部分就是传参才能生成的对象实例
+        self.__result_dict = get_yml_config(yml_file, self.__utils, self.__open_methods, self.__close_methods)
+        # 存入对象池，方便调用
+        self._instances = dict()
+        # 此时实例化对象, 后续就可以根据这个配置的内容来直接调用
+        for name, value in self.__result_dict.items():
+            self.__class, self.__params = value[CLASS_INSTANCE]
+            self._instances[name] = self.__class(**self.__params)
+        # 图像对比类实例化
+        self._images = Images()
+        # 播放器类实例化
+        self._player = Player()
+        # Excel类实例化, 默认xlwings
+        self._excel_utils = ExcelUtils("xlwings")
+
+    def open(self):
+        """
+        根据配置的内容决定打开的设备，如摄像头、串口等
+        抽象类初始化的时候就会打开这些设备
+        TIPS: ExcelUtils除外
+        该方法在类初始化的时候自动调用
+        """
+        logger.debug("call open method")
+        for name, instance in self._instances.items():
+            # 'connect', {'port': 'COM12', 'baud_rate': 115200, 'log_folder': 'd:\\test'}
+            function_name, function_param = self.__result_dict[name][FUNCTION_OPEN]
+            # 调用方法
+            getattr(instance, function_name)(**function_param)
+
+    def close(self):
+        """
+        根据配置的内容决定关闭的设备，如摄像头、串口等
+        在代码结束的时候关闭之前打开的设备
+        TIPS: ExcelUtils除外
+        该方法在子类Run方法结束的时候需要手动调用
+        """
+        logger.debug("call close method")
+        for name, instance in self._instances.items():
+            # 'disconnect', {}
+            function_name, function_param = self.__result_dict[name][FUNCTION_CLOSE]
+            # 调用方法
+            getattr(instance, function_name)(**function_param)
+
+    @abstractmethod
+    def readme(self, queue: Queue):
+        """
+        抽象方法，该方法用于测试步骤的总体描述
+        框架会自动调用该方法
+        """
+        pass
+
+    @abstractmethod
+    def run(self, queue: Queue):
+        pass
+
+    def run_stress(self, queue: Queue):
+        self.readme(queue)
+        self.open()
+        self.run(queue)
+        self.close()

@@ -6,7 +6,7 @@
 # @Author:      lizhe
 # @Created:     2021/12/25 - 22:18
 # --------------------------------------------------------
-from typing import List, Optional, Union, Dict
+from typing import Sequence, Optional, Union, Dict
 from automotive.utils.common.interfaces import BaseExcelUtils, wb, sht, cell_range
 import xlwings as xw
 import openpyxl
@@ -32,7 +32,7 @@ class OpenpyxlExcelUtils(BaseExcelUtils):
     def close_workbook(self, workbook: Workbook):
         workbook.close()
 
-    def get_sheets(self, workbook: Workbook) -> List:
+    def get_sheets(self, workbook: Workbook) -> Sequence:
         return workbook.worksheets
 
     def get_sheet_dict(self, workbook: wb) -> Dict[str, sht]:
@@ -44,6 +44,9 @@ class OpenpyxlExcelUtils(BaseExcelUtils):
 
     def get_sheet(self, workbook: Workbook, sheet_name: str) -> Worksheet:
         return workbook.get_sheet_by_name(sheet_name)
+
+    def get_sheet_name(self, sheet: sht) -> str:
+        return sheet.title
 
     def copy_sheet(self, workbook: Workbook, origin_sheet_name: str, target_sheet_name: str) -> Worksheet:
         origin_sheet = self.get_sheet(workbook, origin_sheet_name)
@@ -58,22 +61,10 @@ class OpenpyxlExcelUtils(BaseExcelUtils):
     def get_max_rows(self, sheet: sht) -> int:
         return sheet.max_row
 
-    def get_valid_max_rows(self, sheet: sht):
-        i = sheet.max_row
-        real_max_row = 0
-        while i > 0:
-            row_dict = {i.value for i in sheet[i]}
-            if row_dict == {None}:
-                i = i - 1
-            else:
-                real_max_row = i
-                break
-        return real_max_row
-
     def get_max_columns(self, sheet: sht) -> int:
         return sheet.max_column
 
-    def get_sheet_contents(self, sheet: Worksheet, start_row: int = 1) -> List:
+    def get_sheet_contents(self, sheet: Worksheet, start_row: int = 1) -> Sequence:
         contents = []
         max_row = self.get_max_rows(sheet) + 1
         max_column = self.get_max_columns(sheet) + 1
@@ -91,7 +82,7 @@ class OpenpyxlExcelUtils(BaseExcelUtils):
             contents.append(lines)
         return contents
 
-    def set_sheet_contents(self, sheet: Worksheet, contents: List, start_row: int = 1, border: bool = False):
+    def set_sheet_contents(self, sheet: Worksheet, contents: Sequence, start_row: int = 1, border: bool = False):
         for row, lines in enumerate(contents):
             logger.info(f"write row {row + start_row}.....")
             for column, value in enumerate(lines):
@@ -129,9 +120,6 @@ class OpenpyxlExcelUtils(BaseExcelUtils):
         # 居中显示 + 自动换行
         cell.alignment = Alignment(horizontal='center', vertical='center', wrapText=True)
 
-    def del_row(self, sheet: Sheet, row_index: int):
-        sheet.delete_rows(row_index)
-
 
 class XlwingsExcelUtils(BaseExcelUtils):
 
@@ -141,7 +129,7 @@ class XlwingsExcelUtils(BaseExcelUtils):
         self.__app.screen_updating = False
 
     @staticmethod
-    def __compare_sheets(before_sheets: List[str], after_sheets: List[str]):
+    def __compare_sheets(before_sheets: Sequence[str], after_sheets: Sequence[str]):
         for sheet in after_sheets:
             if sheet not in before_sheets:
                 return sheet
@@ -174,11 +162,14 @@ class XlwingsExcelUtils(BaseExcelUtils):
             sheet_dict[worksheet.name] = worksheet
         return sheet_dict
 
-    def get_sheets(self, workbook: Book) -> List[Sheet]:
+    def get_sheets(self, workbook: Book) -> Sequence[Sheet]:
         return workbook.sheets
 
     def get_sheet(self, workbook: Book, sheet: str) -> Sheet:
         return workbook.sheets[sheet]
+
+    def get_sheet_name(self, sheet: sht) -> str:
+        return sheet.name
 
     def copy_sheet(self, workbook: Book, origin_sheet: str, target_sheet: str) -> Sheet:
         # 要被copy的sheet
@@ -202,7 +193,7 @@ class XlwingsExcelUtils(BaseExcelUtils):
     def get_max_columns(self, sheet: sht) -> int:
         return sheet.used_range.last_cell.column
 
-    def get_sheet_contents(self, sheet: Sheet, start_row: int = 1) -> List:
+    def get_sheet_contents(self, sheet: Sheet, start_row: int = 1) -> Sequence:
         contents = []
         max_row = self.get_max_rows(sheet) + 1
         max_column = self.get_max_columns(sheet) + 1
@@ -217,7 +208,7 @@ class XlwingsExcelUtils(BaseExcelUtils):
             contents.append(lines)
         return contents
 
-    def set_sheet_contents(self, sheet: Sheet, contents: List, start_row: int = 1, border: bool = False):
+    def set_sheet_contents(self, sheet: Sheet, contents: Sequence, start_row: int = 1, border: bool = False):
         for row, lines in enumerate(contents):
             logger.info(f"write row {row + start_row}.....")
             for column, value in enumerate(lines):
@@ -228,8 +219,8 @@ class XlwingsExcelUtils(BaseExcelUtils):
 
     def get_cell_value(self, sheet: Sheet, row_index: int, column_index: Union[str, int]) -> str:
         # 传递的是序号则获取列名
-        if isinstance(column_index, str):
-            column_index = self._get_column_index(column_index)
+        if isinstance(column_index, int):
+            column_index = self._get_column_name(column_index)
         logger.debug(f"column_name = {column_index}, row_index = {row_index}")
         value = sheet.range(f"{column_index}{row_index}").value
         logger.debug(f"cell[{row_index}, {column_index}] = {value}")
@@ -258,7 +249,8 @@ class XlwingsExcelUtils(BaseExcelUtils):
         # 自动换行
         cell.api.WrapText = True
 
-    def del_row(self, sheet: Sheet, row_index: int):
+    @staticmethod
+    def del_row(sheet: Sheet, row_index: int):
         sheet.api.Rows(row_index).Delete()
 
 
@@ -274,9 +266,6 @@ class ExcelUtils(BaseExcelUtils):
         else:
             raise RuntimeError(f"{type_.value} not support")
 
-    def utils(self):
-        return self.__utils
-
     def create_workbook(self) -> wb:
         return self.__utils.create_workbook()
 
@@ -289,11 +278,14 @@ class ExcelUtils(BaseExcelUtils):
     def get_sheet_dict(self, workbook: wb) -> Dict[str, sht]:
         return self.__utils.get_sheet_dict(workbook)
 
-    def get_sheets(self, workbook: wb) -> List[sht]:
+    def get_sheets(self, workbook: wb) -> Sequence[sht]:
         return self.__utils.get_sheets(workbook)
 
     def get_sheet(self, workbook: wb, sheet_name: str) -> sht:
         return self.__utils.get_sheet(workbook, sheet_name)
+
+    def get_sheet_name(self, sheet: sht) -> str:
+        return self.__utils.get_sheet_name(sheet)
 
     def copy_sheet(self, workbook: wb, origin_sheet: str, target_sheet: str) -> sht:
         return self.__utils.copy_sheet(workbook, origin_sheet, target_sheet)
@@ -301,10 +293,10 @@ class ExcelUtils(BaseExcelUtils):
     def delete_sheet(self, workbook: wb, sheet: str):
         self.__utils.delete_sheet(workbook, sheet)
 
-    def get_sheet_contents(self, sheet: sht, start_row: int = 1) -> List:
+    def get_sheet_contents(self, sheet: sht, start_row: int = 1) -> Sequence:
         return self.__utils.get_sheet_contents(sheet, start_row)
 
-    def set_sheet_contents(self, sheet: sht, contents: List, start_row: int = 1, border: bool = False):
+    def set_sheet_contents(self, sheet: sht, contents: Sequence, start_row: int = 1, border: bool = False):
         self.__utils.set_sheet_contents(sheet, contents, start_row, border)
 
     def get_max_rows(self, sheet: sht) -> int:
@@ -328,6 +320,3 @@ class ExcelUtils(BaseExcelUtils):
 
     def set_border(self, cell: cell_range):
         self.__utils.set_border(cell)
-
-    def del_row(self, sheet: Sheet, row_index: int):
-        self.__utils.del_row(sheet=sheet, row_index=row_index)

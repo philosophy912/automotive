@@ -6,7 +6,7 @@
 # @Author:      lizhe
 # @Created:     2021/5/1 - 23:48
 # --------------------------------------------------------
-from typing import Optional, List, Union
+from typing import Optional, Sequence, Union
 
 from appium.webdriver.common.touch_action import TouchAction
 from selenium.common.exceptions import NoSuchElementException
@@ -147,7 +147,7 @@ class AndroidService(metaclass=Singleton):
         """
         return self.__client.get_element(locator=locator, timeout=timeout)
 
-    def get_elements(self, locator: Locator, timeout: float = _DEFAULT_TIME_OUT) -> List[Element]:
+    def get_elements(self, locator: Locator, timeout: float = _DEFAULT_TIME_OUT) -> Sequence[Element]:
         """
         根据定位符获取元素列表
 
@@ -183,7 +183,7 @@ class AndroidService(metaclass=Singleton):
         return self.__client.get_child_element(parent=parent, locator=locator, timeout=timeout)
 
     def get_child_elements(self, parent: LocatorElement, locator: Locator,
-                           timeout: float = _DEFAULT_TIME_OUT) -> List[Element]:
+                           timeout: float = _DEFAULT_TIME_OUT) -> Sequence[Element]:
         """
         在父元素中查找子元素列表
 
@@ -1297,7 +1297,7 @@ class AndroidService(metaclass=Singleton):
                                        director=director)
 
     def swipe_right_in_element(self, element: LocatorElement, swipe_time: int, duration: float, percent: float = 0.8,
-                               director: SwipeDirectorEnum = SwipeDirectorEnum.LEFT):
+                               director: SwipeDirectorEnum = SwipeDirectorEnum.RIGHT):
         """
         滑动可滑动元素
         :param element: 可滑动的元素

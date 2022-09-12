@@ -7,6 +7,8 @@
 # @Created:     2021/5/1 - 23:44
 # --------------------------------------------------------
 from time import sleep
+from typing import Sequence
+
 from automotive.logger.logger import logger
 from .usb_can import UsbCanDevice
 from automotive.core.can.common.interfaces import BaseCanBus
@@ -32,7 +34,7 @@ class UsbCanBus(BaseCanBus):
         self.__time_flag = 1
 
     @staticmethod
-    def __get_data(data, length: int) -> list:
+    def __get_data(data, length: int) -> Sequence:
         """
         转换CAN BOX收的data为list
 

@@ -8,7 +8,7 @@
 # --------------------------------------------------------
 import math
 import time
-from typing import Optional
+from typing import Optional, Sequence, Tuple
 
 from automotive.logger.logger import logger
 from .konstanter import Konstanter
@@ -100,7 +100,7 @@ class KonstanterControl(object):
             self.__kon.set_current(current)
 
     def set_raise_down(self, start: float, end: float, step: float, operator_time: float, repeat: int = 1,
-                       current: int = 3) -> tuple:
+                       current: float = 3) -> tuple:
         """
         设置电源的上升或下降的参数，测试电源的电压变动
 
@@ -176,8 +176,8 @@ class KonstanterControl(object):
                     flag = True
         logger.debug(f"voltage operator finished")
 
-    def set_user_voltages(self, voltages: (list, tuple), times: float = 0.01, current: float = 5,
-                          repeat: int = 1) -> tuple:
+    def set_user_voltages(self, voltages: Sequence[float], times: float = 0.01, current: float = 5,
+                          repeat: int = 1) -> Tuple:
         """
         设置用户自定义的或从文件读取到的电压序列，模拟用户自定义的电压曲线
 

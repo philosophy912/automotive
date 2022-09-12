@@ -6,12 +6,12 @@
 # @Author:      lizhe
 # @Created:     2021/10/22 - 10:26
 # --------------------------------------------------------
+import ctypes
 import os
 import platform
-from ctypes import CDLL, byref, c_size_t, c_int32, c_double, c_ubyte, POINTER, cast, c_int
-from typing import List, Tuple, Any
-from .tsmasterbasic import TRUE, APP_CHANNEL, TLIBCANFDControllerMode, TLIBCANFDControllerType, TLibCAN, TLibCANFD, \
-    FALSE
+from ctypes import CDLL, byref, c_size_t, c_int32, c_ubyte, POINTER, cast, c_int
+from typing import Sequence, Tuple
+from .tsmasterbasic import TRUE, APP_CHANNEL, TLIBCANFDControllerMode, TLIBCANFDControllerType, TLibCAN, TLibCANFD
 from automotive.common.constant import tsmaster_control_decorator, check_connect, can_tips
 from automotive.core.can.common.interfaces import BaseCanDevice
 from automotive.core.can.common.enums import BaudRateEnum
@@ -53,7 +53,7 @@ class TSMasterDevice(BaseCanDevice):
     def __init_device(self):
         # //初始化TSCANAPI模块
         # typedef void(__stdcall* initialize_lib_tscan_t)(bool AEnableFIFO,bool AEnableTurbe);
-        self.__lib_can.initialize_lib_tscan(TRUE, FALSE)
+        self.__lib_can.initialize_lib_tscan(True, True)
 
     def __scan_devices(self):
         # //扫描在线的设备
@@ -86,10 +86,11 @@ class TSMasterDevice(BaseCanDevice):
             controller_type = "ISOCAN"
         can_fd_controller_mode = "Normal"
         logger.debug(f"controller_type = {controller_type}")
+        logger.debug(f"baud_rate = {baud_rate}, data_rate = {data_rate}")
         return self.__lib_can.tscan_config_canfd_by_baudrate(self.__device_handler,
                                                              APP_CHANNEL[channel],
-                                                             c_double(baud_rate),
-                                                             c_double(data_rate),
+                                                             ctypes.c_double(baud_rate),
+                                                             ctypes.c_double(data_rate),
                                                              TLIBCANFDControllerType[controller_type],
                                                              TLIBCANFDControllerMode[can_fd_controller_mode],
                                                              TRUE)
@@ -107,7 +108,7 @@ class TSMasterDevice(BaseCanDevice):
     def __disconnect(self):
         return self.__lib_can.tsapp_disconnect()
 
-    def __data_package(self, data: List, msg_id: int) -> TLibCAN:
+    def __data_package(self, data: Sequence, msg_id: int) -> TLibCAN:
         lib_can = TLibCAN()
         lib_can.FIdxChn = self.__channel - 1
         lib_can.FIdentifier = msg_id
@@ -118,7 +119,7 @@ class TSMasterDevice(BaseCanDevice):
             lib_can.FData[j] = data
         return lib_can
 
-    def __data_package_fd(self, data: List, msg_id: int) -> TLibCANFD:
+    def __data_package_fd(self, data: Sequence, msg_id: int) -> TLibCANFD:
         lib_can_fd = TLibCANFD()
         lib_can_fd.FIdxChn = self.__channel - 1
         lib_can_fd.FIdentifier = msg_id
@@ -193,7 +194,7 @@ class TSMasterDevice(BaseCanDevice):
                 raise RuntimeError(f"transmit failed. error code is {result}")
 
     @check_connect("_is_open", can_tips)
-    def receive(self) -> Tuple[int, Any]:
+    def receive(self) -> Tuple:
         # 设置缓存大小， 这个是IN OUT模式，即输入的2500不代表一定有这么多数据，这个只是一个最大值，在执行完成函数后在读取值能知道实际的数量
         buffer_size = 2500
         p_buffer_size = byref(c_int(buffer_size))

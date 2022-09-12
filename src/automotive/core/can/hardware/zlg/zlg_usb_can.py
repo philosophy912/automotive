@@ -9,7 +9,7 @@
 import os
 import platform
 from ctypes import CDLL, POINTER, CFUNCTYPE, c_uint, c_char_p, byref, c_int
-from typing import Tuple, Any
+from typing import Tuple
 
 from automotive.common.constant import control_decorator, check_connect, can_tips
 from automotive.core.can.hardware.zlg.zlgbasic import ZCAN_USBCANFD_200U, ZCAN_TYPE_CANFD, ZCAN_TYPE_CAN, \
@@ -187,7 +187,7 @@ class ZlgUsbCanDevice(BaseCanDevice):
                 raise RuntimeError("transmit failed")
 
     @check_connect("_is_open", can_tips)
-    def receive(self, wait_time=c_int(-1)) -> Tuple[int, Any]:
+    def receive(self, wait_time=c_int(-1)) -> Tuple:
         if self.__is_fd:
             rcv_num = self.__lib_can.ZCAN_GetReceiveNum(self.__channel_handler, ZCAN_TYPE_CANFD)
             logger.trace(f"receive count is {rcv_num}")

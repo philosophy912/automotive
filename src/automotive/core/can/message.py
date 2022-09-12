@@ -6,7 +6,7 @@
 # @Author:      lizhe
 # @Created:     2021/5/1 - 23:42
 # --------------------------------------------------------
-from typing import Union, List, Tuple, Dict
+from typing import Union, Sequence, Tuple, Dict, List
 
 from automotive.logger.logger import logger
 from automotive.utils.utils import Utils, Number
@@ -59,7 +59,7 @@ def __get_position(start_bit: int, byte_length: int = 8) -> Tuple[int, int]:
     return byte_index, bit_index
 
 
-def __split_bytes(value: str, length: int, bit_index: int, byte_type: bool) -> List[str]:
+def __split_bytes(value: str, length: int, bit_index: int, byte_type: bool) -> Sequence[str]:
     """
     根据bit_index和length来算value拆分成几个byte
     :param value:  要设置的值
@@ -206,17 +206,17 @@ def set_data(data: List[int], start_bit: int, byte_type: bool, value: int, bit_l
 
 
 def __calc_singed_get_value(value: str) -> int:
-    value = int(value, 2) - 1
-    value = bin(value)[2:]
+    # value = int(value, 2)
+    # value = bin(value)[2:]
     # 去掉了符号位
     value1 = value[1:]
     # 取反码
     value = "".join(map(lambda x: "1" if x == "0" else "0", value1))
-    value = int(value, 2)
+    value = int(value, 2) + 1
     return 0 - value
 
 
-def get_data(data: List[int], start_bit: int, byte_type: bool, bit_length: int, is_sign: bool,
+def get_data(data: Sequence[int], start_bit: int, byte_type: bool, bit_length: int, is_sign: bool,
              byte_length: int = 8) -> int:
     """
     根据data计算出来每个signal的值
@@ -381,6 +381,8 @@ class Message(object):
         self.diag_state = False
         # 是否标准can
         self.is_standard_can = None
+        # USB CAN特有的东西
+        self.external_flag = None
 
     def __str__(self):
         return f"{hex(self.msg_id)} = {self.data}"

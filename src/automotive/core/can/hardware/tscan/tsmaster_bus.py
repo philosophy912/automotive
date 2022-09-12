@@ -7,7 +7,7 @@
 # @Created:     2021/10/27 - 21:26
 # --------------------------------------------------------
 from time import sleep
-from typing import List
+from typing import Sequence
 
 from automotive.logger.logger import logger
 from automotive.core.can.message import Message
@@ -26,7 +26,7 @@ class TsMasterCanBus(BaseCanBus):
         self._can = TSMasterDevice(can_fd)
 
     @staticmethod
-    def __get_data(data, length: int) -> List:
+    def __get_data(data, length: int) -> Sequence:
         msg_data = []
         for i in range(length):
             msg_data.append(data[i])

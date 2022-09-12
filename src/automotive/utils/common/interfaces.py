@@ -8,7 +8,7 @@
 # --------------------------------------------------------
 import os
 from abc import ABCMeta, abstractmethod
-from typing import List, Union, Dict
+from typing import Sequence, Union, Dict
 
 try:
     import xlwings as xw
@@ -63,7 +63,7 @@ class BaseExcelUtils(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def get_sheets(self, workbook: wb) -> List[sht]:
+    def get_sheets(self, workbook: wb) -> Sequence[sht]:
         """
         获取所有的sheet
         :param workbook workbook
@@ -87,6 +87,15 @@ class BaseExcelUtils(metaclass=ABCMeta):
         :param workbook workbook
         :param sheet_name: sheet的名字或者序号
         :return: sheet对象
+        """
+        pass
+
+    @abstractmethod
+    def get_sheet_name(self, sheet: sht) -> str:
+        """
+        根据sheet获取sheet的名字
+        :param sheet:
+        :return: sheet名字
         """
         pass
 
@@ -129,7 +138,7 @@ class BaseExcelUtils(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def get_sheet_contents(self, sheet: sht, start_row: int = 1) -> List:
+    def get_sheet_contents(self, sheet: sht, start_row: int = 1) -> Sequence:
         """
         读取sheet中的所有contents
         :param sheet: sheet
@@ -139,7 +148,7 @@ class BaseExcelUtils(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def set_sheet_contents(self, sheet: sht, contents: List, start_row: int = 1, border: bool = False):
+    def set_sheet_contents(self, sheet: sht, contents: Sequence, start_row: int = 1, border: bool = False):
         """
         把contents内容写入到sheet中
         :param sheet:

@@ -7,7 +7,7 @@
 # @Created:     2021/7/3 - 23:07
 # --------------------------------------------------------
 import importlib
-from typing import Dict, List
+from typing import Dict, Sequence
 
 from automotive.application.common.constants import Testcase
 from automotive.application.common.enums import FileTypeEnum
@@ -67,12 +67,12 @@ class TestCaseGenerator(object):
         self.__get_different(testcases1, testcases2)
 
     @staticmethod
-    def __print_testcases(testcases: Dict[str, List[Testcase]]):
+    def __print_testcases(testcases: Dict[str, Sequence[Testcase]]):
         for key, value in testcases.items():
             for tc in value:
                 print(tc)
 
-    def __get_testcases(self, file: str) -> Dict[str, List[Testcase]]:
+    def __get_testcases(self, file: str) -> Dict[str, Sequence[Testcase]]:
         file_type = FileTypeEnum.from_extends(file)
         available_types = FileTypeEnum.XMIND8, FileTypeEnum.STANDARD_EXCEL
         if file_type not in available_types:
@@ -85,7 +85,7 @@ class TestCaseGenerator(object):
             return testcase
 
     @staticmethod
-    def __get_different(testcases1: List[Testcase], testcases2: List[Testcase]) -> List[Testcase]:
+    def __get_different(testcases1: Sequence[Testcase], testcases2: Sequence[Testcase]) -> Sequence[Testcase]:
         result = []
         different = []
         for testcase1 in testcases1:
@@ -120,7 +120,7 @@ class TestCaseGenerator(object):
         reader = self.__get_reader(file, is_sample)
         return reader.read_from_file(file)
 
-    def generator(self, in_file: str, out_file: str, is_sample: bool = True, tempfile: str = None):
+    def generator(self, in_file: str, out_file: str, is_sample: bool = True, temp_file: str = None):
         """
 
         :param in_file: 输入的文件
@@ -129,7 +129,7 @@ class TestCaseGenerator(object):
 
         :param is_sample: 简版输入，读取的时候会重新组织内容
 
-        :param tempfile: excel模板文件地址
+        :param temp_file: excel模板文件地址
         """
 
         if is_sample:
@@ -138,7 +138,7 @@ class TestCaseGenerator(object):
         writer = self.__get_writer(out_file, is_sample)
         testcases = reader.read_from_file(in_file)
         logger.debug(f"testcases is {testcases}")
-        writer.write_to_file(out_file, testcases, tempfile=tempfile)
+        writer.write_to_file(out_file, testcases, temp_file=temp_file)
         logger.info(f"read testcase from [{in_file}] and write to file [{out_file}]")
 
     def write_template(self, in_file: str, output_file: str = None, is_sample: bool = True):

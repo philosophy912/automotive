@@ -7,9 +7,9 @@
 # @Created:     2021/7/3 - 22:37
 # --------------------------------------------------------
 import os
-from typing import Dict, List, Tuple
+from typing import Dict, Sequence, Tuple
 
-from automotive.application.common.constants import priority_config, column_config, results
+from automotive.application.common.constants import PRIORITY_CONFIG, COLUMN_CONFIG, RESULTS
 from automotive.application.common.interfaces import BaseWriter, TestCases
 from automotive.logger.logger import logger
 
@@ -87,7 +87,7 @@ class StandardExcelWriter(BaseWriter):
             template = fr"{directory}\template.xlsx"
         return template
 
-    def __convert_testcases(self, testcases: TestCases) -> List[Tuple]:
+    def __convert_testcases(self, testcases: TestCases) -> Sequence[Tuple]:
         """
         根据模板文件生成相关的内容
         :param testcases: 测试用例列表
@@ -110,7 +110,7 @@ class StandardExcelWriter(BaseWriter):
             if exception.startswith('-') or exception.startswith('_') or exception.startswith(
                     '.') or exception.startswith(' '):
                 exception = exception.replace(exception[0], '', 1)
-            priority = priority_config[int(testcase.priority)] if testcase.priority else ""
+            priority = PRIORITY_CONFIG[int(testcase.priority)] if testcase.priority else ""
             requirement_id = testcase.requirement_id
             # *********************** 如果excel变化，需要修改这里 ***********************
             line = (index, module_id, test_case_name, sub_module, pre_condition,
@@ -119,7 +119,7 @@ class StandardExcelWriter(BaseWriter):
             result.append(line)
         return result
 
-    def __write_content_to_cell(self, sheet: Sheet, contents: List[Tuple]):
+    def __write_content_to_cell(self, sheet: Sheet, contents: Sequence[Tuple]):
         """
         一行一行写入数据
         :param sheet: sheet
@@ -137,20 +137,20 @@ class StandardExcelWriter(BaseWriter):
         格式化内容
         :return:
         """
-        column_range = column_config.keys()
+        column_range = COLUMN_CONFIG.keys()
         max_row = sheet.used_range.last_cell.row
         # 处理边框
         for i in range(max_row - 1):
             for column in column_range:
                 cell_range = sheet.range(f"{column}{i + self.__start_row - 1}")
                 # 前置条件 执行步骤 预期结果
-                if column_config[column] in ("前置条件", "执行步骤", "预期结果"):
+                if COLUMN_CONFIG[column] in ("前置条件", "执行步骤", "预期结果"):
                     self.__set_border(cell_range, False)
                 else:
                     self.__set_border(cell_range, True)
                 # 测试结果
-                if column_config[column] == "测试结果":
-                    self.__set_valid_value(cell_range, results)
+                if COLUMN_CONFIG[column] == "测试结果":
+                    self.__set_valid_value(cell_range, RESULTS)
 
     @staticmethod
     def __set_valid_value(cell_range: Range, values: list):
@@ -238,7 +238,7 @@ class StandardExcelWriter(BaseWriter):
             self.__set_border(cell_range, border_width=3)
 
     @staticmethod
-    def __convert_pre_condition(pre_conditions: List[str]) -> str:
+    def __convert_pre_condition(pre_conditions: Sequence[str]) -> str:
         """
         先把列表加上序号来进行相关的处理
         :param pre_conditions:前置条件列表
@@ -253,7 +253,7 @@ class StandardExcelWriter(BaseWriter):
             return ""
 
     @staticmethod
-    def __convert_steps_condition(steps: Dict[str, List[str]]) -> Tuple[str, str]:
+    def __convert_steps_condition(steps: Dict[str, Sequence[str]]) -> Tuple[str, str]:
         """
 
         :param steps:

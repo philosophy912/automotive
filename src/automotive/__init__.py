@@ -11,6 +11,7 @@ from automotive.application.qnx.air_condition import AirCondition
 from automotive.application.common.enums import FileTypeEnum
 from automotive.application.testcase.testcase import TestCaseGenerator
 from automotive.application.panel.panel import Gui
+from automotive.application.common.interfaces import BaseAction
 from automotive.core.android.android_service import AndroidService
 from automotive.core.android.common.enums import ElementAttributeEnum, SwipeDirectorEnum, DirectorEnum, ToolTypeEnum
 from automotive.core.can.can_service import CANService
@@ -21,6 +22,7 @@ from automotive.common.image_compare import ImageCompare, CompareTypeEnum, Compa
 from automotive.logger.logger import logger
 from automotive.utils.utils import Utils
 from automotive.utils.serial_port import SerialPort
+from automotive.utils.serial_utils import SerialUtils
 from automotive.utils.images import Images
 from automotive.utils.player import Player
 from automotive.utils.performance import Performance
@@ -30,7 +32,7 @@ from automotive.utils.excel_utils import ExcelUtils
 
 __all__ = ["CameraActions", "CanActions", "It6831Actions", "KonstanterActions", "RelayActions", "SerialActions",
            "Curve", "SystemTypeEnum", "ClusterHmi", "HypervisorScreenShot", "AirCondition", "FileTypeEnum",
-           "TestCaseGenerator", "Gui", "AndroidService", "ElementAttributeEnum", "SwipeDirectorEnum", "DirectorEnum",
-           "ToolTypeEnum", "CANService", "CanBoxDeviceEnum", "BaudRateEnum", "DbcParser", "ImageCompare",
-           "CompareTypeEnum", "CompareProperty", "logger", "Utils", "SerialPort", "Images", "Player", "Performance",
-           "MicroPhone", "Camera", "Message", "ExcelEnum", "ExcelUtils"]
+           "TestCaseGenerator", "Gui", "BaseAction", "AndroidService", "ElementAttributeEnum", "SwipeDirectorEnum",
+           "DirectorEnum", "ToolTypeEnum", "CANService", "CanBoxDeviceEnum", "BaudRateEnum", "DbcParser",
+           "ImageCompare", "CompareTypeEnum", "CompareProperty", "logger", "Utils", "SerialPort", "SerialUtils",
+           "Images", "Player", "Performance", "MicroPhone", "Camera", "Message", "ExcelEnum", "ExcelUtils"]

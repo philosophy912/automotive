@@ -7,6 +7,8 @@
 # @Created:     2021/5/1 - 23:39
 # --------------------------------------------------------
 from time import sleep
+from typing import Sequence
+
 from automotive.logger.logger import logger
 from .pcan import PCanDevice
 from automotive.core.can.common.interfaces import BaseCanBus
@@ -29,7 +31,7 @@ class PCanBus(BaseCanBus):
         self._can = PCanDevice(can_fd)
 
     @staticmethod
-    def __get_data(data, length: int) -> list:
+    def __get_data(data, length: int) -> Sequence:
         """
         转换pcan收的data为list
 

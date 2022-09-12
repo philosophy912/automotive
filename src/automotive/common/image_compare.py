@@ -7,7 +7,7 @@
 # @Created:     2021/5/1 - 23:57
 # --------------------------------------------------------
 import shutil
-from typing import List, Optional
+from typing import Sequence, Optional
 
 from .typehints import Position, RGB
 from ..logger.logger import logger
@@ -56,7 +56,7 @@ class CompareProperty(object):
                   screen_shot_images_path:
                   str, light_template: str,
                   dark_template: str,
-                  positions: List[Position],
+                  positions: Sequence[Position],
                   similarity: float,
                   gray: Optional[bool] = None,
                   gray_threshold: Optional[int] = None):
@@ -136,7 +136,7 @@ class ImageCompare(object):
     def __compare_image(self,
                         template_image: str,
                         target_image: str,
-                        positions: List[Position],
+                        positions: Sequence[Position],
                         gray: bool,
                         threshold: int,
                         similarity: float,
@@ -173,8 +173,8 @@ class ImageCompare(object):
 
     def __compare_images(self,
                          template_image: str,
-                         target_images: List[str],
-                         positions: List[Position],
+                         target_images: Sequence[str],
+                         positions: Sequence[Position],
                          gray: bool,
                          threshold: int,
                          similarity: float,
@@ -321,7 +321,7 @@ class ImageCompare(object):
     def handle_images(self,
                       compare_property: CompareProperty,
                       temp_folder: str,
-                      color: RGB = (255, 255, 255)) -> List[str]:
+                      color: RGB = (255, 255, 255)) -> Sequence[str]:
         """
         处理图片： 把截图图片(screen_shot_images)拷贝到temp_folder中，并依次在截图区域上画框
 
