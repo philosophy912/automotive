@@ -6,7 +6,7 @@
 # @Author:      lizhe
 # @Created:     2021/5/2 - 0:02
 # --------------------------------------------------------
-from typing import List
+from typing import Sequence
 
 from automotive.utils.serial_utils import SerialUtils
 from automotive.logger.logger import logger
@@ -62,7 +62,7 @@ class SerialActions(BaseDevice):
         """
         return self.__serial.read()
 
-    def read_lines(self) -> List[str]:
+    def read_lines(self) -> Sequence[str]:
         """
         从串口中读取数据，按行来读取
         :return:

@@ -8,7 +8,7 @@
 # --------------------------------------------------------
 import copy
 import os
-from typing import List, Tuple, Any
+from typing import Sequence, Tuple, List
 
 from automotive.logger.logger import logger
 
@@ -56,7 +56,7 @@ class Curve(object):
         raise RuntimeError(f"no value distance is less than {threshold}, please adjust threshold and try again")
 
     @staticmethod
-    def __get_voltage_normal_position(voltage_list: List[float]) -> int:
+    def __get_voltage_normal_position(voltage_list: Sequence[float]) -> int:
         """
         从点火开始到电压正常的序号
 
@@ -70,8 +70,7 @@ class Curve(object):
                 return index
         return -1
 
-    def __get_csv_value(self, csv_file: str, use_cols: List[int] = None,
-                        steps: int = None) -> Tuple[List[Any], List[Any]]:
+    def __get_csv_value(self, csv_file: str, use_cols: Sequence[int] = None, steps: int = None) -> Tuple:
         """
         从csv中读取数据
         :param csv_file: 示波器抓取的csv文件
@@ -94,8 +93,8 @@ class Curve(object):
         else:
             return time_list, voltage_list
 
-    def get_voltage_by_csv(self, csv_file: str, use_cols: List[int] = None, steps: int = None,
-                           threshold: float = 0.5) -> List[float]:
+    def get_voltage_by_csv(self, csv_file: str, use_cols: Sequence[int] = None, steps: int = None,
+                           threshold: float = 0.5) -> Sequence[float]:
         """
         从csv文件中获取的点火曲线的值
 

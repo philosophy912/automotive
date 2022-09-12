@@ -6,11 +6,11 @@
 # @Author:      lizhe
 # @Created:     2021/5/1 - 23:53
 # --------------------------------------------------------
-from typing import List, Tuple
+from typing import Sequence
 from time import sleep
 from automotive.utils.telnet_utils import TelnetUtils
 from automotive.logger.logger import logger
-from ..common.interfaces import BaseScreenShot
+from ..common.interfaces import BaseScreenShot, Position
 
 
 class ClusterHmiScreenshot(BaseScreenShot):
@@ -42,7 +42,7 @@ class ClusterHmiScreenshot(BaseScreenShot):
             command = f"{command} -display={display}"
         self.__telnet.write(command)
 
-    def screen_shot(self, image_name: str, count: int, interval_time: float, display: int = None) -> List[str]:
+    def screen_shot(self, image_name: str, count: int, interval_time: float, display: int = None) -> Sequence[str]:
         if count < 1:
             raise ValueError(f"count must >= 1, but current value is {count}")
         # 图片列表
@@ -56,6 +56,6 @@ class ClusterHmiScreenshot(BaseScreenShot):
             sleep(interval_time)
         return image_files
 
-    def screen_shot_area(self, position: Tuple[int, int, int, int], image_name: str, count: int, interval_time: float,
-                         display: int = None) -> List[str]:
+    def screen_shot_area(self, position: Position, image_name: str, count: int, interval_time: float,
+                         display: int = None) -> Sequence[str]:
         raise RuntimeError("not support area screenshot")

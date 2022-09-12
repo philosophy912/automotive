@@ -8,14 +8,13 @@
 # --------------------------------------------------------
 import time
 from time import sleep
-from typing import List
+from typing import Sequence
 
 from .cluster_hmi_screenshot import ClusterHmiScreenshot
 from automotive.utils.ftp_utils import FtpUtils
 from automotive.utils.telnet_utils import TelnetUtils
 from automotive.logger.logger import logger
 from ..common.interfaces import BaseSocketDevice
-
 
 _start_service_list = "clusterNormal_service", "safety", "GaugeMagServer", "cluster_iviinterface"
 
@@ -32,7 +31,7 @@ class ClusterHmi(BaseSocketDevice):
     """
 
     def __init__(self, board_path: str, local_folder: str, test_binary: str = None, cluster: str = None,
-                 whud: str = None, service_list: List[str] = _start_service_list):
+                 whud: str = None, service_list: Sequence[str] = _start_service_list):
         """
         初始化
 
@@ -122,8 +121,10 @@ class ClusterHmi(BaseSocketDevice):
     def read(self) -> str:
         return self.__telnet.read()
 
-    def screen_shot(self, image_name: str, count: int, interval_time: float, timeout: int = 10, display: int = None) -> List[str]:
+    def screen_shot(self, image_name: str, count: int, interval_time: float, timeout: int = 10,
+                    display: int = None) -> Sequence[str]:
         """
+        截图
         """
         # 10张图片
         images = self.__screenshot.screen_shot(image_name, count, interval_time, display)
@@ -144,7 +145,7 @@ class ClusterHmi(BaseSocketDevice):
         else:
             return images
 
-    def __check_screenshot_success(self, images: List[str]) -> bool:
+    def __check_screenshot_success(self, images: Sequence[str]) -> bool:
         """
         只检查文件是否在板子上存在
         """

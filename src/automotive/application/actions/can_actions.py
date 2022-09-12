@@ -6,7 +6,7 @@
 # @Author:      lizhe
 # @Created:     2021/5/2 - 0:01
 # --------------------------------------------------------
-from typing import Any, Dict, Union, List
+from typing import Any, Dict, Union, Sequence
 
 from automotive.core.can.message import Message
 from automotive.logger.logger import logger
@@ -77,7 +77,7 @@ class CanActions(BaseDevice):
         logger.info("关闭CAN盒子")
         self.__can.close_can()
 
-    def send_default_messages(self, node_name: Union[str, List[str]] = None):
+    def send_default_messages(self, node_name: Union[str, Sequence[str]] = None):
         """
         发送除了node_name之外的所有信号的默认数据，该方法用于发送出测试对象之外的所有信号
 
@@ -86,7 +86,7 @@ class CanActions(BaseDevice):
         logger.info(f"发送除了{node_name}之外的所有消息的默认值")
         self.__can.send_default_messages(node_name)
 
-    def send_random_messages(self, filter_sender: Union[str, List[str]] = None, cycle_time: int = None,
+    def send_random_messages(self, filter_sender: Union[str, Sequence[str]] = None, cycle_time: int = None,
                              interval: float = 0.1, default_message: Dict[str, str] = None):
         """
         随机发送信号
@@ -136,7 +136,7 @@ class CanActions(BaseDevice):
         logger.info(f"Message[{hex(message_id)}]中的信号{signal_name}的值是{value}")
         return value
 
-    def check_message(self, stack: List[Message], message_id: int, signal_name: str,
+    def check_message(self, stack: Sequence[Message], message_id: int, signal_name: str,
                       expect_value: int, count: int = None, exact: bool = True) -> bool:
         """
         检查信号
@@ -164,7 +164,7 @@ class CanActions(BaseDevice):
             logger.info("检查结果是不通过的")
         return result
 
-    def get_messages(self) -> List[Message]:
+    def get_messages(self) -> Sequence[Message]:
         """
         获取总线接收的消息
         :return:

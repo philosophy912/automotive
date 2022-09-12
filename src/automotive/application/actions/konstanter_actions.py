@@ -6,7 +6,7 @@
 # @Author:      lizhe
 # @Created:     2021/5/2 - 0:02
 # --------------------------------------------------------
-from typing import List, Tuple
+from typing import Tuple, Sequence
 
 from automotive.logger.logger import logger
 from automotive.core.battery.konstanter_control import KonstanterControl
@@ -146,7 +146,7 @@ class KonstanterActions(BasePowerAdjustActions):
             voltage = -1
         return voltage, current
 
-    def adjust_voltage_by_curve(self, curve: List[float], current: int = 5, interval: float = 0.01):
+    def adjust_voltage_by_curve(self, curve: Sequence[float], current: int = 5, interval: float = 0.01):
         """
         按照电压曲线来设置电压
 
