@@ -28,10 +28,11 @@ from loguru import logger as _logger
 
 config_file_name = "config.yml"
 current_path = os.getcwd()
+default_level = "info"
 log_level_type = "trace", "debug", "info", "warning", "error"
 
 
-def set_logger(level: str = "debug", folder: Optional[str] = None):
+def set_logger(level: str = default_level, folder: Optional[str] = None, folder_level: Optional[str] = default_level):
     # LOG的格式
     formats = "<g>[{time:YYYY-MM-DD HH:mm:ss.SSS}]</g>" \
               "<level>[{level: ^9}]</level>|" \
@@ -59,8 +60,13 @@ def set_logger(level: str = "debug", folder: Optional[str] = None):
             file_path = os.getcwd() + "\\logs"
             if not os.path.exists(file_path):
                 os.makedirs(file_path)
-        _logger.add(os.path.join(file_path, "log_{time}.log"), level=level.upper(), format=formats, rotation=rotation,
-                    encoding="utf-8")
+        # 判断folder_level是否符合规范
+        if folder_level and folder_level.lower() in log_level_type:
+            file_log_level = folder_level
+        else:
+            file_log_level = default_level
+        _logger.add(os.path.join(file_path, "log_{time}.log"), level=file_log_level.upper(), format=formats,
+                    rotation=rotation, encoding="utf-8")
 
 
 def get_files(folder: str) -> Sequence[str]:
@@ -76,7 +82,7 @@ def get_files(folder: str) -> Sequence[str]:
     return files
 
 
-def get_config(config_file: str) -> Tuple[str, str]:
+def get_config(config_file: str) -> Tuple[str, str, str]:
     """
     读取配置文件中的相关配置
 
@@ -89,8 +95,8 @@ def get_config(config_file: str) -> Tuple[str, str]:
         try:
             level = content["level"]
         except KeyError:
-            _logger.warning("not found level in config file, set level to info")
-            level = "info"
+            _logger.warning(f"not found level in config file, set level to {default_level}")
+            level = default_level
             # raise ValueError("not found level in config file")
         try:
             log_folder = content["log_folder"]
@@ -98,10 +104,16 @@ def get_config(config_file: str) -> Tuple[str, str]:
                 log_folder = None
         except KeyError:
             log_folder = None
-        return level, log_folder
+        try:
+            file_log_level = content["log_level"]
+            if file_log_level and file_log_level.lower() == "none":
+                file_log_level = default_level
+        except KeyError:
+            file_log_level = default_level
+        return level, log_folder, file_log_level
 
 
-def find_config_file(folder: str, config_yml_file: str) -> Tuple[str, Optional[str]]:
+def find_config_file(folder: str, config_yml_file: str) -> Tuple[str, Optional[str], Optional[str]]:
     """
     查找指定的配置文件
 
@@ -138,13 +150,16 @@ def find_config_file(folder: str, config_yml_file: str) -> Tuple[str, Optional[s
                 else:
                     # _logger.info(f"{folder}的父级目录是{parent_path}")
                     folder = parent_path
-    return "info", None
+    return default_level, None, default_level
 
 
 # 从文件中读取log等级，然后设置存放文件位置
-logger_level, logger_folder = find_config_file(current_path, config_file_name)
+logger_level, logger_folder, file_folder_level = find_config_file(current_path, config_file_name)
 if logger_level.lower() not in log_level_type:
-    logger_level = "info"
-set_logger(logger_level, logger_folder)
+    logger_level = default_level
+if file_folder_level.lower() not in log_level_type:
+    file_folder_level = default_level
+
+set_logger(logger_level, logger_folder, file_folder_level)
 # 返回logger对象
 logger = _logger
