@@ -22,13 +22,25 @@ class ADB(object):
     Android ADB相关的命令python化， 对于实际的测试活动中，更多的使用了click/screen_shot两个操作
     """
 
-    @staticmethod
-    def __execute(command: str) -> Sequence[str]:
-        logger.debug(f"execute command [{command}]")
-        stdout, stderr = Utils.exec_command_with_output(command, is_shell=True)
-        return stdout.split("\r\n")
+    def __init__(self):
+        self.__utils = Utils()
 
-    def __adb_command(self, command: str, device_id: Optional[str] = None) -> Sequence[str]:
+    def __execute(self, command: str, is_output: bool = False) -> Optional[Sequence[str]]:
+        """
+        执行命令，
+        :param command:  命令
+        :param is_output:  是否存在回显
+        :return: 回显或者None
+        """
+        logger.debug(f"execute command [{command}]")
+        if is_output:
+            stdout, stderr = self.__utils.exec_command_with_output(command, is_shell=True)
+            return stdout.split("\r\n")
+        else:
+            return self.__utils.exec_command_must_success(command, sub_process=False)
+
+    def __adb_command(self, command: str, device_id: Optional[str] = None,
+                      is_output: bool = False) -> Optional[Sequence[str]]:
         """
         执行ADB命令，可以传入如 adb shell dumpsys window，如果传入了device_id则会加上-s参数
         :param command: adb命令
@@ -37,15 +49,15 @@ class ADB(object):
         if command[:3] == "adb":
             command = command[4:]
         if device_id:
-            return self.__execute(f"adb -s {device_id} {command}")
+            return self.__execute(f"adb -s {device_id} {command}", is_output)
         else:
-            return self.__execute(f"adb {command}")
+            return self.__execute(f"adb {command}", is_output)
 
     def devices(self) -> Sequence[str]:
         """
         列出当前ADB连接的设备
         """
-        return self.__execute("adb devices")
+        return self.__execute("adb devices", True)
 
     def disconnect(self):
         """
@@ -69,7 +81,7 @@ class ADB(object):
         """
         查看ADB的版本号
         """
-        return self.__execute("adb version")
+        return self.__execute("adb version", True)
 
     def root(self):
         """
@@ -77,8 +89,19 @@ class ADB(object):
         """
         self.__execute("adb root")
 
-    def command(self, command: str, device_id: Optional[str] = None):
-        return self.__adb_command(command=command, device_id=device_id)
+    def command(self, command: str, device_id: Optional[str] = None,
+                is_output: bool = False) -> Optional[Sequence[str]]:
+        """
+        外部调用adb命令
+        :param command: adb命令
+
+        :param device_id: 设备编号
+
+        :param is_output: 是否需要回显
+
+        :return: 回显信息，不需要回显则回None
+        """
+        return self.__adb_command(command=command, device_id=device_id, is_output=is_output)
 
     def push(self, local: str, remote: str, device_id: Optional[str] = None):
         """
@@ -90,7 +113,7 @@ class ADB(object):
 
         :param remote:  远程文件地址
         """
-        self.__adb_command(f"push {local} {remote}", device_id)
+        self.__adb_command(f"push {local} {remote}", device_id, True)
 
     def pull(self, remote: str, local: str, device_id: Optional[str] = None):
         """
@@ -105,7 +128,7 @@ class ADB(object):
         sys = platform.system()
         if sys == "Windows":
             local = f"\"{local}\""
-        self.__adb_command(f"pull {remote} {local}", device_id)
+        self.__adb_command(f"pull {remote} {local}", device_id, True)
 
     def remove(self, remote: str, device_id: Optional[str] = None):
         """
