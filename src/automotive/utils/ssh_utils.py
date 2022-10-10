@@ -125,15 +125,15 @@ class SshUtils(object):
         # stdout 标准格式的输出，是一个读权限的文件对象
         # stderr 标准格式的错误，是一个写权限的文件对象
         try:
-            str_in = stdin.read().decode("utf-8")
+            str_in = stdin.read().decode("utf-8", errors="ignore")
         except IOError:
             str_in = None
         try:
-            str_out = stdout.read().decode("utf-8")
+            str_out = stdout.read().decode("utf-8", errors="ignore")
         except IOError:
             str_out = None
         try:
-            str_err = stderr.read().decode("utf-8")
+            str_err = stderr.read().decode("utf-8", errors="ignore")
         except IOError:
             str_err = None
         return str_in, str_out, str_err
