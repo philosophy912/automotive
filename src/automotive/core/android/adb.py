@@ -35,12 +35,12 @@ class ADB(object):
         logger.debug(f"execute command [{command}]")
         if is_output:
             stdout, stderr = self.__utils.exec_command_with_output(command, is_shell=True)
-            return stdout.split("\r\n")
+            return stdout.split("\n")
         else:
             return self.__utils.exec_command_must_success(command, sub_process=False)
 
     def __adb_command(self, command: str, device_id: Optional[str] = None,
-                      is_output: bool = False) -> Optional[Sequence[str]]:
+                      is_output: bool = True) -> Optional[Sequence[str]]:
         """
         执行ADB命令，可以传入如 adb shell dumpsys window，如果传入了device_id则会加上-s参数
         :param command: adb命令
@@ -57,7 +57,7 @@ class ADB(object):
         """
         列出当前ADB连接的设备
         """
-        return self.__execute("adb devices", True)
+        return self.__execute("adb devices")
 
     def disconnect(self):
         """
@@ -81,7 +81,7 @@ class ADB(object):
         """
         查看ADB的版本号
         """
-        return self.__execute("adb version", True)
+        return self.__execute("adb version")
 
     def root(self):
         """
@@ -90,7 +90,7 @@ class ADB(object):
         self.__execute("adb root")
 
     def command(self, command: str, device_id: Optional[str] = None,
-                is_output: bool = False) -> Optional[Sequence[str]]:
+                is_output: bool = True) -> Optional[Sequence[str]]:
         """
         外部调用adb命令
         :param command: adb命令
@@ -113,7 +113,7 @@ class ADB(object):
 
         :param remote:  远程文件地址
         """
-        self.__adb_command(f"push {local} {remote}", device_id, True)
+        self.__adb_command(f"push {local} {remote}", device_id)
 
     def pull(self, remote: str, local: str, device_id: Optional[str] = None):
         """
@@ -337,13 +337,11 @@ class ADB(object):
         cmd = f"uninstall {package_name}" if keep_data else f"uninstall -k {package_name}"
         self.__adb_command(cmd, device_id)
 
-    @staticmethod
-    def check_adb_connect(device_id: str):
+    def check_adb_connect(self, device_id: str):
         """
         检查adb是否连接成功, 连接True， 没连接False
         :param device_id: adb的设备序列号
         """
-        result = os.popen('adb devices')
-        res = result.read()
-        logger.debug(fr"命令行: {res}")
-        return device_id in res
+        stdout = self.devices()
+        contents = "".join(stdout)
+        return device_id in contents
