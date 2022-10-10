@@ -305,19 +305,9 @@ class DbcParser(object):
 
     @staticmethod
     def __read_from_file(dbc_file: str, encoding: str) -> Sequence[str]:
-        try:
-            with open(dbc_file, "r", encoding=encoding) as f:
-                contents = f.readlines()
-                return contents
-        except UnicodeDecodeError:
-            try:
-                with open(dbc_file, "r", encoding="utf-8") as f:
-                    contents = f.readlines()
-                    return contents
-            except UnicodeDecodeError:
-                with open(dbc_file, "r", encoding="GB18030") as f:
-                    contents = f.readlines()
-                    return contents
+        with open(dbc_file, "r", encoding=encoding, errors="ignore") as f:
+            contents = f.readlines()
+            return contents
 
     def __read_content(self, dbc_file: str, encoding: str) -> Sequence[str]:
         """
