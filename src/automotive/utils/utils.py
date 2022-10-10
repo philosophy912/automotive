@@ -44,6 +44,34 @@ class Utils(metaclass=Singleton):
     """
 
     @staticmethod
+    def codec(content: str, encoding: str, is_ignore: bool):
+        """
+        字符串的codec
+        :param content: 字符串内容
+        :param encoding:  编码方式
+        :param is_ignore:  是否忽略错误
+        :return:
+        """
+        if is_ignore:
+            return content.encode(encoding, "ignore")
+        else:
+            return content.encode(encoding)
+
+    @staticmethod
+    def decode(content: bytes, encoding: str, is_ignore: bool):
+        """
+        字符串的decode
+        :param content: 字节码
+        :param encoding: 编码凡是
+        :param is_ignore:  是否忽略错误
+        :return:
+        """
+        if is_ignore:
+            return content.decode(encoding, "ignore")
+        else:
+            return content.decode(encoding)
+
+    @staticmethod
     def get_time_as_string(fmt: str = '%Y-%m-%d_%H-%M-%S') -> str:
         """
         返回当前系统时间，类型为string
@@ -288,7 +316,7 @@ class Utils(metaclass=Singleton):
         :return: json文件中的object对象
         """
         logger.debug(f"file is {file}")
-        with open(file, "r", encoding=encoding) as fp:
+        with open(file, "r", encoding=encoding, errors="ignore") as fp:
             content = json.load(fp)
             logger.trace(f"content is {content}")
             return content
@@ -305,7 +333,7 @@ class Utils(metaclass=Singleton):
         :return: yml对象对应的字典对象
         """
         logger.debug(f"file is {file}")
-        with open(file, "r", encoding=encoding) as fp:
+        with open(file, "r", encoding=encoding, errors="ignore") as fp:
             content = yaml.full_load(fp)
             logger.debug(f"content is {content}")
             return content
@@ -322,7 +350,7 @@ class Utils(metaclass=Singleton):
         :return: yml对象对应的字典对象
         """
         logger.debug(f"file is {file}")
-        with open(file, "r", encoding=encoding) as fp:
+        with open(file, "r", encoding=encoding, errors="ignore") as fp:
             content = yaml.safe_load(fp)
             logger.debug(f"content is {content}")
             return content
@@ -339,7 +367,7 @@ class Utils(metaclass=Singleton):
         :return: yml对象对应的字典对象
         """
         logger.debug(f"file is {file}")
-        with open(file, "r", encoding=encoding) as fp:
+        with open(file, "r", encoding=encoding, errors="ignore") as fp:
             content = yaml.unsafe_load(fp)
             logger.debug(f"content is {content}")
             return content
@@ -391,7 +419,8 @@ class Utils(metaclass=Singleton):
         stdout, stderr = p.communicate()
         return stdout.decode(encoding), stderr.decode(encoding)
 
-    def exec_command_must_success(self, command: str, workspace: Optional[str] = None) -> NoReturn:
+    def exec_command_must_success(self, command: str, workspace: Optional[str] = None,
+                                  sub_process: bool = True) -> NoReturn:
         """
         有输出的执行必须成功
 
@@ -399,9 +428,11 @@ class Utils(metaclass=Singleton):
 
         :param workspace: 工作目录
 
+        :param sub_process: 是否以子进程方式执行
+
         :return: 输出的值
         """
-        if self.exec_command(command, workspace, True) != 0:
+        if self.exec_command(command, workspace, sub_process) != 0:
             logger.error(f"execute command [{command}] failed, please check it again")
             sys.exit(1)
 
@@ -461,8 +492,7 @@ class Utils(metaclass=Singleton):
             logger.trace("it use os.system type")
             if workspace:
                 os.chdir(workspace)
-            os.system(command)
-            return 0
+            return os.system(command)
 
     @staticmethod
     def remove_tree(folder: str) -> NoReturn:
