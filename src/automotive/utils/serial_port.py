@@ -25,7 +25,12 @@ class SerialPort(object):
     串口类，用于基础的串口操作
     """
 
-    def __init__(self, line_count: int = 10):
+    def __init__(self, line_count: int = 10, ignore_decode_error: bool = True, codec: str = "utf-8"):
+        """
+
+        :param line_count:
+        :param ignore_decode_error: 是否忽略编码错误
+        """
         self._serial = None
         # 端口号，用于写文件
         self._port = None
@@ -38,9 +43,13 @@ class SerialPort(object):
         self._line_count = line_count
         # 读到的数据
         self._contents = []
+        # 默认编码方式
+        self._codec = codec
+        # 是否忽略编码错误
+        self._decode_ignore = ignore_decode_error
+        self.__utils = Utils()
 
-    @staticmethod
-    def __detect_codec(string: bytes):
+    def __detect_codec(self, string: bytes):
         """
         检测编码类型并返回
 
@@ -51,7 +60,7 @@ class SerialPort(object):
         encode = chardet.detect(string)
         logger.trace(f"codec is {encode['encoding']}")
         encoding = encode['encoding']
-        return encoding if encoding else "utf-8"
+        return encoding if encoding else self._codec
 
     def __bytes_to_string(self, line: bytes, type_: Optional[bool] = None) -> str:
         """
@@ -64,9 +73,9 @@ class SerialPort(object):
         :return 行数据
         """
         if type_:
-            return line if type_ else line.decode("utf-8")
+            return line if type_ else self.__utils.decode(line, self._codec, self._decode_ignore)
         else:
-            return line.decode(self.__detect_codec(line))
+            return self.__utils.decode(line, self.__detect_codec(line), self._decode_ignore)
 
     def __read_line(self, type_: Optional[bool] = None) -> str:
         """
@@ -97,12 +106,12 @@ class SerialPort(object):
         parent = log_folder.split("\"")[0]
         if os.path.exists(log_folder):
             if os.path.isdir(log_folder):
-                log_file = fr"{log_folder}\{self._port}_{Utils().get_time_as_string(fmt=file_fmt)}.log"
+                log_file = fr"{log_folder}\{self._port}_{self.__utils.get_time_as_string(fmt=file_fmt)}.log"
             else:
-                log_file = fr"{parent}\{self._port}_{Utils().get_time_as_string(fmt=file_fmt)}.log"
+                log_file = fr"{parent}\{self._port}_{self.__utils.get_time_as_string(fmt=file_fmt)}.log"
         else:
             if os.path.exists(parent):
-                log_file = f"{self._port}_{Utils().get_time_as_string(fmt=file_fmt)}.log"
+                log_file = f"{self._port}_{self.__utils.get_time_as_string(fmt=file_fmt)}.log"
             else:
                 raise RuntimeError(f"{log_folder} is not exist, please check it")
         self._read_flag = True
@@ -231,7 +240,7 @@ class SerialPort(object):
             cmd = cmd + end if end else cmd
         if type_:
             if not isinstance(cmd, bytes):
-                cmd = cmd.encode("utf-8")
+                cmd = self.__utils.codec(cmd, self._codec, self._decode_ignore)
         self._serial.write(cmd)
 
     @check_connect("_serial", connect_tips, True)
@@ -262,7 +271,7 @@ class SerialPort(object):
         if type_ is None:
             return byte_.decode(self.__detect_codec(byte_))
         else:
-            return byte_.decode('utf-8') if type_ else byte_
+            return byte_.decode(self._codec) if type_ else byte_
 
     @check_connect("_serial", connect_tips, True)
     def read_line(self) -> str:
