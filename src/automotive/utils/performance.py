@@ -523,7 +523,7 @@ class Performance(object):
         cpu_usage = self.__parse_adb_top_cpu_usage(top_data)
         use_memory, total_memory = self.__parse_adb_dumpsys_meminfo_usage(dumpsys_data)
         memory_usage = round(float(use_memory / total_memory * 100), 2)
-        return Android(cpu_usage, memory_usage, total_memory, dumpsys_data)
+        return Android(cpu_usage, memory_usage, top_data, dumpsys_data)
 
     def get_android_app_data(self, app_name: str, device_id: str = None) -> App:
         """
@@ -608,12 +608,12 @@ class Performance(object):
             dumpsys_str = "\n".join(dumpsys)
             performance_str = "\n".join(performance_info)
             qnx_file, android_file, dumpsys_meminfo_file, performance_file = file
-            with open(qnx_file, "w", encoding="utf-8") as f:
+            with open(qnx_file, "w", encoding="utf-8", errors="ignore") as f:
                 f.write(qnx_top_str)
-            with open(android_file, "w", encoding="utf-8") as f:
+            with open(android_file, "w", encoding="utf-8", errors="ignore") as f:
                 f.write(android_str)
-            with open(dumpsys_meminfo_file, "w", encoding="utf-8") as f:
+            with open(dumpsys_meminfo_file, "w", encoding="utf-8", errors="ignore") as f:
                 f.write(dumpsys_str)
-            with open(performance_file, "w", encoding="utf-8") as f:
+            with open(performance_file, "w", encoding="utf-8", errors="ignore") as f:
                 f.write(performance_str)
         return average_qnx_cpu, average_qnx_memory, average_android_cpu, average_android_memory
