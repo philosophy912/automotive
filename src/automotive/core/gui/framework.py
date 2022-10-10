@@ -237,9 +237,8 @@ class Stress(object):
         if self.__thread_pool is None:
             self.__thread_pool = ThreadPoolExecutor(max_workers=self.__max_workers)
         # 开启多线程
-        # 实例化对象
-        # clazz, xml_file = self.__select_action
-        # self.__class_instance = clazz(xml_file)
+        if self.__queue is None:
+            self.__queue = Queue()
         self.__queue_flag = True
         # 清空queue中的内容
         self.__queue.queue.clear()
@@ -265,6 +264,7 @@ class Stress(object):
         # 清空queue中的内容
         logger.debug("clear queue content")
         self.__queue.queue.clear()
+        self.__queue = None
         self.__action_future = None
         # self.__class_instance = None
         self.__queue_future = None
