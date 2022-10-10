@@ -48,7 +48,7 @@ class Player(object):
         :param volume: 播报语音的音量，默认为1[0,1]
         """
         if isinstance(text, bytes):
-            text = text.decode('utf-8')
+            text = text.decode('utf-8', errors="ignore")
         logger.info(f"it will play text[{text}]")
         if not 0 < rate <= 150:
             raise ValueError(f"rate must in (0, 150], current rate is {rate}")
@@ -66,7 +66,7 @@ class Player(object):
         :param text: 需要tts播报的文字内容，支持中英文
         """
         if isinstance(text, bytes):
-            text = text.decode('utf-8')
+            text = text.decode('utf-8', errors="ignore")
         self.speaker.Speak(text)
 
     def play_audio(self, filename: str, playtime: Optional[float] = None, loops: int = 0, start: float = 0.0,
