@@ -6,6 +6,8 @@
 # @Author:      lizhe
 # @Created:     2021/5/1 - 23:34
 # --------------------------------------------------------
+import importlib
+import importlib.util
 import json
 import shutil
 import sys
@@ -18,7 +20,7 @@ import inspect
 import zipfile
 import yaml
 from datetime import datetime
-from typing import Union, Dict, Tuple, Optional, Sequence, NoReturn
+from typing import Union, Dict, Tuple, Optional, Sequence, NoReturn, Any
 
 from ..common.typehints import Number
 from ..logger.logger import logger
@@ -630,3 +632,21 @@ class Utils(metaclass=Singleton):
             params = list(filter(lambda x: x != "self", params))
             methods[method_name] = params
         return methods
+
+    @staticmethod
+    def get_module_from_script(script: str) -> Any:
+        """
+        根据脚本动态导入
+        :param script: 脚本全路径
+        :return:
+        """
+        if not os.path.exists(script):
+            logger.error(f"{script} is not exist")
+            return None
+        module_name = script.split(".")[0]
+        # 根据文件获取spec，然后根据spec加载module
+        module_spec = importlib.util.spec_from_file_location(module_name, script)
+        module = importlib.util.module_from_spec(module_spec)
+        # 模块的Loader必须要执行一次， 否则模块有问题
+        module_spec.loader.exec_module(module)
+        return module
