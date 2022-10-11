@@ -6,8 +6,6 @@
 # @Author:      lizhe
 # @Created:     2022/5/25 - 21:39
 # --------------------------------------------------------
-import importlib
-import importlib.util
 import os.path
 from concurrent.futures import ThreadPoolExecutor
 from queue import Queue
@@ -15,7 +13,7 @@ from tkinter import Tk, Text, BOTH, END, Button, Frame, DISABLED, NORMAL
 from tkinter.ttk import Combobox
 from typing import Dict, Sequence, Union
 
-from automotive import Utils
+from automotive.utils.utils import Utils
 from automotive.application.common.enums import ProjectEnum
 from automotive.logger.logger import logger
 
@@ -42,6 +40,7 @@ class Stress(object):
         :param height: GUI的宽
         :param title: GUI显示的名字
         """
+        self.__utils = Utils()
         # 线程池句柄
         self.__max_workers = 2
         self.__thread_pool = ThreadPoolExecutor(max_workers=self.__max_workers)
@@ -132,7 +131,7 @@ class Stress(object):
         :param next_line: 是否换行， 默认换行
         """
         # 加上了时间的显示
-        current_time = Utils.get_time_as_string("%Y-%m-%d %H:%M:%S")
+        current_time = self.__utils.get_time_as_string("%Y-%m-%d %H:%M:%S")
         new_content = f"{content}\n" if next_line else f"{content}"
         display_content = f"{current_time}:  {new_content}"
         logger.debug(f"text content is [{content}]")
@@ -155,8 +154,7 @@ class Stress(object):
         self.__select_action.close()
         self.__tk.destroy()
 
-    @staticmethod
-    def __get_config(project: Union[ProjectEnum, str], action_path: str) -> Dict:
+    def __get_config(self, project: Union[ProjectEnum, str], action_path: str) -> Dict:
         """
         根据project的value为头的去查找actions下面的的python文件
         :return:
@@ -185,11 +183,7 @@ class Stress(object):
                 if not os.path.exists(abs_xml_file):
                     raise RuntimeError(f"Action {action_file} 对应的配置文件不存在，请检查")
                 module_name = action_file.split(".")[0]
-                # 根据文件获取spec，然后根据spec加载module
-                module_spec = importlib.util.spec_from_file_location(module_name, abs_action_file)
-                module = importlib.util.module_from_spec(module_spec)
-                # 模块的Loader必须要执行一次， 否则模块有问题
-                module_spec.loader.exec_module(module)
+                module = self.__utils.get_module_from_script(abs_action_file)
                 # 根据文件名获取类名
                 # 类名首先需要去掉项目名开头的, 项目名是一定会存在的
                 class_name = module_name[len(project_name) + 1:]
