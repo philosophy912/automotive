@@ -6,6 +6,8 @@
 # @Author:      lizhe
 # @Created:     2021/5/1 - 23:55
 # --------------------------------------------------------
+from typing import Sequence
+
 from .qnx_device import QnxDevice
 from .qnx_actions import QnxActions
 from .qnx_local_screenshot import QnxLocalScreenShot
@@ -35,11 +37,11 @@ class AirCondition(BaseScreenShot, BaseActions, BaseSocketDevice):
         # self.__device.copy_images_to_usb(self.__path)
         self.__device.disconnect()
 
-    def screen_shot(self, image_name: str, count: int, interval_time: float, display: int = None) -> list:
+    def screen_shot(self, image_name: str, count: int, interval_time: float, display: int = None) -> Sequence:
         return self.__screen_shot.screen_shot(image_name, count, interval_time, display)
 
     def screen_shot_area(self, position: Position, image_name: str, count: int, interval_time: float,
-                         display: int = None) -> list:
+                         display: int = None) -> Sequence:
         return self.__screen_shot.screen_shot_area(position, image_name, count, interval_time, display)
 
     def click(self, display: int, x: int, y: int, interval: float = 0.2):
