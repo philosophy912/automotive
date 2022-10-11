@@ -364,12 +364,12 @@ class BaseAction(metaclass=ABCMeta):
         :param close_methods: yml配置文件中类支持的关闭方法
         :param yml_file: YML文件所在路径
         """
-        self.__utils = Utils()
+        self._utils = Utils()
         # 配置open和close用到的方法
         self.__open_methods = open_methods if open_methods else ("connect", "open")
         self.__close_methods = close_methods if close_methods else ("close", "disconnect")
         # 这一部分就是传参才能生成的对象实例
-        self.__result_dict = get_yml_config(yml_file, self.__utils, self.__open_methods, self.__close_methods)
+        self.__result_dict = get_yml_config(yml_file, self._utils, self.__open_methods, self.__close_methods)
         # 存入对象池，方便调用
         self._instances = dict()
         # 此时实例化对象, 后续就可以根据这个配置的内容来直接调用
