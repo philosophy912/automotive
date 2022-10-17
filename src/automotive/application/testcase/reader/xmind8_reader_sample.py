@@ -364,7 +364,7 @@ class Xmind8SampleReader(BaseReader):
         :param content:
         :return:
         """
-        if content[0] in index_list:
+        if content[0] in INDEX_LIST:
             content = content[1:]
             if content[0] in (".", "。", " "):
                 content = content[1:]
