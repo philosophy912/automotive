@@ -21,7 +21,9 @@ from loguru import logger as _logger
 
     1、 from automotive import logger
 
-    2、 在运行代码目录及父目录到根目录的任意目录放置config.yml文件，其中yml中包含level和log_folder用于定义log等级及log存放文件路径
+    2、 在运行代码目录及父目录到根目录的任意目录放置config.yml文件，
+    
+    其中yml中包含level和log_folder、log_level用于定义log等级及log存放文件路径
 
     3、 如果找不到配置文件，默认使用info级别输出log，并且不保存log内容到文件
 """

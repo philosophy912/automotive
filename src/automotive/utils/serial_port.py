@@ -27,10 +27,12 @@ class SerialPort(object):
 
     def __init__(self, line_count: int = 10, ignore_decode_error: bool = True, codec: str = "utf-8"):
         """
-
+        初始化，默认读取到10行代码写入一次文件，默认忽略UTF-8编码错误，
         :param line_count:
         :param ignore_decode_error: 是否忽略编码错误
         """
+        self.__utils = Utils()
+        # 串口的句柄
         self._serial = None
         # 端口号，用于写文件
         self._port = None
@@ -40,6 +42,7 @@ class SerialPort(object):
         self._thread_pool = ThreadPoolExecutor(max_workers=1)
         # 读取的数据来源标识符，当False的时候表示从缓存中读取，此时没有写入文件， True的时候则从contents中读取，表示写入了文件
         self._read_flag = False
+        # 读取多少行数据写入一次文件
         self._line_count = line_count
         # 读到的数据
         self._contents = []
@@ -47,7 +50,6 @@ class SerialPort(object):
         self._codec = codec
         # 是否忽略编码错误
         self._decode_ignore = ignore_decode_error
-        self.__utils = Utils()
 
     def __detect_codec(self, string: bytes):
         """
@@ -146,7 +148,7 @@ class SerialPort(object):
                 write_timeout: float = 3,
                 log_folder: Optional[str] = None):
         """
-        创建新的串口会话窗口、
+        创建新的串口会话窗口
 
         :param log_folder: 记录日志的log
 
@@ -179,8 +181,6 @@ class SerialPort(object):
             self._serial = serial.Serial(port=port, baudrate=baud_rate, bytesize=byte_size, parity=parity,
                                          stopbits=stop_bits, timeout=timeout, xonxoff=xon_xoff, rtscts=rts_cts,
                                          write_timeout=write_timeout, dsrdtr=dsr_dtr)
-            # self._serial.open()
-            # self.set_buffer()
         else:
             raise RuntimeError(f"port[{port}] connect failed")
         sleep(1)
@@ -241,6 +241,7 @@ class SerialPort(object):
         if type_:
             if not isinstance(cmd, bytes):
                 cmd = self.__utils.codec(cmd, self._codec, self._decode_ignore)
+        logger.debug(f"it will write [{cmd}] to serial port")
         self._serial.write(cmd)
 
     @check_connect("_serial", connect_tips, True)
@@ -283,7 +284,6 @@ class SerialPort(object):
         """
         if self._read_flag:
             if len(self._contents) > 0:
-                # content = self._contents[0]
                 content = self._contents.pop(0)
                 return content
             else:

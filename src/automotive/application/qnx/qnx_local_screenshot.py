@@ -44,7 +44,8 @@ class QnxLocalScreenShot(BaseScreenShot):
 
     def __screen_shot_area(self, image_name: str, position: Position, display: int = None):
         """
-        执行截图命令(TODO， 目前QNX系统下不支持区域截图)
+        执行截图命令
+        tips: 目前QNX系统下不支持区域截图
 
         :param image_name: 图片名字，已包含后缀名
         """

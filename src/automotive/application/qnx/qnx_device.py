@@ -22,7 +22,7 @@ class QnxDevice(BaseSocketDevice):
 
     def __init__(self, port: str):
         # 设置串口
-        self.serial = SerialUtils()
+        self.__serial = SerialUtils()
         # 设置端口
         self.__port = port.upper()
 
@@ -33,7 +33,7 @@ class QnxDevice(BaseSocketDevice):
         :param command: 命令
         """
         logger.debug(f"command is {command}")
-        self.serial.write(command)
+        self.__serial.write(command)
 
     def send_commands(self, commands: list, interval: float = 0):
         """
@@ -77,16 +77,16 @@ class QnxDevice(BaseSocketDevice):
         :param path: 板子上存放截图图片的地址
         """
         usb_path = "/fs/usb0"
-        if self.serial.file_exist(usb_path, 5, 1):
+        if self.__serial.file_exist(usb_path, 5, 1):
             logger.info("usb is plugin and it will create folder to copy images")
             # 创建以时间为结尾的文件夹
             current_time = Utils.get_time_as_string("%Y%m%d%H%M%S")
             target_folder = f"{usb_path}/{current_time}"
-            self.serial.write(f"mkdir {target_folder}")
-            if self.serial.file_exist(target_folder):
+            self.__serial.write(f"mkdir {target_folder}")
+            if self.__serial.file_exist(target_folder):
                 logger.info("usb folder created success")
-                self.serial.copy_file(path, target_folder, SystemTypeEnum.QNX)
-                self.serial.write("sync")
+                self.__serial.copy_file(path, target_folder, SystemTypeEnum.QNX)
+                self.__serial.write("sync")
             else:
                 logger.error(f"usb devices cannot create folder, please copy file {path} manually")
         else:
@@ -94,12 +94,12 @@ class QnxDevice(BaseSocketDevice):
 
     def connect(self, username: str = None, password: str = None, ipaddress: str = None):
         try:
-            self.serial.connect(self.__port, baud_rate=115200)
+            self.__serial.connect(self.__port, baud_rate=115200)
         except RuntimeError:
             logger.error(f"connect failed in {self.__port}")
         # 存在用户名和密码的时候就执行登陆操作
         if username and password:
-            self.serial.login(username, password)
+            self.__serial.login(username, password)
 
     def disconnect(self):
-        self.serial.disconnect()
+        self.__serial.disconnect()

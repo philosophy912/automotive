@@ -1,7 +1,5 @@
 ## 开发说明文档
 
-
-
 #### 编译及安装
 
 - 编译
@@ -20,8 +18,6 @@
   pip install automotive-1.0.0.tar.gz
   ```
 
-  
-
 - 卸载
 
   可以通过pip方式直接卸载
@@ -29,10 +25,6 @@
   ```shell
   pip uninstall automotive
   ```
-
-  
-
-
 
 #### PIP源更新
 
@@ -43,13 +35,7 @@ pip install pip -U
 pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
 ```
 
-
-
-
-
 #### 文档创建
-
-
 
 文档创建使用的是**sphinx** 方式自动生成的文件
 

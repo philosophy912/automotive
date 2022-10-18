@@ -8,7 +8,6 @@
 # --------------------------------------------------------
 from abc import ABCMeta, abstractmethod
 from queue import Queue
-from time import sleep
 
 from .constants import Testcase, REPLACE_CHAR, get_yml_config, CLASS_INSTANCE, FUNCTION_OPEN, FUNCTION_CLOSE
 from typing import Tuple, Sequence, Optional, Dict

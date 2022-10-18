@@ -400,7 +400,7 @@ class SerialRelay(object):
 
     def __send_command(self, command_list: List[int]):
         """
-        TODO 需要吹转换错误
+        TODO 暂时没有调试成功
         :param command_list:
         :return:
         """

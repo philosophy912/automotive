@@ -59,7 +59,7 @@ class HypervisorScreenShot(BaseScreenShot):
         :return:
         """
         contents = self.adb.devices()
-        contents.pop(0)
+        contents = contents[1:]
         # 把第一行内容去掉再进行查找
         content = "".join(list(map(lambda x: str(x), contents)))
         logger.debug(f"{content}")
