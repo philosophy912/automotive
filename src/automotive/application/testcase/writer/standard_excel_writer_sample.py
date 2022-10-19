@@ -177,8 +177,11 @@ class StandardExcelSampleWriter(BaseWriter):
         if len(pre_conditions) > 0:
             contents = []
             for i, pre_condition in enumerate(pre_conditions):
-                # 解决excel中前提条件1 1的序号问题
-                contents.append(f"{pre_condition}")
+                # 处理加了序号的前提条件，去掉序号
+                if pre_condition[0].isdigit() and pre_condition[1] == ".":
+                    pre_condition = pre_condition[2:]
+                # 加序号
+                contents.append(f"{i+1}.{pre_condition}")
             return "\n".join(contents)
         else:
             return ""
