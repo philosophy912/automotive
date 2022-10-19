@@ -18,6 +18,7 @@ from automotive.utils.excel_utils import ExcelUtils
 
 class DbcParser(object):
     # 定义常量
+    TWO_BLANK = "  "
     BLANK = " "
     GBK = "gbk"
     UTF8 = "utf-8"
@@ -420,6 +421,9 @@ class DbcParser(object):
          *  VAL_ 1069 BCU_BalnFlg105_RM 1 "Balance Closed" 0 "Balance Open" ;
          */
         """
+        logger.trace(f"val content is [{content}]")
+        # 去掉两个空格的情况
+        content = self.__remove_tow_blank(content)
         # 1069 BCU_BalnFlg105_RM 1 "Balance Closed" 0 "Balance Open" ;
         val = self.__get_val_content(content)
         val = val.replace(self.SEMICOLON, self.BLANK).strip()
@@ -775,3 +779,8 @@ class DbcParser(object):
         receivers = other.split(self.COMMA)
         signal["receiver"] = ",".join(receivers)
         return signal
+
+    def __remove_tow_blank(self, content:str):
+        while self.TWO_BLANK in content:
+            content = content.replace(self.TWO_BLANK, self.BLANK)
+        return content
