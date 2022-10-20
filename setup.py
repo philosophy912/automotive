@@ -46,6 +46,7 @@ setuptools.setup(
         "ImageHash>=4.0",
         "chardet>=3.0.4",
         "pyserial>=3.4",
+        "wmi>=1.5.1",
         "allure-pytest>=2.8.12"
     ],
     classifiers=[

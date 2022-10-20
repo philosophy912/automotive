@@ -52,7 +52,7 @@ coverage.xml
 *.py,cover
 .hypothesis/
 .pytest_cache/
-
+unittest/
 # Translations
 *.mo
 *.pot
