@@ -11,7 +11,7 @@ from time import sleep
 from tkinter import Frame, Button, NORMAL, DISABLED, W, BooleanVar, Checkbutton, Entry, Label, Tk, messagebox, \
     HORIZONTAL, E
 from tkinter.ttk import Combobox, Notebook, Separator
-from typing import Sequence, Dict, Any, Union, Optional, Tuple
+from typing import Sequence, Dict, Any, Union, Optional, Tuple, NoReturn
 from automotive.logger.logger import logger
 from automotive.core.can.can_service import CANService
 from automotive.core.can.common.enums import CanBoxDeviceEnum, BaudRateEnum
@@ -27,6 +27,15 @@ class TabFrame(Frame):
 
     def __init__(self, master, can_service: CANService, config: Dict[str, Any], filter_nodes: Sequence[str],
                  common_panel: bool = False, max_line_count: int = None):
+        """
+        初始化，主要用于CanService的传递， excel配置文件的类型等，
+        :param master: 父组件对象
+        :param can_service:  can service，用于数据发送
+        :param config: 配置文件，主要填写参考reader类配置
+        :param filter_nodes:  发送默认CAN消息的时候过滤的节点
+        :param common_panel: 是否需要通用组件，默认为False, 一般来说除了主面板，其他都是不需要的
+        :param max_line_count: 一行显示的文本和按钮框的数量
+        """
         super().__init__(master)
         self.can_service = can_service
         self.thread_pool = can_service.can_bus.thread_pool
@@ -217,11 +226,10 @@ class TabFrame(Frame):
         self.buttons[text_name].grid(row=self.row, column=self.column, sticky=W)
         self.buttons[text_name]["state"] = NORMAL
 
-    def __create_message_signal_check(self):
+    def __create_message_signal_check(self) -> NoReturn:
         """
         创建信号之前发送过那些值检测
         帧ID，信号名称 精确查找的等选择
-        :return:
         """
         self.column = 0
         text_name, show_name = CHECK_SIGNAL_NAME
@@ -245,7 +253,12 @@ class TabFrame(Frame):
         self.buttons[text_name]["state"] = NORMAL
         logger.debug(f"entries are {entries}")
 
-    def __special_button_event(self, button_type: tuple):
+    def __special_button_event(self, button_type: tuple) -> NoReturn:
+        """
+        打开关闭等按钮的特殊处理，在打开的时候禁用，避免多次打开。
+        执行的部分主要通过 self.__special_actions方法实现
+        :param button_type: 按键类型
+        """
         text_name, show_name = button_type
         self.buttons[text_name]["state"] = DISABLED
         try:
@@ -255,7 +268,12 @@ class TabFrame(Frame):
             logger.error(e)
             self.buttons[text_name]["state"] = NORMAL
 
-    def __special_actions(self, button_type: Tuple):
+    def __special_actions(self, button_type: Tuple) -> NoReturn:
+        """
+        根据按键类型做相应的执行动作， 如总线丢失， 打开关闭设备之类的
+        :param button_type:
+        :return:
+        """
         open_text_name = OPEN_DEVICE[0]
         close_text_name = CLOSE_DEVICE[0]
         signal_name_text_name = SIGNAL_NAME[0]
@@ -334,7 +352,7 @@ class TabFrame(Frame):
 
             self.buttons[text_name]["state"] = NORMAL
 
-    def create_check_buttons(self):
+    def create_check_buttons(self) -> NoReturn:
         """
         创建选中框，适用于单选发送消息的情况
         """
@@ -376,7 +394,7 @@ class TabFrame(Frame):
                                                     columnspan=self.__max_line_count)
             self.row += 1
 
-    def __check_button_event(self, function_name):
+    def __check_button_event(self, function_name) -> NoReturn:
         values = self.__check_buttons[function_name]
         text_name = values[TEXT]
         on_actions = values[ON]
@@ -388,7 +406,7 @@ class TabFrame(Frame):
             logger.debug(f"{text_name} OFF")
             self.__send_actions(off_actions)
 
-    def create_comboxs(self):
+    def create_comboxs(self) -> NoReturn:
         """
         创建下拉框，选中的时候触发事件， 适用于枚举类型的选中框
         """
@@ -432,7 +450,7 @@ class TabFrame(Frame):
                                                     columnspan=self.__max_line_count)
             self.row += 1
 
-    def __combox_event(self, event, function_name):
+    def __combox_event(self, event, function_name) -> NoReturn:
         """
         能够找到下拉框，并根据下拉框的内容进行判断
         后续能够根据内容进行消息的发送
@@ -451,7 +469,7 @@ class TabFrame(Frame):
         self.__send_actions(actions)
         logger.trace(event)
 
-    def create_entries(self):
+    def create_entries(self) -> NoReturn:
         """
         创建输入框，适用于车速类型的线性信号值
         """
@@ -490,7 +508,13 @@ class TabFrame(Frame):
                                                     columnspan=self.__max_line_count)
             self.row += 1
 
-    def __entry_event(self, event, params):
+    def __entry_event(self, event, params) -> NoReturn:
+        """
+        输入框事件处理， 代码会自动解析0x开头的数据并转换后使用__send_actions方法发送数据
+        :param event: 事件类型
+        :param params: 事件参数
+        :return:
+        """
         message_lost = MESSAGE_LOST[0]
         logger.trace(event)
         function_name = params[1]
@@ -534,7 +558,7 @@ class TabFrame(Frame):
                             signals[name] = float(entry_value)
             self.__send_actions(new_actions)
 
-    def create_thread_buttons(self):
+    def create_thread_buttons(self) -> NoReturn:
         """
         创建周期交替变化或者有时间延迟的信号发送， 如双闪灯
         选中会发送，不选中则不发送
@@ -577,7 +601,11 @@ class TabFrame(Frame):
                                                     columnspan=self.__max_line_count)
             self.row += 1
 
-    def __thread_check_button_event(self, function_name):
+    def __thread_check_button_event(self, function_name: str) -> NoReturn:
+        """
+        以增加线程的方式发送数据，意味着在这里的代码会一直在后台发送数据，如果没有手动停止
+        :param function_name:  函数名称
+        """
         if function_name == DEFAULT_MESSAGE:
             logger.info(f"send default messages and filter nodes {self.__filter_nodes}")
             if self.thread_button_bool_vars[DEFAULT_MESSAGE].get():
@@ -598,12 +626,21 @@ class TabFrame(Frame):
                 if function_name in self.thread_task:
                     self.thread_task.pop(function_name)
 
-    def __thread_method(self, name, actions):
+    def __thread_method(self, name: str, actions: Sequence) -> NoReturn:
+        """
+        无线循环执行消息发送命令
+        :param name:
+        :param actions:
+        """
         logger.debug(actions)
         while self.thread_button_bool_vars[name].get():
             self.__send_actions(actions)
 
-    def __send_actions(self, actions: Sequence):
+    def __send_actions(self, actions: Sequence) -> NoReturn:
+        """
+        实际发送CAN消息的部分代码
+        :param actions: 操作类型， 包含发送can消息以及sleep时间
+        """
         for action in actions:
             if len(action) == 2:
                 msg_id, signals = action
@@ -620,7 +657,7 @@ class TabFrame(Frame):
             else:
                 raise RuntimeError(f"value[{action}] incorrect")
 
-    def create_buttons(self):
+    def create_buttons(self) -> NoReturn:
         """
         创建事件信号按钮，主要用于有时间延迟的部分，如长按或者短按方向盘按键， press release两种状态切换需要时间等待
         """
@@ -650,7 +687,11 @@ class TabFrame(Frame):
                                                     columnspan=self.__max_line_count)
             self.row += 1
 
-    def __thread_button_event(self, function_name):
+    def __thread_button_event(self, function_name: str) -> NoReturn:
+        """
+        线程方式发送时间消息，非无线循环，仅保障主线程不卡死
+        :param function_name: 类型
+        """
         try:
             self.buttons[function_name]["state"] = DISABLED
             param = self.__buttons[function_name]
@@ -664,7 +705,7 @@ class TabFrame(Frame):
         finally:
             self.buttons[function_name]["state"] = NORMAL
 
-    def create_receive_buttons(self):
+    def create_receive_buttons(self) -> NoReturn:
         """
         创建接收检查按钮， 模拟其他ECU接收
         """
@@ -694,7 +735,11 @@ class TabFrame(Frame):
                                                     columnspan=self.__max_line_count)
             self.row += 1
 
-    def __receive_button_event(self, function_name):
+    def __receive_button_event(self, function_name: str) -> NoReturn:
+        """
+        接受按钮事件， 主要用于信号对比
+        :param function_name: 函数名
+        """
         self.buttons[function_name]["state"] = DISABLED
         param = self.__receive_buttons[function_name]
         text_name = param[TEXT]

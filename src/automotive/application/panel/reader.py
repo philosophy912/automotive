@@ -15,22 +15,36 @@ from automotive.utils.common.interfaces import sht
 from automotive.utils.excel_utils import ExcelUtils
 from automotive.utils.common.enums import ExcelEnum
 from automotive.core.can.can_service import CANService
-
+# 单选框
 check_buttons = GuiButtonTypeEnum.CHECK_BUTTON.value[1]
+# 时间按钮
 thread_buttons = GuiButtonTypeEnum.EVENT_CHECK_BUTTON.value[1]
+# 下拉框
 comboxs = GuiButtonTypeEnum.COMBOX_BUTTON.value[1]
+# 输入框
 entries = GuiButtonTypeEnum.INPUT_BUTTON.value[1]
+# 普通按钮
 buttons = GuiButtonTypeEnum.EVENT_BUTTON.value[1]
+# 接收信息校验按钮
 receive_buttons = GuiButtonTypeEnum.RECEIVE_BUTTON.value[1]
 
 
 class ConfigReader(object):
 
-    def __init__(self, can_service: CANService, type_: ExcelEnum = ExcelEnum.OPENPYXL):
-        self.__utils = ExcelUtils(type_)
+    def __init__(self, can_service: CANService, excel_type: ExcelEnum = ExcelEnum.OPENPYXL):
+        """
+        初始化，主要设置can service
+        :param can_service: can消息，主要用于数据校验
+        :param excel_type: excel类型，仅支持openpyxl和xlwings
+        """
+        self.__utils = ExcelUtils(excel_type)
         self.can_service = can_service
 
     def read_from_file(self, file: str) -> Dict[str, Dict[str, Any]]:
+        """
+        从文件中读取到相应的数据并组合成类型
+        :param file:
+        """
         result = dict()
         wb = self.__utils.open_workbook(file)
         sheets = self.__utils.get_sheets(wb)
@@ -59,6 +73,10 @@ class ConfigReader(object):
         return result
 
     def __parse(self, sheet: sht) -> Sequence[GuiConfig]:
+        """
+        解析数据，固定格式，若格式有错误，则无法成功
+        :param sheet: sheet对象
+        """
         configs = []
         max_row = self.__utils.get_max_rows(sheet) + 1
         for i in range(2, max_row):
@@ -82,19 +100,25 @@ class ConfigReader(object):
 
     @staticmethod
     def _split_tabs(values: Sequence[GuiConfig]) -> Dict[str, Sequence[GuiConfig]]:
+        """
+        分类tab数据
+        :param values: 读取出来的数据
+        """
         tab_values = dict()
         tab_set = []  # 将获取的Tab按照顺序填写
         for value in values:
-
             if value.tab_name not in tab_set:
                 tab_set.append(value.tab_name)
-
         for tab in tab_set:
             tab_values[tab] = list(filter(lambda x: x.tab_name == tab, values))
         return tab_values
 
     @staticmethod
     def _handle_event_buttons(values: Sequence[GuiConfig]) -> Dict[str, Any]:
+        """
+        分类事件按钮
+        :param values: 读取出来的数据
+        """
         result = dict()
         for item in values:
             content = dict()
@@ -105,6 +129,10 @@ class ConfigReader(object):
 
     @staticmethod
     def _handle_check_buttons(values: Sequence[GuiConfig]) -> Dict[str, Any]:
+        """
+        分类单选框
+        :param values:读取出来的数据
+        """
         result = dict()
         for item in values:
             content = dict()
@@ -117,6 +145,10 @@ class ConfigReader(object):
 
     @staticmethod
     def _handle_buttons(values: Sequence[GuiConfig]) -> Dict[str, Any]:
+        """
+        分类普通按钮
+        :param values:读取出来的数据
+        """
         result = dict()
         for item in values:
             content = dict()
@@ -128,6 +160,10 @@ class ConfigReader(object):
 
     @staticmethod
     def _handle_receive_buttons(values: Sequence[GuiConfig]) -> Dict[str, Any]:
+        """
+        分类接收分析按钮
+        :param values:读取出来的数据
+        """
         result = dict()
         for item in values:
             content = dict()
@@ -139,14 +175,16 @@ class ConfigReader(object):
 
     @staticmethod
     def _handle_combox(values: Sequence[GuiConfig]) -> Dict[str, Any]:
+        """
+        处理下拉框数据的读取
+        :param values: 读取出来的数据
+        """
         result = dict()
         # 当前有多少个按钮
-
         button_names = []
         for item in values:
             if item.text_name not in button_names:
                 button_names.append(item.text_name)
-
         logger.debug(f"buttons = {button_names}")
         button_objects = []
         for name in button_names:
@@ -164,6 +202,10 @@ class ConfigReader(object):
 
     @staticmethod
     def _handle_entries(values: Sequence[GuiConfig]) -> Dict[str, Any]:
+        """
+        处理输入框数据的读取
+        :param values: 读取出来的数据
+        """
         result = dict()
         for item in values:
             content = dict()
@@ -174,6 +216,10 @@ class ConfigReader(object):
         return result
 
     def _parse_actions(self, actions: str) -> Sequence:
+        """
+        处理执行动作部分数据
+        :param actions: 读取出来的数据
+        """
         contents = []
         lines = actions.split("\n")
         lines = list(map(lambda x: x.strip(), lines))
@@ -218,6 +264,10 @@ class ConfigReader(object):
 
     @staticmethod
     def __handle_signal_value(value: str) -> (float, int):
+        """
+        处理信号值， 可能是数字也可能是信号ID
+        :param value: 读取到的值
+        """
         if value.upper() == "NONE":
             return None
         else:
@@ -228,12 +278,20 @@ class ConfigReader(object):
 
     @staticmethod
     def _split_type(configs: Sequence[GuiConfig]) -> Dict[GuiButtonTypeEnum, Any]:
+        """
+        分离类型
+        :param configs: 读取出来的数据
+        """
         typed_configs = dict()
         for key, item in GuiButtonTypeEnum.__members__.items():
             typed_configs[item] = list(filter(lambda x: x.button_type == item, configs))
         return typed_configs
 
     def _parse_check_msgs(self, value: str) -> Tuple[int, str, int, Optional[int], bool]:
+        """
+        处理信号检查部分的数据，更简化处理，可以不用填写0x的部分
+        :param value: 读取的数据
+        """
         value = value.strip()
         if value[:2].upper() == "0X":
             # 0x152=BCM_RightligthSt=0x1=1=True
