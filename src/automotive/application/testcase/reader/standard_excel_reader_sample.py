@@ -9,7 +9,7 @@
 import os
 from typing import Dict, Sequence
 
-from automotive.application.common.constants import Testcase, PRIORITY_CONFIG, INDEX_LIST
+from automotive.application.common.constants import Testcase, PRIORITY_CONFIG, INDEX_LIST, INDEX_LIST_EXCEPTION
 from automotive.application.common.interfaces import BaseReader, TestCases
 from automotive.logger.logger import logger
 from automotive.application.common.enums import ModifyTypeEnum
@@ -180,16 +180,20 @@ class StandardExcelSampleReader(BaseReader):
         :param content:
         :return:
         """
-        if content[0] in INDEX_LIST:
-            content = content[1:]
-            if content[0] in (".", "。", " "):
+        # 解决期望结果是1.1 1.2 取消掉1.1 和 1.2
+        if content[:4] in INDEX_LIST_EXCEPTION:
+            content = content[4:]
+        else:
+            if content[0] in INDEX_LIST:
                 content = content[1:]
+                if content[0] in (".", "。", " "):
+                    content = content[1:]
         return content
 
     def __parse_exceptions(self, exceptions: str) -> Sequence[str]:
         contents = []
         if exceptions:
-            exception_lines = exceptions.split("\r\n")
+            exception_lines = exceptions.split("\n")
             for line in exception_lines:
                 content = self.__handle_prefix_str(line)
                 contents.append(content)

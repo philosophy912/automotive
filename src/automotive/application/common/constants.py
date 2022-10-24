@@ -53,6 +53,7 @@ REQUIREMENT_PREFIX = "[R]"
 AUTOMATION_PREFIX = "[A]"
 RESULTS = "PASS", "FAIL", "BLOCK", "NT"
 INDEX_LIST = list(map(lambda x: f"{x}", [x + 1 for x in range(9)]))
+INDEX_LIST_EXCEPTION = list(map(lambda x: f"1.{x} ", [x + 1 for x in range(9)]))
 
 TEXT = "text"
 ON = "on"
