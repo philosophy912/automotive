@@ -110,20 +110,32 @@ class StandardExcelSampleWriter(BaseWriter):
                     raise RuntimeError(f"没有操作步骤{actions}")
                 if len(actions) != len(exceptions):
                     if len(actions) > 1 and len(exceptions) != 1:
-                        raise RuntimeError("多操作步骤必须一一对应期望结果或者仅对应一个期望结果")
-                    # 一个操作步骤对应多个期望结果
-                    elif len(actions) == 1 and len(exceptions) != 1:
-                        steps.append(f"{1}.{actions[0]}")
+                        # 多操作步骤，多期望结果
+                        for j, action in enumerate(actions):
+                            steps.append(f"{j + 1}.{action}")
+                        for m, exception in enumerate(exceptions):
+                            exception_list.append(f"{len(actions)}.{m + 1} {exception}")
+                    elif len(actions) == 1 and len(exceptions) > 1:
+                        # 一个操作步骤对应多个期望结果
+                        steps.append(f"1.{actions[0]}")
                         for j, action in enumerate(exceptions):
-                            exception_list.append(f"{len(actions)}.{j+1} {exceptions[j]}")
+                            exception_list.append(f"1.{j + 1} {exceptions[j]}")
                     else:
+                        # 多操作步骤，一个期望结果
                         for j, action in enumerate(actions):
                             steps.append(f"{j + 1}.{action}")
                         exception_list.append(f"{len(actions)}.{exceptions[0]}")
-                else:
-                    for j, action in enumerate(actions):
-                        steps.append(f"{j + 1}.{action}")
-                        exception_list.append(f"{j + 1}.{exceptions[j]}")
+                if len(actions) == len(exceptions):
+                    # 有可能是一对一，有可能是二对二、三对三
+                    if len(actions) == 1 and len(exceptions) == 1:
+                        steps.append(f"1.{actions[0]}")
+                        exception_list.append(f"1.{exceptions[0]}")
+                    else:
+                        for j, action in enumerate(actions):
+                            steps.append(f"{j + 1}.{action}")
+                        for m, exception in enumerate(exceptions):
+                            exception_list.append(f"{len(actions)}.{m + 1} {exception}")
+
             else:
                 for j, action in enumerate(actions):
                     steps.append(f"{j + 1}.{action}")

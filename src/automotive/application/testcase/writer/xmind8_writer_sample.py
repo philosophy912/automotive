@@ -87,7 +87,12 @@ class Xmind8SampleWriter(BaseWriter):
             # module_str = testcase.module
             # logger.debug(f"module is {module_str}")
             # modules = module_str.split(split_char)
-            modules = list(map(lambda x: f"{MODULE_PREFIX}{x}", modules))
+            if modules[0] != "":
+                # fix没有模块时，单独有个节点是[M]
+                modules = list(map(lambda x: f"{MODULE_PREFIX}{x}", modules))
+            else:
+                # fix 没有module时，出现空节点
+                modules = []
             modules.extend(testcase.pre_condition)
             logger.debug(f"modules = [{modules}]")
             subtopics = root_topic.getSubTopics()

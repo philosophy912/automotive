@@ -8,7 +8,7 @@
 # --------------------------------------------------------
 import os
 from typing import Dict, Sequence
-
+import re
 from automotive.application.common.constants import Testcase, PRIORITY_CONFIG, INDEX_LIST, INDEX_LIST_EXCEPTION
 from automotive.application.common.interfaces import BaseReader, TestCases
 from automotive.logger.logger import logger
@@ -181,7 +181,7 @@ class StandardExcelSampleReader(BaseReader):
         :return:
         """
         # 解决期望结果是1.1 1.2 取消掉1.1 和 1.2
-        if content[:4] in INDEX_LIST_EXCEPTION:
+        if re.match("\d+.\d+\s", content[:4]):
             content = content[4:]
         else:
             if content[0] in INDEX_LIST:
