@@ -7,16 +7,15 @@
 # @Created:     2021/8/3 - 22:02
 # --------------------------------------------------------
 from abc import ABCMeta, abstractmethod
-from queue import Queue
 
-from .constants import Testcase, REPLACE_CHAR, get_yml_config, CLASS_INSTANCE, FUNCTION_OPEN, FUNCTION_CLOSE
-from typing import Tuple, Sequence, Optional, Dict
+from automotive.core.can.can_service import CANService
 
-from automotive.utils.excel_utils import ExcelUtils
-from automotive.utils.player import Player
-from automotive.utils.images import Images
-from automotive.utils.utils import Utils
+from .constants import Testcase, REPLACE_CHAR
+from typing import Tuple, Sequence, Optional, Dict, List, Union
+
 from automotive.logger.logger import logger
+from .enums import SessionControlTypeEnum, EcuResetTypeEnum, CommunicationControlTypeEnum, ControlDTCSettingTypeEnum
+from automotive.core.can.message import Message
 
 Position = Tuple[int, int, int, int]
 Voltage_Current = Tuple[float, float]
@@ -355,75 +354,241 @@ class BaseWriter(BaseTestCase):
             raise RuntimeError("no testcase found")
 
 
-class BaseAction(metaclass=ABCMeta):
+class BaseUdsService(metaclass=ABCMeta):
 
-    def __init__(self, yml_file: str, open_methods: Sequence = None, close_methods: Sequence = None):
+    def __init__(self, can_service: CANService, request_msg_id: int, response_msg_id: int):
         """
-        :param open_methods: yml配置文件中类支持的打开方法
-        :param close_methods: yml配置文件中类支持的关闭方法
-        :param yml_file: YML文件所在路径
+        初始化类
+        :param can_service: 传入的CAN Service
+        :param request_msg_id:  请求ID
+        :param response_msg_id:  响应ID
         """
-        self._utils = Utils()
-        # 配置open和close用到的方法
-        self.__open_methods = open_methods if open_methods else ("connect", "open")
-        self.__close_methods = close_methods if close_methods else ("close", "disconnect")
-        # 这一部分就是传参才能生成的对象实例
-        self.__result_dict = get_yml_config(yml_file, self._utils, self.__open_methods, self.__close_methods)
-        # 存入对象池，方便调用
-        self._instances = dict()
-        # 此时实例化对象, 后续就可以根据这个配置的内容来直接调用
-        for name, value in self.__result_dict.items():
-            self.__class, self.__params = value[CLASS_INSTANCE]
-            self._instances[name] = self.__class(**self.__params)
-        # 图像对比类实例化
-        self._images = Images()
-        # 播放器类实例化
-        self._player = Player()
-        # Excel类实例化, 默认xlwings
-        self._excel_utils = ExcelUtils("xlwings")
+        self._can_service = can_service
+        self._req_id = request_msg_id
+        self._res_id = response_msg_id
 
-    def open(self):
+    def _get_response_value(self) -> Sequence[Sequence[int]]:
         """
-        根据配置的内容决定打开的设备，如摄像头、串口等
-        抽象类初始化的时候就会打开这些设备
-        TIPS: ExcelUtils除外
-        该方法在类初始化的时候自动调用
+        获取返回的数据
+        :return:
         """
-        logger.debug("call open method")
-        for name, instance in self._instances.items():
-            # 'connect', {'port': 'COM12', 'baud_rate': 115200, 'log_folder': 'd:\\test'}
-            function_name, function_param = self.__result_dict[name][FUNCTION_OPEN]
-            # 调用方法
-            getattr(instance, function_name)(**function_param)
+        filter_messages = []
+        messages = self._can_service.get_stack()
+        messages = list(filter(lambda x: x.msg_id == self._res_id, messages))
+        for message in messages:
+            data = message.data
+            filter_messages.append(data)
+        return filter_messages
 
-    def close(self):
+    def _send_message(self, data: List, byte_size: int = 8, default_value: int = 0x0):
         """
-        根据配置的内容决定关闭的设备，如摄像头、串口等
-        在代码结束的时候关闭之前打开的设备
-        TIPS: ExcelUtils除外
-        该方法在子类Run方法结束的时候需要手动调用
+        填充bytes
+        :param data: 传入的数据
+        :param byte_size: 字节长度，默认为8
+        :param default_value: 填充值，默认为0
         """
-        logger.debug("call close method")
-        for name, instance in self._instances.items():
-            # 'disconnect', {}
-            function_name, function_param = self.__result_dict[name][FUNCTION_CLOSE]
-            # 调用方法
-            getattr(instance, function_name)(**function_param)
+        while len(data) < byte_size:
+            data.append(default_value)
+        message = Message()
+        message.msg_id = self._req_id
+        message.data = data
+        self._can_service.transmit_one(message)
+
+    def diagnostic_session_control_0x10(self,
+                                        sub_function: Union[SessionControlTypeEnum, int]) -> Sequence[Sequence[int]]:
+        """
+        DiagnosticSessionControl 诊断模式控制
+        :return:
+        """
+        self._can_service.clear_stack_data()
+        if isinstance(sub_function, SessionControlTypeEnum):
+            sub_function = sub_function.value
+        data = [0x2, 0x10, sub_function]
+        self._send_message(data)
+        return self._get_response_value()
+
+    def ecu_reset_0x11(self, sub_function: Union[EcuResetTypeEnum, int]) -> Sequence[Sequence[int]]:
+        """
+        EcuReset 电控单元复位
+        :return:
+        """
+        self._can_service.clear_stack_data()
+        if isinstance(sub_function, EcuResetTypeEnum):
+            sub_function = sub_function.value
+        data = [0x2, 0x11, sub_function]
+        self._send_message(data)
+        return self._get_response_value()
 
     @abstractmethod
-    def readme(self, queue: Queue):
+    def security_access_0x27(self) -> Sequence[Sequence[int]]:
         """
-        抽象方法，该方法用于测试步骤的总体描述
-        框架会自动调用该方法
+        SecurityAccess 安全访问
+        :return:
         """
         pass
 
+    def communication_control_0x28(self,
+                                   sub_function: Union[CommunicationControlTypeEnum, int]) -> Sequence[Sequence[int]]:
+        """
+        CommunicationControl 通信控制
+        :return:
+        """
+        self._can_service.clear_stack_data()
+        if isinstance(sub_function, CommunicationControlTypeEnum):
+            sub_function = sub_function.value
+        data = [0x3, 0x11, sub_function, 0x2]
+        self._send_message(data)
+        return self._get_response_value()
+
+    def tester_present_0x3e(self) -> Sequence[Sequence[int]]:
+        """
+        TesterPresent 诊断设备在线
+        :return:
+        """
+        self._can_service.clear_stack_data()
+        data = [0x2, 0x3e]
+        self._send_message(data)
+        return self._get_response_value()
+
+    def control_dtc_setting_0x85(self, sub_function: Union[ControlDTCSettingTypeEnum, int]) -> Sequence[Sequence[int]]:
+        """
+        ControlDTCSetting 控制DTC设置
+        :return:
+        """
+        self._can_service.clear_stack_data()
+        if isinstance(sub_function, ControlDTCSettingTypeEnum):
+            sub_function = sub_function.value
+        data = [0x2, 0x85, sub_function]
+        self._send_message(data)
+        return self._get_response_value()
+
+    @staticmethod
+    def link_control_0x87():
+        """
+        Link Control 链路控制
+        :return:
+        """
+        logger.warning("not implements this function")
+
     @abstractmethod
-    def run(self, queue: Queue):
+    def read_data_by_identifier_0x22(self, did_number: str) -> Sequence[Sequence[int]]:
+        """
+        ReadDataByIdentifier 读取数据（通过标识）
+        :param did_number DID号
+        :return:
+        """
         pass
 
-    def run_stress(self, queue: Queue):
-        self.readme(queue)
-        self.open()
-        self.run(queue)
-        self.close()
+    @staticmethod
+    def read_memory_by_address_0x23():
+        """
+        ReadMemoryByAddress 读取内存（通过地址）
+        :return:
+        """
+        logger.warning("not implements this function")
+
+    @staticmethod
+    def read_data_by_periodic_identifier_0x2a():
+        """
+        ReadDataByPeriodicIdentifier 周期读取数据（通过标识）
+        :return:
+        """
+        logger.warning("not implements this function")
+
+    @abstractmethod
+    def write_data_by_identifier_0x2e(self) -> Sequence[Sequence[int]]:
+        """
+        WriteDataByIdentifier 写入数据（通过标识）
+        :return:
+        """
+        pass
+
+    @staticmethod
+    def write_memory_by_address_0x3d():
+        """
+        WriteMemoryByAddress 写入内存（通过地址）
+        :return:
+        """
+        logger.warning("not implements this function")
+
+    @staticmethod
+    def dynamically_define_data_identifier_0x2c():
+        """
+        DynamicallyDefineDataIdentifier 数据标识符动态定义
+        :return:
+        """
+        logger.warning("not implements this function")
+
+    def clear_diagnostic_information_0x14(self) -> Sequence[Sequence[int]]:
+        """
+        ClearDiagnosticInformation 清除诊断信息
+        :return:
+        """
+        self._can_service.clear_stack_data()
+        data = [0x4, 0x14, 0xff, 0xff, 0xff]
+        self._send_message(data)
+        return self._get_response_value()
+
+    @abstractmethod
+    def read_dtc_information_0x19(self) -> Sequence[Sequence[int]]:
+        """
+        ReadDTCInformation 读取DTC信息
+        :return:
+        """
+        pass
+
+    @staticmethod
+    def input_output_control_by_identifier_0x2f():
+        """
+        InputOutputControlByIdentifier 输入输出控制
+        :return:
+        """
+        logger.warning("not implements this function")
+
+    @staticmethod
+    def routine_control_0x31():
+        """
+        RoutineControl 例程控制
+        :return:
+        """
+        logger.warning("not implements this function")
+
+    @staticmethod
+    def request_download_0x34():
+        """
+        RequestDownload 请求下载
+        :return:
+        """
+        logger.warning("not implements this function")
+
+    @staticmethod
+    def transfer_data_0x36():
+        """
+        TransferData 发送数据
+        :return:
+        """
+        logger.warning("not implements this function")
+
+    @staticmethod
+    def request_transfer_exit_0x37():
+        """
+        RequestTransferExit 请求退出发送
+        :return:
+        """
+        logger.warning("not implements this function")
+
+    @staticmethod
+    def request_upload_0x35():
+        """
+        RequestUpload 请求上传
+        :return:
+        """
+        logger.warning("not implements this function")
+
+    @staticmethod
+    def request_file_transfer_0x38():
+        """
+        RequestFileTransfer 请求文件传输
+        :return:
+        """
+        logger.warning("not implements this function")

@@ -106,3 +106,75 @@ class RelayTypeEnum(Enum):
             if type_.strip().upper() == item.value.upper():
                 return item
         raise ValueError(f"{type_} can not be found in RelayTypeEnum")
+
+
+@unique
+class SessionControlTypeEnum(Enum):
+    # 默认模式
+    DEFAULT_SESSION = 0x1
+    # 编程模式
+    PROGRAMMING_SESSION = 0x2
+    # 扩展诊断模式
+    EXTENDED_DIAGNOSTIC_SESSION = 0x3
+
+    @staticmethod
+    def from_name(value: int):
+        logger.debug(f"value is {value}")
+        for key, item in SessionControlTypeEnum.__members__.items():
+            if value == item.value:
+                return item
+        raise ValueError(f"{value} can not be found in SessionControlTypeEnum")
+
+
+@unique
+class EcuResetTypeEnum(Enum):
+    # 硬件复位
+    HARD_RESET = 0x1
+    # 开关键复位
+    KEY_OFF_ON_RESET = 0x2
+    # 软件复位
+    SOFT_RESET = 0x3
+
+    @staticmethod
+    def from_name(value: int):
+        logger.debug(f"value is {value}")
+        for key, item in EcuResetTypeEnum.__members__.items():
+            if value == item.value:
+                return item
+        raise ValueError(f"{value} can not be found in EcuResetTypeEnum")
+
+
+@unique
+class CommunicationControlTypeEnum(Enum):
+    # 使能接收和发送
+    ENABLE_RX_AND_TX = 0x0
+    # 使能接收禁止发送
+    ENABLE_RX_AND_DISABLE_TX = 0x1
+    # 禁止读接收使能发送
+    DISABLE_RX_AND_ENABLE_TX = 0x2
+    # 禁止接收和发送 （ECU至少应该支持0x01: 常规应用报文和0x03:常规应用报文和网络管理报文)"
+    DISABLE_RX_AND_TX = 0x3
+
+    @staticmethod
+    def from_name(value: int):
+        logger.debug(f"value is {value}")
+        for key, item in CommunicationControlTypeEnum.__members__.items():
+            if value == item.value:
+                return item
+        raise ValueError(f"{value} can not be found in CommunicationControlTypeEnum")
+
+
+@unique
+class ControlDTCSettingTypeEnum(Enum):
+    # 打开DTC设置
+    ON = 0x1
+    # 关闭DTC设置
+    OFF = 0x2
+
+    @staticmethod
+    def from_name(value: int):
+        logger.debug(f"value is {value}")
+        for key, item in ControlDTCSettingTypeEnum.__members__.items():
+            if value == item.value:
+                return item
+        raise ValueError(f"{value} can not be found in ControlDTCSettingTypeEnum")
