@@ -383,6 +383,7 @@ class DbcParser(object):
                     if content.startswith(self.BO):
                         self.__set_message(message, content)
                 else:
+                    # 解析到了一个message
                     self.__set_message(message, content)
             # 处理SG行，主要是signal
             if content.startswith(self.SG):
@@ -447,6 +448,7 @@ class DbcParser(object):
                 quotation_index = other.index(self.QUOTATION)
                 value = other[:quotation_index].strip()
                 other = other[quotation_index + 1:].strip()
+                # 0 "默认状态"  key = 0 value = 默认状态
                 values[key] = re.sub(self.TRIM_BLANK, self.BLANK, value)
             message = self.__get_message_by_id(messages, message_id)
             signal = self.__get_signal_by_name(message["signals"], signal_name)
@@ -548,6 +550,8 @@ class DbcParser(object):
         logger.trace(f"ba_def_def  = {ba_def_def}")
         split = ba_def_def.split(self.BLANK)
         if len(split) == 2:
+            # "GenMsgCycleTimeFast" 0;
+            # name = GenMsgCycleTimeFast  value = 0
             name = split[0].replace(self.QUOTATION, self.NULL)
             value = split[1].replace(self.QUOTATION, self.NULL)
             logger.trace(f"name = [{name}] and value = [{value}]")
@@ -608,6 +612,7 @@ class DbcParser(object):
             logger.trace("暂时不处理这类数据")
         else:
             blank_index = ba_def.index(self.BLANK)
+            # node_type  就是 SG_
             node_type = ba_def[:blank_index]
             logger.trace(f"node_type is {node_type}")
             # "DiagResponse" ENUM  "No","Yes";
@@ -618,6 +623,7 @@ class DbcParser(object):
             logger.trace(f"parse blank_index other = [{other}]")
             # TpApplType STRING
             blank_index = other.index(self.BLANK)
+            # name 就是DiagResponse
             name = other[:blank_index].strip()
             # ENUM  "No","Yes";
             other = other[blank_index + 1:]
