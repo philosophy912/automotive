@@ -29,8 +29,8 @@ class BaseAction(metaclass=ABCMeta):
         """
         self._utils = Utils()
         # 配置open和close用到的方法
-        self.__open_methods = open_methods if open_methods else ("connect", "open")
-        self.__close_methods = close_methods if close_methods else ("close", "disconnect")
+        self.__open_methods = open_methods if open_methods else ("connect", "open", "open_can")
+        self.__close_methods = close_methods if close_methods else ("close", "disconnect", "close_can")
         # 这一部分就是传参才能生成的对象实例
         self.__result_dict = get_yml_config(yml_file, self._utils, self.__open_methods, self.__close_methods)
         # 存入对象池，方便调用
