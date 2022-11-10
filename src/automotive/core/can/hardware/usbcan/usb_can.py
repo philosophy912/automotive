@@ -511,3 +511,9 @@ class UsbCanDevice(BaseCanDevice):
             error = sys.exc_info()
             logger.trace('ERROR: ' + str(error[0]) + ' : ' + str(error[1]))
             raise RuntimeError(error[1])
+
+    def init_uds(self, request_id: int, response_id: int, function_id: int):
+        raise RuntimeError(f"USB CAN not support uds")
+
+    def send_and_receive_uds_message(self, message: Sequence[int]) -> Sequence[int]:
+        raise RuntimeError(f"USB CAN not support uds")

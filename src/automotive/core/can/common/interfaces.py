@@ -23,6 +23,7 @@ class BaseCanDevice(metaclass=ABCMeta):
     def __init__(self):
         self._dlc = dlc
         self._is_open = False
+        self._p_diag_module_index = 0
 
     @property
     def is_open(self) -> bool:
@@ -75,6 +76,25 @@ class BaseCanDevice(metaclass=ABCMeta):
         """
         接收CAN消息
         :return: message CAN消息
+        """
+        pass
+
+    @abstractmethod
+    def init_uds(self, request_id: int, response_id: int, function_id: int):
+        """
+        初始化USD（仅同星可用)
+        :param request_id:  地址请求ID
+        :param response_id:  响应ID
+        :param function_id: 功能寻址ID
+        """
+        pass
+
+    @abstractmethod
+    def send_and_receive_uds_message(self, message: Sequence[int]) -> Sequence[int]:
+        """
+        发送UDS诊断消息
+        :param message:
+        :return:
         """
         pass
 
@@ -387,3 +407,20 @@ class BaseCanBus(metaclass=ABCMeta):
         清除栈数据
         """
         self._stack.clear()
+
+    def init_uds(self, request_id: int, response_id: int, function_id: int):
+        """
+        初始化USD（仅同星可用)
+        :param request_id:  地址请求ID
+        :param response_id:  响应ID
+        :param function_id: 功能寻址ID
+        """
+        self._can.init_uds(request_id, response_id, function_id)
+
+    def send_and_receive_uds_message(self, message: Sequence[int]) -> Sequence[int]:
+        """
+        发送UDS诊断消息
+        :param message:
+        :return:
+        """
+        return self._can.send_and_receive_uds_message(message)

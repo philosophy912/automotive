@@ -9,7 +9,7 @@
 import os
 import platform
 from ctypes import CDLL, POINTER, CFUNCTYPE, c_uint, c_char_p, byref, c_int
-from typing import Tuple
+from typing import Tuple, Sequence
 
 from automotive.common.constant import control_decorator, check_connect, can_tips
 from automotive.core.can.hardware.zlg.zlgbasic import ZCAN_USBCANFD_200U, ZCAN_TYPE_CANFD, ZCAN_TYPE_CAN, \
@@ -209,3 +209,9 @@ class ZlgUsbCanDevice(BaseCanDevice):
                 return counts, rcv_can_msgs
             else:
                 raise RuntimeError("receive buffer not  failed")
+
+    def init_uds(self, request_id: int, response_id: int, function_id: int):
+        raise RuntimeError(f"USB CAN not support uds")
+
+    def send_and_receive_uds_message(self, message: Sequence[int]) -> Sequence[int]:
+        raise RuntimeError(f"USB CAN not support uds")

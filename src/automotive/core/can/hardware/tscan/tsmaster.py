@@ -9,9 +9,10 @@
 import ctypes
 import os
 import platform
-from ctypes import CDLL, byref, c_size_t, c_int32, c_ubyte, POINTER, cast, c_int
+from ctypes import CDLL, byref, c_size_t, c_int32, c_ubyte, POINTER, cast, c_int, c_char_p, create_string_buffer
 from typing import Sequence, Tuple
-from .tsmasterbasic import TRUE, APP_CHANNEL, TLIBCANFDControllerMode, TLIBCANFDControllerType, TLibCAN, TLibCANFD
+from .tsmasterbasic import TRUE, APP_CHANNEL, TLIBCANFDControllerMode, TLIBCANFDControllerType, TLibCAN, TLibCANFD, \
+    error_code
 from automotive.common.constant import tsmaster_control_decorator, check_connect, can_tips
 from automotive.core.can.common.interfaces import BaseCanDevice
 from automotive.core.can.common.enums import BaudRateEnum
@@ -53,7 +54,10 @@ class TSMasterDevice(BaseCanDevice):
     def __init_device(self):
         # //初始化TSCANAPI模块
         # typedef void(__stdcall* initialize_lib_tscan_t)(bool AEnableFIFO,bool AEnableTurbe);
-        self.__lib_can.initialize_lib_tscan(True, True)
+        # # 初始化函数（是否使能fifo,是否激活极速模式）
+        # def initialize_lib_tsmaster(AEnableFIFO: c_bool, AEnableTurbe: c_bool):
+        #     dll.initialize_lib_tscan(AEnableFIFO, AEnableTurbe, True)
+        self.__lib_can.initialize_lib_tscan(True, False, True)
 
     def __scan_devices(self):
         # //扫描在线的设备
@@ -64,7 +68,8 @@ class TSMasterDevice(BaseCanDevice):
     # @tsmaster_control_decorator
     # def __configure_can(self, baud_rate: float, channel: int):
     #     # //设置CAN报文波特率参数
-    #     # typedef c_uint(__stdcall* tscan_config_can_by_BaudRateEnum_t)(const size_t ADeviceHandle, const APP_CHANNEL AChnIdx, const c_double ARateKbps, const c_uint A120OhmConnected);
+    #     # typedef c_uint(__stdcall* tscan_config_can_by_BaudRateEnum_t)(const size_t ADeviceHandle,
+    #     const APP_CHANNEL AChnIdx, const c_double ARateKbps, const c_uint A120OhmConnected);
     #     return self.__lib_can.tscan_config_can_by_baudrate(self.__device_handler,
     #                                                        APP_CHANNEL[channel],
     #                                                        c_double(baud_rate),
@@ -74,8 +79,9 @@ class TSMasterDevice(BaseCanDevice):
     def __configure_can(self, baud_rate: float, data_rate: float, channel: int, is_can_fd: bool = False,
                         is_iso_can_fd: bool = True):
         # //设置CANFD报文波特率参数
-        # typedef c_uint(__stdcall* tscan_config_canfd_by_baudrate_t)(const size_t  ADeviceHandle, const APP_CHANNEL AChnIdx,
-        # const c_double AArbRateKbps, const c_double ADataRateKbps, const TLIBCANFDControllerType AControllerType,
+        # typedef c_uint(__stdcall* tscan_config_canfd_by_baudrate_t)(const size_t  ADeviceHandle,
+        # const APP_CHANNEL AChnIdx, const c_double AArbRateKbps, const c_double ADataRateKbps,
+        # const TLIBCANFDControllerType AControllerType,
         # 	const TLIBCANFDControllerMode AControllerMode, const c_uint A120OhmConnected);
         if is_can_fd:
             if is_iso_can_fd:
@@ -102,7 +108,7 @@ class TSMasterDevice(BaseCanDevice):
 
     def __open_device(self):
         self.__init_device()
-        self.__scan_devices()
+        # self.__scan_devices()
 
     @tsmaster_control_decorator
     def __disconnect(self):
@@ -155,16 +161,17 @@ class TSMasterDevice(BaseCanDevice):
             logger.trace("tscan_disconnect_all_devices")
             # //断开所有设备
             # typedef c_uint(__stdcall* tscan_disconnect_all_devices_t)(void);
-            result = self.__lib_can.tscan_disconnect_all_devices()
-            if result == 0:
-                self._is_open = False
-                self.__channel = None
-                # //释放TSCANAPI模块
-                # typedef void(__stdcall* finalize_lib_tscan_t)(void);
-                # logger.trace("try to finalize_lib_tscan")
-                # self.__lib_can.finalize_lib_tscan()
-            else:
-                raise RuntimeError(f"close tsmaster failed, result = {result}")
+            self.__lib_can.finalize_lib_tscan()
+            # result = self.__lib_can.tscan_disconnect_all_devices()
+            # if result == 0:
+            #     self._is_open = False
+            #     self.__channel = None
+            #     # //释放TSCANAPI模块
+            #     # typedef void(__stdcall* finalize_lib_tscan_t)(void);
+            #     # logger.trace("try to finalize_lib_tscan")
+            #     # self.__lib_can.finalize_lib_tscan()
+            # else:
+            #     raise RuntimeError(f"close tsmaster failed, result = {result}")
 
     @check_connect("_is_open", can_tips)
     def read_board_info(self):
@@ -180,7 +187,8 @@ class TSMasterDevice(BaseCanDevice):
             logger.trace("transmit by can fd")
             etcan_fd = self.__data_package_fd(message.data, message.msg_id)
             # //异步发送CANFD报文
-            # typedef c_uint(__stdcall* tscan_transmit_canfd_async_t)(const size_t ADeviceHandle, const TLibCANFD* ACAN);
+            # typedef c_uint(__stdcall* tscan_transmit_canfd_async_t)(const size_t ADeviceHandle,
+            # const TLibCANFD* ACAN);
             result = self.__lib_can.tscan_transmit_canfd_async(self.__device_handler, etcan_fd)
             if result != 0:
                 raise RuntimeError(f"transmit can fd failed. error code is {result}")
@@ -202,7 +210,8 @@ class TSMasterDevice(BaseCanDevice):
             # //读取CANFD报文
             # //ADeviceHandle：设备句柄；ACANBuffers:存储接收报文的数组；ACANBufferSize：存储数组的长度
             # //返回值：实际收到的报文数量
-            # typedef c_uint(__stdcall* tsfifo_receive_canfd_msgs_t)(const size_t ADeviceHandle, const TLibCANFD* ACANBuffers, c_uint ACANBufferSize, c_uint8 AChn, c_uint8 ARXTX);
+            # typedef c_uint(__stdcall* tsfifo_receive_canfd_msgs_t)(const size_t ADeviceHandle,
+            # const TLibCANFD* ACANBuffers, c_uint ACANBufferSize, c_uint8 AChn, c_uint8 ARXTX);
             # 0-RX, 1-TX
             p_receive = [TLibCANFD() for _ in range(buffer_size)]
             data = POINTER(TLibCANFD * len(p_receive))((TLibCANFD * len(p_receive))(*p_receive))
@@ -215,7 +224,8 @@ class TSMasterDevice(BaseCanDevice):
             # //读取CAN报文
             # //ADeviceHandle：设备句柄；ACANBuffers:存储接收报文的数组；ACANBufferSize：存储数组的长度
             # //返回值：实际收到的报文数量
-            # typedef c_uint(__stdcall* tsfifo_receive_can_msgs_t)(const size_t ADeviceHandle, const TLibCAN* ACANBuffers, c_uint ACANBufferSize, c_uint8 AChn, c_uint8 ARXTX);
+            # typedef c_uint(__stdcall* tsfifo_receive_can_msgs_t)(const size_t ADeviceHandle,
+            # const TLibCAN* ACANBuffers, c_uint ACANBufferSize, c_uint8 AChn, c_uint8 ARXTX);
             # 0-RX, 1-TX
             # p_receive = (TLibCAN * buffer_size)()
             # temp_size = copy.copy(p_buffer_size)
@@ -233,3 +243,48 @@ class TSMasterDevice(BaseCanDevice):
             return cast_value, data.contents
         else:
             raise RuntimeError(f"receive failed, frame receive count is {result}")
+
+    def init_uds(self, request_id: int, response_id: int, function_id: int):
+        support_canfd = 0
+        # dlc = 64 if self.__is_fd else 8
+        dlc = 8
+        logger.trace("start tsdiag_can_create")
+        logger.trace(f"_p_diag_module_index = {self._p_diag_module_index}")
+        logger.trace(f"__channel = {self.__channel}")
+        logger.trace(f"support_canfd = {support_canfd}")
+        logger.trace(f"dlc = {dlc}")
+        logger.trace(f"request_id = {request_id}")
+        logger.trace(f"response_id = {response_id}")
+        logger.trace(f"function_id = {function_id}")
+        result = self.__lib_can.tsdiag_can_create(byref(c_int32(self._p_diag_module_index)),
+                                                  c_int32(self.__channel - 1),
+                                                  support_canfd, dlc, request_id, True, response_id, True,
+                                                  function_id, True)
+        logger.debug(f"tsdiag_can_create result is [{error_code[result]}]")
+        logger.trace("start tsdiag_can_create")
+        logger.trace(f"_p_diag_module_index = {self._p_diag_module_index}")
+        logger.trace(f"device_handler = {self.device_handler}")
+        result = self.__lib_can.tsdiag_can_attach_to_tscan_tool(c_int32(self._p_diag_module_index), self.device_handler)
+        logger.debug(f"tsdiag_can_attach_to_tscan_tool result is [{error_code[result]}]")
+
+    def send_and_receive_uds_message(self, message: Sequence[int]) -> Sequence[int]:
+        bytes_message = bytes(message)
+        response_data = create_string_buffer(4095)
+        response_data_size = ctypes.c_uint32(len(response_data))
+        logger.trace("start tstp_can_request_and_get_response")
+        logger.trace(f"_p_diag_module_index = {self._p_diag_module_index}")
+        logger.trace(f"bytes_message = {bytes_message}")
+        logger.trace(f"message = {message}")
+        logger.trace(f"response_data = {response_data}")
+        logger.trace(f"response_data_size = {response_data_size}")
+        result = self.__lib_can.tstp_can_request_and_get_response(c_int32(self._p_diag_module_index),
+                                                                  c_char_p(bytes_message),
+                                                                  len(message), response_data,
+                                                                  byref(response_data_size))
+        logger.debug(f"tstp_can_request_and_get_response result is [{error_code[result]}]")
+        if result != 0:
+            raise RuntimeError(f"diag message[{message}] send failed, error is [{error_code[result]}]")
+        else:
+            resp_data = response_data[:response_data_size.value]
+            resp_data = list(map(lambda x: int(x), resp_data))
+            return list(resp_data)

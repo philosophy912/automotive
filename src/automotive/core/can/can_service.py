@@ -188,6 +188,23 @@ class Can(metaclass=Singleton):
         time.sleep(continue_time)
         return len(self._can.get_stack()) == 0
 
+    def init_uds(self, request_id: int, response_id: int, function_id: int):
+        """
+        初始化USD（仅同星可用)
+        :param request_id:  地址请求ID
+        :param response_id:  响应ID
+        :param function_id: 功能寻址ID
+        """
+        self._can.init_uds(request_id, response_id, function_id)
+
+    def send_and_receive_uds_message(self, message: Sequence[int]) -> Sequence[int]:
+        """
+        发送UDS诊断消息
+        :param message:
+        :return:
+        """
+        return self._can.send_and_receive_uds_message(message)
+
 
 class CANService(Can):
     """
