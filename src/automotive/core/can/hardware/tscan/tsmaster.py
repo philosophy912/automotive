@@ -263,8 +263,9 @@ class TSMasterDevice(BaseCanDevice):
         logger.debug(f"tsdiag_can_create result is [{error_code[result]}]")
         logger.trace("start tsdiag_can_create")
         logger.trace(f"_p_diag_module_index = {self._p_diag_module_index}")
-        logger.trace(f"device_handler = {self.device_handler}")
-        result = self.__lib_can.tsdiag_can_attach_to_tscan_tool(c_int32(self._p_diag_module_index), self.device_handler)
+        logger.trace(f"device_handler = {self.__device_handler}")
+        result = self.__lib_can.tsdiag_can_attach_to_tscan_tool(c_int32(self._p_diag_module_index),
+                                                                self.__device_handler)
         logger.debug(f"tsdiag_can_attach_to_tscan_tool result is [{error_code[result]}]")
 
     def send_and_receive_uds_message(self, message: Sequence[int]) -> Sequence[int]:
