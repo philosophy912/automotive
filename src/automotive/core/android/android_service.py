@@ -61,7 +61,7 @@ class AndroidService(metaclass=Singleton):
     """
     _DEFAULT_TIME_OUT = 3
 
-    def __init__(self, tool_type: Union[ToolTypeEnum, str]):
+    def __init__(self, tool_type: Union[ToolTypeEnum, str] = ToolTypeEnum.UIAUTOMATOR2):
         self.adb = ADB()
         if isinstance(tool_type, str):
             self.__type = ToolTypeEnum.from_value(tool_type)
