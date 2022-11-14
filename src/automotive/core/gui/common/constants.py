@@ -73,6 +73,7 @@ def get_yml_config(yml_file: str, utils: Utils, open_methods: Sequence, close_me
             # 去掉type，方便后续做查找
             instance_param.pop("type")
             logger.debug(f"instance_methods size is {len(instance_methods)}")
+            logger.debug(f"instance_methods is {instance_methods}")
             # __init__函数的参数
             used_params = dict()
             # 如果存在init函数，则可能存在相关的参数， 如果没有配置，后续可能会执行失败

@@ -6,6 +6,8 @@
 # @Author:      lizhe
 # @Created:     2022/11/1 - 13:12
 # --------------------------------------------------------
+import sys
+import traceback
 from abc import ABCMeta, abstractmethod
 from typing import Sequence
 from queue import Queue
@@ -54,11 +56,18 @@ class BaseAction(metaclass=ABCMeta):
         该方法在类初始化的时候自动调用
         """
         logger.debug("call open method")
+        logger.trace(f"{self._instances}")
+        logger.trace(f"{self.__result_dict}")
         for name, instance in self._instances.items():
-            # 'connect', {'port': 'COM12', 'baud_rate': 115200, 'log_folder': 'd:\\test'}
-            function_name, function_param = self.__result_dict[name][FUNCTION_OPEN]
-            # 调用方法
-            getattr(instance, function_name)(**function_param)
+            # image_compare没有open/close方法
+            function_dict = self.__result_dict[name]
+            if FUNCTION_OPEN in function_dict:
+                # 'connect', {'port': 'COM12', 'baud_rate': 115200, 'log_folder': 'd:\\test'}
+                function_name, function_param = function_dict[FUNCTION_OPEN]
+                logger.debug(f"The instance is [{instance}] ")
+                logger.debug(f"and call function [{function_name}] and function param is [{function_param}]")
+                # 调用方法
+                getattr(instance, function_name)(**function_param)
 
     def close(self):
         """
@@ -69,10 +78,14 @@ class BaseAction(metaclass=ABCMeta):
         """
         logger.debug("call close method")
         for name, instance in self._instances.items():
-            # 'disconnect', {}
-            function_name, function_param = self.__result_dict[name][FUNCTION_CLOSE]
-            # 调用方法
-            getattr(instance, function_name)(**function_param)
+            function_dict = self.__result_dict[name]
+            if FUNCTION_OPEN in function_dict:
+                # 'disconnect', {}
+                function_name, function_param = function_dict[FUNCTION_CLOSE]
+                logger.debug(f"The instance is [{instance}] ")
+                logger.debug(f"and call function [{function_name}] and function param is [{function_param}]")
+                # 调用方法
+                getattr(instance, function_name)(**function_param)
 
     @abstractmethod
     def readme(self, queue: Queue):
@@ -87,7 +100,13 @@ class BaseAction(metaclass=ABCMeta):
         pass
 
     def run_stress(self, queue: Queue):
-        self.readme(queue)
-        self.open()
-        self.run(queue)
-        self.close()
+        try:
+            self.readme(queue)
+            self.open()
+            self.run(queue)
+            self.close()
+        except Exception:
+            error = traceback.format_exc()
+            logger.error(f"there is some wrong run found, the issue [{error}]")
+        finally:
+            sys.exit(1)

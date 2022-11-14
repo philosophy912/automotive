@@ -7,7 +7,8 @@
 # @Created:     2022/5/25 - 21:39
 # --------------------------------------------------------
 import os.path
-from concurrent.futures import ThreadPoolExecutor
+import traceback
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from queue import Queue
 from tkinter import Tk, Text, BOTH, END, Button, Frame, DISABLED, NORMAL
 from tkinter.ttk import Combobox
@@ -109,11 +110,11 @@ class Stress(object):
         self.__start_button.grid(row=1, column=1)
         self.__combobox = Combobox(self.__tk, values=self.__values, state="readonly")
         self.__combobox.current(0)
-        self.__combobox.bind("<<ComboboxSelected>>", lambda x="": self.__select_event)
+        self.__combobox.bind("<<ComboboxSelected>>", lambda x="": self.__select_event(x))
         self.__combobox.grid(row=1, column=2)
 
     def __select_event(self, event):
-        logger.info(event)
+        logger.debug(event)
         current_select_index = self.__combobox.current()
         self.__select_action = self.__actions[current_select_index]
 
@@ -150,9 +151,14 @@ class Stress(object):
         退出时候需要销毁的内容
         :return:
         """
-        # 关闭can service等等 异常退出
-        self.__select_action.close()
-        self.__tk.destroy()
+        try:
+            # 关闭can service等等 异常退出
+            self.__select_action.close()
+        except Exception:
+            error = traceback.format_exc()
+            logger.error(f"close found issue [{error}]")
+        finally:
+            self.__tk.destroy()
 
     def __get_config(self, project: Union[ProjectEnum, str], action_path: str) -> Dict:
         """
