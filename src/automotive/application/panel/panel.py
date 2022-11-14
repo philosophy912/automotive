@@ -793,7 +793,7 @@ class Gui(object):
 
         self.__filter_nodes = filter_nodes
         # 获取按钮
-        service = ConfigReader(can_service=self.can_service, type_=excel_type)
+        service = ConfigReader(can_service=self.can_service, excel_type=excel_type)
         tab_configs = dict()
         tab_configs[COMMON] = {check_buttons: {}, thread_buttons: {}, comboxs: {},
                                entries: {}, buttons: {}, receive_buttons: {}}
