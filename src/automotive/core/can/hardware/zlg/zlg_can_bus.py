@@ -19,9 +19,9 @@ from .zlg_usb_can import ZlgUsbCanDevice
 class ZlgCanBus(BaseCanBus):
 
     def __init__(self, baud_rate: BaudRateEnum = BaudRateEnum.HIGH, data_rate: BaudRateEnum = BaudRateEnum.DATA,
-                 channel_index: int = 1, can_fd: bool = False, max_workers: int = 300):
+                 channel_index: int = 1, can_fd: bool = False, max_workers: int = 300, need_receive: bool = True):
         super().__init__(baud_rate=baud_rate, data_rate=data_rate, channel_index=channel_index, can_fd=can_fd,
-                         max_workers=max_workers)
+                         max_workers=max_workers, need_receive=need_receive)
         self.__can_fd = can_fd
         # 实例化周立功
         self._can = ZlgUsbCanDevice(can_fd)
@@ -62,10 +62,10 @@ class ZlgCanBus(BaseCanBus):
                 count, p_receive = self._can.receive()
                 logger.trace(f"receive count is {count}")
                 for i in range(count):
-                    message = self.__get_message(p_receive)
-                    logger.trace(f"message_id = {hex(message.msg_id)}")
-                    self._receive_messages[message.msg_id] = message
-                    self._stack.append(message)
+                    receive_message = self.__get_message(p_receive)
+                    logger.trace(f"message_id = {hex(receive_message.msg_id)}")
+                    self._receive_messages[receive_message.msg_id] = receive_message
+                    self._append(receive_message)
             except RuntimeError as e:
                 logger.trace(e)
                 continue
@@ -77,5 +77,6 @@ class ZlgCanBus(BaseCanBus):
         对CAN设备进行打开、初始化等操作，并同时开启设备的帧接收线程。
                 """
         super()._open_can()
-        # 把接收函数submit到线程池中
-        self._receive_thread.append(self._thread_pool.submit(self.__receive))
+        if self._need_start_receive:
+            # 把接收函数submit到线程池中
+            self._receive_thread.append(self._thread_pool.submit(self.__receive))

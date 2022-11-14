@@ -23,9 +23,9 @@ class UsbCanBus(BaseCanBus):
 
     def __init__(self, can_box_device: CanBoxDeviceEnum, baud_rate: BaudRateEnum = BaudRateEnum.HIGH,
                  data_rate: BaudRateEnum = BaudRateEnum.DATA, channel_index: int = 1, can_fd: bool = False,
-                 max_workers: int = 300):
+                 max_workers: int = 300, need_receive: bool = True):
         super().__init__(baud_rate=baud_rate, data_rate=data_rate, channel_index=channel_index, can_fd=can_fd,
-                         max_workers=max_workers)
+                         max_workers=max_workers, need_receive=need_receive)
         if self._can_fd:
             raise RuntimeError("usb can not support can fd")
         # USB CAN BOX实例化
@@ -100,7 +100,7 @@ class UsbCanBus(BaseCanBus):
                     if receive_message.external_flag == 0:
                         # 获取数据并保存到self._receive_msg字典中
                         self._receive_messages[receive_message.msg_id] = receive_message
-                        self._stack.append(receive_message)
+                        self._append(receive_message)
                     # 扩展帧
                     else:
                         logger.debug("type is external frame, not implement")
@@ -115,5 +115,6 @@ class UsbCanBus(BaseCanBus):
         对CAN设备进行打开、初始化等操作，并同时开启设备的帧接收线程。
         """
         super()._open_can()
-        # 把接收函数submit到线程池中
-        self._receive_thread.append(self._thread_pool.submit(self.__receive))
+        if self._need_start_receive:
+            # 把接收函数submit到线程池中
+            self._receive_thread.append(self._thread_pool.submit(self.__receive))

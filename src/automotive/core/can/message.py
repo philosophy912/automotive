@@ -622,7 +622,7 @@ class Signal(object):
         """
         self.__value = value
         self.__physical_value = int((float(value) * float(self.factor)) + float(self.offset))
-        logger.debug(f"signal[{self.signal_name}]value is {self.__value} and physical value is {self.__physical_value}")
+        logger.trace(f"signal[{self.signal_name}]value is {self.__value} and physical value is {self.__physical_value}")
 
     @property
     def physical_value(self):
@@ -635,4 +635,4 @@ class Signal(object):
         if not self.is_sign:
             if self.__value < 0 or self.__value > (2 ** self.bit_length - 1):
                 raise RuntimeError("it need input physical value not bus value")
-        logger.debug(f"physical value is {self.__physical_value} and value is {self.__value}")
+        logger.trace(f"physical value is {self.__physical_value} and value is {self.__value}")

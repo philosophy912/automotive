@@ -22,11 +22,11 @@ class PCanBus(BaseCanBus):
     """
 
     def __init__(self, baud_rate: BaudRateEnum = BaudRateEnum.HIGH, data_rate: BaudRateEnum = BaudRateEnum.DATA,
-                 channel_index: int = 1, can_fd: bool = False, max_workers: int = 300):
+                 channel_index: int = 1, can_fd: bool = False, max_workers: int = 300, need_receive: bool = True):
         if can_fd:
             raise RuntimeError("pcan not support canfd")
         super().__init__(baud_rate=baud_rate, data_rate=data_rate, channel_index=channel_index,
-                         can_fd=can_fd, max_workers=max_workers)
+                         can_fd=can_fd, max_workers=max_workers, need_receive=need_receive)
         # PCAN实例化
         self._can = PCanDevice(can_fd)
 
@@ -85,7 +85,7 @@ class PCanBus(BaseCanBus):
                 logger.trace(f"msg id = {hex(msg_id)}")
                 receive_message = self.__get_message(receive_msg, timestamp)
                 self._receive_messages[msg_id] = receive_message
-                self._stack.append(receive_message)
+                self._append(receive_message)
             except RuntimeError as e:
                 logger.trace(e)
                 continue
@@ -97,5 +97,6 @@ class PCanBus(BaseCanBus):
         对CAN设备进行打开、初始化等操作，并同时开启设备的帧接收线程。
         """
         super()._open_can()
-        # 把接收函数submit到线程池中
-        self._receive_thread.append(self._thread_pool.submit(self.__receive))
+        if self._need_start_receive:
+            # 把接收函数submit到线程池中
+            self._receive_thread.append(self._thread_pool.submit(self.__receive))

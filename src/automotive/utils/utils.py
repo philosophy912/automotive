@@ -46,7 +46,7 @@ class Utils(metaclass=Singleton):
     """
 
     @staticmethod
-    def codec(content: str, encoding: str, is_ignore: bool):
+    def codec(content: str, encoding: str, is_ignore: bool) -> bytes:
         """
         字符串的codec
         :param content: 字符串内容
@@ -60,7 +60,7 @@ class Utils(metaclass=Singleton):
             return content.encode(encoding)
 
     @staticmethod
-    def decode(content: bytes, encoding: str, is_ignore: bool):
+    def decode(content: bytes, encoding: str, is_ignore: bool) -> str:
         """
         字符串的decode
         :param content: 字节码
@@ -184,7 +184,7 @@ class Utils(metaclass=Singleton):
         return pinyin.get_initial(text, delimiter) if is_first else pinyin.get(text, delimiter, format_.value)
 
     @staticmethod
-    def is_type_correct(actual_, except_) -> bool:
+    def is_type_correct(actual_: Any, except_: Any) -> bool:
         """
         判断类型是否属于期望类型
 
@@ -243,7 +243,7 @@ class Utils(metaclass=Singleton):
         if end < start:
             raise ValueError(f"开始{start}必须大于结束{end}")
         sleep_time = int(self.random_decimal(start, end))
-        logger.info(f"随机休眠时间{sleep_time}")
+        logger.info(f"随机等待时间{sleep_time}")
         # 超过1分钟的休眠会分段休息
         if sleep_time > 60:
             for i in range(sleep_time):
@@ -419,7 +419,7 @@ class Utils(metaclass=Singleton):
         else:
             p = sp.Popen(command, shell=is_shell, stdout=sp.PIPE, stderr=sp.PIPE)
         stdout, stderr = p.communicate()
-        return stdout.decode(encoding), stderr.decode(encoding)
+        return stdout.decode(encoding, "ignore"), stderr.decode(encoding, "ignore")
 
     def exec_command_must_success(self, command: str, workspace: Optional[str] = None,
                                   sub_process: bool = True) -> NoReturn:
@@ -513,7 +513,7 @@ class Utils(metaclass=Singleton):
     def check_file_exist(file: str) -> NoReturn:
         """
         检查文件是否存在
-        :param file: w文件
+        :param file: 文件
         """
         if not (os.path.exists(file) and os.path.isfile(file)):
             raise RuntimeError(f"file[{file}] is not exist or not a file")
@@ -626,7 +626,7 @@ class Utils(metaclass=Singleton):
             logger.debug(f"method_name is {method_name}")
             # 获取类中的方法
             function = getattr(clazz, method_name)
-            # 获取类中的参数个数
+            # 获取方法中的参数个数
             params = function.__code__.co_varnames[0:function.__code__.co_argcount]
             # 过滤self
             params = list(filter(lambda x: x != "self", params))

@@ -19,9 +19,9 @@ from .tsmaster import TSMasterDevice
 class TsMasterCanBus(BaseCanBus):
 
     def __init__(self, baud_rate: BaudRateEnum = BaudRateEnum.HIGH, data_rate: BaudRateEnum = BaudRateEnum.DATA,
-                 channel_index: int = 1, can_fd: bool = False, max_workers: int = 300):
+                 channel_index: int = 1, can_fd: bool = False, max_workers: int = 300, need_receive: bool = True):
         super().__init__(baud_rate=baud_rate, data_rate=data_rate, channel_index=channel_index, can_fd=can_fd,
-                         max_workers=max_workers)
+                         max_workers=max_workers, need_receive=need_receive)
         # 实例化同星
         self._can = TSMasterDevice(can_fd)
 
@@ -59,10 +59,10 @@ class TsMasterCanBus(BaseCanBus):
                 # todo 同星的dll存在64bit， 标准can消息接收的问题，所以修改为过滤ID不为空的处理方式
                 messages = list(filter(lambda x: x.FIdentifier != 0x00, p_receive))
                 for p_receive in messages:
-                    message = self.__get_message(p_receive)
-                    logger.trace(f"message_id = {hex(message.msg_id)}")
-                    self._receive_messages[message.msg_id] = message
-                    self._stack.append(message)
+                    receive_message = self.__get_message(p_receive)
+                    logger.trace(f"message_id = {hex(receive_message.msg_id)}")
+                    self._receive_messages[receive_message.msg_id] = receive_message
+                    self._append(receive_message)
             except RuntimeError as e:
                 logger.trace(e)
                 continue
@@ -74,5 +74,6 @@ class TsMasterCanBus(BaseCanBus):
         对CAN设备进行打开、初始化等操作，并同时开启设备的帧接收线程。
                 """
         super()._open_can()
-        # 把接收函数submit到线程池中
-        self._receive_thread.append(self._thread_pool.submit(self.__receive))
+        if self._need_start_receive:
+            # 把接收函数submit到线程池中
+            self._receive_thread.append(self._thread_pool.submit(self.__receive))

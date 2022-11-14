@@ -21,62 +21,66 @@ from automotive.logger.logger import logger
 
 
 def __get_can_bus(can_box_device: CanBoxDeviceEnum, baud_rate: BaudRateEnum, data_rate: BaudRateEnum,
-                  channel_index: int, can_fd: bool, max_workers: int) -> BaseCanBus:
+                  channel_index: int, can_fd: bool, max_workers: int, need_receive: bool) -> BaseCanBus:
     if can_box_device == CanBoxDeviceEnum.PEAKCAN:
         logger.debug("use pcan")
         from .hardware.peakcan.pcan_bus import PCanBus
         return PCanBus(baud_rate=baud_rate, data_rate=data_rate, channel_index=channel_index, can_fd=can_fd,
-                       max_workers=max_workers)
+                       max_workers=max_workers, need_receive=need_receive)
     elif can_box_device == CanBoxDeviceEnum.TSMASTER:
         logger.debug("use tsmaster")
         from .hardware.tscan.tsmaster_bus import TsMasterCanBus
         return TsMasterCanBus(baud_rate=baud_rate, data_rate=data_rate, channel_index=channel_index, can_fd=can_fd,
-                              max_workers=max_workers)
+                              max_workers=max_workers, need_receive=need_receive)
     elif can_box_device == CanBoxDeviceEnum.ZLGUSBCAN:
         logger.debug("use zlg")
         from .hardware.zlg.zlg_can_bus import ZlgCanBus
         return ZlgCanBus(baud_rate=baud_rate, data_rate=data_rate, channel_index=channel_index, can_fd=can_fd,
-                         max_workers=max_workers)
+                         max_workers=max_workers, need_receive=need_receive)
     elif can_box_device == CanBoxDeviceEnum.CANALYST or can_box_device == CanBoxDeviceEnum.USBCAN:
         logger.debug("use usbcan")
         from .hardware.usbcan.usb_can_bus import UsbCanBus
         return UsbCanBus(can_box_device, baud_rate=baud_rate, data_rate=data_rate, channel_index=channel_index,
-                         can_fd=can_fd, max_workers=max_workers)
+                         can_fd=can_fd, max_workers=max_workers, need_receive=need_receive)
     else:
         raise RuntimeError(f"{can_box_device.value} not support")
 
 
-def get_can_box_device(can_box_device: CanBoxDeviceEnum, baud_rate: BaudRateEnum, data_rate: BaudRateEnum,
-                       channel_index: int, can_fd: bool, max_workers: int) -> Tuple[CanBoxDeviceEnum, BaseCanBus]:
+def get_can_box_device(can_box_device: CanBoxDeviceEnum, baud_rate: BaudRateEnum,
+                       data_rate: BaudRateEnum, channel_index: int, can_fd: bool,
+                       max_workers: int, need_receive: bool) -> Tuple[CanBoxDeviceEnum, BaseCanBus]:
     """
     获取can盒子的类型， 依次从PCan找到CANALYST然后到USBCAN
     :return: can盒类型
     """
     if can_box_device:
-        return can_box_device, __get_can_bus(can_box_device, baud_rate, data_rate, channel_index, can_fd, max_workers)
+        return can_box_device, __get_can_bus(can_box_device, baud_rate, data_rate, channel_index, can_fd, max_workers,
+                                             need_receive)
     else:
         for key, value in CanBoxDeviceEnum.__members__.items():
             name, type_ = value.value
             if can_fd is True and type_ is True:
                 logger.info(f"try to open {key}")
-                can = __get_can_bus(value, baud_rate, data_rate, channel_index, can_fd, max_workers)
+                can = __get_can_bus(value, baud_rate, data_rate, channel_index, can_fd, max_workers, need_receive)
                 try:
                     can.open_can()
                     sleep(1)
                     can.close_can()
-                    return value, __get_can_bus(value, baud_rate, data_rate, channel_index, can_fd, max_workers)
-                except RuntimeError:
-                    logger.debug(f"open {name} failed")
+                    return value, __get_can_bus(value, baud_rate, data_rate, channel_index, can_fd, max_workers,
+                                                need_receive)
+                except RuntimeError as e:
+                    logger.debug(f"open {name} failed, error is {e}")
             elif can_fd is False:
                 logger.info(f"try to open {key}")
-                can = __get_can_bus(value, baud_rate, data_rate, channel_index, can_fd, max_workers)
+                can = __get_can_bus(value, baud_rate, data_rate, channel_index, can_fd, max_workers, need_receive)
                 try:
                     can.open_can()
                     sleep(1)
                     can.close_can()
-                    return value, __get_can_bus(value, baud_rate, data_rate, channel_index, can_fd, max_workers)
-                except RuntimeError:
-                    logger.debug(f"open {name} failed")
+                    return value, __get_can_bus(value, baud_rate, data_rate, channel_index, can_fd, max_workers,
+                                                need_receive)
+                except RuntimeError as e:
+                    logger.debug(f"open {name} failed, , error is {e}")
         raise RuntimeError("No device found, is can box connected")
 
 
@@ -91,7 +95,8 @@ class Can(metaclass=Singleton):
                  data_rate: Union[BaudRateEnum, int] = BaudRateEnum.DATA,
                  channel_index: int = 1,
                  can_fd: bool = False,
-                 max_workers: int = 300):
+                 max_workers: int = 300,
+                 need_receive: bool = True):
         if isinstance(can_box_device, str):
             can_box_device = CanBoxDeviceEnum.from_name(can_box_device)
         if isinstance(baud_rate, int):
@@ -99,7 +104,7 @@ class Can(metaclass=Singleton):
         if isinstance(data_rate, int):
             data_rate = BaudRateEnum.from_value(data_rate)
         self._can_box_device, self._can = get_can_box_device(can_box_device, baud_rate, data_rate, channel_index,
-                                                             can_fd, max_workers)
+                                                             can_fd, max_workers, need_receive)
 
     @property
     def can_box_device(self) -> CanBoxDeviceEnum:
@@ -242,8 +247,9 @@ class CANService(Can):
                  data_rate: Union[BaudRateEnum, int] = BaudRateEnum.DATA,
                  channel_index: int = 1,
                  can_fd: bool = False,
-                 max_workers: int = 300):
-        super().__init__(can_box_device, baud_rate, data_rate, channel_index, can_fd, max_workers)
+                 max_workers: int = 300,
+                 need_receive: bool = True):
+        super().__init__(can_box_device, baud_rate, data_rate, channel_index, can_fd, max_workers, need_receive)
         logger.debug(f"read message from file {messages}")
         self.__messages, self.__name_messages = get_message(messages, encoding=encoding)
         # 备份message, 可以作为初始值发送

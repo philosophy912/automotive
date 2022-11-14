@@ -101,7 +101,7 @@ class BaseCanDevice(metaclass=ABCMeta):
 
 class BaseCanBus(metaclass=ABCMeta):
     def __init__(self, baud_rate: BaudRateEnum = BaudRateEnum.HIGH, data_rate: BaudRateEnum = BaudRateEnum.DATA,
-                 channel_index: int = 1, can_fd: bool = False, max_workers: int = 300):
+                 channel_index: int = 1, can_fd: bool = False, max_workers: int = 300, need_receive: bool = True):
         # baud_rate波特率，
         self._baud_rate = baud_rate
         # data_rate波特率， 仅canfd有用
@@ -110,6 +110,10 @@ class BaseCanBus(metaclass=ABCMeta):
         self._channel_index = channel_index
         # CAN FD
         self._can_fd = can_fd
+        # 是否开启接收线程
+        self._need_start_receive = need_receive
+        # 最大允许接收的CAN消息数量
+        self._max_message_size = 500000
         # 最大线程数
         self._max_workers = max_workers
         # 保存接受数据帧的字典，用于接收
@@ -150,6 +154,11 @@ class BaseCanBus(metaclass=ABCMeta):
     @property
     def thread_pool(self) -> ThreadPoolExecutor:
         return self._thread_pool
+
+    def _append(self, message: Message):
+        if len(self._stack) == self._max_message_size:
+            self._stack.pop(0)
+        self._stack.append(message)
 
     def _get_dlc_length(self, dlc_length: int) -> int:
         for key, value in self._dlc.items():
