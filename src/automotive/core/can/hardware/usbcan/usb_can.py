@@ -10,7 +10,7 @@
 import platform
 import sys
 import os
-from ctypes import c_int, byref, POINTER, memmove, c_long, CDLL
+from ctypes import c_int, byref, POINTER, memmove, c_long, windll
 from time import time
 from platform import architecture
 from inspect import stack
@@ -51,7 +51,7 @@ class UsbCanDevice(BaseCanDevice):
         self.__dll_path = self.__get_dll_path(can_box_device)
         logger.debug(f"use dll path is {self.__dll_path}")
         if platform.system() == "Windows":
-            self.__lib_can = CDLL(self.__dll_path)
+            self.__lib_can = windll.LoadLibrary(self.__dll_path)
         else:
             raise RuntimeError("can not support linux")
         self.__start_time = 0
@@ -511,9 +511,3 @@ class UsbCanDevice(BaseCanDevice):
             error = sys.exc_info()
             logger.trace('ERROR: ' + str(error[0]) + ' : ' + str(error[1]))
             raise RuntimeError(error[1])
-
-    def init_uds(self, request_id: int, response_id: int, function_id: int):
-        raise RuntimeError(f"USB CAN not support uds")
-
-    def send_and_receive_uds_message(self, message: Sequence[int]) -> Sequence[int]:
-        raise RuntimeError(f"USB CAN not support uds")

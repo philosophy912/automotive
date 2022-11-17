@@ -8,7 +8,7 @@
 # --------------------------------------------------------
 import numpy as np
 from typing import Union, Dict, Tuple
-# 类型别名
+# 绫诲瀷鍒悕
 Number = Union[int, float]
 NumpyArray = np.ndarray
 Position = Tuple[int, int, int, int]

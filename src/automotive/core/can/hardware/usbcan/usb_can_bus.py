@@ -23,9 +23,9 @@ class UsbCanBus(BaseCanBus):
 
     def __init__(self, can_box_device: CanBoxDeviceEnum, baud_rate: BaudRateEnum = BaudRateEnum.HIGH,
                  data_rate: BaudRateEnum = BaudRateEnum.DATA, channel_index: int = 1, can_fd: bool = False,
-                 max_workers: int = 300, need_receive: bool = True):
+                 max_workers: int = 300, need_receive: bool = True, is_uds_can_fd: bool = False):
         super().__init__(baud_rate=baud_rate, data_rate=data_rate, channel_index=channel_index, can_fd=can_fd,
-                         max_workers=max_workers, need_receive=need_receive)
+                         max_workers=max_workers, need_receive=need_receive, is_uds_can_fd=is_uds_can_fd)
         if self._can_fd:
             raise RuntimeError("usb can not support can fd")
         # USB CAN BOX实例化
@@ -101,6 +101,8 @@ class UsbCanBus(BaseCanBus):
                         # 获取数据并保存到self._receive_msg字典中
                         self._receive_messages[receive_message.msg_id] = receive_message
                         self._append(receive_message)
+                        # UDS的时候自动发多帧的流控帧信号
+                        self._handle_continue_frame(receive_message)
                     # 扩展帧
                     else:
                         logger.debug("type is external frame, not implement")

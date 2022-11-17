@@ -22,11 +22,12 @@ class PCanBus(BaseCanBus):
     """
 
     def __init__(self, baud_rate: BaudRateEnum = BaudRateEnum.HIGH, data_rate: BaudRateEnum = BaudRateEnum.DATA,
-                 channel_index: int = 1, can_fd: bool = False, max_workers: int = 300, need_receive: bool = True):
+                 channel_index: int = 1, can_fd: bool = False, max_workers: int = 300, need_receive: bool = True,
+                 is_uds_can_fd: bool = False):
         if can_fd:
             raise RuntimeError("pcan not support canfd")
         super().__init__(baud_rate=baud_rate, data_rate=data_rate, channel_index=channel_index,
-                         can_fd=can_fd, max_workers=max_workers, need_receive=need_receive)
+                         can_fd=can_fd, max_workers=max_workers, need_receive=need_receive, is_uds_can_fd=is_uds_can_fd)
         # PCAN实例化
         self._can = PCanDevice(can_fd)
 
@@ -86,6 +87,8 @@ class PCanBus(BaseCanBus):
                 receive_message = self.__get_message(receive_msg, timestamp)
                 self._receive_messages[msg_id] = receive_message
                 self._append(receive_message)
+                # UDS的时候自动发多帧的流控帧信号
+                self._handle_continue_frame(receive_message)
             except RuntimeError as e:
                 logger.trace(e)
                 continue

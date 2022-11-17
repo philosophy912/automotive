@@ -9,7 +9,7 @@
 import ctypes
 import os
 import platform
-from ctypes import CDLL, byref, c_size_t, c_int32, c_ubyte, POINTER, cast, c_int, c_char_p, create_string_buffer
+from ctypes import windll, byref, c_size_t, c_int32, c_ubyte, POINTER, cast, c_int, c_char_p, create_string_buffer
 from typing import Sequence, Tuple
 from .tsmasterbasic import TRUE, APP_CHANNEL, TLIBCANFDControllerMode, TLIBCANFDControllerType, TLibCAN, TLibCANFD, \
     error_code
@@ -31,7 +31,8 @@ class TSMasterDevice(BaseCanDevice):
         self.__dll_path = self.__get_dll_path()
         logger.debug(f"use dll path is {self.__dll_path}")
         if platform.system() == "Windows":
-            self.__lib_can = CDLL(self.__dll_path)
+            # self.__lib_can = CDLL(self.__dll_path)
+            self.__lib_can = windll.LoadLibrary(self.__dll_path)
         else:
             raise RuntimeError("can not support linux")
 
@@ -135,6 +136,7 @@ class TSMasterDevice(BaseCanDevice):
         lib_can_fd.FDLC = self._dlc[len(data)]
         for j, data in enumerate(data):
             lib_can_fd.FData[j] = data
+        logger.trace(f"dlc = {lib_can_fd.FDLC}")
         return lib_can_fd
 
     def open_device(self, baud_rate: BaudRateEnum = BaudRateEnum.HIGH, data_rate: BaudRateEnum = BaudRateEnum.DATA,

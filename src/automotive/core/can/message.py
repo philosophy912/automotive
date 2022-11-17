@@ -385,7 +385,8 @@ class Message(object):
         self.external_flag = None
 
     def __str__(self):
-        return f"{hex(self.msg_id)} = {self.data}"
+        data = [hex(x) for x in self.data]
+        return f"id = {hex(self.msg_id)}, data = {data}"
 
     def __check_msg_id(self):
         """

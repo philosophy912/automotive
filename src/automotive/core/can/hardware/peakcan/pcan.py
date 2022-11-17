@@ -331,9 +331,3 @@ class PCanDevice(BaseCanDevice):
                 raise RuntimeError(f"Method <{stack()[0][3]}> PEAK CAN Receive Failed.")
         except Exception:
             raise RuntimeError('PEAK CAN receive failed.')
-
-    def init_uds(self, request_id: int, response_id: int, function_id: int):
-        raise RuntimeError(f"pcan not support uds")
-
-    def send_and_receive_uds_message(self, message: Sequence[int]) -> Sequence[int]:
-        raise RuntimeError(f"pcan not support uds")

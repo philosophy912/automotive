@@ -6,9 +6,11 @@
 # @Author:      lizhe
 # @Created:     2021/11/18 - 22:07
 # --------------------------------------------------------
+import copy
+import time
 from abc import ABCMeta, abstractmethod
 from concurrent.futures import ThreadPoolExecutor, ALL_COMPLETED, wait
-from typing import Tuple, Sequence
+from typing import Tuple, Sequence, List
 from time import sleep
 
 from automotive.common.constant import check_connect, can_tips
@@ -79,29 +81,19 @@ class BaseCanDevice(metaclass=ABCMeta):
         """
         pass
 
-    @abstractmethod
-    def init_uds(self, request_id: int, response_id: int, function_id: int):
-        """
-        初始化USD（仅同星可用)
-        :param request_id:  地址请求ID
-        :param response_id:  响应ID
-        :param function_id: 功能寻址ID
-        """
-        pass
-
-    @abstractmethod
-    def send_and_receive_uds_message(self, message: Sequence[int]) -> Sequence[int]:
-        """
-        发送UDS诊断消息
-        :param message:
-        :return:
-        """
-        pass
-
 
 class BaseCanBus(metaclass=ABCMeta):
     def __init__(self, baud_rate: BaudRateEnum = BaudRateEnum.HIGH, data_rate: BaudRateEnum = BaudRateEnum.DATA,
-                 channel_index: int = 1, can_fd: bool = False, max_workers: int = 300, need_receive: bool = True):
+                 channel_index: int = 1, can_fd: bool = False, max_workers: int = 300, need_receive: bool = True,
+                 is_uds_can_fd: bool = False):
+        # UDS是否使用CANFD模式
+        self._is_uds_can_fd = is_uds_can_fd
+        # 表示间隔时间10ms
+        self._interval_time = 10
+        # 流控帧最大超时时间
+        self._flow_control_time_out = 5
+        # 接收连续帧最大超时时间
+        self._mutil_frame_time_out = 0.1
         # baud_rate波特率，
         self._baud_rate = baud_rate
         # data_rate波特率， 仅canfd有用
@@ -146,6 +138,12 @@ class BaseCanBus(metaclass=ABCMeta):
         self._dlc = dlc
         # can实例化的对象
         self._can = None
+        # 诊断的请求ID
+        self._request_id = None
+        # 诊断的相应ID
+        self._response_id = None
+        # 诊断的功能请求ID
+        self._function_id = None
 
     @property
     def can_device(self) -> BaseCanDevice:
@@ -165,6 +163,46 @@ class BaseCanBus(metaclass=ABCMeta):
             if dlc_length == value:
                 return key
         raise RuntimeError(f"dlc {dlc} not support, only support {self._dlc.keys()}")
+
+    def _handle_continue_frame(self, message: Message):
+        """
+        处理流控帧的部分
+        :param message:
+        :return:
+        """
+
+        # 当设置了才能返回
+        if self._response_id:
+            # 这里只处理诊断数据，即7xx的信号
+            if message.msg_id >> 8 == 7:
+                first_data = message.data[0]
+                if first_data == 0x10:
+                    # 收到7xx的信号，且第一帧是10，表示是连续帧的首帧，需要回一个流控帧
+                    msg = Message()
+                    msg.msg_id = self._request_id
+                    if self._can_fd:
+                        msg.data = [0x30, 0x0, self._interval_time]
+                        while len(msg.data) != 8:
+                            msg.data.append(0x0)
+                    else:
+                        msg.data = [0x30, 0x0, self._interval_time]
+                        while len(msg.data) != 64:
+                            msg.data.append(0x0)
+                    self.transmit_one(msg)
+
+    def _open_can(self):
+        """
+        对CAN设备进行打开、初始化等操作，并同时开启设备的帧接收线程。
+        """
+        # 线程池句柄
+        if self._thread_pool is None:
+            self._thread_pool = ThreadPoolExecutor(max_workers=self._max_workers)
+        # 开启设备的接收线程
+        self._need_receive = True
+        # 开启设备的发送线程
+        self._need_transmit = True
+        # 打开设备，并初始化设备
+        self._can.open_device(baud_rate=self._baud_rate, data_rate=self._data_rate, channel=self._channel_index)
 
     def __transmit(self, can: BaseCanDevice, message: Message, cycle_time: float):
         """
@@ -263,19 +301,202 @@ class BaseCanBus(metaclass=ABCMeta):
             if self._event_thread[msg_id].done():
                 self._event_thread[msg_id] = self._thread_pool.submit(self.__event_transmit, can, msg_id, cycle_time)
 
-    def _open_can(self):
+    def __get_response_frame(self):
         """
-        对CAN设备进行打开、初始化等操作，并同时开启设备的帧接收线程。
+        接收返回帧
+        :return:
         """
-        # 线程池句柄
-        if self._thread_pool is None:
-            self._thread_pool = ThreadPoolExecutor(max_workers=self._max_workers)
-        # 开启设备的接收线程
-        self._need_receive = True
-        # 开启设备的发送线程
-        self._need_transmit = True
-        # 打开设备，并初始化设备
-        self._can.open_device(baud_rate=self._baud_rate, data_rate=self._data_rate, channel=self._channel_index)
+        result = []
+        receive_flag = True
+        start_time = time.time()
+        logger.trace(f"timeout is {self._mutil_frame_time_out}")
+        real_timeout = self._mutil_frame_time_out
+        while receive_flag:
+            stack = self.get_stack()
+            receive_messages = list(filter(lambda x: x.msg_id == self._response_id, stack))
+            message_size = len(receive_messages)
+            logger.trace(f"message size is {message_size}")
+            if message_size > 0:
+                message = receive_messages[0]
+                data = message.data
+                show_data = [hex(x) for x in data]
+                logger.trace(f"data is {show_data}")
+                if data[0] == 0x10:
+                    logger.trace(f"continue frame")
+                    length = data[1]
+                    logger.trace(f"length is {length}")
+                    # 获取连续帧还需要发多少帧
+                    frame_count = self.__get_frame_length(length)
+                    logger.trace(f"frame_count is {frame_count}")
+                    if real_timeout == self._mutil_frame_time_out:
+                        # 根据每帧之间的间隔时间计算出来需要多少, 单位是秒  10是buffer时间
+                        timeout = ((frame_count + 10) * self._interval_time * 1.2) / 1000
+                        real_timeout = timeout
+                        logger.debug(f"change timeout to {real_timeout}s")
+                    # 判断是否收集完成所有帧数据
+                    if self.__is_message_receive_finished(length, message_size):
+                        for index, message in enumerate(receive_messages):
+                            if index == 0:
+                                msg_data = message.data[2:]
+                            else:
+                                msg_data = message.data[1:]
+                            show_result = [hex(x) for x in result]
+                            logger.debug(f"result = {show_result}")
+                            result += msg_data
+                        receive_flag = False
+                else:
+                    logger.debug(f"one frame")
+                    for message in receive_messages:
+                        msg_data = message.data
+                        logger.debug(f"msg_data is {msg_data}")
+                        result += msg_data
+                        logger.debug(f"result = {result}")
+                        receive_flag = False
+            current_time = time.time()
+            pass_time = current_time - start_time
+            logger.trace(f"pass_time is {pass_time}")
+            if pass_time > real_timeout:
+                logger.debug(f"timeout exit , the pass time is {pass_time}")
+                receive_flag = False
+        return result
+
+    def __get_frame_length(self, length: int) -> int:
+        """
+        根据第一帧检查需要收的帧数
+        :param length: 数据的长度
+        :return:
+        """
+        message_length = 64 if self._is_uds_can_fd else 8
+        # 先把第一帧数据去掉
+        length = length - (message_length - 2)
+        size = length // (message_length - 1)
+        left = length % (message_length - 1)
+        logger.trace(f"length = {length}")
+        logger.trace(f"size = {size}")
+        logger.trace(f"left = {left}")
+        if left == 0:
+            size = size
+        else:
+            size = size + 1
+        logger.trace(f"size is {size}")
+        return size
+
+    def __is_message_receive_finished(self, length: int, message_size: int) -> bool:
+        """
+        根据第一帧检查是否已经接收完成
+        :param length: 数据的长度
+        :param message_size:  目前收到的帧数
+        :return:
+        """
+        size = self.__get_frame_length(length) + 1
+        logger.trace(f"size is {size} and message_size is {message_size}")
+        return size == message_size
+
+    def __send_multi_frame(self, messages: List[Message]):
+        """
+        发多帧
+        :param messages:
+        :return:
+        """
+        # 清空接收数据，并发送发送第一帧，等待流控帧
+        self.clear_stack_data()
+        messages_length = len(messages)
+        logger.info(f"messages size is {messages_length}")
+        message = messages.pop(0)
+        logger.debug(f"first frame message is {message}")
+        if messages_length == 1:
+            self.transmit_one(message)
+        else:
+            self.transmit_one(message)
+            send_time = -1
+            wait_flag = True
+            start_time = time.time()
+            while wait_flag:
+                stack = self.get_stack()
+                receive_messages = list(filter(lambda x: x.msg_id == self._response_id, stack))
+                if len(receive_messages) > 0:
+                    for message in receive_messages:
+                        # 14.054030 CANFD   1 Rx 70E  1  0  8 8 30 08 05 00 00 00 00 00    0  0   1000 0 0 0 0 0
+                        data = message.data
+                        if data[0] == 0x30:
+                            send_time = data[2]
+                            # 收到了流控帧，就需要处理,否则解析出来的数据可能有问题
+                            self.clear_stack_data()
+                            wait_flag = False
+                current_time = time.time()
+                pass_time = current_time - start_time
+                if pass_time > self._flow_control_time_out:
+                    wait_flag = False
+            logger.debug(f"send_time is {send_time}")
+            # 没有收到流控帧
+            if send_time != -1:
+                interval_time = send_time / 1000
+                for message in messages:
+                    data = [hex(x) for x in message.data]
+                    logger.debug(f"send message [{hex(message.msg_id)}] and data is [{data}]")
+                    self.transmit_one(message)
+                    sleep(interval_time)
+            else:
+                raise RuntimeError("can not receive flow control frame, not send message")
+
+    def __get_message_data(self, message: List[int]) -> List[Message]:
+        """
+        根据数据长度组包，方便后期发送
+        :param message: 数据列表
+        :return: 二维数组，数组中的每一个值表示一个message中的data
+        """
+        messages = []
+        message_datus = []
+        length = len(message)
+        size = 64 if self._is_uds_can_fd else 8
+        if length < size:
+            msg_data = copy.deepcopy(message)
+            msg_data.insert(0, length)
+            while len(msg_data) != size:
+                msg_data.append(0x0)
+            msg = Message()
+            msg.msg_id = self._request_id
+            msg.data = msg_data
+            messages.append(msg)
+        else:
+            # 这一步处理当数据超过3位的时候
+            length_value = hex(length)[2:]
+            if len(length_value) > 3:
+                value = f"1{length_value}"
+                first_frame = list(int(value, 16).to_bytes(64, "big"))
+            else:
+                first_frame = [0x10, length]
+            while len(first_frame) != size:
+                data = message.pop(0)
+                logger.trace(f"data = {data}")
+                first_frame.append(data)
+            message_datus.append(first_frame)
+            continue_frame = [0x21]
+            # CAN FD的方式组包
+            while len(message) != 0:
+                data = message.pop(0)
+                logger.trace(f"data = {data}")
+                if len(continue_frame) != size:
+                    continue_frame.append(data)
+                else:
+                    # 列表复用，所以需要深拷贝
+                    message_datus.append(copy.deepcopy(continue_frame))
+                    frame = continue_frame[0] + 1
+                    continue_frame.clear()
+                    continue_frame.append(frame)
+                    continue_frame.append(data)
+            # 追加尾部数据
+            if len(continue_frame) != 0:
+                while len(continue_frame) != size:
+                    continue_frame.append(0xAA)
+                message_datus.append(copy.deepcopy(continue_frame))
+            for msg in message_datus:
+                message = Message()
+                message.msg_id = self._request_id
+                message.data = msg
+                messages.append(message)
+        logger.debug(f"message is [{messages}]")
+        return messages
 
     @abstractmethod
     def open_can(self):
@@ -424,12 +645,28 @@ class BaseCanBus(metaclass=ABCMeta):
         :param response_id:  响应ID
         :param function_id: 功能寻址ID
         """
-        self._can.init_uds(request_id, response_id, function_id)
+        self._request_id = request_id
+        self._response_id = response_id
+        self._function_id = function_id
 
-    def send_and_receive_uds_message(self, message: Sequence[int]) -> Sequence[int]:
+    def send_and_receive_uds_message(self, message: List[int]) -> List[int]:
         """
-        发送UDS诊断消息
+        发送UDS诊断消息, 两种情况，没有init的UDS的时候，返回空列表，还有就是本身不返回
         :param message:
         :return:
         """
-        return self._can.send_and_receive_uds_message(message)
+        if self._request_id and self._response_id and self._function_id:
+            receive_message = []
+            message_data = self.__get_message_data(message)
+            logger.debug(f"message_data length is {len(message_data)}")
+            try:
+                self.__send_multi_frame(message_data)
+                logger.info(f"now get response data")
+                receive_message = self.__get_response_frame()
+            except RuntimeError as e:
+                logger.error(e)
+            return receive_message
+        else:
+            raise RuntimeError("please use function init_uds to init uds")
+
+
