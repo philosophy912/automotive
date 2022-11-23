@@ -193,8 +193,14 @@ class StandardExcelSampleReader(BaseReader):
     def __parse_exceptions(self, exceptions: str) -> Sequence[str]:
         contents = []
         if exceptions:
+            if '\r\n' in exceptions:
+                # 先把一个节点里的换行符替换成\r，以防把换行后面的内容拆成xmind的一个节点
+                exceptions = exceptions.replace('\r\n', '\r')
             exception_lines = exceptions.split("\n")
             for line in exception_lines:
                 content = self.__handle_prefix_str(line)
+                if '\r' in content:
+                    # 把前面替换过的\r\n，替换回去
+                    content = content.replace('\r', '\r\n')
                 contents.append(content)
         return contents
