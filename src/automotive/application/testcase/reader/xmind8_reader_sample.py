@@ -331,6 +331,7 @@ class Xmind8SampleReader(BaseReader):
 
     def __handle_actions(self, actions: str):
         total = []
+        # 用\n区分是为了防止后面拼\n时，保证0x前面是\r\n，，保证在一个步骤里
         lines = actions.split("\n")
         lines = list(filter(lambda x: x != "", lines))
         temp = []
@@ -343,6 +344,7 @@ class Xmind8SampleReader(BaseReader):
             temp.pop(0)
             start_index = 0
             for t in temp:
+                # 每个步骤用\n分隔
                 content = "\n".join(lines[start_index:t])
                 total.append(content)
                 start_index = t

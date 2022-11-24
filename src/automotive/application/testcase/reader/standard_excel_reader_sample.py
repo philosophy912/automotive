@@ -88,7 +88,7 @@ class StandardExcelSampleReader(BaseReader):
                 testcase.actions = self.__parse_actions(sheet.range(f"E{i}").value)
                 testcase.exceptions = self.__parse_exceptions(sheet.range(f"F{i}").value)
                 requirement = sheet.range(f"G{i}").value
-                testcase.requirement = requirement.split("\n") if requirement else None
+                testcase.requirement = [requirement] if requirement else None
                 fix_cell = sheet.range(f"J{i}").value
                 if fix_cell is not None:
                     try:

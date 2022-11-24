@@ -142,7 +142,7 @@ class Xmind8SampleWriter(BaseWriter):
                 actions.append(f"{i + 1}.{action}")
             actions = "\n".join(actions)
         else:
-            actions = "\n".join(testcase.actions)
+            actions = f"1.{testcase.actions[0]}"
         topic_titles.append(actions)
         if testcase.requirement_id != "":
             topic_titles.append(f"[{testcase.requirement_id}]")
