@@ -175,19 +175,17 @@ class BaseCanBus(metaclass=ABCMeta):
         if self._response_id:
             # 这里只处理诊断数据，即7xx的信号
             if message.msg_id >> 8 == 7:
+                logger.trace(f"msg_id is {message.msg_id}")
                 first_data = message.data[0]
                 if first_data == 0x10:
                     # 收到7xx的信号，且第一帧是10，表示是连续帧的首帧，需要回一个流控帧
                     msg = Message()
                     msg.msg_id = self._request_id
-                    if self._can_fd:
-                        msg.data = [0x30, 0x0, self._interval_time]
-                        while len(msg.data) != 8:
-                            msg.data.append(0x0)
-                    else:
-                        msg.data = [0x30, 0x0, self._interval_time]
-                        while len(msg.data) != 64:
-                            msg.data.append(0x0)
+                    size = 64 if self._is_uds_can_fd else 8
+                    msg.data = [0x30, 0x0, self._interval_time]
+                    while len(msg.data) != size:
+                        msg.data.append(0x0)
+                    logger.debug(f"it will send msg {msg.msg_id} and data = {[hex(x) for x in msg.data]}")
                     self.transmit_one(msg)
 
     def _open_can(self):
@@ -245,7 +243,7 @@ class BaseCanBus(metaclass=ABCMeta):
             cycle_time = message.cycle_time / 1000.0
             message.stop_flag = False
             # 周期性发送
-            logger.info(f"****** Transmit [Cycle] {hex_msg_id} : {list(map(lambda x: hex(x), data))}"
+            logger.debug(f"****** Transmit [Cycle] {hex_msg_id} : {list(map(lambda x: hex(x), data))}"
                         f"Circle time is {message.cycle_time}ms ******")
             task = self._thread_pool.submit(self.__transmit, can, message, cycle_time)
             self._transmit_thread.append(task)
@@ -343,6 +341,7 @@ class BaseCanBus(metaclass=ABCMeta):
                             show_result = [hex(x) for x in result]
                             logger.debug(f"result = {show_result}")
                             result += msg_data
+                        result = result[: length]
                         receive_flag = False
                 else:
                     logger.debug(f"one frame")
@@ -392,16 +391,17 @@ class BaseCanBus(metaclass=ABCMeta):
         logger.trace(f"size is {size} and message_size is {message_size}")
         return size == message_size
 
-    def __send_multi_frame(self, messages: List[Message]):
+    def __send_multi_frame(self, send_messages: List[Message]):
         """
         发多帧
-        :param messages:
+        :param send_messages:
         :return:
         """
         # 清空接收数据，并发送发送第一帧，等待流控帧
         self.clear_stack_data()
+        messages = copy.deepcopy(send_messages)
         messages_length = len(messages)
-        logger.info(f"messages size is {messages_length}")
+        logger.debug(f"messages size is {messages_length}")
         message = messages.pop(0)
         logger.debug(f"first frame message is {message}")
         if messages_length == 1:
@@ -439,14 +439,15 @@ class BaseCanBus(metaclass=ABCMeta):
             else:
                 raise RuntimeError("can not receive flow control frame, not send message")
 
-    def __get_message_data(self, message: List[int]) -> List[Message]:
+    def __get_message_data(self, message_data: List[int]) -> List[Message]:
         """
         根据数据长度组包，方便后期发送
-        :param message: 数据列表
+        :param message_data: 数据列表
         :return: 二维数组，数组中的每一个值表示一个message中的data
         """
         messages = []
         message_datus = []
+        message = copy.deepcopy(message_data)
         length = len(message)
         size = 64 if self._is_uds_can_fd else 8
         if length < size:
@@ -573,7 +574,7 @@ class BaseCanBus(metaclass=ABCMeta):
         if message_id:
             logger.trace(f"try to stop message {hex(message_id)}")
             if message_id in self._send_messages:
-                logger.info(f"Message <{hex(message_id)}> is stop to send.")
+                logger.debug(f"Message <{hex(message_id)}> is stop to send.")
                 self._send_messages[message_id].stop_flag = True
                 # self._send_messages[message_id].pause_flag = True
             else:
@@ -581,7 +582,7 @@ class BaseCanBus(metaclass=ABCMeta):
         else:
             logger.trace(f"try to stop all messages")
             for key, item in self._send_messages.items():
-                logger.info(f"Message <{hex(key)}> is stop to send.")
+                logger.debug(f"Message <{hex(key)}> is stop to send.")
                 item.stop_flag = True
                 # item.pause_flag = True
 
@@ -595,7 +596,7 @@ class BaseCanBus(metaclass=ABCMeta):
         if message_id:
             logger.trace(f"try to resume message {hex(message_id)}")
             if message_id in self._send_messages:
-                logger.info(f"Message <{hex(message_id)}> is resume to send.")
+                logger.debug(f"Message <{hex(message_id)}> is resume to send.")
                 message = self._send_messages[message_id]
                 # message.stop_flag = False
                 self.transmit(message)
@@ -604,7 +605,7 @@ class BaseCanBus(metaclass=ABCMeta):
         else:
             logger.trace(f"try to resume all messages")
             for key, item in self._send_messages.items():
-                logger.info(f"Message <{hex(key)}> is resume to send.")
+                logger.debug(f"Message <{hex(key)}> is resume to send.")
                 # 当发现这个msg是停止的时候就恢复发送
                 if item.stop_flag:
                     # item.stop_flag = False
@@ -661,12 +662,10 @@ class BaseCanBus(metaclass=ABCMeta):
             logger.debug(f"message_data length is {len(message_data)}")
             try:
                 self.__send_multi_frame(message_data)
-                logger.info(f"now get response data")
+                logger.debug(f"now get response data")
                 receive_message = self.__get_response_frame()
             except RuntimeError as e:
                 logger.error(e)
             return receive_message
         else:
             raise RuntimeError("please use function init_uds to init uds")
-
-
