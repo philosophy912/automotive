@@ -413,7 +413,7 @@ class CANService(Can):
             如： {"signal_name1": 0x1, "signal_name2": 0x2}
         """
         if isinstance(msg, str):
-            msg_id = self.name_messages[msg]
+            msg_id = self.name_messages[msg].msg_id
         elif isinstance(msg, int):
             msg_id = msg
         else:
