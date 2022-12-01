@@ -6,11 +6,13 @@
 # @Author:      lizhe
 # @Created:     2021/5/1 - 23:34
 # --------------------------------------------------------
+import gzip
 import importlib
 import importlib.util
 import json
 import shutil
 import sys
+import tarfile
 import time
 import os
 import platform
@@ -650,3 +652,89 @@ class Utils(metaclass=Singleton):
         # 模块的Loader必须要执行一次， 否则模块有问题
         module_spec.loader.exec_module(module)
         return module
+
+    def extract_file(self, file: str, del_origin_file: bool) -> str:
+        # 获取扩展名
+        extends = os.path.splitext(file)[1]
+        # 检查文件是否存在
+        if not os.path.exists(file):
+            raise RuntimeError(f"{file} is not exist, please check it!")
+        if not os.path.isfile(file):
+            raise RuntimeError(f"{file} is not a file, please check it!")
+        if not file.endswith(f"{extends}"):
+            raise RuntimeError(f"{file} is not {extends} file, please check it!")
+        # 创建文件夹
+        directory, full_file = os.path.split(file)
+        logger.trace(f"directory is {directory} and file is {full_file}")
+        file_name = os.path.splitext(file)[0]
+        folder = os.path.join(directory, file_name)
+        if os.path.exists(folder):
+            self.delete_folder(folder)
+        os.makedirs(folder)
+        # 解压压缩文件
+        if extends == ".zip":
+            with zipfile.ZipFile(file, "r") as fz:
+                for f in fz.namelist():
+                    try:
+                        # 解决中文乱码问题
+                        name = f.encode('utf-8').decode("utf-8")
+                    except UnicodeError:
+                        # 解决中文乱码问题
+                        name = f.encode('cp437').decode("utf-8")
+                    logger.trace(f"name is {name}")
+                    try:
+                        fz.extract(f, folder)
+                        origin_file = os.path.join(folder, f)
+                        target_file = os.path.join(folder, name)
+                        # 中文乱码后的重命名文件
+                        os.rename(origin_file, target_file)
+                        # 解压出来的文件中包含压缩文件再次解压
+                        if self.is_compress_file(target_file):
+                            abs_file = os.path.join(folder, target_file)
+                            self.extract_file(abs_file, del_origin_file)
+                    # 容错，有些zip文件解压不成功
+                    except Exception as e:
+                        logger.warning(f"extract file {f} failed, error is [{e}]")
+
+        elif extends == ".tar":
+            with tarfile.open(file, "r") as fz:
+                for f in fz.getnames():
+                    try:
+                        # 解决中文乱码问题
+                        name = f.encode('utf-8').decode("utf-8")
+                    except UnicodeError:
+                        # 解决中文乱码问题
+                        name = f.encode('cp437').decode("utf-8")
+                    logger.trace(f"name is {f}")
+                    try:
+                        fz.extract(f, folder)
+                        origin_file = os.path.join(folder, f)
+                        target_file = os.path.join(folder, name)
+                        os.rename(origin_file, target_file)
+                        if self.is_compress_file(f):
+                            abs_file = os.path.join(folder, target_file)
+                            self.extract_file(abs_file, del_origin_file)
+                    except Exception as e:
+                        logger.warning(f"extract file {f} failed, error is [{e}]")
+        elif extends == ".gz":
+            self.delete_folder(folder)
+            new_file_name = file_name.replace(extends, "")
+            logger.info(f"new file name {new_file_name}")
+            with gzip.GzipFile(file) as fz:
+                with open(new_file_name, "wb") as f:
+                    f.writelines(fz)
+        if del_origin_file:
+            logger.trace(f"it will delete {file}")
+            os.remove(file)
+        return folder
+
+    @staticmethod
+    def is_compress_file(file: str, support_extends: Tuple = (".zip", ".gz", ".tar")) -> bool:
+        """
+        是否是压缩文件
+        :param support_extends: 支持的解压文件的类型
+        :param file: 要解压的文件
+        :return:
+        """
+        extends = os.path.splitext(file)[1]
+        return extends in support_extends
