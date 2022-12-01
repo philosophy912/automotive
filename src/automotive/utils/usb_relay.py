@@ -9,7 +9,7 @@
 import sys
 import os
 import platform
-from ctypes import c_char_p, c_int, byref, c_uint64, Structure, POINTER, CDLL
+from ctypes import c_char_p, c_int, byref, c_uint64, Structure, POINTER, windll
 from functools import reduce
 from typing import List
 
@@ -54,7 +54,7 @@ class _LibUsbRelay(object):
         else:
             raise RuntimeError("only support windows and not support linux")
         try:
-            self.usbRelayDll = CDLL(file_path)
+            self.usbRelayDll = windll.LoadLibrary(file_path)
         except Exception:
             raise RuntimeError(f"dll file[{file_path}] load failed, please sure if install Visual Studio")
 
