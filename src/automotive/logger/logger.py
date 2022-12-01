@@ -68,7 +68,7 @@ def set_logger(level: str = default_level, folder: Optional[str] = None, folder_
         else:
             file_log_level = default_level
         _logger.add(os.path.join(file_path, "log_{time}.log"), level=file_log_level.upper(), format=formats,
-                    rotation=rotation, encoding="utf-8")
+                    rotation=rotation, encoding="utf-8", errors="ignore")
 
 
 def get_files(folder: str) -> Sequence[str]:
@@ -92,7 +92,7 @@ def get_config(config_file: str) -> Tuple[str, str, str]:
 
     :return: level, log_folder
     """
-    with open(config_file, "r", encoding="UTF-8") as fp:
+    with open(config_file, "r", encoding="UTF-8", errors="ignore") as fp:
         content = yaml.full_load(fp)
         try:
             level = content["level"]
