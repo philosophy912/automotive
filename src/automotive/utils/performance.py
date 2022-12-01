@@ -544,6 +544,14 @@ class Performance(object):
 
     def get_performance(self, port: str, cycle_time: int = 5, device_id: str = None,
                         file: Tuple[str, str, str, str] = None) -> Tuple:
+        """
+        获取性能测试信息
+        :param port: SOC串口端口
+        :param cycle_time: 测试次数
+        :param device_id: Android 设备ID
+        :param file: qnx_file, android_file, dumpsys_meminfo_file, performance_file
+        :return:  average_qnx_cpu, average_qnx_memory, average_android_cpu, average_android_memory
+        """
         self.connect(port)
         content_list = []
         for i in range(cycle_time):
@@ -554,13 +562,15 @@ class Performance(object):
             logger.debug("get android dumpsys meminfo")
             dumpsys_timestamp = self.__utils.get_time_as_string("%Y-%m-%d %H:%M:%S")
             dumpsys_data = self.__exec_adb_dumpsys_meminfo(device_id=device_id)
+            # 根据项目需求
             self.__utils.random_sleep(1.0, 2.0)
             logger.debug("get qnx top")
-            top_timestamp = self.__utils.get_time_as_string("%Y-%m-%d %H:%M:%S")
+            qnx_top_timestamp = self.__utils.get_time_as_string("%Y-%m-%d %H:%M:%S")
             qnx_top_data = self.__exec_qnx_top_command()
-            test_result_tuple = android_top_timestamp, android_top_data, dumpsys_timestamp, dumpsys_data, top_timestamp, qnx_top_data
+            test_result_tuple = android_top_timestamp, android_top_data, dumpsys_timestamp, dumpsys_data, qnx_top_timestamp, qnx_top_data
             content_list.append(test_result_tuple)
             # 执行并返回结果需要时间有点久，所以不停止直接运行了
+        self.disconnect()
         qnx_top = []
         android_top = []
         dumpsys_meminfo = []
@@ -584,7 +594,6 @@ class Performance(object):
             total_android_cpu += cpu_usage
             # android的内存占用率
             total_android_memory += memory_usage
-        self.disconnect()
         average_qnx_cpu = round(total_qnx_cpu / cycle_time, 2)
         average_qnx_memory = round(total_qnx_memory / cycle_time, 2)
         average_android_cpu = round(total_android_cpu / cycle_time, 2)
