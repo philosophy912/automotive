@@ -249,7 +249,7 @@ class Camera(object):
         """
         if self.__capture is not None:
             self.close_camera()
-        self.__capture = cv2.VideoCapture(camera_id)
+        self.__capture = cv2.VideoCapture(camera_id, cv2.CAP_DSHOW)
         frame_width = int(self.__capture.get(cv2.CAP_PROP_FRAME_WIDTH))
         frame_height = int(self.__capture.get(cv2.CAP_PROP_FRAME_HEIGHT))
         if width is None:
