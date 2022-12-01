@@ -39,6 +39,7 @@ class TabFrame(Frame):
         super().__init__(master)
         self.can_service = can_service
         self.thread_pool = can_service.can_bus.thread_pool
+        logger.trace(f"the thread_pool id is {id(self.thread_pool)}")
         self.__filter_nodes = filter_nodes
         # 单选框按钮配置
         self.__check_buttons = config[check_buttons] if config[check_buttons] else dict()
@@ -115,6 +116,13 @@ class TabFrame(Frame):
         self.create_buttons()
         # 创建接收检查按钮
         self.create_receive_buttons()
+
+    def __update_thread_pool(self):
+        """
+        更新一下线程池地址
+        :return:
+        """
+        self.thread_pool = self.can_service.can_bus.thread_pool
 
     def create_common_widget(self):
         """
@@ -609,10 +617,12 @@ class TabFrame(Frame):
         if function_name == DEFAULT_MESSAGE:
             logger.info(f"send default messages and filter nodes {self.__filter_nodes}")
             if self.thread_button_bool_vars[DEFAULT_MESSAGE].get():
+                self.__update_thread_pool()
                 self.thread_pool.submit(self.__special_actions, 1)
         elif function_name == BUS_LOST:
             logger.info("can bus lost")
             if self.thread_button_bool_vars[BUS_LOST].get():
+                self.__update_thread_pool()
                 self.thread_pool.submit(self.__special_actions, 2)
         else:
             param = self.__thread_buttons[function_name]
@@ -620,6 +630,7 @@ class TabFrame(Frame):
             actions = param[ACTIONS]
             if self.thread_button_bool_vars[text_name].get():
                 if function_name not in self.thread_task:
+                    self.__update_thread_pool()
                     task = self.thread_pool.submit(self.__thread_method, text_name, actions)
                     self.thread_task[function_name] = task
             else:
@@ -698,6 +709,8 @@ class TabFrame(Frame):
             text_name = param[TEXT]
             logger.debug(f"press {text_name} button")
             actions = param[ACTIONS]
+            logger.trace(f"thread pool id is {id(self.thread_pool)}")
+            self.__update_thread_pool()
             self.thread_pool.submit(self.__send_actions, actions)
         except RuntimeError as e:
             logger.error(e)
@@ -790,7 +803,6 @@ class Gui(object):
         self.can_service = CANService(dbc, can_box_device=can_box_device, baud_rate=baud_rate, data_rate=data_rate,
                                       channel_index=channel_index, can_fd=can_fd, max_workers=max_workers)
         # 默认消息发送要过滤的节点
-
         self.__filter_nodes = filter_nodes
         # 获取按钮
         service = ConfigReader(can_service=self.can_service, excel_type=excel_type)
