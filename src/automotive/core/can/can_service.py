@@ -23,8 +23,9 @@ from automotive.logger.logger import logger
 def __get_can_bus(can_box_device: CanBoxDeviceEnum, baud_rate: BaudRateEnum, data_rate: BaudRateEnum,
                   channel_index: int, can_fd: bool, max_workers: int, need_receive: bool,
                   is_uds_can_fd: bool) -> BaseCanBus:
-    params = {"baud_rate": baud_rate, "data_rate": data_rate, "channel_index": channel_index, "can_fd": can_fd,
-              "max_workers": max_workers, "need_receive": need_receive, "is_uds_can_fd": is_uds_can_fd}
+    params = {"baud_rate": baud_rate, "data_rate": data_rate,
+              "channel_index": channel_index, "can_fd": can_fd, "max_workers": max_workers,
+              "need_receive": need_receive, "is_uds_can_fd": is_uds_can_fd}
     if can_box_device == CanBoxDeviceEnum.PEAKCAN:
         logger.debug("use pcan")
         from .hardware.peakcan.pcan_bus import PCanBus
@@ -39,6 +40,7 @@ def __get_can_bus(can_box_device: CanBoxDeviceEnum, baud_rate: BaudRateEnum, dat
         return ZlgCanBus(**params)
     elif can_box_device == CanBoxDeviceEnum.CANALYST or can_box_device == CanBoxDeviceEnum.USBCAN:
         logger.debug("use usbcan")
+        params["can_box_device"] = can_box_device
         from .hardware.usbcan.usb_can_bus import UsbCanBus
         return UsbCanBus(**params)
     else:

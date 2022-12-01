@@ -124,6 +124,7 @@ class BaseCanBus(metaclass=ABCMeta):
         self._cycle_event = "Cycle and Event"
         # 线程池句柄
         self._thread_pool = ThreadPoolExecutor(max_workers=self._max_workers)
+        logger.trace(f"the thread pool id is {id(self._thread_pool)}")
         # 是否需要接收，用于线程关闭
         self._need_receive = True
         # 是否需要一直发送
@@ -195,6 +196,7 @@ class BaseCanBus(metaclass=ABCMeta):
         # 线程池句柄
         if self._thread_pool is None:
             self._thread_pool = ThreadPoolExecutor(max_workers=self._max_workers)
+            logger.trace(f"new init thread pool and id is {id(self._thread_pool)}")
         # 开启设备的接收线程
         self._need_receive = True
         # 开启设备的发送线程
@@ -244,7 +246,7 @@ class BaseCanBus(metaclass=ABCMeta):
             message.stop_flag = False
             # 周期性发送
             logger.debug(f"****** Transmit [Cycle] {hex_msg_id} : {list(map(lambda x: hex(x), data))}"
-                        f"Circle time is {message.cycle_time}ms ******")
+                         f"Circle time is {message.cycle_time}ms ******")
             task = self._thread_pool.submit(self.__transmit, can, message, cycle_time)
             self._transmit_thread.append(task)
         else:
@@ -525,6 +527,7 @@ class BaseCanBus(metaclass=ABCMeta):
         self._send_messages.clear()
         self._thread_pool = None
         logger.trace("close_device")
+        logger.trace(f"The thread pool id is {id(self._thread_pool)}")
         self._can.close_device()
 
     @check_connect("_can", can_tips, is_bus=True)
