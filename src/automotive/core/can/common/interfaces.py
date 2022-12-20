@@ -301,9 +301,10 @@ class BaseCanBus(metaclass=ABCMeta):
             if self._event_thread[msg_id].done():
                 self._event_thread[msg_id] = self._thread_pool.submit(self.__event_transmit, can, msg_id, cycle_time)
 
-    def __get_response_frame(self):
+    def __get_response_frame(self, delay_78: int = 5):
         """
         接收返回帧
+        params delay_78: 遇到7F 78时，需要等待的时长。按照ISO 14229-2标准，等待5000ms
         :return:
         """
         result = []
@@ -311,7 +312,11 @@ class BaseCanBus(metaclass=ABCMeta):
         start_time = time.time()
         logger.trace(f"timeout is {self._mutil_frame_time_out}")
         real_timeout = self._mutil_frame_time_out
+        total_count = 1
         while receive_flag:
+            logger.trace(f"第{total_count}次")
+            total_count += 1
+            delay_flag = False
             stack = self.get_stack()
             receive_messages = list(filter(lambda x: x.msg_id == self._response_id, stack))
             message_size = len(receive_messages)
@@ -347,18 +352,39 @@ class BaseCanBus(metaclass=ABCMeta):
                         receive_flag = False
                 else:
                     logger.debug(f"one frame")
+                    # 拿到一次receive，清一次栈（单帧处理方法）
+                    self.clear_stack_data()
+                    logger.trace(f"receive_messages: {list(map(lambda  x: x.data, receive_messages))}")
                     for message in receive_messages:
                         msg_data = message.data
                         logger.debug(f"msg_data is {msg_data}")
                         result += msg_data
+                        if msg_data[0] >> 4 == 3:
+                            # 处理流控帧等待时间 30开头的报文，第二个字节是允许接收最大帧数，第三个字节是每帧间隔时间（ms）
+                            delay_time = ((msg_data[2] & 0xf) * msg_data[1] / 1000)
+                            # 据观察每一帧会比规定时间多1-2ms左右
+                            sleep(delay_time + ((msg_data[2] & 0xf) * 2)/1000)
+                            logger.trace(f"遇到流控帧 需要等待{delay_time + ((msg_data[2] & 0xf) * 2)/1000}ms")
+                            delay_flag = True
+                            break
+
+                        if msg_data[1] == 0x7f and msg_data[3] == 0x78:
+                            # 负响应超时处理
+                            logger.trace(f"遇到78, 等待 {delay_78}s")
+                            sleep(delay_78)
+                            delay_flag = True
+                            break
+
                         logger.debug(f"result = {result}")
-                        receive_flag = False
-            current_time = time.time()
-            pass_time = current_time - start_time
-            logger.trace(f"pass_time is {pass_time}")
-            if pass_time > real_timeout:
-                logger.debug(f"timeout exit , the pass time is {pass_time}")
-                receive_flag = False
+
+            logger.trace(f"是否收到78： {delay_flag}")
+            if not delay_flag:
+                current_time = time.time()
+                pass_time = current_time - start_time
+                logger.trace(f"pass_time is {pass_time}")
+                if pass_time > real_timeout:
+                    logger.debug(f"timeout exit , the pass time is {pass_time}")
+                    receive_flag = False
         return result
 
     def __get_frame_length(self, length: int) -> int:
@@ -399,6 +425,9 @@ class BaseCanBus(metaclass=ABCMeta):
         :param send_messages:
         :return:
         """
+        if len(send_messages) > 4095:
+            raise RuntimeError("报文字节长度超出最大范围4095")
+
         # 清空接收数据，并发送发送第一帧，等待流控帧
         self.clear_stack_data()
         messages = copy.deepcopy(send_messages)
