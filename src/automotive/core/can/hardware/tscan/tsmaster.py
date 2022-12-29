@@ -164,6 +164,10 @@ class TSMasterDevice(BaseCanDevice):
             # //断开所有设备
             # typedef c_uint(__stdcall* tscan_disconnect_all_devices_t)(void);
             self.__lib_can.finalize_lib_tscan()
+            # 重置初始状态
+            logger.trace("reset default variable value")
+            self._is_open = False
+            self.__channel = None
             # result = self.__lib_can.tscan_disconnect_all_devices()
             # if result == 0:
             #     self._is_open = False
