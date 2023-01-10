@@ -6,6 +6,7 @@
 # @Author:      lizhe
 # @Created:     2021/12/13 - 22:25
 # --------------------------------------------------------
+import uuid
 from typing import Sequence, Dict, Any, Tuple, Optional
 
 from automotive.application.common.constants import GuiConfig, TEXT, ACTIONS, ON, OFF, CHECK_MSGS, VALUES
@@ -15,6 +16,7 @@ from automotive.utils.common.interfaces import sht
 from automotive.utils.excel_utils import ExcelUtils
 from automotive.utils.common.enums import ExcelEnum
 from automotive.core.can.can_service import CANService
+
 # 单选框
 check_buttons = GuiButtonTypeEnum.CHECK_BUTTON.value[1]
 # 时间按钮
@@ -79,21 +81,32 @@ class ConfigReader(object):
         """
         configs = []
         max_row = self.__utils.get_max_rows(sheet) + 1
+        # cell_a1 = self.__utils.get_cell_value(sheet, 1, "A")
+        max_column = self.__utils.get_max_columns(sheet) + 1
+        # 读取第一行获取列名与列序号的对应关系
+        result = dict()
+        for i in range(1, max_column):
+            title = self.__utils.get_cell_value(sheet, 1, i)
+            result[title] = i
         for i in range(2, max_row):
             config = GuiConfig()
-            config.name = self.__utils.get_cell_value(sheet, i, "A")
-            config.text_name = self.__utils.get_cell_value(sheet, i, "B")
-            config.button_type = GuiButtonTypeEnum.from_name(self.__utils.get_cell_value(sheet, i, "C"))
-            column_d = self.__utils.get_cell_value(sheet, i, "D")
+            config.name = uuid.uuid3(uuid.NAMESPACE_DNS, self.__utils.get_cell_value(sheet, i, result["按钮名称"]))
+            config.text_name = self.__utils.get_cell_value(sheet, i, result["按钮名称"])
+            config.button_type = GuiButtonTypeEnum.from_name(self.__utils.get_cell_value(sheet, i, result["类型"]))
+            column_d = self.__utils.get_cell_value(sheet, i, result["选中"])
             config.selected = self._parse_actions(column_d) if column_d else None
-            column_e = self.__utils.get_cell_value(sheet, i, "E")
+            column_e = self.__utils.get_cell_value(sheet, i, result["未选中"])
             config.unselected = self._parse_actions(column_e) if column_e else None
-            config.items = self.__utils.get_cell_value(sheet, i, "F")
-            column_g = self.__utils.get_cell_value(sheet, i, "G")
+            config.items = self.__utils.get_cell_value(sheet, i, result["选项名"])
+            column_g = self.__utils.get_cell_value(sheet, i, result["操作步骤"])
             config.actions = self._parse_actions(column_g) if column_g else None
-            config.tab_name = self.__utils.get_cell_value(sheet, i, "H")
-            column_i = self.__utils.get_cell_value(sheet, i, "I")
-            config.check_msgs = self._parse_check_msgs(column_i) if column_i else None
+            config.tab_name = self.__utils.get_cell_value(sheet, i, result["选项卡名"])
+            if "检查" in result.keys():
+                column_i = self.__utils.get_cell_value(sheet, i, result["检查"])
+                config.check_msgs = self._parse_check_msgs(column_i) if column_i else None
+            else:
+                column_i = self.__utils.get_cell_value(sheet, i, max_column - 1)
+                config.check_msgs = self._parse_check_msgs(column_i) if column_i else None
             configs.append(config)
             logger.debug(f"config = {config}")
         return configs
@@ -223,6 +236,7 @@ class ConfigReader(object):
         contents = []
         lines = actions.split("\n")
         lines = list(map(lambda x: x.strip(), lines))
+        # logger.info(f"当前信号为{lines}")
         for line in lines:
             # 0x152 BCM_LetfligthSt=0x1
             if line[:2].upper() == "0X":
@@ -259,7 +273,7 @@ class ConfigReader(object):
                 if msg_id is None:
                     logger.info(f"当前信号[ {key} ]在dbc文件中未找到msg_id，请检查信号值书写或dbc文件")
             else:
-                contents.append((line,))
+                contents.append([line, ])
         return contents
 
     @staticmethod
@@ -287,32 +301,38 @@ class ConfigReader(object):
             typed_configs[item] = list(filter(lambda x: x.button_type == item, configs))
         return typed_configs
 
-    def _parse_check_msgs(self, value: str) -> Tuple[int, str, int, Optional[int], bool]:
+    def _parse_check_msgs(self, check_value: str) -> Sequence:
         """
         处理信号检查部分的数据，更简化处理，可以不用填写0x的部分
-        :param value: 读取的数据
+        :param check_value: 读取的数据
         """
-        value = value.strip()
-        if value[:2].upper() == "0X":
-            # 0x152=BCM_RightligthSt=0x1=1=True
-            values = value.split("=")
-            msg_id = self.__handle_signal_value(values[0])
-            signal_name = values[1]
-            signal_value = self.__handle_signal_value(values[2])
-            count = self.__handle_signal_value(values[3])
-            expect_value = values[4].upper() == "TRUE"
-            return msg_id, signal_name, signal_value, count, expect_value
-        else:
-            # BCM_RightligthSt = 0x1 = 1 = True
-            values = value.split("=")
-            signal_name = values[0]
-            signal_value = self.__handle_signal_value(values[1])
-            count = self.__handle_signal_value(values[2])
-            expect_value = values[3].upper() == "TRUE"
-            msg_id = None
-            for msg_name, msg in self.can_service.messages.items():
-                if signal_name in msg.signals:
-                    msg_id = msg.msg_id
-            if msg_id is None:
-                logger.info(f"当前信号[ {signal_name} ]在dbc文件中未找到msg_id，请检查信号值书写或dbc文件")
-            return msg_id, signal_name, signal_value, count, expect_value
+        lines = check_value.split("\n")
+        lines = list(map(lambda x: x.strip(), lines))
+        check_contents= []
+        for value in lines:
+            if value[:2].upper() == "0X":
+                # 0x152=BCM_RightligthSt=0x1=1=True
+                values = value.split("=")
+                msg_id = self.__handle_signal_value(values[0])
+                signal_name = values[1]
+                signal_value = self.__handle_signal_value(values[2])
+                count = self.__handle_signal_value(values[3])
+                expect_value = values[4].upper() == "TRUE"
+                check_contents.append((msg_id, signal_name, signal_value, count, expect_value))
+            elif value != '':
+                # BCM_RightligthSt = 0x1 = 1 = True
+                values = value.split("=")
+                signal_name = values[0]
+                signal_value = self.__handle_signal_value(values[1])
+                count = self.__handle_signal_value(values[2])
+                expect_value = values[3].upper() == "TRUE"
+                msg_id = None
+                for msg_name, msg in self.can_service.messages.items():
+                    if signal_name in msg.signals:
+                        msg_id = msg.msg_id
+                if msg_id is None:
+                    logger.info(f"当前信号[ {signal_name} ]在dbc文件中未找到msg_id，请检查信号值书写或dbc文件")
+                check_contents.append((msg_id, signal_name, signal_value, count, expect_value))
+            else:
+                continue
+        return check_contents

@@ -7,9 +7,6 @@
 # @Created:     2021/11/18 - 20:51
 # --------------------------------------------------------
 import hashlib
-from typing import Sequence, Dict
-
-from automotive.utils.utils import Utils
 
 from automotive.logger.logger import logger
 
@@ -63,6 +60,7 @@ CLEAR_STACK = "clear_stack", "清除数据"
 DEFAULT_MESSAGE = "default_message", "发送默认消息"
 BUS_LOST = "bus_lost", "总线丢失"
 MESSAGE_LOST = "message_lost", "要丢失信号"
+MESSAGE_RESUME = "message_resume", "要恢复信号"
 CHECK_MESSAGE = "check_message", "检查发送消息"
 CHECK_SIGNAL = "check_signal", "检查信号发送值"
 EXACT_SEARCH = "exact_search", "精确查找"

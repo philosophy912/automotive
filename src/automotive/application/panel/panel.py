@@ -19,7 +19,7 @@ from .reader import ConfigReader
 from .reader import check_buttons, thread_buttons, comboxs, entries, buttons, receive_buttons
 from ..common.constants import OPEN_DEVICE, CLOSE_DEVICE, CLEAR_STACK, DEFAULT_MESSAGE, BUS_LOST, \
     MESSAGE_LOST, TEXT, ON, OFF, VALUES, ACTIONS, COMMON, CHECK_MSGS, CHECK_MESSAGE, SIGNAL_NAME, \
-    SIGNAL_VALUE, SIGNAL_VALUES, SEARCH_COUNT, EXACT_SEARCH, YES_OR_NO, CHECK_SIGNAL, CHECK_SIGNAL_NAME
+    SIGNAL_VALUE, SIGNAL_VALUES, SEARCH_COUNT, EXACT_SEARCH, YES_OR_NO, CHECK_SIGNAL, CHECK_SIGNAL_NAME, MESSAGE_RESUME
 from ...utils.common.enums import ExcelEnum
 
 
@@ -172,6 +172,16 @@ class TabFrame(Frame):
         self.column += 1
         # ********** 创建一个信号丢失的输入框  entry **********
         text_name, show_name = MESSAGE_LOST
+        # 获取输入框的名称
+        Label(self, text=show_name).grid(row=self.row, column=self.column, sticky=W)
+        self.column += 1
+        self.entries[text_name] = Entry(self, width=10)
+        self.entries[text_name].grid(row=self.row, column=self.column, sticky=W, columnspan=2)
+        self.entries[text_name].bind(self.support_event_keys[0],
+                                     lambda x, y=("", text_name): self.__entry_event(x, y))
+        self.column += 1
+        # ********** 创建一个信号恢复的输入框  entry **********
+        text_name, show_name = MESSAGE_RESUME
         # 获取输入框的名称
         Label(self, text=show_name).grid(row=self.row, column=self.column, sticky=W)
         self.column += 1
@@ -524,9 +534,10 @@ class TabFrame(Frame):
         :return:
         """
         message_lost = MESSAGE_LOST[0]
+        message_resume = MESSAGE_RESUME[0]
         logger.trace(event)
         function_name = params[1]
-        if function_name == message_lost:
+        if function_name == message_lost or function_name == message_resume:
             value = self.entries[function_name].get()
             if value != "":
                 # 0x152,0x153, 0x154
@@ -545,11 +556,19 @@ class TabFrame(Frame):
                     else:
                         message_id = int(f"0x{msg_id}", 16)
                     logger.debug(f"message_id = {message_id}")
-                    try:
-                        self.can_service.stop_transmit(message_id)
-                    except RuntimeError as e:
-                        logger.error(e)
-                        messagebox.showerror("出错了", f"【{e}】")
+                    if function_name == message_lost:
+                        try:
+                            self.can_service.stop_transmit(message_id)
+                        except RuntimeError as e:
+                            logger.error(e)
+                            messagebox.showerror("出错了", f"【{e}】")
+                    else:
+                        try:
+                            self.can_service.resume_transmit(message_id)
+                        except RuntimeError as e:
+                            logger.error(e)
+                            messagebox.showerror("出错了", f"【{e}】")
+
         else:
             entry_value = self.entries[function_name].get()
             params = self.__entries[function_name]
@@ -662,9 +681,29 @@ class TabFrame(Frame):
                     logger.error(e)
                     messagebox.showerror("出错了", f"【{e}】")
             elif len(action) == 1:
-                logger.debug(f"sleep {action} seconds")
-                sleep_time = float(action[0])
-                sleep(sleep_time)
+                action = action[0]
+                if "stop" in action or "resume" in action:
+                    new_action, msg_id = action.split(" ")
+                    if "0x" in msg_id:
+                        msg_id = int(msg_id, 16)
+                    else:
+                        msg_id = int(msg_id)
+                    if new_action == "stop":
+                        try:
+                            self.can_service.stop_transmit(msg_id)
+                        except RuntimeError as e:
+                            logger.error(e)
+                            messagebox.showerror("出错了", f"【{e}】")
+                    else:
+                        try:
+                            self.can_service.resume_transmit(msg_id)
+                        except RuntimeError as e:
+                            logger.error(e)
+                            messagebox.showerror("出错了", f"【{e}】")
+                else:
+                    logger.debug(f"sleep {action} seconds")
+                    sleep_time = float(action)
+                    sleep(sleep_time)
             else:
                 raise RuntimeError(f"value[{action}] incorrect")
 
@@ -758,25 +797,26 @@ class TabFrame(Frame):
         text_name = param[TEXT]
         logger.debug(f"press {text_name} button")
         check_msgs = param[CHECK_MSGS]
-        msg_id, signal_name, signal_value, count, expect_value = check_msgs
-        try:
-            stack = self.can_service.get_stack()
-            result = self.can_service.check_signal_value(stack=stack, msg_id=msg_id, signal_name=signal_name,
-                                                         expect_value=signal_value, count=count, exact=expect_value)
-            show_message = "成功" if result else "失败"
-            exact_message = "精确" if expect_value else "不精确"
-            message = f"检查【{hex(msg_id)}】中信号【{signal_name}】值为【{signal_value}】收到次数" \
-                      f"为【{count}】，匹配方式为【{exact_message}】的检查结果是【{show_message}】"
-            if result:
-                messagebox.showinfo(title=show_message, message=message)
-            else:
-                messagebox.showerror(title=show_message, message=message)
-        except RuntimeError as e:
-            logger.error(e)
-            messagebox.showerror(title="出错了", message=f"【{e}】")
-        finally:
-            self.can_service.clear_stack_data()
-            self.buttons[function_name]["state"] = NORMAL
+        stack = self.can_service.get_stack()
+        for value in check_msgs:
+            msg_id, signal_name, signal_value, count, expect_value = value
+            try:
+                result = self.can_service.check_signal_value(stack=stack, msg_id=msg_id, signal_name=signal_name,
+                                                             expect_value=signal_value, count=count, exact=expect_value)
+                show_message = "成功" if result else "失败"
+                exact_message = "精确" if expect_value else "不精确"
+                message = f"检查【{hex(msg_id)}】中信号【{signal_name}】值为【{signal_value}】收到次数" \
+                          f"为【{count}】，匹配方式为【{exact_message}】的检查结果是【{show_message}】"
+                if result:
+                    messagebox.showinfo(title=show_message, message=message)
+                else:
+                    messagebox.showerror(title=show_message, message=message)
+            except RuntimeError as e:
+                logger.error(e)
+                messagebox.showerror(title="出错了", message=f"【{e}】")
+
+        self.can_service.clear_stack_data()
+        self.buttons[function_name]["state"] = NORMAL
 
 
 class Gui(object):
