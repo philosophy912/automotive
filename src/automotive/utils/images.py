@@ -10,7 +10,6 @@ import cv2
 import numpy as np
 import imagehash
 from PIL import Image
-from airtest.aircv import NoModuleError
 from typing import Sequence, Optional, Union
 
 # 2960*1440设备 内存耗费： kaze (2GB) >> sift > akaze >> surf > brisk > brief > orb > tpl
@@ -20,6 +19,7 @@ from airtest.aircv.keypoint_matching import KAZEMatching, BRISKMatching, AKAZEMa
 from airtest.aircv.keypoint_matching_contrib import SIFTMatching, SURFMatching, BRIEFMatching, \
     NoMatchPointError
 from airtest.aircv.template_matching import TemplateMatching
+from airtest.aircv import NoModuleError, find_template
 from .common.enums import FindTypeEnum, HammingCompareTypeEnum, ImageCompareTypeEnum
 from ..common.typehints import NumpyArray, Position, ImageFile, CompareResult, RGB, AirTestResult
 from ..logger.logger import logger
@@ -319,6 +319,21 @@ class Images(object):
         same_percent = float((total_pixel - different_count) / total_pixel) * 100
         different_percent = float(different_count / total_pixel) * 100
         return round(same_percent, percent), round(different_percent, percent)
+
+    @staticmethod
+    def __find_by_template_new(
+                               im_source: np.ndarray,
+                               im_search: np.ndarray,
+                               threshold: float = 0.8) -> dict:
+        """
+        新版本airtest，找到最优结果
+        :param im_source:整张图像
+        :param im_search:截图图像
+        :param threshold: 对比阈值
+        :return:
+        """
+        result = find_template(im_source=im_source, im_search=im_search, threshold=threshold)
+        return result
 
     @staticmethod
     def __find_by_template(small_image: ImageFile,
@@ -656,7 +671,7 @@ class Images(object):
         return image_array
 
     def rectangle_image(self,
-                        image: Image,
+                        image: ImageFile,
                         positions: Sequence[Position],
                         color: RGB,
                         target_image: Optional[str] = None,
@@ -664,7 +679,7 @@ class Images(object):
         """
         在现有的图片上添加指定位置的方形的框
 
-        :param image 图片
+        :param image 图片的相对路径或者绝对路径
 
         :param positions position(x1,y1,x2,y2)列表，表示多个区域
 
@@ -685,7 +700,8 @@ class Images(object):
                          big_image: ImageFile,
                          threshold: float = 0.7,
                          rgb: bool = True,
-                         find_type: Union[FindTypeEnum, str] = FindTypeEnum.TEMPLATE) -> AirTestResult:
+                         find_type: Union[FindTypeEnum, str] = FindTypeEnum.TEMPLATE,
+                         ver: str = "new") -> AirTestResult:
         """
         查找小图是否在大图中匹配, 当小图在大图中无法找到，则返回None
 
@@ -698,6 +714,8 @@ class Images(object):
         :param rgb: 默认True
 
         :param find_type: 默认tpl方式
+
+        :param ver: 比较版本，默认用airtest新版本比较
 
         :return: 返回了五个坐标点以及对比结果
 
@@ -725,7 +743,10 @@ class Images(object):
             find_type = FindTypeEnum.from_value(find_type)
         small_image = self.__get_image_nd_array(small_image)
         big_image = self.__get_image_nd_array(big_image)
-        return self.__find_by_template(small_image, big_image, threshold=threshold, rgb=rgb, find_type=find_type)
+        if ver == "new":
+            return self.__find_by_template_new(im_source=big_image, im_search=small_image, threshold=threshold)
+        else:
+            return self.__find_by_template(small_image, big_image, threshold=threshold, rgb=rgb, find_type=find_type)
 
     def find_best_result_in_templates(self,
                                       small_image: ImageFile,
