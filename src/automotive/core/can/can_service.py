@@ -112,6 +112,13 @@ class Can(metaclass=Singleton):
                   "need_receive": need_receive, "is_uds_can_fd": is_uds_can_fd}
         self._can_box_device, self._can = get_can_box_device(**params)
 
+    def __enter__(self):
+        self.open_can()
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.close_can()
+
     @property
     def can_box_device(self) -> CanBoxDeviceEnum:
         return self._can_box_device
@@ -672,13 +679,30 @@ class CANService(Can):
             logger.info(f"current value is {actual_value}, expect value is {expect_value}")
             return expect_value == actual_value
 
+    def __send_random(self,
+                      filter_sender: Optional[FilterNode] = None,
+                      cycle_time: Optional[int] = None,
+                      interval: float = 0.1,
+                      default_message: Optional[Dict] = None,
+                      filter_nm: bool = True,
+                      filter_diag: bool = True):
+        messages = self.__filter_messages(filter_sender, filter_nm, filter_diag)
+        if cycle_time:
+            for i in range(cycle_time):
+                logger.info(f"The {i + 1} time set random value")
+                self.__send_messages(messages, interval, default_message, True)
+        else:
+            while self.can_bus.random_flag:
+                self.__send_messages(messages, interval, default_message, True)
+
     def send_random(self,
                     filter_sender: Optional[FilterNode] = None,
                     cycle_time: Optional[int] = None,
                     interval: float = 0.1,
                     default_message: Optional[Dict] = None,
                     filter_nm: bool = True,
-                    filter_diag: bool = True):
+                    filter_diag: bool = True,
+                    is_thread: bool = False):
         """
         随机发送信号
 
@@ -699,15 +723,15 @@ class CANService(Can):
         :param filter_nm: 是否过滤网络管理报文
 
         :param filter_diag: 是否过滤诊断报文
+
+        :param is_thread: 是否以多线程方式执行
         """
-        messages = self.__filter_messages(filter_sender, filter_nm, filter_diag)
-        if cycle_time:
-            for i in range(cycle_time):
-                logger.info(f"The {i + 1} time set random value")
-                self.__send_messages(messages, interval, default_message, True)
+        if is_thread:
+            executor = self.can_bus.thread_pool.submit(self.__send_random, filter_sender, cycle_time, interval,
+                                                       default_message, filter_nm, filter_diag)
+            self.can_bus.random_thread.append(executor)
         else:
-            while True:
-                self.__send_messages(messages, interval, default_message, True)
+            self.__send_random(filter_sender, cycle_time, interval, default_message, filter_nm, filter_diag)
 
     def send_messages(self, filter_sender: Optional[FilterNode] = None):
         """

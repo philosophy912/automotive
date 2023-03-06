@@ -133,6 +133,10 @@ class BaseCanBus(metaclass=ABCMeta):
         self._transmit_thread = []
         # 接收线程
         self._receive_thread = []
+        # 随机信号线程
+        self._random_thread = []
+        # 随机信号线程停止标识符
+        self.random_flag = True
         # 事件信号线程
         self._event_thread = dict()
         # dlc对应关系
@@ -145,6 +149,10 @@ class BaseCanBus(metaclass=ABCMeta):
         self._response_id = None
         # 诊断的功能请求ID
         self._function_id = None
+
+    @property
+    def random_thread(self) -> List:
+        return self._random_thread
 
     @property
     def can_device(self) -> BaseCanDevice:
@@ -201,6 +209,8 @@ class BaseCanBus(metaclass=ABCMeta):
         self._need_receive = True
         # 开启设备的发送线程
         self._need_transmit = True
+        # 开启随机信号的标识符
+        self.random_flag = True
         # 打开设备，并初始化设备
         self._can.open_device(baud_rate=self._baud_rate, data_rate=self._data_rate, channel=self._channel_index)
 
@@ -354,7 +364,7 @@ class BaseCanBus(metaclass=ABCMeta):
                     logger.debug(f"one frame")
                     # 拿到一次receive，清一次栈（单帧处理方法）
                     self.clear_stack_data()
-                    logger.trace(f"receive_messages: {list(map(lambda  x: x.data, receive_messages))}")
+                    logger.trace(f"receive_messages: {list(map(lambda x: x.data, receive_messages))}")
                     for message in receive_messages:
                         msg_data = message.data
                         logger.debug(f"msg_data is {msg_data}")
@@ -363,8 +373,8 @@ class BaseCanBus(metaclass=ABCMeta):
                             # 处理流控帧等待时间 30开头的报文，第二个字节是允许接收最大帧数，第三个字节是每帧间隔时间（ms）
                             delay_time = ((msg_data[2] & 0xf) * msg_data[1] / 1000)
                             # 据观察每一帧会比规定时间多1-2ms左右
-                            sleep(delay_time + ((msg_data[2] & 0xf) * 2)/1000)
-                            logger.trace(f"遇到流控帧 需要等待{delay_time + ((msg_data[2] & 0xf) * 2)/1000}ms")
+                            sleep(delay_time + ((msg_data[2] & 0xf) * 2) / 1000)
+                            logger.trace(f"遇到流控帧 需要等待{delay_time + ((msg_data[2] & 0xf) * 2) / 1000}ms")
                             delay_flag = True
                             break
 
@@ -549,6 +559,10 @@ class BaseCanBus(metaclass=ABCMeta):
         wait(self._receive_thread, return_when=ALL_COMPLETED)
         logger.trace("wait _event_thread close")
         wait(self._event_thread.values(), return_when=ALL_COMPLETED)
+        logger.trace("wait _random_thread close")
+        # 开启随机信号的标识符
+        self.random_flag = False
+        wait(self._random_thread, return_when=ALL_COMPLETED)
         if self._thread_pool:
             logger.info("shutdown thread pool")
             self._thread_pool.shutdown()
