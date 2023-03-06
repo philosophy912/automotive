@@ -10,7 +10,7 @@ import cv2
 import numpy as np
 import imagehash
 from PIL import Image
-from typing import Sequence, Optional, Union
+from typing import Sequence, Optional, Union, Dict
 
 # 2960*1440设备 内存耗费： kaze (2GB) >> sift > akaze >> surf > brisk > brief > orb > tpl
 # 单纯效果,推荐程度： tpl > surf ≈ sift > kaze > brisk > akaze> brief > orb
@@ -321,19 +321,12 @@ class Images(object):
         return round(same_percent, percent), round(different_percent, percent)
 
     @staticmethod
-    def __find_by_template_new(
-                               im_source: np.ndarray,
-                               im_search: np.ndarray,
-                               threshold: float = 0.8) -> dict:
-        """
-        新版本airtest，找到最优结果
-        :param im_source:整张图像
-        :param im_search:截图图像
-        :param threshold: 对比阈值
-        :return:
-        """
-        result = find_template(im_source=im_source, im_search=im_search, threshold=threshold)
-        return result
+    def __find_by_template_new(small_image: np.ndarray,
+                               big_image: np.ndarray,
+                               threshold: float = 0.7,
+                               rgb: bool = True
+                               ) -> Dict:
+        return find_template(im_source=big_image, im_search=small_image, threshold=threshold, rgb=rgb)
 
     @staticmethod
     def __find_by_template(small_image: ImageFile,
@@ -699,9 +692,8 @@ class Images(object):
                          small_image: ImageFile,
                          big_image: ImageFile,
                          threshold: float = 0.7,
-                         rgb: bool = True,
-                         find_type: Union[FindTypeEnum, str] = FindTypeEnum.TEMPLATE,
-                         ver: str = "new") -> AirTestResult:
+                         rgb: bool = True
+                         ) -> AirTestResult:
         """
         查找小图是否在大图中匹配, 当小图在大图中无法找到，则返回None
 
@@ -711,11 +703,7 @@ class Images(object):
 
         :param threshold: 阈值，默认0.7
 
-        :param rgb: 默认True
-
-        :param find_type: 默认tpl方式
-
-        :param ver: 比较版本，默认用airtest新版本比较
+        :param rgb: 默认True, 若需要提高识别率，就改为False（但是无法识别不同的颜色）
 
         :return: 返回了五个坐标点以及对比结果
 
@@ -739,14 +727,10 @@ class Images(object):
 
             }
         """
-        if isinstance(find_type, str):
-            find_type = FindTypeEnum.from_value(find_type)
+
         small_image = self.__get_image_nd_array(small_image)
         big_image = self.__get_image_nd_array(big_image)
-        if ver == "new":
-            return self.__find_by_template_new(im_source=big_image, im_search=small_image, threshold=threshold)
-        else:
-            return self.__find_by_template(small_image, big_image, threshold=threshold, rgb=rgb, find_type=find_type)
+        return self.__find_by_template_new(small_image, big_image, threshold=threshold, rgb=rgb)
 
     def find_best_result_in_templates(self,
                                       small_image: ImageFile,
@@ -754,6 +738,7 @@ class Images(object):
                                       threshold: float = 0.7,
                                       rgb: bool = True) -> AirTestResult:
         """
+        此方法已经废弃
         查找小图是否在大图中匹配, 当小图在大图中无法找到，尝试所有FindType的所有比较方式
 
         :param small_image: 小图片
@@ -786,6 +771,7 @@ class Images(object):
 
             }
         """
+        logger.warning("此方法已废弃")
         small_image = self.__get_image_nd_array(small_image)
         big_image = self.__get_image_nd_array(big_image)
         compare_result = None
@@ -820,7 +806,7 @@ class Images(object):
         :param position1: 位置1
         :param position2: 位置2
         :param threshold: 阈值，默认0.7
-        :param rgb: 默认True
+        :param rgb: 默认True, 若要使用最新版本识别率
         :param is_convert: 是否需要转换成为start_x, start_y, end_x, end_y模式，可以直接传入x, y, w, h
         :return:
         """
