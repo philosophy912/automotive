@@ -21,6 +21,7 @@ from .constants import DEFAULT_TIME_OUT, LOWER_LOCATORS, LOCATORS, LOWER_UISELEC
 from .typehints import Capability, Driver, Element, LocatorElement, Locator, Attributes, SwipeParam, ClickPosition
 from ..common.enums import DirectorEnum, SwipeDirectorEnum, ElementAttributeEnum
 from automotive.logger.logger import logger
+from ..air_utils import AirUtils
 
 
 class BaseAndroid(metaclass=ABCMeta):
@@ -32,9 +33,10 @@ class BaseAndroid(metaclass=ABCMeta):
     对于元素获取来说，也可以设置超时
     """
 
-    def __init__(self):
+    def __init__(self, temp_folder: str):
         self._driver = None
         self._actions = None
+        self._utils = AirUtils(temp_folder=temp_folder)
 
     @property
     def actions(self) -> TouchAction:
@@ -1168,3 +1170,58 @@ class BaseAndroid(metaclass=ABCMeta):
             return new_locator
         else:
             raise TypeError(f"locator type is not str or dict but [{type(locator)}]")
+
+    def _click_by_images(self, small_image: str, big_image: str):
+        """
+        通过图片点击--单击
+        :param small_image: 要点击的图片
+        :param big_image: 大图绝对或者相对路径
+        :return:
+        """
+
+        # 获得的坐标点，(中心坐标点x, y), (左上x 左上y), (左下x，左下y) （右下x 右下y） （右上x 右上y）
+        pt = self._utils.get_position_by_image(small_image=small_image, big_image=big_image)
+        center_x, center_y = pt[0]
+        if self._driver:
+            self._driver.click(center_x, center_y)
+        if self._actions:
+            self._actions.tap(x=center_x, y=center_y, count=1).perform()
+
+    def _double_click_by_image(self, small_image: str, big_image: str):
+        """
+        通过图标点击--双击
+        :param small_image: 要点击的图片
+        :param big_image: 大图绝对或者相对路径
+        :return:
+        """
+        # 获得的坐标点，(中心坐标点x, y), (左上x 左上y), (左下x，左下y) （右下x 右下y） （右上x 右上y）
+        pt = self._utils.get_position_by_image(small_image=small_image, big_image=big_image)
+        center_x, center_y = pt[0]
+        if self._driver:
+            self._driver.double_click(center_x, center_y)
+        if self._actions:
+            self._actions.tap(x=center_x, y=center_y, count=2).perform()
+
+    def _press_by_image(self, small_image: str, big_image: str, duration: float):
+        """
+        通过图像长按坐标点
+        :param small_image:要点击的图片路径
+        :param big_image:大图绝对或者相对路径
+        :param duration:持续时间
+        :return:
+        """
+
+        pt = self._utils.get_position_by_image(small_image=small_image, big_image=big_image)
+        center_x, center_y = pt[0]
+        if self._driver:
+            self._driver.long_click(center_x, center_y, duration=duration)
+        if self._actions:
+            duration = int(duration * 1000)
+            self._actions.long_press(x=center_x, y=center_y, duration=duration).wait(duration).perform()
+
+    def _exist_by_image(self, small_image: str, big_image: str, threshold: float):
+        result = self._utils.get_compare_result_by_image(small_image=small_image, big_image=big_image, threshold=threshold)
+        if result is None:
+            return False
+        else:
+            return True

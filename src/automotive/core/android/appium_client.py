@@ -25,11 +25,10 @@ from .common.typehints import AppiumLocatorElement, Locator, Attributes, ClickPo
 from ...common.typehints import Position
 from time import sleep
 
-
 class AppiumClient(BaseAndroid):
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, temp_folder: str = None):
+        super().__init__(temp_folder)
         self._driver = None
         self._actions = None
 
@@ -420,6 +419,9 @@ class AppiumClient(BaseAndroid):
         logger.info(f"the point[{x}:{y}] will be click")
         self.__click_point(x, y)
 
+    def click_by_images(self, small_image: str, big_image: str):
+        self._click_by_images(small_image=small_image, big_image=big_image)
+
     def double_click(self,
                      locator: Union[ClickPosition, AppiumLocatorElement],
                      timeout: float = DEFAULT_TIME_OUT,
@@ -428,6 +430,15 @@ class AppiumClient(BaseAndroid):
         logger.info(f"the point[{x}:{y}] will be click")
         self.__click_point(x, y, 2)
 
+    def double_click_by_image(self, small_image: str, big_image: str):
+        """
+        通过图标点击--双击
+        :param small_image: 要点击的图片
+        :param big_image: 大图绝对或者相对路径
+        :return:
+        """
+        self._double_click_by_image(small_image=small_image, big_image=big_image)
+
     def press(self,
               locator: Union[ClickPosition, AppiumLocatorElement],
               duration: Optional[float] = None,
@@ -435,6 +446,16 @@ class AppiumClient(BaseAndroid):
         x, y = self._get_element_location(locator, DirectorEnum.CENTER, timeout)
         logger.info(f"the point[{x}:{y}] will be click")
         self.__press_point(x, y, duration)
+
+    def press_by_image(self, small_image: str, big_image: str, duration: float):
+        """
+        通过图像长按坐标点
+        :param small_image:要点击的图片路径
+        :param big_image:大图绝对或者相对路径
+        :param duration:持续时间
+        :return:
+        """
+        self._press_by_image(small_image=small_image, big_image=big_image, duration=duration)
 
     def drag(self, start_x: int, start_y: int, end_x: int, end_y: int, duration: int = 1):
         self._actions.long_press(x=start_x, y=start_y).move_to(x=end_x, y=end_y).wait(duration).release().perform()
@@ -489,6 +510,247 @@ class AppiumClient(BaseAndroid):
         self._scroll_element(start_x, start_y, end_x, end_y, duration, direction, swipe_element, locator,
                              timeout=timeout, swipe_time=swipe_time, wait_time=wait_time)
 
+    def slide_to_bottom(self,
+                        swipe_element: AppiumLocatorElement,
+                        locator: Locator,
+                        duration: Optional[float] = None,
+                        wait_time: Optional[float] = None,
+                        timeout: float = DEFAULT_TIME_OUT,
+                        swipe_percent: float = 0.8):
+        """
+        从下往上滑，滑动到底
+        :param swipe_element: 可滑动元素 scrollable=true  一般情况是classname=android.widget.ListView
+        :param locator:用于定位是否滑动到最后的元素，一般是classname=android.widget.LinearLayout
+        :param duration:通常指滑动一次的时间
+        :param wait_time:每次滑动等待的时间
+        :param timeout:超时时间， 默认3秒
+        :param swipe_percent:滑动幅度，简单理解一个控件内，取的swipe_percent比例框，滑动范围
+        :return:
+        """
+        logger.debug(f"swipe_element is {swipe_element}")
+        # 首先获取locator定位的元素， 并判断该元素是否可滑动，若不可滑动则发出警告信息
+        swipe_element = self.get_element(swipe_element, timeout)
+        if not self.get_element_attribute(swipe_element, timeout)[ElementAttributeEnum.SCROLLABLE]:
+            logger.warning(f"element is not scrollable")
+        # 其次，根据方向确定start_x, start_y, end_x, end_y
+        x, y, width, height = self.get_location(swipe_element)
+        start_x, start_y, end_x, end_y = self._get_swipe_point(x, y, width, height, SwipeDirectorEnum.UP, swipe_percent)
+        logger.debug(f"swipe from {start_x}, {start_y} to {end_x}, {end_y}")
+        self._scroll_element_no_swipe_times(start_x, start_y, end_x, end_y, duration, SwipeDirectorEnum.UP,
+                                            swipe_element, locator,
+                                            timeout=timeout, wait_time=wait_time)
+
+    def slide_to_top(self,
+                     swipe_element: AppiumLocatorElement,
+                     locator: Locator,
+                     duration: Optional[float] = None,
+                     wait_time: Optional[float] = None,
+                     timeout: float = DEFAULT_TIME_OUT,
+                     swipe_percent: float = 0.8):
+        """
+        从上往下滑动，滑动到顶
+        :param swipe_element: 可滑动元素 scrollable=true  一般情况是classname=android.widget.ListView，若不能滑动需要添加多个定位元素
+        :param locator: 用于定位是否滑动到最后的元素，一般是classname=android.widget.LinearLayout
+        :param duration: 通常指滑动一次的时间
+        :param wait_time: 每次滑动等待的时间
+        :param timeout: 超时时间， 默认3秒
+        :param swipe_percent: 滑动幅度，简单理解一个控件内，取的swipe_percent比例框，滑动范围
+        :return:
+        """
+        logger.debug(f"swipe_element is {swipe_element}")
+        # 首先获取locator定位的元素， 并判断该元素是否可滑动，若不可滑动则发出警告信息
+        swipe_element = self.get_element(swipe_element, timeout)
+        if not self.get_element_attribute(swipe_element, timeout)[ElementAttributeEnum.SCROLLABLE]:
+            logger.warning(f"element is not scrollable")
+        # 其次，根据方向确定start_x, start_y, end_x, end_y
+        x, y, width, height = self.get_location(swipe_element)
+        start_x, start_y, end_x, end_y = self._get_swipe_point(x, y, width, height, SwipeDirectorEnum.DOWN,
+                                                               swipe_percent)
+        logger.debug(f"swipe from {start_x}, {start_y} to {end_x}, {end_y}")
+        self._scroll_element_no_swipe_times(start_x, start_y, end_x, end_y, duration, SwipeDirectorEnum.DOWN,
+                                            swipe_element, locator,
+                                            timeout=timeout, wait_time=wait_time)
+
+    def slide_to_leftmost(self,
+                          swipe_element: AppiumLocatorElement,
+                          locator: Locator,
+                          duration: Optional[float] = None,
+                          wait_time: Optional[float] = None,
+                          timeout: float = DEFAULT_TIME_OUT,
+                          swipe_percent: float = 0.8
+                          ):
+        """
+        从左向右滑，滑动到最左侧
+        :param swipe_element:可滑动元素 scrollable=true 若有多个空间，需要用多个定位元素定位
+        :param locator:用于定位是否滑动到最后的元素
+        :param duration:通常指滑动一次的时间
+        :param wait_time:每次滑动等待的时间
+        :param timeout:超时时间， 默认3秒
+        :param swipe_percent: 滑动幅度，简单理解一个控件内，取的swipe_percent比例框，滑动范围
+        :return:
+        """
+        logger.debug(f"swipe_element is {swipe_element}")
+        # 首先获取locator定位的元素， 并判断该元素是否可滑动，若不可滑动则发出警告信息
+        swipe_element = self.get_element(swipe_element, timeout)
+        if not self.get_element_attribute(swipe_element, timeout)[ElementAttributeEnum.SCROLLABLE]:
+            logger.warning(f"element is not scrollable")
+        # 其次，根据方向确定start_x, start_y, end_x, end_y
+        x, y, width, height = self.get_location(swipe_element)
+        start_x, start_y, end_x, end_y = self._get_swipe_point(x, y, width, height, SwipeDirectorEnum.RIGHT,
+                                                               swipe_percent)
+        logger.debug(f"swipe from {start_x}, {start_y} to {end_x}, {end_y}")
+        self._scroll_element_no_swipe_times(start_x, start_y, end_x, end_y, duration, SwipeDirectorEnum.RIGHT,
+                                            swipe_element, locator,
+                                            timeout=timeout, wait_time=wait_time)
+
+    def slide_to_rightmost(self,
+                           swipe_element: AppiumLocatorElement,
+                           locator: Locator,
+                           duration: Optional[float] = None,
+                           wait_time: Optional[float] = None,
+                           timeout: float = DEFAULT_TIME_OUT,
+                           swipe_percent: float = 0.8
+                           ):
+        """
+        从右向左滑，滑动到最右侧
+        :param swipe_element:可滑动元素 scrollable=true 若有多个空间，需要用多个定位元素定位
+        :param locator:用于定位是否滑动到最后的元素
+        :param duration:通常指滑动一次的时间
+        :param wait_time:每次滑动等待的时间
+        :param timeout:超时时间， 默认3秒
+        :param swipe_percent: 滑动幅度，简单理解一个控件内，取的swipe_percent比例框，滑动范围
+        :return:
+        """
+        logger.debug(f"swipe_element is {swipe_element}")
+        # 首先获取locator定位的元素， 并判断该元素是否可滑动，若不可滑动则发出警告信息
+        swipe_element = self.get_element(swipe_element, timeout)
+        if not self.get_element_attribute(swipe_element, timeout)[ElementAttributeEnum.SCROLLABLE]:
+            logger.warning(f"element is not scrollable")
+        # 其次，根据方向确定start_x, start_y, end_x, end_y
+        x, y, width, height = self.get_location(swipe_element)
+        start_x, start_y, end_x, end_y = self._get_swipe_point(x, y, width, height, SwipeDirectorEnum.LEFT,
+                                                               swipe_percent)
+        logger.debug(f"swipe from {start_x}, {start_y} to {end_x}, {end_y}")
+        self._scroll_element_no_swipe_times(start_x, start_y, end_x, end_y, duration, SwipeDirectorEnum.LEFT,
+                                            swipe_element, locator,
+                                            timeout=timeout, wait_time=wait_time)
+
+    def slide_up_times(self, swipe_element: AppiumLocatorElement,
+                       swipe_time: int,
+                       duration: Optional[float] = None,
+                       wait_time: Optional[float] = None,
+                       timeout: float = DEFAULT_TIME_OUT,
+                       swipe_percent: float = 0.8):
+        """
+        向上滑swipe_time次
+        :param swipe_element: 可滑动元素 scrollable=true 若有多个空间，需要用多个定位元素定位
+        :param swipe_time: 滑动次数
+        :param duration: 通常指滑动一次的时间
+        :param wait_time: 每次滑动等待的时间
+        :param timeout: 超时时间， 默认3秒
+        :param swipe_percent: 滑动幅度，简单理解一个控件内，取的swipe_percent比例框，滑动范围
+        :return:
+        """
+        logger.debug(f"swipe_element is {swipe_element}")
+        # 首先获取locator定位的元素， 并判断该元素是否可滑动，若不可滑动则发出警告信息
+        swipe_element = self.get_element(swipe_element, timeout)
+        if not self.get_element_attribute(swipe_element, timeout)[ElementAttributeEnum.SCROLLABLE]:
+            logger.warning(f"element is not scrollable")
+        # 其次，根据方向确定start_x, start_y, end_x, end_y
+        x, y, width, height = self.get_location(swipe_element)
+        start_x, start_y, end_x, end_y = self._get_swipe_point(x, y, width, height, SwipeDirectorEnum.UP,
+                                                               swipe_percent)
+        logger.debug(f"swipe from {start_x}, {start_y} to {end_x}, {end_y}")
+        self._scroll_element_swipe_time(start_x=start_x, start_y=start_y, end_x=end_x, end_y=end_y,
+                                        duration=duration, swipe_time=swipe_time, wait_time=wait_time)
+
+    def slide_down_times(self, swipe_element: AppiumLocatorElement,
+                         swipe_time: int,
+                         duration: Optional[float] = None,
+                         wait_time: Optional[float] = None,
+                         timeout: float = DEFAULT_TIME_OUT,
+                         swipe_percent: float = 0.8):
+        """
+        向下滑swipe_time次
+        :param swipe_element: 可滑动元素 scrollable=true 若有多个空间，需要用多个定位元素定位
+        :param swipe_time: 滑动次数
+        :param duration: 通常指滑动一次的时间
+        :param wait_time: 每次滑动等待的时间
+        :param timeout: 超时时间， 默认3秒
+        :param swipe_percent: 滑动幅度，简单理解一个控件内，取的swipe_percent比例框，滑动范围
+        :return:
+        """
+        logger.debug(f"swipe_element is {swipe_element}")
+        # 首先获取locator定位的元素， 并判断该元素是否可滑动，若不可滑动则发出警告信息
+        swipe_element = self.get_element(swipe_element, timeout)
+        if not self.get_element_attribute(swipe_element, timeout)[ElementAttributeEnum.SCROLLABLE]:
+            logger.warning(f"element is not scrollable")
+        # 其次，根据方向确定start_x, start_y, end_x, end_y
+        x, y, width, height = self.get_location(swipe_element)
+        start_x, start_y, end_x, end_y = self._get_swipe_point(x, y, width, height, SwipeDirectorEnum.DOWN,
+                                                               swipe_percent)
+        logger.debug(f"swipe from {start_x}, {start_y} to {end_x}, {end_y}")
+        self._scroll_element_swipe_time(start_x=start_x, start_y=start_y, end_x=end_x, end_y=end_y,
+                                        duration=duration, swipe_time=swipe_time, wait_time=wait_time)
+
+    def slide_left_times(self, swipe_element: AppiumLocatorElement,
+                         swipe_time: int,
+                         duration: Optional[float] = None,
+                         wait_time: Optional[float] = None,
+                         timeout: float = DEFAULT_TIME_OUT,
+                         swipe_percent: float = 0.8):
+        """
+        向左滑swipe_time次
+        :param swipe_element: 可滑动元素 scrollable=true 若有多个空间，需要用多个定位元素定位
+        :param swipe_time: 滑动次数
+        :param duration: 通常指滑动一次的时间
+        :param wait_time: 每次滑动等待的时间
+        :param timeout: 超时时间， 默认3秒
+        :param swipe_percent: 滑动幅度，简单理解一个控件内，取的swipe_percent比例框，滑动范围
+        :return:
+        """
+        logger.debug(f"swipe_element is {swipe_element}")
+        # 首先获取locator定位的元素， 并判断该元素是否可滑动，若不可滑动则发出警告信息
+        swipe_element = self.get_element(swipe_element, timeout)
+        if not self.get_element_attribute(swipe_element, timeout)[ElementAttributeEnum.SCROLLABLE]:
+            logger.warning(f"element is not scrollable")
+        # 其次，根据方向确定start_x, start_y, end_x, end_y
+        x, y, width, height = self.get_location(swipe_element)
+        start_x, start_y, end_x, end_y = self._get_swipe_point(x, y, width, height, SwipeDirectorEnum.LEFT,
+                                                               swipe_percent)
+        logger.debug(f"swipe from {start_x}, {start_y} to {end_x}, {end_y}")
+        self._scroll_element_swipe_time(start_x=start_x, start_y=start_y, end_x=end_x, end_y=end_y,
+                                        duration=duration, swipe_time=swipe_time, wait_time=wait_time)
+
+    def slide_right_times(self, swipe_element: AppiumLocatorElement,
+                          swipe_time: int,
+                          duration: Optional[float] = None,
+                          wait_time: Optional[float] = None,
+                          timeout: float = DEFAULT_TIME_OUT,
+                          swipe_percent: float = 0.8):
+        """
+        向右滑swipe_time次
+        :param swipe_element: 可滑动元素 scrollable=true 若有多个空间，需要用多个定位元素定位
+        :param swipe_time: 滑动次数
+        :param duration: 通常指滑动一次的时间
+        :param wait_time: 每次滑动等待的时间
+        :param timeout: 超时时间， 默认3秒
+        :param swipe_percent: 滑动幅度，简单理解一个控件内，取的swipe_percent比例框，滑动范围
+        :return:
+        """
+        logger.debug(f"swipe_element is {swipe_element}")
+        # 首先获取locator定位的元素， 并判断该元素是否可滑动，若不可滑动则发出警告信息
+        swipe_element = self.get_element(swipe_element, timeout)
+        if not self.get_element_attribute(swipe_element, timeout)[ElementAttributeEnum.SCROLLABLE]:
+            logger.warning(f"element is not scrollable")
+        # 其次，根据方向确定start_x, start_y, end_x, end_y
+        x, y, width, height = self.get_location(swipe_element)
+        start_x, start_y, end_x, end_y = self._get_swipe_point(x, y, width, height, SwipeDirectorEnum.RIGHT,
+                                                               swipe_percent)
+        logger.debug(f"swipe from {start_x}, {start_y} to {end_x}, {end_y}")
+        self._scroll_element_swipe_time(start_x=start_x, start_y=start_y, end_x=end_x, end_y=end_y,
+                                        duration=duration, swipe_time=swipe_time, wait_time=wait_time)
+
     def get_text(self, locator: AppiumLocatorElement, timeout: float = DEFAULT_TIME_OUT) -> str:
         return self.get_element(locator, timeout).text
 
@@ -540,3 +802,6 @@ class AppiumClient(BaseAndroid):
         for i in range(swipe_time):
             self._driver.swipe(start_x, start_y, end_x, end_y, duration)
             sleep(0.5)
+
+    def exist_by_image(self, small_image: str, big_image: str, threshold: float = 0.7):
+        self._exist_by_image(small_image=small_image, big_image=big_image, threshold=threshold)

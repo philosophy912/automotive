@@ -61,16 +61,16 @@ class AndroidService(metaclass=Singleton):
     """
     _DEFAULT_TIME_OUT = 3
 
-    def __init__(self, tool_type: Union[ToolTypeEnum, str] = ToolTypeEnum.UIAUTOMATOR2):
+    def __init__(self, tool_type: Union[ToolTypeEnum, str] = ToolTypeEnum.UIAUTOMATOR2, temp_folder: str = None):
         self.adb = ADB()
         if isinstance(tool_type, str):
             self.__type = ToolTypeEnum.from_value(tool_type)
         else:
             self.__type = tool_type
         if self.__type == ToolTypeEnum.APPIUM:
-            self.__client = AppiumClient()
+            self.__client = AppiumClient(temp_folder)
         elif self.__type == ToolTypeEnum.UIAUTOMATOR2:
-            self.__client = UiAutomator2Client()
+            self.__client = UiAutomator2Client(temp_folder)
         else:
             raise TypeError(f"{tool_type} not support, only support APPIUM and UIAUTOMATOR2")
 
@@ -1370,3 +1370,181 @@ class AndroidService(metaclass=Singleton):
             return True
         except NoSuchElementException:
             return False
+
+    def slide_to_top(self, swipe_element: LocatorElement,
+                     locator: Locator,
+                     duration: Optional[float] = None,
+                     wait_time: Optional[float] = None,
+                     timeout: float = _DEFAULT_TIME_OUT,
+                     swipe_percent: float = 0.8
+                     ):
+        """
+        滑动到顶
+        :return:
+        """
+        self.__client.slide_to_top(swipe_element=swipe_element,
+                                   locator=locator,
+                                   duration=duration,
+                                   wait_time=wait_time,
+                                   timeout=timeout,
+                                   swipe_percent=swipe_percent)
+
+    def slide_to_bottom(self, swipe_element: LocatorElement,
+                        locator: Locator,
+                        duration: Optional[float] = None,
+                        wait_time: Optional[float] = None,
+                        timeout: float = _DEFAULT_TIME_OUT,
+                        swipe_percent: float = 0.8
+                        ):
+        """
+        滑动到底
+        :return:
+        """
+        self.__client.slide_to_bottom(swipe_element=swipe_element,
+                                      locator=locator,
+                                      duration=duration,
+                                      wait_time=wait_time,
+                                      timeout=timeout,
+                                      swipe_percent=swipe_percent)
+
+    def slide_to_left(self, swipe_element: LocatorElement,
+                      locator: Locator,
+                      duration: Optional[float] = None,
+                      wait_time: Optional[float] = None,
+                      timeout: float = _DEFAULT_TIME_OUT,
+                      swipe_percent: float = 0.8):
+        """
+        滑动到左
+        :return:
+        """
+        self.__client.slide_to_leftmost(swipe_element=swipe_element,
+                                        locator=locator,
+                                        duration=duration,
+                                        wait_time=wait_time,
+                                        timeout=timeout,
+                                        swipe_percent=swipe_percent)
+
+    def slide_to_right(self, swipe_element: LocatorElement,
+                       locator: Locator,
+                       duration: Optional[float] = None,
+                       wait_time: Optional[float] = None,
+                       timeout: float = _DEFAULT_TIME_OUT,
+                       swipe_percent: float = 0.8):
+        """
+        滑动到右
+        :return:
+        """
+        self.__client.slide_to_rightmost(swipe_element=swipe_element,
+                                         locator=locator,
+                                         duration=duration,
+                                         wait_time=wait_time,
+                                         timeout=timeout,
+                                         swipe_percent=swipe_percent)
+
+    def slide_up_times(self, swipe_element: LocatorElement,
+                       swipe_time: int,
+                       duration: Optional[float] = None,
+                       wait_time: Optional[float] = None,
+                       timeout: float = _DEFAULT_TIME_OUT,
+                       swipe_percent: float = 0.8):
+        """
+        向上滑动x次
+        :return:
+        """
+        self.__client.slide_up_times(swipe_element=swipe_element,
+                                     swipe_time=swipe_time,
+                                     duration=duration,
+                                     wait_time=wait_time,
+                                     timeout=timeout,
+                                     swipe_percent=swipe_percent)
+
+    def slide_down_times(self, swipe_element: LocatorElement,
+                         swipe_time: int,
+                         duration: Optional[float] = None,
+                         wait_time: Optional[float] = None,
+                         timeout: float = _DEFAULT_TIME_OUT,
+                         swipe_percent: float = 0.8):
+        """
+        向上滑动x次
+        :return:
+        """
+        self.__client.slide_down_times(swipe_element=swipe_element,
+                                       swipe_time=swipe_time,
+                                       duration=duration,
+                                       wait_time=wait_time,
+                                       timeout=timeout,
+                                       swipe_percent=swipe_percent)
+
+    def slide_left_times(self, swipe_element: LocatorElement,
+                         swipe_time: int,
+                         duration: Optional[float] = None,
+                         wait_time: Optional[float] = None,
+                         timeout: float = _DEFAULT_TIME_OUT,
+                         swipe_percent: float = 0.8):
+        """
+        向上滑动x次
+        :return:
+        """
+        self.__client.slide_left_times(swipe_element=swipe_element,
+                                       swipe_time=swipe_time,
+                                       duration=duration,
+                                       wait_time=wait_time,
+                                       timeout=timeout,
+                                       swipe_percent=swipe_percent)
+
+    def slide_right_times(self, swipe_element: LocatorElement,
+                          swipe_time: int,
+                          duration: Optional[float] = None,
+                          wait_time: Optional[float] = None,
+                          timeout: float = _DEFAULT_TIME_OUT,
+                          swipe_percent: float = 0.8):
+        """
+        向上滑动x次
+        :return:
+        """
+        self.__client.slide_right_times(swipe_element=swipe_element,
+                                        swipe_time=swipe_time,
+                                        duration=duration,
+                                        wait_time=wait_time,
+                                        timeout=timeout,
+                                        swipe_percent=swipe_percent)
+
+    def click_by_image(self, small_img: str, big_img: str):
+        """
+        通过图像单击坐标点
+        :return:
+        """
+        self.__client.click_by_images(small_image=small_img, big_image=big_img)
+
+    def double_click_by_image(self, small_image: str, big_image: str):
+        """
+        通过图像双击坐标点
+        :return:
+        """
+        self.__client.double_click_by_image(small_image=small_image, big_image=big_image)
+
+    def press_by_image(self, small_image: str, big_image: str, duration: float = 0.5):
+        """
+        通过图像长按坐标点
+        :return:
+        """
+        self.__client.press_by_image(small_image=small_image, big_image=big_image, duration=duration)
+
+    def exist_by_locator(self, locator: LocatorElement, timeout: float = _DEFAULT_TIME_OUT):
+        """
+        元素是否存在
+        :return: 存在/不存在
+        """
+        try:
+            self.__client.get_element(locator=locator, timeout=timeout)
+            return True
+        except NoSuchElementException:
+            return False
+
+    def exist_by_image(self, small_image: str, big_image: str):
+        """
+        根据截图判定是否存在
+        :return:
+        """
+        result = self.__client.exist_by_image(small_image=small_image, big_image=big_image)
+        return result
