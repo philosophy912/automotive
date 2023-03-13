@@ -72,6 +72,17 @@ CHECK_SIGNAL_NAME = "check_signal_name", "检查信号名称"
 COMMON = "公共"
 YES_OR_NO = "是", "否"
 
+# uds面板参数
+CONFIG_UDS = "车型配置", "功能配置"
+# 按钮宽
+BUTTON_WIDTH = 10
+# 界面宽x高+x+y
+GUI_SIZE = 800, 500, 100, 100
+# 文本输出框的frame框架 text.grid(row, column)
+FM_TEXT = 10, 0
+# 按钮的frame框架 button.grid(row, column)
+FM_BUTTON = 0, 0
+
 
 class Testcase(object):
 
