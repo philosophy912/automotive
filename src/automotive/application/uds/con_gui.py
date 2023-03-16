@@ -9,8 +9,7 @@ import os.path
 import time
 from time import sleep
 from typing import Dict
-
-from unit_test.zhangvv.uds.uds_common import UdsCommon
+from uds_common import UdsCommon
 from automotive import logger
 from ..common.constants import CONFIG_UDS, GUI_SIZE, BUTTON_WIDTH, FM_TEXT, FM_BUTTON
 from automotive.utils.excel_utils import ExcelUtils
@@ -99,63 +98,70 @@ class ConfigurationGui(object):
         title = service.get_file_name(file=json_file)
         self.root.title()
         self.root.geometry(f'{GUI_SIZE[0]}x{GUI_SIZE[1]}+{GUI_SIZE[2]}+{GUI_SIZE[3]}')  # 设置主窗口长宽以及窗口在屏幕的位置 宽x高+x+y
-        # 文本输出框和标签的框架
-        self.fm_t = tk.Frame(self.root)
-        self.fm_t.grid(row=FM_TEXT[0], column=FM_TEXT[1], sticky="W" + "E")
-        # 按钮的框架
-        self.fm_b = tk.Frame(self.root)
-        self.fm_b.grid(row=FM_BUTTON[0], column=FM_BUTTON[1], sticky="W" + "E")
 
-        l2 = tk.Label(self.fm_t, text='实时终端控制台', font=('微软雅黑', 10, 'bold'), width=500, justify='left',
-                      anchor='w')  # justify控制对其方向，anchor控制位置 共同使文本靠左
-        l2.pack()
-        self.s2 = tk.Scrollbar(self.fm_t)  # 设置垂直滚动条
-        self.b2 = tk.Scrollbar(self.fm_t, orient='horizontal')  # 水平滚动条
-        self.s2.pack(side='right', fill='y')  # 靠右，充满Y轴
-        self.b2.pack(side='bottom', fill='x')  # 靠下，充满x轴
+        if title == "车型配置":
 
-        # wrap=word 单词换行 char 字符换行 none不换行
-        self.text = tk.Text(self.fm_t, font=('Consolas', 9), undo=True, autoseparators=False,
-                            wrap='char', xscrollcommand=self.b2.set,
-                            yscrollcommand=self.s2.set)  # , state=DISABLED, wrap='none'表示不自动换行
-        self.text.pack(fill='x', side="bottom")
+            # 按钮的框架
+            self.fm_b = tk.Frame(self.root)
+            self.fm_b.pack(fill="both")
 
-        # 获取request\response\function id的值，并移除
-        request_id = self.str16_to_hex(configure["request_id"])
-        response_id = self.str16_to_hex(configure["response_id"])
-        function_id = self.str16_to_hex(configure["function_id"])
-        can_box_device = configure["can_box_device"]
+            # 文本输出框和标签的框架
+            self.fm_t = tk.Frame(self.root)
+            self.fm_t.pack(fill='both', expand=0)
 
-        # did属性值
-        self.did = configure["did"]
-        # dll_file
-        dll_file = configure["dll_file"]
-        can_fd = configure["can_fd"]
-        is_uds_can_fd = configure["is_uds_can_fd"]
+            l2 = tk.Label(self.fm_t, text='实时终端控制台', font=('微软雅黑', 10, 'bold'), width=500, justify='left',
+                          anchor='w')  # justify控制对其方向，anchor控制位置 共同使文本靠左
+            l2.pack()
+            self.s2 = tk.Scrollbar(self.fm_t)  # 设置垂直滚动条
+            self.b2 = tk.Scrollbar(self.fm_t, orient='horizontal')  # 水平滚动条
+            self.s2.pack(side='right', fill='y')  # 靠右，充满Y轴
+            self.b2.pack(side='bottom', fill='x')  # 靠下，充满x轴
 
-        # 删除除车型之外的其他几个键值对
-        del configure["request_id"]
-        del configure["response_id"]
-        del configure["function_id"]
-        del configure["did"]
-        del configure["dll_file"]
-        del configure["can_box_device"]
-        del configure["can_fd"]
-        del configure["is_uds_can_fd"]
+            # wrap=word 单词换行 char 字符换行 none不换行
+            self.text = tk.Text(self.fm_t, font=('Consolas', 9), undo=True, autoseparators=False,
+                                wrap='none', xscrollcommand=self.b2.set,
+                                yscrollcommand=self.s2.set)  # , state=DISABLED, wrap='none'表示不自动换行
+            self.text.pack(fill='x', side="bottom")
 
-        # 定义CAN
-        self.uds = UdsCommon(can_box_device=can_box_device,
-                             can_fd=can_fd,
-                             is_uds_can_fd=is_uds_can_fd,
-                             request_id=request_id,
-                             response_id=response_id,
-                             dll_file=dll_file,
-                             function_id=function_id)
+            # 获取request\response\function id的值，并移除
+            request_id = self.str16_to_hex(configure["request_id"])
+            response_id = self.str16_to_hex(configure["response_id"])
+            function_id = self.str16_to_hex(configure["function_id"])
+            can_box_device = configure["can_box_device"]
 
-        if title == CONFIG_UDS[0]:
+            # did属性值
+            self.did = configure["did"]
+            # dll_file
+            dll_file = configure["dll_file"]
+            can_fd = configure["can_fd"]
+            is_uds_can_fd = configure["is_uds_can_fd"]
+
+            # 删除除车型之外的其他几个键值对
+            del configure["request_id"]
+            del configure["response_id"]
+            del configure["function_id"]
+            del configure["did"]
+            del configure["dll_file"]
+            del configure["can_box_device"]
+            del configure["can_fd"]
+            del configure["is_uds_can_fd"]
+
+            # 定义CAN
+            self.uds = UdsCommon(can_box_device=can_box_device,
+                                 can_fd=can_fd,
+                                 is_uds_can_fd=is_uds_can_fd,
+                                 request_id=request_id,
+                                 response_id=response_id,
+                                 dll_file=dll_file,
+                                 function_id=function_id)
+
             # 车型配置
             self.car_type_config(configure=configure)
+        else:
+            pass
 
+        self.s2.config(command=self.text.yview)  # Text随着滚动条移动被控制移动
+        self.b2.config(command=self.text.xview)
         self.root.protocol("WM_DELETE_WINDOW", self.exit_root)
         self.root.mainloop()
 
@@ -173,6 +179,17 @@ class ConfigurationGui(object):
         """
         self.text.insert('end', "\n%s [%s] %s" % (time.strftime('%Y-%m-%d %H:%M:%S'), info_type.upper(), msg))
         self.text.update()
+
+    @staticmethod
+    def solve_configure_word_form(configure):
+        b = ''
+        for i in range(len(configure)):
+            j = i + 1
+            a = configure[i]
+            b = b + a
+            if j % 2 == 0:
+                b = b + ' '
+        return b
 
     def messagebox(self, message: str):
         """
@@ -192,7 +209,8 @@ class ConfigurationGui(object):
             # 解析出来配置字
             config = re.findall("配置字为.*吗？", message)[0][4:-2]
             logger.debug(f"2e写入配置字为：{config}")
-            self.terminal_print(msg=config, info_type="2e写入的配置字")
+            # 处理2E写入的配置字，两个字符一分隔
+            self.terminal_print(msg=self.solve_configure_word_form(configure=config.lower()), info_type="2e写入的配置字")
             # 执行写配置的任务
             # 1.写配置
             self.terminal_print(msg="即将写入数据", info_type="提示")
@@ -208,7 +226,7 @@ class ConfigurationGui(object):
             response_data_22_after = self.uds.read_fd_22(did=self.did)
             logger.debug(f"22读出来的配置：{response_data_22_after}")
             logger.debug(f"重启后的读结果判断{response_data_22_after.lower() == config.lower()}")
-            self.terminal_print(msg=response_data_22_after, info_type="22读出来的配置")
+            self.terminal_print(msg=self.solve_configure_word_form(response_data_22_after.lower()), info_type="22读出来的配置")
             self.terminal_print(msg=response_data_22_after.lower() == config.lower(), info_type="重启后的读结果判断")
             if config.lower() != response_data_22_after.lower():
                 logger.info(f"{car_type}配置失败，请检查")

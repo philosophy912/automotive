@@ -17,7 +17,7 @@ class UdsCommon(object):
     def __init__(self,
                  request_id: int,
                  response_id: int,
-                 funciton_id: int,
+                 function_id: int,
                  dll_file: str,
                  can_box_device: Union[CanBoxDeviceEnum, str, None] = None,
                  can_fd: bool = False,
@@ -28,7 +28,7 @@ class UdsCommon(object):
                        can_fd=can_fd,
                        is_uds_can_fd=is_uds_can_fd)
 
-        self.can.init_uds(request_id=request_id, response_id=response_id, function_id=funciton_id)
+        self.can.init_uds(request_id=request_id, response_id=response_id, function_id=function_id)
         self.can.open_can()
         self.__dll = WinDLL(dll_file)
 
