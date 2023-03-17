@@ -120,6 +120,38 @@ class OpenpyxlExcelUtils(BaseExcelUtils):
         # 居中显示 + 自动换行
         cell.alignment = Alignment(horizontal='center', vertical='center', wrapText=True)
 
+    @staticmethod
+    def split_merge_cell(workbook: Workbook, worksheet: Worksheet, xlsx_path: str, save_path: str):
+        """
+        拆分合并了的单元格，存储到新的xlsx文件中.仅支持一列的合并单元格，一行单元格目前不支持
+        :param worksheet:
+        :param workbook:
+        :param xlsx_path: 合并单元格的excel
+        :param save_path: 拆分了单元格的excel
+        :return:
+        """
+        if save_path == xlsx_path:
+            raise RuntimeWarning("拆分路径不可以跟xlsx文件路径一样\n")
+
+        # m_list合并单元格的位置信息，可迭代对象（单个是一个'openpyxl.worksheet.cell_range.CellRange'对象），print后就是excel坐标信息
+        m_list = worksheet.merged_cells
+        if m_list:
+            cr = []
+            for m_area in m_list:
+                # 合并单元格的起始行坐标、终止行坐标。。。。，
+                r1, r2, c1, c2 = m_area.min_row, m_area.max_row, m_area.min_col, m_area.max_col
+                # 纵向合并单元格的位置信息提取出
+                if r2 - r1 > 0:
+                    cr.append((r1, r2, c1, c2))
+            # 这里注意需要把合并单元格的信息提取出再拆分
+            for r in cr:
+                worksheet.unmerge_cells(start_row=r[0], end_row=r[1],
+                                        start_column=r[2], end_column=r[3])
+                for i in range(r[1] - r[0] + 1):
+                    for j in range(r[3] - r[2] + 1):
+                        worksheet.cell(row=r[0] + i, column=r[2] + j, value=worksheet.cell(r[0], r[2]).value)
+            workbook.save(save_path)
+
 
 class XlwingsExcelUtils(BaseExcelUtils):
 
